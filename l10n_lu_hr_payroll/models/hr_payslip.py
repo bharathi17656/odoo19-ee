@@ -28,7 +28,7 @@ class HrPayslip(models.Model):
         ('without', 'Without')],
         compute='_compute_l10n_lu_tax_classification', store=True, readonly=False)
     l10n_lu_tax_rate_no_classification = fields.Float(
-        compute="_compute_l10n_lu_tax_id_number", store=True, readonly=False)
+        compute="_compute_l10n_lu_tax_rate_no_classification", store=True, readonly=False)
 
     l10n_lu_deduction_fd_daily = fields.Monetary(
         compute="_compute_l10n_lu_deduction_fd_daily", store=True, readonly=False)
@@ -88,7 +88,8 @@ class HrPayslip(models.Model):
             if payslip.company_id.country_id.code != "LU" and payslip.version_id.wage_type == "hourly":
                 continue
             payslip.l10n_lu_presence_prorata = payslip._get_month_presence_prorata()
-            payslip.l10n_lu_prorated_wage = payslip.version_id.l10n_lu_indexed_wage * payslip.l10n_lu_presence_prorata
+            indexed_wage = payslip.version_id._get_l10n_lu_indexed_wage(payslip.date_to)
+            payslip.l10n_lu_prorated_wage = indexed_wage * payslip.l10n_lu_presence_prorata
 
     @api.depends('employee_id.l10n_lu_tax_id_number', 'state')
     def _compute_l10n_lu_tax_id_number(self):

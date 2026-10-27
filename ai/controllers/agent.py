@@ -1,17 +1,20 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from werkzeug.exceptions import Forbidden
+
 from odoo import http
 from odoo.http import request
 
 from ..utils.llm_api_service import LLMApiService, RealtimeParameters
 
 DEFAULT_TOKEN_LIFESPAN = 7200  # Token lifespan in seconds
-DEFAULT_SILENCE_DURATION = 500  # Silence duration in ms
 
 
 class AgentController(http.Controller):
 
     @http.route(["/ai/transcription/session"], methods=["POST"], type="jsonrpc", auth="user", readonly=True)
     def get_session_token(self, language: str, prompt: str):
+        if not request.env.user._is_internal():
+            raise Forbidden("Only internal users can create transcription sessions.")
         service = LLMApiService(request.env)
 
         session_params: RealtimeParameters = {
@@ -22,12 +25,11 @@ class AgentController(http.Controller):
                     "input": {
                         "transcription": {
                             "language": language,
-                            "model": "gpt-4o-transcribe",
+                            "model": "whisper-1",
                             "prompt": prompt,
                         },
                         "turn_detection": {
                             "type": "server_vad",
-                            "silence_duration_ms": DEFAULT_SILENCE_DURATION,
                         },
                         "noise_reduction": {"type": "far_field"},
                     }

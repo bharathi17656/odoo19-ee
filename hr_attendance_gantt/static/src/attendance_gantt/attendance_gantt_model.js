@@ -14,6 +14,13 @@ export class AttendanceGanttModel extends GanttModel {
     _getDomain(metaData) {
         const { dateStartField, dateStopField, globalStart, globalStop } = metaData;
         const dateNow = luxon.DateTime.now();
+        const closedRecordDomain = [
+            "|",
+            [dateStopField, ">", serializeDateTime(globalStart)],
+            "&",
+            [dateStopField, "!=", false],
+            [dateStartField, ">=", serializeDateTime(globalStart)],
+        ];
         if (dateNow >= globalStart) {
             const domain = Domain.and([
                 this.searchParams.domain,
@@ -24,12 +31,20 @@ export class AttendanceGanttModel extends GanttModel {
                     "&",
                     [dateStartField, "<", serializeDateTime(dateNow)],
                     [dateStopField, "=", false],
-                    [dateStopField, ">", serializeDateTime(globalStart)],
+                    ...closedRecordDomain,
                 ],
             ]);
             return domain.toList();
         } else {
-            return super._getDomain(...arguments);
+            const domain = Domain.and([
+                this.searchParams.domain,
+                [
+                    "&",
+                    [dateStartField, "<", serializeDateTime(globalStop)],
+                    ...closedRecordDomain,
+                ],
+            ]);
+            return domain.toList();
         }
     }
 

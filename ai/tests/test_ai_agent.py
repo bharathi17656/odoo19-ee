@@ -8,6 +8,18 @@ from odoo.tests import TransactionCase, tagged
 @tagged("post_install", "-at_install")
 class TestAIAgent(TransactionCase):
 
+    def test_deprecated_model_replacement_hint_shows_for_deprecated_models(self):
+        agent = self.env["ai.agent"].create({
+            "name": "Test AI Agent",
+            "llm_model": "gemini-1.5-flash",
+            "response_style": "analytical",
+        })
+
+        self.assertEqual(
+            agent.deprecated_model_replacement_hint,
+            "Using Gemini 3 Flash medium thinking based on your agent setup.",
+        )
+
     def test_close_chat_only_works_with_ai_channel(self):
         partner = self.env["res.partner"].create({
             "name": "Odoo AI"
@@ -121,3 +133,31 @@ class TestAIAgent(TransactionCase):
             action_2["params"]["channelId"],
             "Each call to 'action_ask_ai' should open a new ai chat channel."
         )
+
+    def test_get_llm_response_with_sources(self):
+        """Responses include source links when the LLM returns attachment ids."""
+        agent = self.env["ai.agent"].create({
+            "name": "Odoo Agent",
+        })
+
+        attachment = self.env["ir.attachment"].create({
+            "name": "Doc 1",
+            "raw": b"content",
+            "mimetype": "text/plain",
+        })
+        self.env["ai.agent.source"].create({
+            "name": "Doc 1",
+            "agent_id": agent.id,
+            "attachment_id": attachment.id,
+            "type": "binary",
+            "status": "indexed",
+            "is_active": True,
+        })
+
+        message = f"Here is your answer [SOURCE:{attachment.id}]"
+        llm_response = agent._get_llm_response_with_sources([message])
+
+        self.assertEqual(len(llm_response), 1)
+        self.assertNotIn("[SOURCE", llm_response[0])
+        self.assertIn("href=\"%s/web/content/%s\"" % (agent.get_base_url(), attachment.id), llm_response[0])
+        self.assertIn("[1]", llm_response[0])

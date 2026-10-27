@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import _, models, Command
+from odoo.exceptions import UserError
 
 
 class QualityCheck(models.Model):
@@ -37,6 +38,21 @@ class QualityCheck(models.Model):
 
         # get the operation in the eco's new bom similar to the current one
         operation = eco.new_bom_id.operation_ids.filtered(lambda o: o._get_sync_values() == self.workorder_id.operation_id._get_sync_values())
+        if not operation:
+            raise UserError(_(
+                "Unable to add the proposed step to the corresponding Engineering Change Order (ECO) for this "
+                "work order because no corresponding operation could not be found in the ECO's "
+                "Bill of Materials (BoM). This can happen if the BoM was modified after the manufacturing "
+                "order was created. Please let your manager know if you need additional assistance "
+                "for your proposed change."
+            ))
+        if len(operation) > 1:
+            raise UserError(_(
+                "Unable to add the proposed step to the corresponding Engineering Change Order (ECO) for "
+                "this work order (WO) because multiple operations were matched with the WO. "
+                "Please differentiate the operations by name, work center, or product variant. "
+                "Please let your manager know if you need additional assistance for your proposed change."
+            ))
         quality_point_data = {
             'title': _("New Step Suggestion: %s", self.title or ''),
             'operation_id': operation.id,
@@ -51,7 +67,7 @@ class QualityCheck(models.Model):
         # Would need 'quality.group_quality_manager' otherwise, but we want this to be available for MRP basic users.
         point = self.env['quality.point'].sudo().create(quality_point_data)
         self.point_id = point
-        # Resequence quality points according to checks
+        # Resequence quality points according to checks, starting from first check
         current_sequence = 10
         points = self.env['quality.point'].search([('operation_id', '=', operation.id)])
         check = self.env['quality.check'].search([
@@ -59,7 +75,7 @@ class QualityCheck(models.Model):
             ('previous_check_id', '=', False), ('production_id', '=', self.production_id.id)
         ])
         while check:
-            point = check.point_id if check.point_id.operation_id == operation else points.filtered(lambda p: p._get_sync_values() == check.point_id._get_sync_values())[0]
+            point = check.point_id if check.point_id.operation_id == operation else points.filtered(lambda p: p._get_sync_values() == check.point_id._get_sync_values())[:1]
             points -= point
             if point.sequence != current_sequence:
                 point.sequence = current_sequence

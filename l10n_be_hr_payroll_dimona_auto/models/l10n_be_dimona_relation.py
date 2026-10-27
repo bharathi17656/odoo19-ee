@@ -25,13 +25,14 @@ class L10nBeDimonaRelation(models.Model):
     @api.depends('content')
     def _compute_relation_info(self):
         for relation in self:
-            if 'startDate' in relation.content:
-                (year, month, day) = relation.content['startDate'].split('-')
-                relation.date_start = date(int(year), int(month), int(day))
+            if relation.content:
+                if 'startDate' in relation.content:
+                    (year, month, day) = relation.content['startDate'].split('-')
+                    relation.date_start = date(int(year), int(month), int(day))
 
-            if 'endDate' in relation.content:
-                (year, month, day) = relation.content['endDate'].split('-')
-                relation.date_end = date(int(year), int(month), int(day))
+                if 'endDate' in relation.content:
+                    (year, month, day) = relation.content['endDate'].split('-')
+                    relation.date_end = date(int(year), int(month), int(day))
 
             relation.employee_id = self.env['hr.employee'].with_context(active_test=False).search([
                 ('niss', '=', relation.name)

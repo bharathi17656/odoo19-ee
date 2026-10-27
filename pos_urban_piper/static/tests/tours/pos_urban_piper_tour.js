@@ -5,6 +5,7 @@ import * as Order from "@point_of_sale/../tests/generic_helpers/order_widget_uti
 import * as UrbanPiper from "@pos_urban_piper/../tests/tours/utils/pos_urban_piper_utils";
 import * as Chrome from "@point_of_sale/../tests/pos/tours/utils/chrome_util";
 import * as Dialog from "@point_of_sale/../tests/generic_helpers/dialog_util";
+import { inLeftSide } from "@point_of_sale/../tests/pos/tours/utils/common";
 import { registry } from "@web/core/registry";
 
 registry.category("web_tour.tours").add("OrderFlowTour", {
@@ -13,20 +14,24 @@ registry.category("web_tour.tours").add("OrderFlowTour", {
             Chrome.startPoS(),
             Dialog.confirm("Open Register"),
             UrbanPiper.fetchDeliveryData(),
-            UrbanPiper.checkNewOrderCount(2),
+            UrbanPiper.checkNewOrderCount(3),
             UrbanPiper.onDropdownStatus("New"),
+            TicketScreen.nbOrdersIs(3),
             UrbanPiper.orderButtonClick("Accept"),
             UrbanPiper.fetchDeliveryData(),
-            UrbanPiper.checkNewOrderCount(1),
+            UrbanPiper.checkNewOrderCount(2),
             TicketScreen.selectOrder("001"),
             UrbanPiper.orderHasText("001", "Acknowledged"),
             UrbanPiper.orderHasText("001", "Just Eat"),
             UrbanPiper.fetchDeliveryData(),
+            UrbanPiper.onDropdownStatus("Ongoing"),
+            TicketScreen.nbOrdersIs(1),
             UrbanPiper.onDropdownStatus("New"),
+            TicketScreen.nbOrdersIs(2),
             TicketScreen.selectOrder("002"),
             UrbanPiper.orderButtonClick("Accept"),
             UrbanPiper.fetchDeliveryData(),
-            UrbanPiper.checkNewOrderCount(0),
+            UrbanPiper.checkNewOrderCount(1),
             UrbanPiper.orderHasText("002", "Acknowledged"),
             UrbanPiper.onDropdownStatus("Ongoing"),
             TicketScreen.selectOrder("001"),
@@ -133,5 +138,53 @@ registry.category("web_tour.tours").add("test_reject_order", {
                 trigger: ".selection-item:contains('Product is out of Stock')",
                 run: "click",
             },
+        ].flat(),
+});
+
+registry.category("web_tour.tours").add("test_to_check_attribute", {
+    steps: () =>
+        [
+            Chrome.startPoS(),
+            Dialog.confirm("Open Register"),
+            UrbanPiper.fetchDeliveryData(),
+            UrbanPiper.checkNewOrderCount(1),
+            inLeftSide(
+                Order.hasLine({
+                    productName: "Configurable Chair",
+                    quantity: 2,
+                    attributeLine: "Red, Metal, Wool, Cushion, Cup Holder",
+                })
+            ),
+            UrbanPiper.onDropdownStatus("New"),
+            TicketScreen.selectOrder("001"),
+            UrbanPiper.orderButtonClick("Accept"),
+            UrbanPiper.fetchDeliveryData(),
+            UrbanPiper.checkNewOrderCount(0),
+            UrbanPiper.orderHasText("001", "Acknowledged"),
+            UrbanPiper.orderHasText("001", "Just Eat"),
+            TicketScreen.selectOrder("001"),
+            UrbanPiper.orderButtonClick("Mark as ready"),
+            UrbanPiper.fetchDeliveryData(),
+            UrbanPiper.orderHasText("001", "Food Ready"),
+        ].flat(),
+});
+
+registry.category("web_tour.tours").add("test_product_level_discount", {
+    steps: () =>
+        [
+            Chrome.startPoS(),
+            Dialog.confirm("Open Register"),
+            UrbanPiper.fetchDeliveryData(),
+            {
+                content: "Check 20% discount applied on orderline",
+                trigger: ".orderline .info-list li.price-per-unit em:contains(20%)",
+            },
+            UrbanPiper.checkNewOrderCount(1),
+            UrbanPiper.onDropdownStatus("New"),
+            UrbanPiper.orderButtonClick("Accept"),
+            TicketScreen.selectOrder("001"),
+            UrbanPiper.orderButtonClick("Mark as ready"),
+            UrbanPiper.fetchDeliveryData(),
+            UrbanPiper.orderHasText("001", "Food Ready"),
         ].flat(),
 });

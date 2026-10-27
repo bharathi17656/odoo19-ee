@@ -11,6 +11,7 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError, UserError
 from odoo.fields import Command
 from odoo.tools import mute_logger, SQL
+from odoo.tools.sql import table_columns
 
 _logger = logging.getLogger('odoo.addons.base.partner.merge')
 
@@ -89,6 +90,7 @@ class BasePartnerMergeAutomaticWizard(models.TransientModel):
                 AND con.conkey[1] = att1.attnum
                 AND att1.attrelid = cl1.oid
                 AND cl2.relname = %s
+                AND cl2.relnamespace = current_schema::regnamespace
                 AND att2.attname = 'id'
                 AND array_lower(con.confkey, 1) = 1
                 AND con.confkey[1] = att2.attnum
@@ -107,6 +109,7 @@ class BasePartnerMergeAutomaticWizard(models.TransientModel):
             JOIN pg_attribute a ON (a.attrelid = c.conrelid AND a.attnum = cattr.attnum)
             WHERE c.contype IN ('c', 'u')
                 AND r.relname = %s
+                AND r.relnamespace = current_schema::regnamespace
                 AND a.attname = %s
             LIMIT 1
         """, (table, column))
@@ -130,13 +133,8 @@ class BasePartnerMergeAutomaticWizard(models.TransientModel):
             if 'base_partner_merge_' in table:  # ignore two tables
                 continue
 
-            # get list of columns of current table (exept the current fk column)
-            query = "SELECT column_name FROM information_schema.columns WHERE table_name LIKE '%s'" % (table)
-            self.env.cr.execute(query, ())
-            columns = []
-            for data in self.env.cr.fetchall():
-                if data[0] != column:
-                    columns.append(data[0])
+            # get list of columns of current table (except the current fk column)
+            columns = [fld for fld in table_columns(self.env.cr, table) if fld != column]
 
             # do the update for the current table/column in SQL
             query_dic = {
@@ -361,6 +359,8 @@ class BasePartnerMergeAutomaticWizard(models.TransientModel):
         values_by_company = defaultdict(dict)   # {company: vals}
         for column in model_fields:
             field = dst_partner._fields[column]
+            if not field.copy:
+                continue
             if field.type not in ('many2many', 'one2many') and field.compute is None:
                 for item in itertools.chain(src_partners, [dst_partner]):
                     if item[column]:
@@ -435,7 +435,7 @@ class BasePartnerMergeAutomaticWizard(models.TransientModel):
             raise UserError(self.env._("You cannot merge a contact with one of his parent."))
 
         # check if the list of partners to merge are linked to more than one user
-        if len(partner_ids.with_context(active_test=False).user_ids) > 1:
+        if len(partner_ids.sudo().with_context(active_test=False).user_ids) > 1:
             raise UserError(self.env._("You cannot merge contacts linked to more than one user even if only one is active."))
 
         if extra_checks and len(set(partner.email for partner in partner_ids)) > 1:

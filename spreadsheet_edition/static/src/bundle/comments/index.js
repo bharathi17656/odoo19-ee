@@ -32,7 +32,15 @@ coreTypes.add("ADD_COMMENT_THREAD");
 coreTypes.add("DELETE_COMMENT_THREAD");
 coreTypes.add("EDIT_COMMENT_THREAD");
 
-inverseCommandRegistry.add("ADD_COMMENT_THREAD", identity);
+inverseCommandRegistry.add("ADD_COMMENT_THREAD", (cmd) => [
+    {
+        type: "DELETE_COMMENT_THREAD",
+        threadId: cmd.threadId,
+        sheetId: cmd.sheetId,
+        col: cmd.col,
+        row: cmd.row,
+    },
+]);
 inverseCommandRegistry.add("DELETE_COMMENT_THREAD", identity);
 inverseCommandRegistry.add("EDIT_COMMENT_THREAD", identity);
 
@@ -60,14 +68,13 @@ cellPopoverRegistry.add("OdooCellComment", {
                 ?.at(-1) || {};
         return {
             Component: CellThreadPopover,
-            cellCorner: "TopRight",
+            cellCorner: "top-right",
             props: {
                 threadId: thread.threadId,
                 position,
                 isInteractive: true,
             },
             isOpen: true,
-            positioning: "TopRight",
         };
     },
     onHover: (position, getters) => {
@@ -83,14 +90,13 @@ cellPopoverRegistry.add("OdooCellComment", {
         }
         return {
             Component: CellThreadPopover,
-            cellCorner: "TopRight",
+            cellCorner: "top-right",
             props: {
                 threadId: threads.at(-1).threadId,
                 position,
                 isInteractive: false,
             },
             isOpen: true,
-            positioning: "TopRight",
         };
     },
 });

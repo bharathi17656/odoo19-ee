@@ -42,6 +42,7 @@ export const homeMenuService = {
                 if (homemenuConfig) {
                     reorderApps(apps, homemenuConfig);
                 }
+                this.env.bus.trigger("HOME-MENU:APPS-UPDATED", { apps });
                 return {
                     apps,
                     reorderApps: (order) => reorderApps(apps, order),

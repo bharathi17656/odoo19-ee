@@ -111,7 +111,7 @@ class WebsiteHrRecruitment(WebsiteForm):
 
         env = request.env(context=dict(request.env.context, show_address=True, no_tag_br=True))
         website = request.website
-        department = env['hr.department'].browse(to_int(department_id)).exists()
+        department = env['hr.department'].browse(to_int(department_id)).exists().sudo()
         country = env['res.country'].browse(to_int(country_id)).exists()
         office = env['res.partner'].browse(to_int(office_id)).exists()
         contract_type = env['hr.contract.type'].browse(to_int(contract_type_id)).exists().sudo()
@@ -212,17 +212,13 @@ class WebsiteHrRecruitment(WebsiteForm):
             'email': [('email_normalized', '=', email_normalize(value))],
             'phone': [('partner_phone', '=', value)],
             'linkedin': [('linkedin_profile', '=ilike', escape_psql(value))],
-        }.get(field, [])
+        }.get(field, Domain.FALSE)
 
         applications_by_status = http.request.env['hr.applicant'].sudo().search(Domain.AND([
             field_domain,
             [
                 ('job_id.website_id', 'in', [http.request.website.id, False]),
-                '|',
-                    ('application_status', '=', 'ongoing'),
-                    '&',
-                        ('application_status', '=', 'refused'),
-                        ('active', '=', False),
+                ('application_status', 'in', ['ongoing', 'refused']),
             ]
         ]), order='create_date DESC').grouped('application_status')
         refused_applicants = applications_by_status.get('refused', http.request.env['hr.applicant'])

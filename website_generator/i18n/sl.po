@@ -3,13 +3,17 @@
 # * website_generator
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
+# Žiga Trček <ziga.trcek@implex.si>, 2026.
+# Jan Zorko <jan.zorko@implex.si>, 2026.
+# NEDŽAD BEUS <nedzad.beus@implex.si>, 2026.
+# Nedžad Beus <nedzad.beus@implex.si>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:50+0000\n"
-"PO-Revision-Date: 2025-09-16 21:29+0000\n"
-"Last-Translator: \"Tiffany Chang (tic)\" <tic@odoo.com>\n"
+"POT-Creation-Date: 2026-07-03 17:48+0000\n"
+"PO-Revision-Date: 2026-09-14 17:33+0000\n"
+"Last-Translator: Nedžad Beus <nedzad.beus@implex.si>\n"
 "Language-Team: Slovenian <https://translate.odoo.com/projects/odoo-19/"
 "website_generator/sl/>\n"
 "Language: sl\n"
@@ -18,7 +22,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || "
 "n%100==4 ? 2 : 3;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: website_generator
 #: model:mail.template,body_html:website_generator.email_template_website_scrapped
@@ -36,11 +40,25 @@ msgid ""
 "            </div>\n"
 "            "
 msgstr ""
+"<div>\n"
+"            <p><b>Odlične novice!</b> Pretvorba vašega spletnega mesta je "
+"končana in vaše novo integrirano spletno mesto Odoo je zdaj objavljeno.</p>\n"
+"            <p>Oglejte si svoje novo spletno mesto tukaj: <a t-att-"
+"href=\"ctx.get('website_url')\"><t t-out=\"ctx.get('website_url')\"/></a></p>"
+"\n"
+"            <p>Hvala, ker ste za integracijo svojega spletnega mesta izbrali "
+"Odoo!</p>\n"
+"            <p>Lep pozdrav,</p>\n"
+"            <br/>\n"
+"            <p>Odoo – najboljši gradnik spletnih mest z odprto izvorno "
+"kodo.</p>\n"
+"            </div>\n"
+"            "
 
 #. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__additional_urls
 msgid "Additional URLs"
-msgstr ""
+msgstr "Dodatni URL-ji"
 
 #. module: website_generator
 #. odoo-python
@@ -52,13 +70,13 @@ msgstr "Pojavila se je napaka"
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Attachment not found"
-msgstr ""
+msgstr "Priloge ni mogoče najti"
 
 #. module: website_generator
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Banned url"
-msgstr ""
+msgstr "Prepovedan URL"
 
 #. module: website_generator
 #. odoo-javascript
@@ -69,12 +87,18 @@ msgid ""
 "and you take full responsibility for their use and any potential legal "
 "implications."
 msgstr ""
+"S klikom na \"Uvozi moje spletno mesto\" potrjujete, da ste lastnik "
+"spletnega mesta in vseh povezanih komponent (kot so slike in druga vsebina) "
+"ter prevzemate polno odgovornost za njihovo uporabo in morebitne pravne "
+"posledice."
 
 #. module: website_generator
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Could not fetch result, invalid output uuid or result expired"
 msgstr ""
+"Rezultata ni bilo mogoče pridobiti, UUID izhoda ni veljaven ali pa je "
+"rezultat potekel"
 
 #. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__create_uid
@@ -98,7 +122,13 @@ msgstr "Prikazani naziv"
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Done, website generated"
-msgstr ""
+msgstr "Končano, spletno mesto je ustvarjeno"
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "Error"
+msgstr "Napaka"
 
 #. module: website_generator
 #: model:ir.model,name:website_generator.model_ir_http
@@ -116,68 +146,62 @@ msgstr "ID"
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
-msgid "If you require more, you can contact us at"
-msgstr ""
-
-#. module: website_generator
-#. odoo-javascript
-#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
 msgid "Import Products"
-msgstr ""
+msgstr "Uvozi izdelke"
 
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
 msgid "Import my website"
-msgstr ""
+msgstr "Uvozi moje spletno mesto"
 
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
 msgid "Import your"
-msgstr ""
+msgstr "Uvozite svoj"
 
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/builder/imported_footer_template_choice.xml:0
 msgid "Imported"
-msgstr ""
+msgstr "Uvoženo"
 
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/builder/imported_footer_plugin.js:0
 msgid "Imported Footer"
-msgstr ""
+msgstr "Uvožena noga"
 
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/generator_wait/generator.js:0
 msgid "Importing your website."
-msgstr ""
+msgstr "Uvažanje vašega spletnega mesta."
 
 #. module: website_generator
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Invalid dbuuid"
-msgstr ""
+msgstr "Neveljaven dbuuid"
 
 #. module: website_generator
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Invalid import products"
-msgstr ""
+msgstr "Neveljavni uvoženi izdelki"
 
 #. module: website_generator
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Invalid token"
-msgstr ""
+msgstr "Neveljaven žeton"
 
 #. module: website_generator
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Invalid url"
-msgstr ""
+msgstr "Neveljaven URL"
 
 #. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__write_uid
@@ -190,6 +214,12 @@ msgid "Last Updated on"
 msgstr "Zadnjič posodobljeno"
 
 #. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
+msgid "Loading..."
+msgstr "Nalaganje …"
+
+#. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__notified
 msgid "Notified"
 msgstr "Obveščen"
@@ -198,13 +228,13 @@ msgstr "Obveščen"
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Number of allowed requests exhausted"
-msgstr ""
+msgstr "Število dovoljenih zahtev je izčrpano"
 
 #. module: website_generator
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Number of concurrent requests exceeded"
-msgstr ""
+msgstr "Število sočasnih zahtev je preseženo"
 
 #. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__page_count
@@ -214,7 +244,7 @@ msgstr "Število strani"
 #. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__uuid
 msgid "Output UUID generated from Website Scraper Server"
-msgstr ""
+msgstr "Izhodni UUID, ustvarjen iz strežnika za spletno strganje"
 
 #. module: website_generator
 #: model:ir.model,name:website_generator.model_website_page
@@ -243,7 +273,7 @@ msgstr "Proizvodi"
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Request is still processing, result not available yet"
-msgstr ""
+msgstr "Zahteva se še vedno obdeluje, rezultat še ni na voljo"
 
 #. module: website_generator
 #. odoo-python
@@ -261,7 +291,7 @@ msgstr "Nekaj je šlo narobe"
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
 msgid "Something went wrong while importing your website."
-msgstr ""
+msgstr "Pri uvozu vašega spletnega mesta je prišlo do napake."
 
 #. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__status
@@ -281,21 +311,45 @@ msgstr "Uspešno"
 
 #. module: website_generator
 #. odoo-javascript
-#: code:addons/website_generator/static/src/systray_items/generator_request.js:0
-msgid "The import of your website has started!"
-msgstr ""
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
+msgid "The URL is not reachable."
+msgstr "URL ni dosegljiv."
 
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
-msgid "The maximum number of pages is 200 by default."
-msgstr ""
+msgid "The URL is reachable."
+msgstr "URL je dosegljiv."
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/systray_items/generator_request.js:0
+msgid "The import of your website has started!"
+msgstr "Uvoz vašega spletnega mesta se je začel!"
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
+msgid "The maximum number of pages is 100."
+msgstr "Največje število strani je 100."
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "The provided URL is not allowed"
+msgstr "Navedeni URL ni dovoljen"
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "The provided URL is not reachable"
+msgstr "Navedeni URL ni dosegljiv."
 
 #. module: website_generator
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "The request asks for too many pages"
-msgstr ""
+msgstr "Zahtevek zahteva preveč strani"
 
 #. module: website_generator
 #. odoo-python
@@ -304,6 +358,8 @@ msgid ""
 "The requested url redirected to another url, try again with the redirected "
 "url"
 msgstr ""
+"Zahtevani URL je bil preusmerjen na drug URL, poskusite znova s "
+"preusmerjenim URL-jem"
 
 #. module: website_generator
 #. odoo-python
@@ -312,6 +368,8 @@ msgid ""
 "The requested url took too long to load and is probably unreachable from the "
 "server"
 msgstr ""
+"Nalaganje zahtevanega URL-ja je trajalo predolgo in strežnik ga verjetno ne "
+"more doseči"
 
 #. module: website_generator
 #. odoo-python
@@ -320,12 +378,20 @@ msgid ""
 "The same request has just been made, please wait before sending another "
 "identical request"
 msgstr ""
+"Ista zahteva je bila pravkar poslana, počakajte, preden pošljete drugo enako "
+"zahtevo"
 
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/generator_wait/generator.xml:0
 msgid "This can take a few minutes."
-msgstr ""
+msgstr "To lahko traja nekaj minut."
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "Too many requests"
+msgstr "Preveč zahtev"
 
 #. module: website_generator
 #. odoo-python
@@ -334,9 +400,15 @@ msgid "Top Menu for Website %s"
 msgstr "Vrhnji meni za spletno stran %s"
 
 #. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "URL redirection"
+msgstr "Preusmeritev URL-ja"
+
+#. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__target_url
 msgid "URL to scrape"
-msgstr ""
+msgstr "URL za strganje"
 
 #. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__version
@@ -347,25 +419,26 @@ msgstr "Različica"
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Version is unsupported"
-msgstr ""
+msgstr "Različica ni podprta"
 
 #. module: website_generator
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Waiting for the server to process the request"
-msgstr ""
+msgstr "Čakanje, da strežnik obdela zahtevo"
 
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/generator_wait/generator.xml:0
 msgid "We could not convert your website, please try again later"
 msgstr ""
+"Vašega spletnega mesta ni bilo mogoče pretvoriti, poskusite znova pozneje"
 
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/systray_items/generator_request.js:0
 msgid "We will notify %(email)s when everything is ready."
-msgstr ""
+msgstr "Obvestili vas bomo na naslov %(email)s, ko bo vse pripravljeno."
 
 #. module: website_generator
 #: model:ir.model,name:website_generator.model_website
@@ -381,22 +454,22 @@ msgstr "Generator spletnih strani"
 #. module: website_generator
 #: model:ir.actions.server,name:website_generator.action_convert_scraping_request_ICP
 msgid "Website Generator After Install"
-msgstr ""
+msgstr "Generator spletnega mesta po namestitvi"
 
 #. module: website_generator
 #: model:ir.model,name:website_generator.model_website_generator_request
 msgid "Website Generator Request"
-msgstr ""
+msgstr "Zahteva generatorja spletnih strani"
 
 #. module: website_generator
 #: model:ir.actions.server,name:website_generator.cron_get_result_ir_actions_server
 msgid "Website Generator: Get website scraper results"
-msgstr ""
+msgstr "Generator spletnih mest: Pridobi rezultate spletnega pajka"
 
 #. module: website_generator
 #: model:mail.template,name:website_generator.email_template_website_scrapped
 msgid "Website Scraped"
-msgstr ""
+msgstr "Spletno mesto zajeto"
 
 #. module: website_generator
 #. odoo-javascript
@@ -408,30 +481,30 @@ msgstr "URL spletne strani"
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Website blocked or unreachable"
-msgstr ""
+msgstr "Spletno mesto je blokirano ali nedosegljivo"
 
 #. module: website_generator
 #. odoo-python
 #: code:addons/website_generator/models/generator.py:0
 msgid "Website not supported"
-msgstr ""
+msgstr "Spletno mesto ni podprto"
 
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/generator_wait/generator.xml:0
 msgid "You will be redirected once your website is ready."
-msgstr ""
+msgstr "Preusmerjeni boste, ko bo vaše spletno mesto pripravljeno."
 
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
 msgid "You'll be able to create additional pages later on."
-msgstr ""
+msgstr "Dodatne strani boste lahko ustvarili pozneje."
 
 #. module: website_generator
 #: model:mail.template,subject:website_generator.email_template_website_scrapped
 msgid "Your Odoo Website is Ready!"
-msgstr ""
+msgstr "Vaše spletno mesto Odoo je pripravljeno!"
 
 #. module: website_generator
 #. odoo-javascript
@@ -443,10 +516,4 @@ msgstr "in"
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
 msgid "https://www.odoo.com/"
-msgstr ""
-
-#. module: website_generator
-#. odoo-javascript
-#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
-msgid "odoo.com/help"
-msgstr ""
+msgstr "https://www.odoo.com/"

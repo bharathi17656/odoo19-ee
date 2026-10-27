@@ -2,16 +2,16 @@
 # This file contains the translation of the following modules:
 # * ai_documents
 #
-# "Manon Rondou (ronm)" <ronm@odoo.com>, 2025.
+# "Manon Rondou (ronm)" <ronm@odoo.com>, 2025, 2026.
 # "Cécile Collart (cco)" <cco@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:41+0000\n"
-"PO-Revision-Date: 2025-11-16 13:49+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-01-30 18:45+0000\n"
+"PO-Revision-Date: 2026-02-18 14:53+0000\n"
+"Last-Translator: \"Manon Rondou (ronm)\" <ronm@odoo.com>\n"
 "Language-Team: French <https://translate.odoo.com/projects/odoo-19/"
 "ai_documents/fr/>\n"
 "Language: fr\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: ai_documents
 #: model_terms:ir.ui.view,arch_db:ai_documents.ai_documents_sort_view_form
@@ -47,7 +47,7 @@ msgstr "Documents IA : Trier les documents avec l'IA"
 #: model:ir.model.fields,field_description:ai_documents.field_ai_documents_sort__ai_sort_prompt
 #: model:ir.model.fields,field_description:ai_documents.field_documents_document__ai_sort_prompt
 msgid "AI Folder Sort Prompt"
-msgstr ""
+msgstr "Prompt de tri dossier IA"
 
 #. module: ai_documents
 #: model:ir.actions.act_window,name:ai_documents.ai_documents_sort_action
@@ -100,7 +100,7 @@ msgstr "Outils additionnels"
 #. module: ai_documents
 #: model:ir.model,name:ai_documents.model_ai_documents_sort
 msgid "Ai Documents Sort"
-msgstr ""
+msgstr "Tri documents IA"
 
 #. module: ai_documents
 #: model:ir.model.fields,field_description:ai_documents.field_ai_documents_sort__allowed_tools_ids
@@ -166,6 +166,7 @@ msgstr "Ignorer"
 #: model:ir.model.fields,field_description:ai_documents.field_base_automation__display_name
 #: model:ir.model.fields,field_description:ai_documents.field_documents_document__display_name
 #: model:ir.model.fields,field_description:ai_documents.field_ir_actions_server__display_name
+#: model:ir.model.fields,field_description:ai_documents.field_ir_http__display_name
 msgid "Display Name"
 msgstr "Nom d'affichage"
 
@@ -183,12 +184,17 @@ msgstr "Contenu du document"
 #. module: ai_documents
 #: model:ir.model.fields,help:ai_documents.field_documents_document__ai_to_sort
 msgid "Flag to mark the files as to be sorted with AI"
-msgstr ""
+msgstr "Indicateur pour marquer les fichiers à trier avec l’IA"
 
 #. module: ai_documents
 #: model:ir.model.fields,field_description:ai_documents.field_ai_documents_sort__folder_id
 msgid "Folder"
 msgstr "Dossier"
+
+#. module: ai_documents
+#: model:ir.model,name:ai_documents.model_ir_http
+msgid "HTTP Routing"
+msgstr "Routage HTTP"
 
 #. module: ai_documents
 #. odoo-python
@@ -205,6 +211,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ai_documents.field_base_automation__id
 #: model:ir.model.fields,field_description:ai_documents.field_documents_document__id
 #: model:ir.model.fields,field_description:ai_documents.field_ir_actions_server__id
+#: model:ir.model.fields,field_description:ai_documents.field_ir_http__id
 msgid "ID"
 msgstr "ID"
 
@@ -217,7 +224,7 @@ msgstr "Si le document est une facture, l'envoyer vers %s"
 #. module: ai_documents
 #: model:ir.model.fields,field_description:ai_documents.field_ai_documents_sort__is_ai_sort_prompt_set
 msgid "Is Prompt Set"
-msgstr ""
+msgstr "Prompt défini"
 
 #. module: ai_documents
 #: model:ir.model.fields,field_description:ai_documents.field_ai_documents_sort__write_uid
@@ -233,7 +240,7 @@ msgstr "Dernière mise à jour le"
 #. odoo-python
 #: code:addons/ai_documents/models/documents_document.py:0
 msgid "Mimetype"
-msgstr ""
+msgstr "Type MIME"
 
 #. module: ai_documents
 #: model:ir.model.fields,field_description:ai_documents.field_ai_documents_sort__model
@@ -266,7 +273,7 @@ msgstr "Aucun document adapté au tri par l'IA."
 #. module: ai_documents
 #: model:ir.model.constraint,message:ai_documents.constraint_documents_document_check_ai_sort_prompt
 msgid "Only folders can be auto-sorted."
-msgstr ""
+msgstr "Seuls les dossiers peuvent être triés automatiquement."
 
 #. module: ai_documents
 #: model:ir.model.constraint,message:ai_documents.constraint_base_automation_unique_ai_autosort_folder_id
@@ -279,6 +286,8 @@ msgstr ""
 #: model:ir.model.fields,help:ai_documents.field_documents_document__ai_sort_prompt
 msgid "Prompt used to automatically sort files moved in this folder"
 msgstr ""
+"Prompt utilisé pour trier automatiquement les fichiers déplacés dans ce "
+"dossier"
 
 #. module: ai_documents
 #: model:ir.model.fields,field_description:ai_documents.field_ai_documents_sort__relation
@@ -311,13 +320,13 @@ msgstr "Trier avec l'IA"
 #: model:ir.model.fields,field_description:ai_documents.field_ir_actions_server__ai_autosort_folder_id
 #: model:ir.model.fields,field_description:ai_documents.field_ir_cron__ai_autosort_folder_id
 msgid "Sorted Folder"
-msgstr ""
+msgstr "Dossier trié"
 
 #. module: ai_documents
 #. odoo-python
 #: code:addons/ai_documents/models/documents_document.py:0
 msgid "Tag(s) %s added"
-msgstr ""
+msgstr "Étiquette(s) %s ajoutée(s)"
 
 #. module: ai_documents
 #. odoo-python
@@ -329,7 +338,7 @@ msgstr "Tags > Nom"
 #. odoo-python
 #: code:addons/ai_documents/models/documents_document.py:0
 msgid "Tags not found: %s"
-msgstr ""
+msgstr "Étiquettes non trouvées : %s"
 
 #. module: ai_documents
 #. odoo-python

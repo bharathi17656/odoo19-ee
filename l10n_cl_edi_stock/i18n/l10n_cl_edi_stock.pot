@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 19:57+0000\n"
-"PO-Revision-Date: 2025-11-13 19:57+0000\n"
+"POT-Creation-Date: 2026-07-31 18:05+0000\n"
+"PO-Revision-Date: 2026-07-31 18:05+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -347,11 +347,6 @@ msgid "Delivery Guide"
 msgstr ""
 
 #. module: l10n_cl_edi_stock
-#: model:ir.model.fields,field_description:l10n_cl_edi_stock.field_stock_picking__l10n_latam_document_number
-msgid "Delivery Guide Number"
-msgstr ""
-
-#. module: l10n_cl_edi_stock
 #: model:ir.model.fields,field_description:l10n_cl_edi_stock.field_res_partner__l10n_cl_delivery_guide_price
 #: model:ir.model.fields,field_description:l10n_cl_edi_stock.field_res_users__l10n_cl_delivery_guide_price
 msgid "Delivery Guide Price"
@@ -383,6 +378,11 @@ msgid "Do Not Show Price"
 msgstr ""
 
 #. module: l10n_cl_edi_stock
+#: model:ir.model.fields,field_description:l10n_cl_edi_stock.field_stock_picking__l10n_latam_document_number
+msgid "Document Number (UY)"
+msgstr ""
+
+#. module: l10n_cl_edi_stock
 #. odoo-python
 #: code:addons/l10n_cl_edi_stock/models/stock_picking.py:0
 msgid "Document Signature"
@@ -390,7 +390,7 @@ msgstr ""
 
 #. module: l10n_cl_edi_stock
 #: model:ir.model.fields,field_description:l10n_cl_edi_stock.field_stock_picking__l10n_latam_document_type_id
-msgid "Document Type"
+msgid "Document Type (UY)"
 msgstr ""
 
 #. module: l10n_cl_edi_stock
@@ -599,13 +599,26 @@ msgstr ""
 
 #. module: l10n_cl_edi_stock
 #: model:ir.model,name:l10n_cl_edi_stock.model_stock_move
-msgid "Stock Move"
+msgid "Stock Move Ewaybill"
+msgstr ""
+
+#. module: l10n_cl_edi_stock
+#: model:ir.model,name:l10n_cl_edi_stock.model_stock_picking
+msgid "Stock Picking - Delivery Guide (Uruguay)"
 msgstr ""
 
 #. module: l10n_cl_edi_stock
 #. odoo-python
 #: code:addons/l10n_cl_edi_stock/models/stock_picking.py:0
 msgid "System Locked"
+msgstr ""
+
+#. module: l10n_cl_edi_stock
+#. odoo-python
+#: code:addons/l10n_cl_edi_stock/models/stock_picking.py:0
+msgid ""
+"The maximum amount of Activities Names is 4. Please go to your company and "
+"select only 4 or less options."
 msgstr ""
 
 #. module: l10n_cl_edi_stock
@@ -684,11 +697,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_cl_edi_stock/models/stock_picking.py:0
 msgid "This electronic document is being processed already."
-msgstr ""
-
-#. module: l10n_cl_edi_stock
-#: model:ir.model,name:l10n_cl_edi_stock.model_stock_picking
-msgid "Transfer"
 msgstr ""
 
 #. module: l10n_cl_edi_stock

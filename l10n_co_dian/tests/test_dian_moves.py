@@ -6,6 +6,7 @@ from odoo.exceptions import UserError
 from odoo.tests import tagged, freeze_time
 from .common import TestCoDianCommon
 from odoo.addons.l10n_co_edi.models.account_invoice import L10N_CO_EDI_TYPE
+from odoo.addons.l10n_co_dian import xml_utils
 
 
 @freeze_time('2024-01-30')
@@ -15,29 +16,6 @@ class TestDianMoves(TestCoDianCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        # Sugar Taxes (need to fill 'l10n_co_edi_ref_nominal_tax' on the product !)
-        cls.sugar_tax_1 = cls.env['account.tax'].create({
-            'name': "IBUA >10gr 3500ml",
-            'amount_type': 'fixed',
-            'amount': 35 * 35,  # rate of the tax = 35 (for a product with >10gr of sugar per 100ml)
-            'l10n_co_edi_type': cls.env.ref('l10n_co_edi.tax_type_20').id,  # IBUA
-        })
-        cls.sugar_tax_2 = cls.sugar_tax_1.copy({
-            'name': "IBUA >6gr & <10gr 100ml",
-            'amount': 36,  # rate of the tax = 36 (for a product with >10gr of sugar per 100ml)
-        })
-
-        # Products
-        cls.product_sugar_1 = cls._create_product(
-            name="Coca cola 3.5L",
-            l10n_co_edi_ref_nominal_tax=3500,
-            default_code='P1111',
-        )
-        cls.product_sugar_2 = cls._create_product(
-            name="Sprite 100mL",
-            l10n_co_edi_ref_nominal_tax=100,
-            default_code='P2222',
-        )
 
         # Alcohol Taxes
         cls.alcohol_tax_1 = cls.env['account.tax'].create({
@@ -61,6 +39,24 @@ class TestDianMoves(TestCoDianCommon):
             name="Beer 3% ABV",
             l10n_co_edi_ref_nominal_tax=3,
             default_code='BEER1',
+        )
+
+        # Plastic Bag Taxes (INC Bolsas)
+        cls.plastic_bag_tax = cls.env['account.tax'].create({
+            'name': "INC Plastic Bags",
+            'amount_type': 'fixed',
+            'amount': 70,  # Fixed rate per bag
+            'type_tax_use': 'sale',
+            'invoice_label': 'INC Plastic Bags',
+            'description': 'INC Plastic Bags',
+            'tax_group_id': cls.env['account.chart.template'].ref('l10n_co_tax_group_inc_bolsas').id,  # INC Bolsas
+            'l10n_co_edi_type': cls.env.ref('l10n_co_edi.tax_type_9').id,  # INC Bolsas
+        })
+
+        # Plastic Bag Product
+        cls.product_plastic_bag = cls._create_product(
+            name="Bolsa Plastica",
+            default_code='BOLSA1',
         )
 
         # 1 USD ~= 3919 COP
@@ -172,6 +168,27 @@ class TestDianMoves(TestCoDianCommon):
         xml = self.env['account.edi.xml.ubl_dian']._export_invoice(invoice)[0]
         self._assert_document_dian(xml, "l10n_co_dian/tests/attachments/invoice_aiu.xml")
 
+    def test_invoice_plastic_bags(self):
+        invoice = self._create_move(invoice_line_ids=[
+            Command.create({
+                'product_id': self.product_plastic_bag.id,
+                'quantity': 2,
+                'price_unit': 100,
+                'tax_ids': [Command.set([self.tax_iva_19.id, self.plastic_bag_tax.id])],
+            }),
+            Command.create({
+                'product_id': self.product_a.id,
+                'quantity': 5,
+                'price_unit': 100,
+                'tax_ids': [Command.set([self.plastic_bag_tax.id])],
+            }),
+        ])
+        xml = self._generate_xml(invoice)
+        self._assert_document_dian(xml, "l10n_co_dian/tests/attachments/invoice_plastic_bags.xml")
+
+    def test_invoice_plastic_bags_new(self):
+        self.test_invoice_plastic_bags()
+
     def test_multicurrency(self):
         """
         In the xml, all labels should be expressed in COP, not in the document's currency.
@@ -223,6 +240,8 @@ class TestDianMoves(TestCoDianCommon):
         )
         xml = self._generate_xml(credit_note)
         self._assert_document_dian(xml, "l10n_co_dian/tests/attachments/credit_note_20.xml")
+        self.assertFalse('xmlns:sts="http://www.dian.gov.co/contratos/facturaelectronica/v1/Structures"' in xml.decode())
+        self.assertTrue('xmlns:sts="dian:gov:co:facturaelectronica:Structures-2-1"' in xml.decode())
 
     def test_credit_note_22(self):
         """ Credit note not referencing an invoice """
@@ -236,6 +255,8 @@ class TestDianMoves(TestCoDianCommon):
         xml = self._generate_xml(credit_note)
         self.env['l10n_co_dian.document']._create_document(xml, credit_note, state='invoice_accepted')
         self._assert_document_dian(xml, "l10n_co_dian/tests/attachments/credit_note_22.xml")
+        self.assertFalse('xmlns:sts="http://www.dian.gov.co/contratos/facturaelectronica/v1/Structures"' in xml.decode())
+        self.assertTrue('xmlns:sts="dian:gov:co:facturaelectronica:Structures-2-1"' in xml.decode())
 
     def test_invoice_exportation(self):
         """ Invoice to a non-Colombian customer. Also checks the rounding of the tax amounts. """
@@ -499,16 +520,45 @@ class TestDianMoves(TestCoDianCommon):
             'subfolder': 'tests/attachments',
             'invoice_vals': {
                 'currency_id': self.currency.id,
-                'amount_total': 224.00,
-                'amount_tax': 24.00,
+                'amount_total': 219.99,
+                'amount_tax': 19.99,
                 'l10n_co_edi_cufe_cude_ref': '8007424c5ee187a2aa3bb99fdbfaee9354c0b2a355ce9654fcd97eae289ad827e19460b71e4390b3e9b1cc6c293fb247',
+                'l10n_co_edi_type': '03',
                 'invoice_lines': [
                     {'price_subtotal': 100.00, 'price_unit': 100.00},
                     {'price_subtotal': 100.00, 'price_unit': 100.00},
                 ],
             },
         }
-        self._assert_imported_invoice_from_file(filename='import_attached_document.xml', **kwargs)
+        # We are testing variation of the ProfileID
+        self._assert_imported_invoice_from_file(filename='import_attached_document.xml', **kwargs)  # DIAN 2.1
+        self._assert_imported_invoice_from_file(filename='import_attached_document_2.xml', **kwargs)  # DIAN 2.1: Factura Electrónica de Venta
+        self._assert_imported_invoice_from_file(filename='import_attached_document_3.xml', **kwargs)  # Factura Electrónica de Venta
+
+    def test_dian_import_vendor_xml_base_quantity(self):
+        """ Test to ensure that PriceAmount is imported as the exact price unit for Colombia."""
+        line_xml = b"""
+            <cac:InvoiceLine
+                    xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+                    xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+                <cbc:ID>1</cbc:ID>
+                <cbc:InvoicedQuantity unitCode="94">3.0</cbc:InvoicedQuantity>
+                <cbc:LineExtensionAmount currencyID="COP">30.00</cbc:LineExtensionAmount>
+                <cac:Item>
+                    <cbc:Description>product_a</cbc:Description>
+                </cac:Item>
+                <cac:Price>
+                    <cbc:PriceAmount currencyID="COP">10.0</cbc:PriceAmount>
+                    <cbc:BaseQuantity unitCode="94">3.0</cbc:BaseQuantity>
+                </cac:Price>
+            </cac:InvoiceLine>
+        """
+        line_tree = etree.fromstring(line_xml)
+
+        # DIAN parser: BaseQuantity is ignored as a divisor -> exact unit price, no discount.
+        dian_vals = self.env['account.edi.xml.ubl_dian']._retrieve_line_vals(line_tree, 'in_invoice')
+        self.assertEqual(dian_vals['quantity'], 3.0)
+        self.assertEqual(dian_vals['price_unit'], 10.0)
 
     def test_dian_invoicing_access_rights(self):
         self.user.group_ids = [Command.unlink(self.env.ref('base.group_system').id)]
@@ -608,3 +658,55 @@ class TestDianMoves(TestCoDianCommon):
         xml = self._generate_xml(credit_note)
         self.env['l10n_co_dian.document']._create_document(xml, credit_note, state='invoice_accepted')
         self.assertEqual(credit_note._get_name_invoice_report(), 'l10n_co_dian.report_invoice_document')
+
+    def test_only_terms_and_conditions_are_exported_in_note_tag(self):
+        invoice = self._create_move()
+        invoice.narration = ("<p>Payment due in 15 days</p>")
+        xml = self._generate_xml(invoice)
+        root = etree.fromstring(xml)
+        notes = root.findall('.//{*}Note')
+        self.assertEqual(len(notes), 1, "The XML should contain only one Note tag.")
+        self.assertEqual(
+            notes[0].text,
+            "Payment due in 15 days",
+            "The Note tag should contain only the Terms and Conditions.",
+        )
+
+    def test_embedded_xml_encoding(self):
+        self.partner_co.email = 'test@test.com'
+        invoice = self._create_move()
+        invoice.company_id.l10n_co_dian_demo_mode = True
+        # response_file doesn't matter here
+        self._mock_send_and_print(move=invoice, response_file='SendTestSetAsync.xml')
+
+        zip_file = invoice.attachment_ids.filtered(lambda att: att.mimetype == 'application/zip')
+        raw = xml_utils._unzip(zip_file.raw)
+
+        namespaces = {
+            'cac': "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2",
+            'cbc': "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2",
+        }
+
+        tree = etree.fromstring(raw)
+
+        # Invoice is embedded as text in Description tag
+        description_str = tree.xpath('//cbc:Description/text()', namespaces=namespaces)[0]
+        description_tree = etree.fromstring(description_str.encode('utf-8'))
+        result = description_tree.find('.//cac:AccountingSupplierParty/cac:Party/cac:PhysicalLocation/cac:Address/cbc:CountrySubentity', namespaces)
+
+        self.assertEqual(result.text, 'Bogotá')
+
+    def test_debit_note_with_buyer_reference(self):
+        """ Test that generating a UBL document for a debit note with a buyer reference does
+        not crash due to the lack of a BuyerReference node in the debit note XML template. """
+        partner = self.partner_a
+        partner.ref = '123456'
+
+        debit_note = self._create_move(
+            move_type='out_invoice',
+            journal_id=self.debit_note_journal.id,
+            partner_id=partner.id
+        )
+
+        # Should not raise a ValueError
+        self._generate_xml(debit_note)

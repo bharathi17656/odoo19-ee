@@ -47,6 +47,9 @@ class StockMove(models.Model):
         check_vals_list = []
         for picking, moves in pick_moves.items():
             quality_points_domain = self.env['quality.point']._get_domain(moves.product_id, picking.picking_type_id, measure_on='operation')
+            existing_point_ids = picking.check_ids.filtered(lambda c: c.measure_on == 'operation').point_id.ids
+            if existing_point_ids:
+                quality_points_domain += [('id', 'not in', existing_point_ids)]
             quality_points = self.env['quality.point'].sudo().search(quality_points_domain)
             for point in quality_points:
                 if point.check_execute_now():
@@ -65,6 +68,11 @@ class StockMove(models.Model):
         is_product_canceled = defaultdict(lambda: True)
         for qc in self.picking_id.sudo().check_ids:
             if qc.quality_state != 'none':
+                continue
+            if qc.measure_on == 'operation':
+                # Operation check covers the whole transfer: unlink only if all its moves are canceled.
+                if all(move.state == 'cancel' for move in qc.picking_id.move_ids):
+                    to_unlink |= qc
                 continue
             if (qc.picking_id, qc.product_id) not in is_product_canceled:
                 for move in qc.picking_id.move_ids:

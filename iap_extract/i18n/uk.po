@@ -3,13 +3,14 @@
 # * iap_extract
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:47+0000\n"
-"PO-Revision-Date: 2025-11-17 03:35+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2025-12-30 18:45+0000\n"
+"PO-Revision-Date: 2026-10-07 10:33+0000\n"
+"Last-Translator: Alina Lisnenko <alina.lisnenko@erp.co.ua>\n"
 "Language-Team: Ukrainian <https://translate.odoo.com/projects/odoo-19/"
 "iap_extract/uk/>\n"
 "Language: uk\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: iap_extract
 #: model:mail.template,body_html:iap_extract.iap_extract_no_credit
@@ -31,6 +32,14 @@ msgid ""
 "    <p>Odoo S.A.</p>\n"
 "</div>"
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"<p>Шановний(-а) клієнте,<br/></p>\n"
+"<p>На вашому обліковому записі IAP OCR закінчилися кредити.<br/>\n"
+"Ви можете поповнити свій обліковий запис IAP OCR на сторінці налаштувань.</p>"
+"\n"
+"<p>З повагою,<br/></p>\n"
+"<p>Odoo S.A.</p>\n"
+"</div>"
 
 #. module: iap_extract
 #: model:ir.model.fields,field_description:iap_extract.field_extract_mixin__message_needaction
@@ -45,6 +54,8 @@ msgid ""
 "All fields will be automatically populated by Artificial Intelligence, it "
 "might take 5 seconds."
 msgstr ""
+"Усі поля будуть автоматично заповнені штучним інтелектом; це може зайняти 5 "
+"секунд."
 
 #. module: iap_extract
 #. odoo-python
@@ -79,6 +90,8 @@ msgstr "Базовий клас для вилучення даних з доку
 #: model:ir.model,name:iap_extract.model_extract_mixin_with_words
 msgid "Base class to extract data from documents with OCRed words saved"
 msgstr ""
+"Базовий клас для вилучення даних із документів, у яких збережено результати "
+"розпізнавання тексту (OCR)"
 
 #. module: iap_extract
 #. odoo-javascript
@@ -108,6 +121,9 @@ msgid ""
 "Digitize your scanned or PDF vendor bills, expenses and resumes with OCR and "
 "Artificial Intelligence."
 msgstr ""
+"Оцифровуйте відскановані рахунки від постачальників, чеки про витрати та "
+"резюме (зокрема у форматі PDF) за допомогою технології OCR та штучного "
+"інтелекту."
 
 #. module: iap_extract
 #: model:ir.model.fields,field_description:iap_extract.field_extract_mixin__display_name
@@ -131,7 +147,7 @@ msgstr "Документ відправлено на оцифрування"
 #. odoo-javascript
 #: code:addons/iap_extract/static/src/components/status_header/status.xml:0
 msgid "Document successfully parsed. Please refresh."
-msgstr ""
+msgstr "Документ успішно розібрано. Будь ласка, оновіть сторінку."
 
 #. module: iap_extract
 #: model:iap.service,unit_name:iap_extract.iap_service_ocr
@@ -176,17 +192,17 @@ msgstr "Статус вилучення"
 #. module: iap_extract
 #: model:ir.model.fields,field_description:iap_extract.field_extract_mixin_with_words__extracted_dates
 msgid "Extracted Dates"
-msgstr ""
+msgstr "Вилучені дати"
 
 #. module: iap_extract
 #: model:ir.model.fields,field_description:iap_extract.field_extract_mixin_with_words__extracted_numbers
 msgid "Extracted Numbers"
-msgstr ""
+msgstr "Вилучені цифри"
 
 #. module: iap_extract
 #: model:ir.model.fields,field_description:iap_extract.field_extract_mixin_with_words__extracted_words
 msgid "Extracted Words"
-msgstr ""
+msgstr "Вилучені слова"
 
 #. module: iap_extract
 #: model:ir.model.fields,field_description:iap_extract.field_extract_mixin__message_follower_ids
@@ -210,7 +226,7 @@ msgstr "Є повідомлення"
 #: model:mail.template,name:iap_extract.iap_extract_no_credit
 #: model:mail.template,subject:iap_extract.iap_extract_no_credit
 msgid "IAP Extract Notification"
-msgstr "Споіщення вилучення IAP"
+msgstr "Сповіщення вилучення IAP"
 
 #. module: iap_extract
 #: model:ir.model.fields,field_description:iap_extract.field_extract_mixin__id
@@ -438,7 +454,7 @@ msgstr "Очікування підтвердження"
 #. odoo-javascript
 #: code:addons/iap_extract/static/src/components/status_header/status.xml:0
 msgid "You don't have enough credit to extract data from your document."
-msgstr ""
+msgstr "У вас недостатньо кредитів для вилучення даних із документа."
 
 #. module: iap_extract
 #. odoo-python

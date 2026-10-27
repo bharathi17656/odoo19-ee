@@ -7,8 +7,10 @@ from odoo.addons.test_discuss_full.tests.test_performance import TestDiscussFull
 #       - search ai_agent (_compute_im_status ai override)
 #   1: fetch voip_provider (_res_users_settings_format)
 #   1: search mail_activity_type (voip_config)
+#   1: search hr_employee (_get_number_of_missed_calls ACL - manager hierarchy)
+#   1: search res_users (_get_number_of_missed_calls ACL - department manager)
 #   1: search_count voip_call (_get_number_of_missed_calls)
-TestDiscussFullPerformance._query_count_init_store += 4
+TestDiscussFullPerformance._query_count_init_store += 6
 # Queries for _query_count_init_messaging:
 #   1: _process_request_for_all: channel add: member _to_store: partner _to_store:
 #       - search ai_agent (_compute_im_status ai override)
@@ -16,6 +18,10 @@ TestDiscussFullPerformance._query_count_init_messaging += 1
 # Queries for _query_count_init_messaging:
 #   1: channel _to_store_defaults: member _to_store: partner _to_store:
 #       - search ai_agent (_compute_im_status ai override)
+TestDiscussFullPerformance._query_count_discuss_channels += 1
+# Queries for _query_count_discuss_channels:
+#   1: channel _to_store_defaults: livechat_channel_has_agents:
+#       - search im_livechat_channel_im_user (ai_livechat/models/discuss_channel.py)
 TestDiscussFullPerformance._query_count_discuss_channels += 1
 
 old_get_init_store_data_result = TestDiscussFullPerformance._get_init_store_data_result

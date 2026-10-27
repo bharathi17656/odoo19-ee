@@ -7,13 +7,13 @@
 # Niyas Raphy, 2022
 # Malaz Abuidris <msea@odoo.com>, 2023
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
-# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2025.
+# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:48+0000\n"
-"PO-Revision-Date: 2025-11-19 16:33+0000\n"
+"POT-Creation-Date: 2026-04-03 18:48+0000\n"
+"PO-Revision-Date: 2026-09-10 13:45+0000\n"
 "Last-Translator: \"Malaz Siddig Elsayed Abuidris (msea)\" <msea@odoo.com>\n"
 "Language-Team: Arabic <https://translate.odoo.com/projects/odoo-19/"
 "project_enterprise/ar/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: project_enterprise
 #. odoo-python
@@ -61,6 +61,11 @@ msgstr "<strong>التاريخ المخطط له:</strong>"
 #: model:ir.model.fields,field_description:project_enterprise.field_project_task__allocated_hours
 msgid "Allocated Time"
 msgstr "الوقت المخصص"
+
+#. module: project_enterprise
+#: model:ir.model.fields,field_description:project_enterprise.field_res_users__task_ids
+msgid "Assigned Tasks"
+msgstr "المهام المسندة "
 
 #. module: project_enterprise
 #: model:ir.model.fields,field_description:project_enterprise.field_project_task__user_ids
@@ -195,6 +200,8 @@ msgid ""
 "Some tasks have been successfully scheduled for the upcoming periods. Some "
 "warnings were generated. Please review them for details."
 msgstr ""
+"تمت جدولة بعض المهام بنجاح للفترات القادمة. تم إنشاء بعض التحذيرات. يرجى "
+"مراجعتها للحصول على التفاصيل."
 
 #. module: project_enterprise
 #. odoo-python
@@ -261,7 +268,7 @@ msgstr "تمت إزالة المهمة"
 #. odoo-javascript
 #: code:addons/project_enterprise/static/src/views/task_gantt/task_gantt_renderer.js:0
 msgid "Task reschedule undone"
-msgstr ""
+msgstr "تم إلغاء إعادة جدولة المهمة"
 
 #. module: project_enterprise
 #. odoo-javascript
@@ -495,9 +502,6 @@ msgstr "إظهار مواقع العملاء لمهامك"
 #~ msgstr ""
 #~ "لا يملك هذا الموظف عقداً جارياً خلال الفترة المحددة. \n"
 #~ "تم استخدام ساعات عمل الشركة كمرجع عوضاً عن ذلك. "
-
-#~ msgid "Unassigned Tasks"
-#~ msgstr "المهام غير المسندة "
 
 #~ msgid "User Names"
 #~ msgstr "أسماء المستخدمين "

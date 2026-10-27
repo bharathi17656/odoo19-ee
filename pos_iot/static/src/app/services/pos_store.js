@@ -84,7 +84,7 @@ patch(PosStore.prototype, {
         if (this.config.iface_scan_via_proxy) {
             this.barcodeReader?.connectToProxy();
         }
-        if (this.config.iface_print_via_proxy) {
+        if (!this.hardwareProxy.printer && this.config.iface_print_via_proxy) {
             this.hardwareProxy.connectToPrinter();
         }
         return Promise.resolve();

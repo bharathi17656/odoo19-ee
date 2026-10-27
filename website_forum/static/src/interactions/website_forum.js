@@ -95,7 +95,7 @@ export class WebsiteForum extends Interaction {
 
             this.mountComponent(selectMenuWrapperEl, WebsiteForumTagsWrapper, {
                 defaulValue: defaulValue,
-                disabled: isReadOnly,
+                isReadOnly: isReadOnly,
             });
         }
 
@@ -185,7 +185,7 @@ export class WebsiteForum extends Interaction {
         const textareaEl = currentTargetEl.querySelector("textarea[name=content]");
 
         if (titleEl?.required) {
-            titleEl.classList.toggle("is-invalid", !!titleEl.value);
+            titleEl.classList.toggle("is-invalid", !titleEl.value);
             validForm = !!titleEl.value;
         }
 
@@ -195,7 +195,7 @@ export class WebsiteForum extends Interaction {
             const textareaContainerEl = currentTargetEl.querySelector(".o_wysiwyg_textarea_wrapper");
             const hasContent = !!textareaContainerEl.innerText.trim() || !!textareaContainerEl.querySelector("img");
             ["border", "border-danger", "rounded-top"].forEach((cls) => {
-                textareaContainerEl.classList.toggle(cls, hasContent);
+                textareaContainerEl.classList.toggle(cls, !hasContent);
             });
             validForm = hasContent;
         }
@@ -249,13 +249,13 @@ export class WebsiteForum extends Interaction {
         const forumId = parseInt(this.el.ownerDocument.getElementById("wrapwrap").dataset.forum_id);
         let message = _t("%(score)s karma is required to perform this action.", { score: karma });
         if (forumId) {
-            message = htmlJoin(
+            message = htmlJoin([
                 message,
                 _t("%(link_start)sRead the guidelines to know how to gain karma.%(link_end)s", {
                     link_start: markup`<br><a class="alert-link" href="/forum/${forumId}/faq">`,
                     link_end: markup`</a>`,
-                })
-            );
+                }),
+            ]);
         }
         this.services.notification.add(message, {
             type: "warning",
@@ -496,9 +496,8 @@ export class WebsiteForum extends Interaction {
         cookie.set("forum_welcome_message", false, 24 * 60 * 60 * 365, "optional");
         const forumIntroEl = this.el.querySelector(".forum_intro");
         forumIntroEl.style.height = getComputedStyle(forumIntroEl).height;
-        forumIntroEl.classList.add("overflow-hidden");
-        forumIntroEl.style.transition = "height 1s";
-        forumIntroEl.classList.add("h-0");
+        void forumIntroEl.offsetHeight;
+        forumIntroEl.classList.add("o_wforum_intro_closing");
         return true;
     }
 

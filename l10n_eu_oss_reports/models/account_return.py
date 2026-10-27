@@ -26,6 +26,15 @@ class AccountReturnType(models.Model):
 
         return rslt
 
+    def _can_return_exist(self, company, tax_unit=False):
+        can_exist = super()._can_return_exist(company, tax_unit=tax_unit)
+        if tax_unit and self in (
+            self.env.ref('l10n_eu_oss_reports.eu_oss_sales_tax_return_type'),
+            self.env.ref('l10n_eu_oss_reports.eu_oss_imports_tax_return_type'),
+        ):
+            can_exist &= tax_unit.main_company_id == company
+        return can_exist
+
 
 class AccountReturn(models.Model):
     _inherit = 'account.return'
@@ -110,6 +119,7 @@ class AccountReturn(models.Model):
             business_partners_count = len(business_partner_ids)
             review_action = {
                 'type': 'ir.actions.act_window',
+                'name': str(_lt("Business customers")),
                 'view_mode': 'list',
                 'res_model': 'res.partner',
                 'domain': [('id', 'in', business_partner_ids)],

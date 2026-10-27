@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.tools import get_lang
 
 
 class AccountMoveLine(models.Model):
@@ -21,10 +22,12 @@ class AccountMoveLine(models.Model):
         readonly=False,
     )
 
-    @api.depends('tax_ids', 'move_id.company_id', 'move_id.l10n_mx_edi_cfdi_to_public', 'move_id.l10n_mx_edi_is_cfdi_needed', 'move_id.partner_id')
+    @api.depends('price_unit', 'tax_ids', 'move_id.company_id', 'move_id.l10n_mx_edi_cfdi_to_public', 'move_id.l10n_mx_edi_is_cfdi_needed', 'move_id.partner_id')
     def _compute_l10n_mx_edi_tax_object(self):
         L10nMxEdiDocument = self.env['l10n_mx_edi.document']
         for move, lines in self.grouped('move_id').items():
+            if move._l10n_mx_edi_is_cfdi_bill():
+                continue
             lines.l10n_mx_edi_tax_object = None
             if not move._l10n_mx_edi_is_cfdi_invoice():
                 continue
@@ -43,12 +46,22 @@ class AccountMoveLine(models.Model):
 
     def _l10n_mx_edi_get_cfdi_line_name(self):
         self.ensure_one()
-        if self.product_id.display_name:
+        product = self.product_id.with_context(
+            lang=get_lang(self.env, self.move_id.partner_id.lang).code,
+            partner_id=self.move_id.partner_id.id,
+            company_id=self.company_id.id,
+        )
+        original_display_name = self.product_id.display_name
+        if original_display_name and self.name and (
+            original_display_name in self.name or self.name in original_display_name
+        ):
+            return self.name
+        if product.display_name:
             if self.name:
-                if self.product_id.display_name in self.name or self.name in self.product_id.display_name:
+                if product.display_name in self.name or self.name in product.display_name:
                     return self.name
-                return f"{self.product_id.display_name} {self.name}"
-            return self.product_id.display_name
+                return f"{product.display_name} {self.name}"
+            return product.display_name
         return self.name
 
     def _get_product_unspsc_code(self):

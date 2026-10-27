@@ -42,6 +42,7 @@ class CalendarEvent(models.Model):
         return ['id', 'start', 'duration', 'stop', 'name', 'appointment_type_id', 'appointment_status', 'appointment_resource_ids', 'total_capacity_reserved']
 
     def action_open_booking_gantt_view(self):
+        appointment_type_id = self.env.context.get('appointment_type_id')
         return {
             'name': _('Manage Bookings'),
             'type': 'ir.actions.act_window',
@@ -56,6 +57,7 @@ class CalendarEvent(models.Model):
                 (self.env.ref("pos_appointment.calendar_event_view_graph_pos_appointment").id, 'graph'),
             ],
             'target': 'current',
+            'domain': [('appointment_type_id', '=', appointment_type_id)],
             'context': {
                 'appointment_booking_gantt_show_all_resources': True,
                 'active_model': 'appointment.type',
@@ -63,11 +65,10 @@ class CalendarEvent(models.Model):
                 'default_duration': 2,
                 'default_total_capacity_reserved': 0,
                 'default_waiting_list_capacity': 2,
-                "search_default_appointment_type_id": self.env.context.get("appointment_type_id"),
-                "no_breadcrumbs": True,
+                'default_appointment_type_id': appointment_type_id,
                 'hide_no_content_helper': True,
                 'from_pos_booking': True,
-                "appointment_type_id": self.env.context.get("appointment_type_id"),
+                'appointment_type_id': appointment_type_id,
             }
         }
 

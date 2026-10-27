@@ -81,7 +81,7 @@ test("Open Ended record today", async () => {
         },
     });
     const { range, rows } = getGridContent();
-    expect(range).toBe("From: 12/10/2018 to: 12/10/2018");
+    expect(range).toBe("12/10/2018 -> 12/10/2018");
     expect(rows).toEqual([
         {
             pills: [
@@ -122,7 +122,7 @@ test("Future Open Ended record not displayed", async () => {
         },
     });
     const { range, rows } = getGridContent();
-    expect(range).toBe("From: 12/10/2018 to: 12/10/2018");
+    expect(range).toBe("12/10/2018 -> 12/10/2018");
     expect(rows).toEqual([
         {
             pills: [
@@ -158,7 +158,7 @@ test("Open Ended record spanning multiple days", async () => {
         },
     });
     let gridContent = getGridContent();
-    expect(gridContent.range).toBe("From: 12/12/2018 to: 12/12/2018");
+    expect(gridContent.range).toBe("12/12/2018 -> 12/12/2018");
     expect(gridContent.rows).toEqual([
         {
             pills: [
@@ -175,7 +175,7 @@ test("Open Ended record spanning multiple days", async () => {
     await advanceTime(500);
     await animationFrame();
     gridContent = getGridContent();
-    expect(gridContent.range).toBe("From: 12/11/2018 to: 12/11/2018");
+    expect(gridContent.range).toBe("12/11/2018 -> 12/11/2018");
     expect(gridContent.rows).toEqual([
         {
             pills: [
@@ -192,7 +192,7 @@ test("Open Ended record spanning multiple days", async () => {
     await advanceTime(500);
     await animationFrame();
     gridContent = getGridContent();
-    expect(gridContent.range).toBe("From: 12/10/2018 to: 12/10/2018");
+    expect(gridContent.range).toBe("12/10/2018 -> 12/10/2018");
     expect(gridContent.rows).toEqual([
         {
             pills: [
@@ -250,7 +250,7 @@ test("Concurrent open-ended records", async () => {
         },
     });
     const { range, rows } = getGridContent();
-    expect(range).toBe("From: 12/20/2018 to: 12/20/2018");
+    expect(range).toBe("12/20/2018 -> 12/20/2018");
     expect(rows).toEqual([
         {
             pills: [
@@ -291,7 +291,7 @@ test("Open ended record Precision", async () => {
         },
     });
     const { range, rows } = getGridContent();
-    expect(range).toBe("From: 12/20/2018 to: 12/20/2018");
+    expect(range).toBe("12/20/2018 -> 12/20/2018");
     expect(rows).toEqual([
         {
             pills: [
@@ -327,7 +327,7 @@ test("Open ended record updated correctly", async () => {
         },
     });
     let gridContent = getGridContent();
-    expect(gridContent.range).toBe("From: 12/20/2018 to: 12/20/2018");
+    expect(gridContent.range).toBe("12/20/2018 -> 12/20/2018");
     expect(gridContent.rows).toEqual([
         {
             pills: [
@@ -348,7 +348,7 @@ test("Open ended record updated correctly", async () => {
     await advanceTime(500);
     await animationFrame();
     gridContent = getGridContent();
-    expect(gridContent.range).toBe("From: 12/20/2018 to: 12/20/2018");
+    expect(gridContent.range).toBe("12/20/2018 -> 12/20/2018");
     // TODO fixme: end hour is non deterministic and alternates between 7pm and 8pm.
     const endHour = parseInt(gridContent.rows[0].pills[0].colSpan.match(/->\s*(\d+)/)[1]);
     expect(endHour).toBeWithin(6, 7);
@@ -394,7 +394,7 @@ test("Future Open ended record not shown before it happens and appears after sta
         },
     });
     let gridContent = getGridContent();
-    expect(gridContent.range).toBe("From: 11/02/2018 to: 11/02/2018");
+    expect(gridContent.range).toBe("11/02/2018 -> 11/02/2018");
     expect(gridContent.rows).toEqual([
         {
             pills: [
@@ -415,7 +415,7 @@ test("Future Open ended record not shown before it happens and appears after sta
     await advanceTime(500);
     await animationFrame();
     gridContent = getGridContent();
-    expect(gridContent.range).toBe("From: 11/02/2018 to: 11/02/2018");
+    expect(gridContent.range).toBe("11/02/2018 -> 11/02/2018");
     expect(gridContent.rows).toEqual([
         {
             pills: [
@@ -471,7 +471,7 @@ test("Domain correctly applied when allow_open_ended=1.", async () => {
         },
     });
     const { rows, range } = getGridContent();
-    expect(range).toBe("From: 11/02/2018 to: 11/02/2018");
+    expect(range).toBe("11/02/2018 -> 11/02/2018");
     expect(rows).toEqual([
         {
             pills: [
@@ -526,4 +526,100 @@ test("Dragging half column in week scale preserves checkout context", async () =
     await runAllTimers(); // Pointer move is subjected to throttleForAnimation in gantt
     await drop();
     await animationFrame();
+});
+
+test("Monday attendance is shown in weekly gantt when first day of week is Monday", async () => {
+    // Customer records are 0-duration at local midnight (pill label "00:00 (00:00:00-00:00:00)").
+    // With week_start=Monday, that check_out equals the week start and was excluded by `>`.
+    mockDate("2018-12-19 12:00:00", +0);
+    defineParams({
+        lang_parameters: {
+            time_format: "%I:%M:%S",
+            week_start: 1,
+        },
+    });
+    Attendances._records = [
+        {
+            id: 9,
+            check_in: "2018-12-16 22:00:00",
+            check_out: "2018-12-17 00:00:00",
+            name: "Sunday Overnight Attendance",
+            user_id: 1,
+        },
+        {
+            id: 10,
+            check_in: "2018-12-17 00:00:00",
+            check_out: "2018-12-17 00:00:00",
+            name: "Monday Attendance",
+            user_id: 1,
+        },
+        {
+            id: 11,
+            check_in: "2018-12-19 00:00:00",
+            check_out: "2018-12-19 00:00:00",
+            name: "Wednesday Attendance",
+            user_id: 1,
+        },
+    ];
+    onRpc("get_gantt_data", ({ parent }) => {
+        const result = parent();
+        const ids = result.records.map((record) => record.id);
+        expect(ids).toInclude(10);
+        expect(ids).not.toInclude(9);
+        return result;
+    });
+    await mountGanttView({
+        resModel: "attendances",
+        arch: `<gantt js_class="attendance_gantt" date_start="check_in" date_stop="check_out" default_group_by="user_id" default_scale="week" default_range="week"/>`,
+    });
+    const { groupHeaders, rows } = getGridContent();
+    expect(groupHeaders.map((header) => header.title)).toEqual(["Week 51, Dec 17 - Dec 23"]);
+    const titles = rows.flatMap((row) => (row.pills || []).map((pill) => pill.title));
+    expect(titles).toInclude("Monday Attendance");
+    expect(titles).toInclude("Wednesday Attendance");
+    expect(titles).not.toInclude("Sunday Overnight Attendance");
+});
+
+test("Zero-duration attendance at the start of a future week is shown", async () => {
+    mockDate("2018-12-12 12:00:00", +0);
+    defineParams({
+        lang_parameters: {
+            time_format: "%I:%M:%S",
+            week_start: 1,
+        },
+    });
+    Attendances._records = [
+        {
+            id: 9,
+            check_in: "2018-12-16 22:00:00",
+            check_out: "2018-12-17 00:00:00",
+            name: "Future Sunday Overnight Attendance",
+            user_id: 1,
+        },
+        {
+            id: 10,
+            check_in: "2018-12-17 00:00:00",
+            check_out: "2018-12-17 00:00:00",
+            name: "Future Monday Attendance",
+            user_id: 1,
+        },
+        {
+            id: 11,
+            check_in: "2018-12-19 00:00:00",
+            check_out: "2018-12-19 00:00:00",
+            name: "Future Wednesday Attendance",
+            user_id: 1,
+        },
+    ];
+    await mountGanttView({
+        resModel: "attendances",
+        arch: `<gantt js_class="attendance_gantt" date_start="check_in" date_stop="check_out" default_group_by="user_id" default_scale="week" default_range="week"/>`,
+        context: { initialDate: "2018-12-17 08:00:00" },
+    });
+    const { groupHeaders, rows } = getGridContent();
+    expect(groupHeaders.map((header) => header.title)).toEqual(["Week 51, Dec 17 - Dec 23"]);
+    const titles = rows.flatMap((row) => (row.pills || []).map((pill) => pill.title));
+    expect(titles).toInclude("Future Wednesday Attendance");
+    expect(titles).toInclude("Future Monday Attendance");
+    expect(titles).not.toInclude("Future Sunday Overnight Attendance");
 });

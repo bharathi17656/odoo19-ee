@@ -2,8 +2,11 @@
 
 from datetime import date, datetime, timedelta, time
 from dateutil.relativedelta import relativedelta
+from dateutil import rrule
 
+from odoo.tools import get_lang
 from odoo import api, fields, models
+from odoo.fields import Domain
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -89,31 +92,39 @@ class ResCompany(models.Model):
             company.timesheet_mail_nextdate = fields.Datetime.to_string(nextdate)
 
     @api.model
+    def _get_timesheet_reminder_domain(self):
+        return [
+            ('date', '>=', fields.Date.to_string(date.today() - relativedelta(months=3))),
+            ('date', '<=', fields.Date.today()),
+            ('project_id', '!=', False),
+        ]
+
+    @api.model
     def _cron_timesheet_reminder_employee(self):
         """ Send an email reminder to the user having at least one timesheet since the last 3 month. From those ones, we exclude
             ones having complete their timesheet (meaning timesheeted the same hours amount than their working calendar).
         """
         today_max = fields.Datetime.to_string(datetime.combine(date.today(), time.max))
         companies = self.search([('timesheet_mail_employee_allow', '=', True), ('timesheet_mail_employee_nextdate', '<', today_max)])
+        timesheet_domain = self._get_timesheet_reminder_domain()
         for company in companies:
             if company.timesheet_mail_employee_nextdate < fields.Datetime.today():
                 _logger.warning('The cron "Timesheet: Employees Email Reminder" should have run on %s' % company.timesheet_mail_employee_nextdate)
 
             # get the employee that have at least a timesheet for the last 3 months
             # and that are still active; don't spam retired users
-            users = self.env['account.analytic.line'].search([
-                ('date', '>=', fields.Date.to_string(date.today() - relativedelta(months=3))),
-                ('date', '<=', fields.Date.today()),
-                ('project_id', '!=', False),
-                ('company_id', '=', company.id),
-            ]).mapped('user_id').filtered('active')
+            users = self.env['account.analytic.line'].search(Domain.AND([
+                [('company_id', '=', company.id)],
+                timesheet_domain,
+            ])).mapped('user_id').filtered('active')
 
             # calculate the period
             if company.timesheet_mail_employee_interval == 'months':
-                date_start = (date.today() - timedelta(days=company.timesheet_mail_employee_delay)) + relativedelta(day=1)
+                date_start = (date.today() - timedelta(days=company.timesheet_mail_employee_delay + 1)) + relativedelta(day=1)
                 date_stop = date_start + relativedelta(months=1, days=-1)
             else:
-                date_start = date.today() - timedelta(weeks=1, days=company.timesheet_mail_employee_delay - 1)
+                week_start = int(get_lang(self.env).week_start)
+                date_start = date.today() - timedelta(days=company.timesheet_mail_employee_delay + 1) + relativedelta(weekday=rrule.weekday(week_start - 1)(-1))
                 date_stop = date_start + timedelta(days=6)
 
             date_start = fields.Date.to_string(date_start)
@@ -140,15 +151,19 @@ class ResCompany(models.Model):
         """ Send a email reminder to all users having the group 'timesheet approver'. """
         today_max = fields.Datetime.to_string(datetime.combine(date.today(), time.max))
         companies = self.search([('timesheet_mail_allow', '=', True), ('timesheet_mail_nextdate', '<', today_max)])
+        users = self.env['res.users']
+        if companies:
+            users = users.search([('all_group_ids', 'in', [self.env.ref('hr_timesheet.group_hr_timesheet_approver').id])])
         for company in companies:
             if company.timesheet_mail_nextdate < fields.Datetime.today():
                 _logger.warning('The cron "Timesheet: Approver Email Reminder" should have run on %s', company.timesheet_mail_nextdate)
             # calculate the period
             if company.timesheet_mail_interval == 'months':
-                date_start = (date.today() - timedelta(days=company.timesheet_mail_delay)) + relativedelta(day=1)
+                date_start = (date.today() - timedelta(days=company.timesheet_mail_delay + 1)) + relativedelta(day=1)
                 date_stop = date_start + relativedelta(months=1, days=-1)
             else:
-                date_start = date.today() - timedelta(weeks=1, days=company.timesheet_mail_delay - 1)
+                week_start = int(get_lang(self.env).week_start)
+                date_start = date.today() - timedelta(days=company.timesheet_mail_delay + 1) + relativedelta(weekday=rrule.weekday(week_start - 1)(-1))
                 date_stop = date_start + timedelta(days=6)
 
             date_start = fields.Date.to_string(date_start)
@@ -158,12 +173,25 @@ class ResCompany(models.Model):
                 'date_start': date_start,
                 'date_stop': date_stop,
             }
-            users = self.env['res.users'].search([('all_group_ids', 'in', [self.env.ref('hr_timesheet.group_hr_timesheet_approver').id])])
-            self._cron_timesheet_send_reminder(
-                self.env['hr.employee'].search([('company_id', '=', company.id), ('user_id', 'in', users.ids)]),
-                'timesheet_grid.mail_template_timesheet_reminder',
-                'timesheet_grid.timesheet_grid_to_validate_action',
-                additionnal_values=values)
+            for user in users:
+                validation_domain = self.env['account.analytic.line'].with_user(user)._get_domain_for_validation_timesheets()
+                timesheets_to_validate = self.env['account.analytic.line'].with_user(user).search(
+                    Domain.AND([
+                        validation_domain,
+                        [
+                            ('employee_id.timesheet_manager_id', '=', user.id),
+                            '&',
+                                ('date', '>=', date_start),
+                                ('date', '<=', date_stop),
+                        ]
+                    ])
+                )
+                if timesheets_to_validate:
+                    self._cron_timesheet_send_reminder(
+                        self.env['hr.employee'].search([('company_id', '=', company.id), ('user_id', '=', user.id)]),
+                        'timesheet_grid.mail_template_timesheet_reminder',
+                        action_xmlid='timesheet_grid.timesheet_grid_to_validate_action',
+                        additionnal_values=values)
 
         # compute the next execution date
         companies._calculate_timesheet_mail_nextdate()

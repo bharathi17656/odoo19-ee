@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:49+0000\n"
-"PO-Revision-Date: 2025-11-17 07:02+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2025-12-30 18:47+0000\n"
+"PO-Revision-Date: 2025-12-06 10:20+0000\n"
+"Last-Translator: \"Manon Rondou (ronm)\" <ronm@odoo.com>\n"
 "Language-Team: French <https://translate.odoo.com/projects/odoo-19/"
 "sign_emsigner/fr/>\n"
 "Language: fr\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: sign_emsigner
 #: model_terms:ir.ui.view,arch_db:sign_emsigner.sign_request_logs_user
@@ -26,6 +26,8 @@ msgid ""
 "<br/>\n"
 "                        Reference Number:"
 msgstr ""
+"<br/>\n"
+"Numéro de référence :"
 
 #. module: sign_emsigner
 #: model_terms:ir.ui.view,arch_db:sign_emsigner.sign_request_logs_user
@@ -33,12 +35,14 @@ msgid ""
 "<br/>\n"
 "                        Transaction Number:"
 msgstr ""
+"<br/>\n"
+"Numéro de transaction :"
 
 #. module: sign_emsigner
 #: model_terms:ir.ui.view,arch_db:sign_emsigner.sign_request_logs_user
 msgid ""
 "<small>The signatory has provided this identity through emSigner</small>"
-msgstr ""
+msgstr "<small>Le signataire a fourni cette identité via emSigner</small>"
 
 #. module: sign_emsigner
 #. odoo-javascript
@@ -47,6 +51,9 @@ msgid ""
 "Aadhaar Sign works only with a single signer and document. Adding more will "
 "switch to the standard eSignature."
 msgstr ""
+"La signature Aadhaar ne fonctionne qu’avec un seul signataire et un seul "
+"document. En ajouter davantage fera basculer vers la signature électronique "
+"standard."
 
 #. module: sign_emsigner
 #: model:iap.service,description:sign_emsigner.iap_service_emsigner_proxy
@@ -57,11 +64,17 @@ msgid ""
 "their identity through the emSigner platform using aadhaar card number. "
 "Available in India."
 msgstr ""
+"Demandez aux signataires des documents dans Odoo Sign de fournir leur "
+"identité via la e-signature Aadhaar emSigner. En combinant Odoo Sign avec "
+"emSigner, vous pouvez ajouter une étape d’identification à vos flux de "
+"signature et demander aux signataires de fournir leur identité sur la "
+"plateforme emSigner à l’aide de leur numéro de carte Aadhaar. Disponible en "
+"Inde."
 
 #. module: sign_emsigner
 #: model_terms:ir.ui.view,arch_db:sign_emsigner.sign_request_logs_user
 msgid "Authenticated with emSigner"
-msgstr ""
+msgstr "Authentifié avec emSigner"
 
 #. module: sign_emsigner
 #. odoo-javascript
@@ -86,13 +99,14 @@ msgstr "Nom d'affichage"
 #. odoo-python
 #: code:addons/sign_emsigner/controllers/main.py:0
 msgid "ERROR: Invalid PDF file! %s"
-msgstr ""
+msgstr "ERREUR : fichier PDF invalide ! %s"
 
 #. module: sign_emsigner
 #. odoo-python
 #: code:addons/sign_emsigner/controllers/main.py:0
 msgid "Emsigner only supports signing a single document at a time."
 msgstr ""
+"Emsigner ne prend en charge la signature que d’un seul document à la fois."
 
 #. module: sign_emsigner
 #. odoo-python
@@ -100,6 +114,8 @@ msgstr ""
 msgid ""
 "Emsigner role cannot be signed first. Please keep emsigner as last signer."
 msgstr ""
+"Le rôle emsigner ne peut pas signer en premier. Veuillez laisser emsigner "
+"comme dernier signataire."
 
 #. module: sign_emsigner
 #. odoo-python
@@ -108,6 +124,8 @@ msgid ""
 "Emsigner role cannot be used for signing directly. Please send the request "
 "instead."
 msgstr ""
+"Le rôle emsigner ne peut pas être utilisé pour signer directement. Veuillez "
+"envoyer la demande à la place."
 
 #. module: sign_emsigner
 #. odoo-javascript
@@ -145,13 +163,13 @@ msgstr "Ok"
 #. odoo-javascript
 #: code:addons/sign_emsigner/static/src/dialogs/emsigner_dialog.xml:0
 msgid "Proceed to eSign"
-msgstr ""
+msgstr "Procéder à la signature électronique"
 
 #. module: sign_emsigner
 #. odoo-javascript
 #: code:addons/sign_emsigner/static/src/dialogs/emsigner_dialog.xml:0
 msgid "Redirecting to complete the Aadhaar eSign process."
-msgstr ""
+msgstr "Redirection en cours pour finaliser le processus Aadhaar eSign."
 
 #. module: sign_emsigner
 #. odoo-python
@@ -197,11 +215,13 @@ msgid ""
 "The emSigner identification data could not be forwarded to Odoo, the "
 "signature could not be saved."
 msgstr ""
+"Les données d’identification emSigner n’ont pas pu être transférées à Odoo, "
+"la signature n’a pas pu être enregistrée."
 
 #. module: sign_emsigner
 #: model:ir.model.fields.selection,name:sign_emsigner.selection__sign_item_role__auth_method__emsigner
 msgid "Via Aadhar eSign"
-msgstr ""
+msgstr "Via Aadhaar eSign"
 
 #. module: sign_emsigner
 #. odoo-javascript
@@ -213,24 +233,24 @@ msgstr "Avertissement"
 #. odoo-python
 #: code:addons/sign_emsigner/controllers/main.py:0
 msgid "emSigner IAP service could not be found."
-msgstr ""
+msgstr "Le service IAP emSigner est introuvable."
 
 #. module: sign_emsigner
 #: model:ir.model.fields,field_description:sign_emsigner.field_sign_request_item__emsigner_reference_number
 msgid "emSigner Reference Number"
-msgstr ""
+msgstr "Numéro de référence emSigner"
 
 #. module: sign_emsigner
 #: model:ir.model.fields,field_description:sign_emsigner.field_sign_request_item__emsigner_status
 msgid "emSigner Status"
-msgstr ""
+msgstr "Statut emSigner"
 
 #. module: sign_emsigner
 #: model:ir.model.fields,field_description:sign_emsigner.field_sign_request_item__emsigner_transaction_number
 msgid "emSigner Transaction Number"
-msgstr ""
+msgstr "Numéro de transaction emSigner"
 
 #. module: sign_emsigner
 #: model:ir.model.fields,field_description:sign_emsigner.field_sign_request_item__emsigner_return_value
 msgid "emSigner Values"
-msgstr ""
+msgstr "Valeurs emSigner"

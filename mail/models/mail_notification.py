@@ -108,7 +108,7 @@ class MailNotification(models.Model):
     def format_failure_reason(self):
         self.ensure_one()
         if self.failure_type != 'unknown':
-            return dict(self._fields['failure_type'].selection).get(self.failure_type, _('No Error'))
+            return dict(self._fields['failure_type']._description_selection(self.env)).get(self.failure_type, _('No Error'))
         else:
             if self.failure_reason:
                 return _("Unknown error: %(error)s", error=self.failure_reason)
@@ -136,5 +136,12 @@ class MailNotification(models.Model):
             "mail_message_id",
             "notification_status",
             "notification_type",
-            Store.One("res_partner_id", ["name", "email"]),
+            Store.One(
+                "res_partner_id",
+                [
+                    "name",
+                    "email",
+                    Store.Attr("display_name", predicate=lambda p: not p.name),
+                ],
+            ),
         ]

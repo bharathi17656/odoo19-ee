@@ -8,13 +8,23 @@ patch(PosStore.prototype, {
         await super.setup(...arguments);
         this.setAllTotalDueOfPartners(this.models["res.partner"].getAll());
     },
+    /** Dues are carried by the commercial partner of a contact. */
+    _getDuePartner(partner) {
+        if (!partner.parent_name) {
+            return partner;
+        }
+        const commercialPartnerId = partner.raw.commercial_partner_id;
+        return (
+            (commercialPartnerId && this.models["res.partner"].get(commercialPartnerId)) || partner
+        );
+    },
     getPartnerCredit(partner) {
         const order = this.getOrder();
         const partnerInfos = {
             totalDue: 0,
             posOrdersAmountDue: 0,
             invoicesAmountDue: 0,
-            totalWithCart: order?.amount_total ?? 0,
+            totalWithCart: order ? this.currency.round(order.priceIncl) : 0,
             creditLimit: 0,
             useLimit: false,
             overDue: false,
@@ -23,12 +33,7 @@ patch(PosStore.prototype, {
         if (!partner) {
             return partnerInfos;
         }
-        if (partner.parent_name) {
-            const parent = this.models["res.partner"].find((p) => p.name === partner.parent_name);
-            if (parent) {
-                partner = parent;
-            }
-        }
+        partner = this._getDuePartner(partner);
 
         partnerInfos.totalDue = this.currency.round(partner.total_due);
         partnerInfos.posOrdersAmountDue = this.currency.round(partner.pos_orders_amount_due);
@@ -53,12 +58,7 @@ patch(PosStore.prototype, {
         ]);
         this.deviceSync.dispatch({ "res.partner": [partner] });
         const updatePartner = res["res.partner"][0];
-        if (partner.parent_name) {
-            const parent = this.models["res.partner"].find((p) => p.name === partner.parent_name);
-            if (parent) {
-                partner = parent;
-            }
-        }
+        partner = this._getDuePartner(partner);
         partner.total_due = updatePartner.total_due;
         partner.pos_orders_amount_due = updatePartner.pos_orders_amount_due;
         partner.invoices_amount_due = updatePartner.invoices_amount_due;
@@ -151,7 +151,6 @@ patch(PosStore.prototype, {
                 newOrder.is_settling_account = true;
                 result.data.setAmount(amount);
                 newOrder.setPartner(partner);
-                newOrder.is_settling_account = true;
                 this.navigate("PaymentScreen", {
                     orderUuid: this.selectedOrderUuid,
                     isDepositOrder: true,

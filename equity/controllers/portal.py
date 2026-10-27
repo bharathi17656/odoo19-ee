@@ -15,9 +15,8 @@ class PortalEquity(CustomerPortal):
         if 'transaction_count' in counters:
             holder_id = self._get_user_partner_id()
             values['transaction_count'] = (
-                request.env['equity.transaction'].search_count(self._get_transactions_domain(holder_id), limit=1)
-                if holder_id and request.env['equity.transaction'].has_access('read') else
-                0
+                request.env['equity.transaction'].sudo().search_count(self._get_transactions_domain(holder_id), limit=1)
+                if holder_id else 0
             )
         return values
 
@@ -27,12 +26,13 @@ class PortalEquity(CustomerPortal):
             partner_id, token = access_token.split('$', maxsplit=1)
         if (
             partner_id and
+            partner_id.isdigit() and
             (partner := request.env['res.partner'].sudo().browse(int(partner_id))) and
             partner.equity_access_token and
             consteq(partner.equity_access_token, token)
         ):
             return int(partner_id)
-        elif default_to_request_partner and request.env['equity.transaction'].has_access('read'):
+        elif default_to_request_partner:
             return request.env.user.partner_id.id
         return False
 
@@ -162,10 +162,10 @@ class PortalEquity(CustomerPortal):
         })
         return values
 
-    def _prepare_contact_values(self, user_id=None):
-        if not user_id:
+    def _prepare_contact_values(self, partner_id=None):
+        if not partner_id:
             return {}
-        return request.env['res.users'].sudo().browse(int(user_id)).read(['name', 'email', 'phone'])[0]
+        return request.env['res.partner'].sudo().browse(partner_id)._get_ubo_contact_details()
 
     @route('/my/equity/<int:partner_id>', type='http', auth='public', website=True, sitemap=False)
     def portal_my_company_equity(self, partner_id, access_token=None, **kw):
@@ -191,7 +191,7 @@ class PortalEquity(CustomerPortal):
         ubos = request.env['equity.ubo'].sudo().search([('partner_id', '=', partner_id)])
         values.update({
             'access_token': access_token,
-            'contact': self._prepare_contact_values(user_id),
+            'contact': self._prepare_contact_values(partner_id),
             'equity_ubo_settings': {
                 'control_methods': dict(CONTROL_METHODS),
                 'activate_percentages': ACTIVATE_PERCENTAGES,
@@ -240,11 +240,9 @@ class PortalEquity(CustomerPortal):
         partner_id = self._get_user_partner_id(access_token, default_to_request_partner=False)
         if not partner_id:
             raise request.not_found()
-        elif rep_name and rep_position:
-            request.env['res.partner'].browse(partner_id)._ubo_portal_form_filled(rep_name=rep_name, rep_position=rep_position)
 
         values = {
             **self._prepare_portal_layout_values(),
-            'contact': self._prepare_contact_values(user_id),
+            'contact': self._prepare_contact_values(partner_id),
         }
         return request.render('equity.portal_ubo_submit', values)

@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-21 18:40+0000\n"
+"POT-Creation-Date: 2026-02-27 18:44+0000\n"
 "PO-Revision-Date: 2025-11-20 08:14+0000\n"
 "Last-Translator: \"Chloe Wang (chwa)\" <chwa@odoo.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://translate.odoo.com/"
@@ -147,12 +147,6 @@ msgid "Camera"
 msgstr "摄像头"
 
 #. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/backend/iot_device_form.js:0
-msgid "Check if the device is still connected"
-msgstr "检查设备是否仍在连接"
-
-#. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_no_iot_box_found
 msgid "Check the lights"
 msgstr "检查灯号"
@@ -208,12 +202,6 @@ msgstr "已连线状态"
 #: model_terms:ir.ui.view,arch_db:iot.iot_device_search
 msgid "Connection"
 msgstr "连接"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/backend/iot_device_form.js:0
-msgid "Connection to device failed"
-msgstr "连接到设备失败"
 
 #. module: iot
 #: model:ir.model.fields,field_description:iot.field_add_iot_box__create_uid
@@ -371,6 +359,24 @@ msgstr "未能重置%s密码。"
 #. odoo-javascript
 #: code:addons/iot/static/src/view_widgets/iot_restart_odoo.js:0
 msgid "Failed to send the restart command to the IoT Box ('%s')"
+msgstr ""
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "Failed to toggle remote debug."
+msgstr ""
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/backend/iot_device_form.js:0
+msgid "Failed to update keyboard layout on the device."
+msgstr ""
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/backend/iot_device_form.js:0
+msgid "Failed to update scanner mode on the device."
 msgstr ""
 
 #. module: iot
@@ -745,12 +751,6 @@ msgstr "可选：插入屏幕"
 #. module: iot
 #. odoo-javascript
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
-msgid "Out of paper"
-msgstr "没有纸张"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "PIN accepted."
 msgstr ""
 
@@ -771,12 +771,6 @@ msgstr "配对码"
 #: model_terms:ir.ui.view,arch_db:iot.view_no_iot_box_found
 msgid "Pairing code received from a printer or screen"
 msgstr "从打印机或屏幕接收的配对代码"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/network_utils/iot_http_service.js:0
-msgid "Paper is low"
-msgstr "纸量偏低"
 
 #. module: iot
 #: model:ir.model.fields.selection,name:iot.selection__iot_device__type__payment
@@ -817,12 +811,6 @@ msgstr "打印机"
 #. module: iot
 #. odoo-javascript
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
-msgid "Printer is not ready"
-msgstr "打印机尚未准备就绪"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "Printer is unreachable"
 msgstr "未能连线至打印机"
 
@@ -851,6 +839,12 @@ msgstr "票据打印机"
 #. odoo-javascript
 #: code:addons/iot/static/src/view_widgets/iot_remote_debug.xml:0
 msgid "Remote Debug"
+msgstr ""
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "Remote debug is %s."
 msgstr ""
 
 #. module: iot
@@ -1216,6 +1210,12 @@ msgid "device-icon"
 msgstr "device-icon"
 
 #. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "disabled"
+msgstr ""
+
+#. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_enter_pairing_code
 msgid "documentation"
 msgstr "文档"
@@ -1223,6 +1223,12 @@ msgstr "文档"
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_enter_pairing_code
 msgid "e.g. ABDE0123"
+msgstr ""
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "enabled"
 msgstr ""
 
 #. module: iot
@@ -1255,6 +1261,21 @@ msgstr "reset.linked.printers"
 #: model_terms:ir.actions.act_window,help:iot.iot_box_action
 msgid "to add an IoT Box."
 msgstr "添加一个IOT 盒子"
+
+#~ msgid "Out of paper"
+#~ msgstr "没有纸张"
+
+#~ msgid "Paper is low"
+#~ msgstr "纸量偏低"
+
+#~ msgid "Printer is not ready"
+#~ msgstr "打印机尚未准备就绪"
+
+#~ msgid "Check if the device is still connected"
+#~ msgstr "检查设备是否仍在连接"
+
+#~ msgid "Connection to device failed"
+#~ msgstr "连接到设备失败"
 
 #~ msgid "Are you sure you want to restart Odoo on the IoT box?"
 #~ msgstr "您确定想重启IoT盒子上的Odoo吗？"

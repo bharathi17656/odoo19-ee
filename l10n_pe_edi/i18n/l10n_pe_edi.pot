@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 20:08+0000\n"
-"PO-Revision-Date: 2025-11-13 20:08+0000\n"
+"POT-Creation-Date: 2026-10-02 18:07+0000\n"
+"PO-Revision-Date: 2026-10-02 18:07+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -33,16 +33,6 @@ msgstr ""
 #. module: l10n_pe_edi
 #: model_terms:ir.ui.view,arch_db:l10n_pe_edi.ubl_pe_21_voided_documents
 msgid "#SignVX"
-msgstr ""
-
-#. module: l10n_pe_edi
-#: model_terms:ir.ui.view,arch_db:l10n_pe_edi.ubl_pe_21_voided_documents
-msgid "1.0"
-msgstr ""
-
-#. module: l10n_pe_edi
-#: model_terms:ir.ui.view,arch_db:l10n_pe_edi.ubl_pe_21_voided_documents
-msgid "2.0"
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -342,6 +332,16 @@ msgid "Certificates"
 msgstr ""
 
 #. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__47
+msgid "Charges affecting the IGV/IVAP taxable base"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__48
+msgid "Charges not affecting the IGV/IVAP taxable base"
+msgstr ""
+
+#. module: l10n_pe_edi
 #. odoo-python
 #: code:addons/l10n_pe_edi/models/account_edi_format.py:0
 msgid ""
@@ -360,6 +360,11 @@ msgid ""
 msgstr ""
 
 #. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__product_template__l10n_pe_withhold_code__046
+msgid "Cobre gravado con el IGV"
+msgstr ""
+
+#. module: l10n_pe_edi
 #: model:ir.model.fields,help:l10n_pe_edi.field_res_company__l10n_pe_edi_address_type_code
 msgid "Code of the establishment that SUNAT has registered."
 msgstr ""
@@ -375,8 +380,18 @@ msgid "Companies"
 msgstr ""
 
 #. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__07
+msgid "Compensation factor - Emergency Decree No. 010-2004"
+msgstr ""
+
+#. module: l10n_pe_edi
 #: model:ir.model,name:l10n_pe_edi.model_res_config_settings
 msgid "Config Settings"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__46
+msgid "Consumption surcharge and/or tips"
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -385,9 +400,14 @@ msgid "Contratos de construcción"
 msgstr ""
 
 #. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__54
+msgid "Contribution factor - Emergency Decree No. 010-2004"
+msgstr ""
+
+#. module: l10n_pe_edi
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move__l10n_pe_edi_refund_reason__03
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_reversal__l10n_pe_edi_refund_reason__03
-msgid "Correction by error in the description"
+msgid "Correction by error in the description and/or SUNAT product code"
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -405,6 +425,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_pe_edi.field_account_move__l10n_pe_edi_refund_reason
 #: model:ir.model.fields,field_description:l10n_pe_edi.field_account_move_reversal__l10n_pe_edi_refund_reason
 msgid "Credit Reason"
+msgstr ""
+
+#. module: l10n_pe_edi
+#. odoo-python
+#: code:addons/l10n_pe_edi/models/account_move.py:0
+msgid ""
+"Credit and Debit notes with discounts are not allowed in SUNAT. Please "
+"adjust the lines to confirm the document."
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -445,6 +473,16 @@ msgstr ""
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move__l10n_pe_edi_refund_reason__05
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_reversal__l10n_pe_edi_refund_reason__05
 msgid "Discount per item"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__00
+msgid "Discounts affecting the IGV/IVAP taxable base"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__01
+msgid "Discounts not affecting the IGV/IVAP taxable base"
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -540,6 +578,11 @@ msgid ""
 msgstr ""
 
 #. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__product_template__l10n_pe_withhold_code__038
+msgid "Espectáculos públicos gravados con el IGV"
+msgstr ""
+
+#. module: l10n_pe_edi
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__product_template__l10n_pe_withhold_code__033
 msgid "Espárragos (Obsoleto)"
 msgstr ""
@@ -547,6 +590,11 @@ msgstr ""
 #. module: l10n_pe_edi
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__res_company__l10n_pe_edi_provider__digiflow
 msgid "Estela (formerly Digiflow)"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__product_template__l10n_pe_withhold_code__043
+msgid "Estructuras metálicas para la construcción"
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -568,6 +616,11 @@ msgid "Exportation"
 msgstr ""
 
 #. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__45
+msgid "FISE"
+msgstr ""
+
+#. module: l10n_pe_edi
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__product_template__l10n_pe_withhold_code__025
 msgid "Fabricación de bienes por encargo"
 msgstr ""
@@ -581,9 +634,46 @@ msgid ""
 msgstr ""
 
 #. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__49
+msgid "Global charges affecting the IGV/IVAP taxable base"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__50
+msgid "Global charges not affecting the IGV/IVAP taxable base"
+msgstr ""
+
+#. module: l10n_pe_edi
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move__l10n_pe_edi_refund_reason__04
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_reversal__l10n_pe_edi_refund_reason__04
 msgid "Global discount"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__02
+msgid "Global discounts affecting the IGV/IVAP taxable base"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__05
+msgid "Global discounts for exonerated advance payments"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__04
+msgid ""
+"Global discounts for taxed advance payments affecting the IGV/IVAP taxable "
+"base"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__06
+msgid "Global discounts for unaffected advance payments"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__03
+msgid "Global discounts not affecting the IGV/IVAP taxable base"
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -624,12 +714,27 @@ msgid "IDSignKG"
 msgstr ""
 
 #. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__62
+msgid "IGV withholding"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__20
+msgid "ISC advance payment"
+msgstr ""
+
+#. module: l10n_pe_edi
 #: model_terms:ir.ui.view,arch_db:l10n_pe_edi.res_config_settings_form_inherit_l10n_pe_edi
 msgid ""
 "In order to avoid sign invoices on your test environment set as true when "
 "you do not need the invoices to be really signed (it is blocked after "
 "several attempts to avoid abuse, please ensure just use it for testing "
 "purposes)."
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__61
+msgid "Income tax withholding for advance payments"
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -700,6 +805,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_pe_edi.field_account_bank_statement_line__l10n_pe_edi_cancel_cdr_number
 #: model:ir.model.fields,field_description:l10n_pe_edi.field_account_move__l10n_pe_edi_cancel_cdr_number
 msgid "L10N Pe Edi Cancel Cdr Number"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__product_template__l10n_pe_withhold_code__042
+msgid ""
+"Ladrillos de construcción, bovedillas, cubrevigas y artículos similares, de "
+"cerámica"
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -850,26 +962,13 @@ msgid "Oro y demás minerales metálicos exonerados del IGV"
 msgstr ""
 
 #. module: l10n_pe_edi
-#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__50
-msgid "Other Charges"
-msgstr ""
-
-#. module: l10n_pe_edi
-#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__54
-msgid "Other Charges Related to the Service"
-msgstr ""
-
-#. module: l10n_pe_edi
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__55
-msgid "Other Charges no Related to the Service"
+msgid "Other Charges no Related to the Service (Obsolete)"
 msgstr ""
 
 #. module: l10n_pe_edi
-#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__00
-msgid "Other Discounts"
-msgstr ""
-
-#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_debit_note__l10n_pe_edi_charge_reason__03
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move__l10n_pe_edi_charge_reason__03
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move__l10n_pe_edi_refund_reason__10
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_reversal__l10n_pe_edi_refund_reason__10
 msgid "Other concepts"
@@ -892,9 +991,9 @@ msgid ""
 msgstr ""
 
 #. module: l10n_pe_edi
-#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_debit_note__l10n_pe_edi_charge_reason__03
-#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move__l10n_pe_edi_charge_reason__03
-msgid "Penalties / other concepts"
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_debit_note__l10n_pe_edi_charge_reason__13
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move__l10n_pe_edi_charge_reason__13
+msgid "Penalties"
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -994,6 +1093,11 @@ msgstr ""
 #. module: l10n_pe_edi
 #: model_terms:ir.ui.view,arch_db:l10n_pe_edi.res_config_settings_form_inherit_l10n_pe_edi
 msgid "Peruvian Electronic Invoicing"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__product_template__l10n_pe_withhold_code__047
+msgid "Plata gravada con el IGV"
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -1119,6 +1223,11 @@ msgid ""
 "Salvados, moyuelos y demás residuos del cernido, de la molienda o de otros "
 "tratamientos de los cereales o de las leguminosas, incluso en \"pellets\" de"
 " arroz"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move_line__l10n_pe_edi_allowance_charge_reason_code__63
+msgid "Second category income tax withholding"
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -1659,7 +1768,7 @@ msgstr ""
 
 #. module: l10n_pe_edi
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move__l10n_pe_edi_operation_type__0101
-msgid "[0101] Internal sale"
+msgid "[0101] Internal sale not subject to detraction or perception"
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -1740,7 +1849,7 @@ msgstr ""
 
 #. module: l10n_pe_edi
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move__l10n_pe_edi_operation_type__0303
-msgid "[0303] Oil royalty Pay Operations"
+msgid "[0303] Oil royalty Pay Operations (Obsolete)"
 msgstr ""
 
 #. module: l10n_pe_edi
@@ -1771,6 +1880,11 @@ msgstr ""
 #. module: l10n_pe_edi
 #: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move__l10n_pe_edi_operation_type__2001
 msgid "[2001] Operation Subject to Perception"
+msgstr ""
+
+#. module: l10n_pe_edi
+#: model:ir.model.fields.selection,name:l10n_pe_edi.selection__account_move__l10n_pe_edi_operation_type__2106
+msgid "[2106] National sale to tourists - Tax Free"
 msgstr ""
 
 #. module: l10n_pe_edi

@@ -39,7 +39,7 @@
     <t t-name="stock_barcode.LineQuantity">
         <div class="d-flex justify-content-between align-items-end">
             <div name="quantity">
-                <span class="o_packaging text-muted" t-if="line.packaging_uom_id &amp;&amp; line.packaging_uom_id.id !== line.product_uom_id.id">
+                <span class="o_packaging text-muted" t-if="this.displayPackaging">
                     Packaging: <span t-esc="line.packaging_uom_qty"/> <span t-esc="line.packaging_uom_id.name"/>
                 </span>
                 <br/>
@@ -52,7 +52,7 @@
                         t-out="env.model.IsNotSet(line) ? '?' : qtyDone"/>
                     <span t-if="env.model.displayLineQtyDemand(line)" t-out="'/' + qtyDemand"/>
                 </span>
-                <small t-if="props.displayUOM" class="o_line_uom text-muted ms-1"
+                <small t-if="props.displayUOM" class="o_line_uom ms-1"
                     t-out="props.line.product_uom_id.name"/>
             </div>
             <t t-if="lowerButtons !== false" t-call="{{lowerButtons || 'stock_barcode.LineLowerButtons'}}"/>
@@ -92,7 +92,7 @@
                 <t t-if="incrementQty > 0">+</t><t t-esc="incrementQty"/>
             </button>
             <button t-if="displayDeleteButton" name="deleteButton"
-                    t-on-click="() => this.env.model.deleteLine(line)"
+                    t-on-click="delete"
                     t-att-disabled="!this.env.model.lineCanBeEdited(line)"
                     class="o_line_button o_delete_line btn btn-danger">
                 <span class="fa fa-lg fa-trash"/>

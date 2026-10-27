@@ -84,7 +84,7 @@ registry.category('web_tour.tours').add('date_based_rental_duration', {
             async run(helpers) {
                 await delay(1000);
                 await helpers.edit(getFutureDate(2));
-                await helpers.press("Tab");
+                await helpers.press("Enter");
             },
         },
         {
@@ -93,7 +93,7 @@ registry.category('web_tour.tours').add('date_based_rental_duration', {
             async run(helpers) {
                 await delay(1000);
                 await helpers.edit(getFutureDate(1));
-                await helpers.press("Tab");
+                await helpers.press("Enter");
             },
         },
         {

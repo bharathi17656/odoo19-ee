@@ -4,42 +4,22 @@
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Hanna Kharraziha <hakha@odoo.com>, 2026.
+# David Poole <david@proloc.se>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:41+0000\n"
-"PO-Revision-Date: 2025-11-08 20:04+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-09-25 17:44+0000\n"
+"PO-Revision-Date: 2026-10-05 09:33+0000\n"
+"Last-Translator: Hanna Kharraziha <hakha@odoo.com>\n"
 "Language-Team: Swedish <https://translate.odoo.com/projects/odoo-19/ai/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
-
-#. module: ai
-#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_read_group
-msgid ""
-"\n"
-"            **Tool Name: Read group**\n"
-"\n"
-"            Searches a particular model using a domain. The provided domain "
-"must be in valid JSON format.\n"
-"        "
-msgstr ""
-
-#. module: ai
-#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_search
-msgid ""
-"\n"
-"            **Tool Name: search**\n"
-"\n"
-"            Searches a particular model using a domain. The provided domain "
-"must be in valid JSON format.\n"
-"        "
-msgstr ""
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: ai
 #: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_get_fields
@@ -249,6 +229,16 @@ msgid ""
 msgstr ""
 
 #. module: ai
+#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_read_group
+#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_search
+msgid ""
+"\n"
+"            Searches a particular model using a domain. The provided domain "
+"must be in valid JSON format.\n"
+"        "
+msgstr ""
+
+#. module: ai
 #: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_adjust_search
 msgid ""
 "\n"
@@ -292,12 +282,58 @@ msgid ""
 "the current view info.\n"
 "        "
 msgstr ""
+"\n"
+"            Användaren kan fortsätta ställa frågor och om du tror att den "
+"nuvarande sökningen kan justeras utan att öppna en separat meny, så kan du "
+"använda det här verktyget.\n"
+"\n"
+"            I promptens <session_info_context> anges en nuvarande överblick "
+"med information om de aktiva sökningsaspekterna.\n"
+"            En aspekt kan vara en grupp av `OR`-filter, en grupp av groupby-"
+"värden, eller en grupp av `OR`-söktermer.\n"
+"\n"
+"            **Mer information om tillgängliga parametrar**:\n"
+"            - `remove_facets` - Att ta bort en aspekt tar bort en hel grupp "
+"av filter/groupby-värden/sökningstermer. Att ta bort ett filter eller en "
+"sökningsaspekt minskar begränsningarna.\n"
+"            - `toggle_filters` - Att ändra ett filter tar bort/lägger till "
+"ett filter från ett aktivt filteraspekt.\n"
+"            - `toggle_groupbys` - Att ändra ett groupby-värde tar bort/"
+"lägger till ett groupby-värde från en aktiv groupby-aspekt.\n"
+"            - `apply_searches` - Att tillämpa en sökning lägger till ett "
+"`OR` på sökningstermen i en aktiv sökningsaspekt med samma fält. T.ex. om "
+"det finns en fältaspekt med \"name=John\" och du anger \"name=Jane\", så "
+"kommer den resulterande sökningen bli \"name=John OR name=Jane\".\n"
+"            - `measures` - Att specificera mätningar kommer att aktivera de "
+"valda mätningarna i den nuvarande vyn om det är en pivot- eller diagram-vy.\n"
+"            - `mode` - Endast i diagram-vyer: Det här är diagramtypen. Välj "
+"bland \"linje-\", \"stapel-\", eller \"cirkeldiagram\" för att ändra "
+"diagramtypen i den nuvarande diagram-vyn.\n"
+"            - `order` - Endast i diagram-vyer: Specificera ordningsföljden "
+"som resultaten sorteras enligt i nuvarande diagram-vy.\n"
+"            - `stacked` - Endast i diagram-vyer: Specificera hur resultaten "
+"ska staplas i den nuvarande diagram-vyn.\n"
+"            - `cumulated` - Endast diagram-vyer: Specificera hur resultaten "
+"ska ackumuleras i den nuvarande diagram-vyn.\n"
+"            - `custom_domain` - Elementen i sökningen kanske inte räcker för "
+"att uttrycka den domän som eftersöks. I sådana fall kan du ange "
+"specialanpassade domäner som till exempel en JSON-sträng.\n"
+"            - `switch_view_type` - Att växla typen av vy kommer att ändra "
+"den nuvarande vyn till den angivna typen. Välj bland tillgängliga typer "
+"under information om den nuvarande vyn.\n"
+"        "
 
 #. module: ai
 #. odoo-python
 #: code:addons/ai/models/ai_agent.py:0 code:addons/ai/models/ai_composer.py:0
 msgid "%s (copy)"
 msgstr "%s (copy)"
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/llm_providers.py:0
+msgid "%s is no longer available. Please select a newer model."
+msgstr ""
 
 #. module: ai
 #: model_terms:ir.ui.view,arch_db:ai.ai_log_action
@@ -344,12 +380,12 @@ msgstr ""
 #. module: ai
 #: model:ir.model,name:ai.model_ai_agent
 msgid "AI Agent"
-msgstr ""
+msgstr "AI-agent"
 
 #. module: ai
 #: model:ir.model,name:ai.model_ai_agent_source
 msgid "AI Agent Source"
-msgstr ""
+msgstr "AI-agentens källor"
 
 #. module: ai
 #: model:ir.actions.server,name:ai.ir_cron_process_sources_ir_actions_server
@@ -418,6 +454,7 @@ msgstr ""
 #: model:ir.model,name:ai.model_ai_composer
 msgid "AI model configurations (system prompts) for text drafting."
 msgstr ""
+"Konfiguration av AI-modeller (inmatningsmarkörer) för skriftliga utkast."
 
 #. module: ai
 #. odoo-python
@@ -551,7 +588,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/ai/static/src/components/agent_add_source_dialog/agent_add_source_dialog.xml:0
 msgid "Adding sources..."
-msgstr ""
+msgstr "Lägger till källor…"
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ai_agent_source__agent_id
@@ -559,17 +596,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:ai.field_res_partner__agent_ids
 #: model:ir.model.fields,field_description:ai.field_res_users__agent_ids
 msgid "Agent"
-msgstr ""
+msgstr "Agent"
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ai_agent__name
 msgid "Agent Name"
-msgstr ""
+msgstr "Agentens namn"
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_discuss_channel__ai_agent_id
 msgid "Ai Agent"
-msgstr ""
+msgstr "AI-agent"
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ir_actions_server__ai_tool_has_schema
@@ -602,12 +639,6 @@ msgid "An error occured"
 msgstr ""
 
 #. module: ai
-#. odoo-javascript
-#: code:addons/ai/static/src/discuss/core/common/thread_model_patch.js:0
-msgid "An error occurred while generating the AI response."
-msgstr ""
-
-#. module: ai
 #: model:ir.model.fields.selection,name:ai.selection__ai_agent__response_style__analytical
 msgid "Analytical"
 msgstr ""
@@ -619,7 +650,7 @@ msgstr ""
 #: code:addons/ai/static/src/mail_composer_chatgpt.xml:0
 #: code:addons/ai/static/src/web/systray_action.xml:0
 msgid "Ask AI"
-msgstr ""
+msgstr "Fråga AI"
 
 #. module: ai
 #: model:ir.model.fields.selection,name:ai.selection__ai_composer__interface_key__systray_ai_button
@@ -777,6 +808,11 @@ msgid "Customize to control relevance and formatting."
 msgstr ""
 
 #. module: ai
+#: model:ir.model.fields,field_description:ai.field_ai_agent__deprecated_model_replacement_hint
+msgid "Deprecated Model Replacement Hint"
+msgstr ""
+
+#. module: ai
 #. odoo-javascript
 #: code:addons/ai/static/src/ai_json_schema/ai_json_schema.xml:0
 #: model:ir.model.fields,field_description:ai.field_ai_agent__subtitle
@@ -815,6 +851,7 @@ msgstr "Diskussionskanal"
 #: model:ir.model.fields,field_description:ai.field_ir_actions_server__display_name
 #: model:ir.model.fields,field_description:ai.field_ir_attachment__display_name
 #: model:ir.model.fields,field_description:ai.field_ir_http__display_name
+#: model:ir.model.fields,field_description:ai.field_ir_model_fields__display_name
 #: model:ir.model.fields,field_description:ai.field_mail_composer_mixin__display_name
 #: model:ir.model.fields,field_description:ai.field_mail_render_mixin__display_name
 #: model:ir.model.fields,field_description:ai.field_mail_template__display_name
@@ -890,6 +927,12 @@ msgstr "Misslyckades"
 
 #. module: ai
 #. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "Failed to fetch URL: %s"
+msgstr ""
+
+#. module: ai
+#. odoo-python
 #: code:addons/ai/models/ai_agent_source.py:0
 msgid "Failed to fetch the content of the source."
 msgstr ""
@@ -907,6 +950,16 @@ msgid "Field Selector"
 msgstr ""
 
 #. module: ai
+#: model:ir.model.fields,field_description:ai.field_ir_model_fields__ttype
+msgid "Field Type"
+msgstr "Fälttyp"
+
+#. module: ai
+#: model:ir.model,name:ai.model_ir_model_fields
+msgid "Fields"
+msgstr "Fält"
+
+#. module: ai
 #: model:ir.model.fields.selection,name:ai.selection__ai_agent_source__type__binary
 msgid "File"
 msgstr "Fil"
@@ -915,6 +968,13 @@ msgstr "Fil"
 #: model:ir.model.fields,field_description:ai.field_ai_agent_source__file_size
 msgid "File Size"
 msgstr "Filstorlek"
+
+#. module: ai
+#: model:ir.model.fields,help:ai.field_ai_agent__response_style
+msgid ""
+"For thinking models (e.g. gpt-5): Analytical: Medium thinking, Balanced: Low "
+"thinking, Creative: Minimal thinking"
+msgstr ""
 
 #. module: ai
 #. odoo-javascript
@@ -928,7 +988,7 @@ msgid "Get help on a record"
 msgstr ""
 
 #. module: ai
-#: model:ir.model.fields.selection,name:ai.selection__ai_embedding__embedding_model__gemini-embedding-001
+#: model:ir.model.fields.selection,name:ai.selection__ai_embedding__embedding_model__gemini-embedding-2
 msgid "Google"
 msgstr "Google"
 
@@ -964,6 +1024,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ai.field_ir_actions_server__id
 #: model:ir.model.fields,field_description:ai.field_ir_attachment__id
 #: model:ir.model.fields,field_description:ai.field_ir_http__id
+#: model:ir.model.fields,field_description:ai.field_ir_model_fields__id
 #: model:ir.model.fields,field_description:ai.field_mail_composer_mixin__id
 #: model:ir.model.fields,field_description:ai.field_mail_render_mixin__id
 #: model:ir.model.fields,field_description:ai.field_mail_template__id
@@ -1135,7 +1196,7 @@ msgstr "Mixin för rendering av e-post"
 #. odoo-javascript
 #: code:addons/ai/static/src/ai_json_schema/ai_json_schema.xml:0
 msgid "Max Length"
-msgstr ""
+msgstr "Max Längd"
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ai_agent_source__mimetype
@@ -1146,7 +1207,7 @@ msgstr "Mime-typ"
 #. odoo-python
 #: code:addons/ai/utils/tools_schema/validators.py:0
 msgid "Missing definition for %(name)s"
-msgstr ""
+msgstr "Saknar definition för %(name)s"
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ai_composer__focused_models
@@ -1170,6 +1231,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/ai/models/ai_agent.py:0
 msgid "No configured Ask AI agent. Please contact your administrator."
+msgstr ""
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/llm_providers.py:0
+msgid "No embedding configuration found for the provider"
 msgstr ""
 
 #. module: ai
@@ -1214,7 +1281,7 @@ msgstr ""
 #: code:addons/ai/static/src/editor/embedded_components/core/readonly_voice_transcription.xml:0
 #: code:addons/ai/static/src/editor/embedded_components/core/voice_transcription.xml:0
 msgid "Notes"
-msgstr "Noter"
+msgstr "Anteckningar"
 
 #. module: ai
 #. odoo-javascript
@@ -1226,6 +1293,18 @@ msgstr "Online"
 #. odoo-python
 #: code:addons/ai/models/ai_agent_source.py:0
 msgid "Only administrators can create sources from URLs."
+msgstr ""
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/llm_api_service.py:0
+msgid "Oops! Your API key seems incorrect. Update it from the Settings."
+msgstr ""
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/models/ai_agent.py:0
+msgid "Oops, it looks like our AI is unreachable"
 msgstr ""
 
 #. module: ai
@@ -1327,7 +1406,7 @@ msgstr ""
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ai_composer__name
 msgid "Rule Name"
-msgstr "Regelns namn"
+msgstr "Regelnamn"
 
 #. module: ai
 #. odoo-javascript
@@ -1368,7 +1447,7 @@ msgstr "Sekvens"
 #. module: ai
 #: model:ir.model,name:ai.model_ir_actions_server
 msgid "Server Action"
-msgstr "Serveraktivitet"
+msgstr "Serveråtgärd"
 
 #. module: ai
 #. odoo-javascript
@@ -1412,7 +1491,7 @@ msgstr ""
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ai_agent__sources_ids
 msgid "Sources"
-msgstr "Källa"
+msgstr "Källor"
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ai_agent__sources_fully_processed
@@ -1508,6 +1587,12 @@ msgstr ""
 #. module: ai
 #: model:ir.model.fields,help:ai.field_ai_prompt_button__name
 msgid "The prompt sent to the AI when clicked on"
+msgstr ""
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "The site's rules (robots.txt) prevent reading this page."
 msgstr ""
 
 #. module: ai
@@ -1640,6 +1725,18 @@ msgid "URL"
 msgstr "URL"
 
 #. module: ai
+#. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "URL %(url)s returned non-HTML content: %(content_type)s"
+msgstr ""
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "URL %s returned empty content"
+msgstr ""
+
+#. module: ai
 #. odoo-javascript
 #: code:addons/ai/static/src/editor/embedded_components/core/voice_transcription.js:0
 msgid "Unable to start the recording."
@@ -1678,12 +1775,12 @@ msgstr ""
 #. module: ai
 #: model_terms:ir.ui.view,arch_db:ai.res_config_settings_view_form
 msgid "Use your own ChatGPT account"
-msgstr ""
+msgstr "Använd ditt egna ChatGPT-konto"
 
 #. module: ai
 #: model_terms:ir.ui.view,arch_db:ai.res_config_settings_view_form
 msgid "Use your own Google Gemini account"
-msgstr ""
+msgstr "Använd ditt egna Google Gemini-konto"
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ai_agent_source__user_has_access
@@ -1701,6 +1798,12 @@ msgstr "Användarfel"
 #: code:addons/ai/static/src/im_status_patch.xml:0
 msgid "User is online"
 msgstr "Användaren är online"
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/models/ai_agent.py:0
+msgid "Using %(llm_model_label)s based on your agent setup."
+msgstr ""
 
 #. module: ai
 #. odoo-javascript
@@ -1772,4 +1875,9 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/ai/static/src/ai_prompt/ai_field_selector_plugin.js:0
 msgid "fa-hashtag"
+msgstr ""
+
+#. module: ai
+#: model:ir.model.fields.selection,name:ai.selection__ir_model_fields__ttype__vector
+msgid "vector"
 msgstr ""

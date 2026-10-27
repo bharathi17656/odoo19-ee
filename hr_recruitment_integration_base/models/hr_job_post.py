@@ -59,15 +59,16 @@ class HrJobPost(models.Model):
 
     @api.depends('apply_method', 'job_id.alias_id.alias_full_name', 'job_id.user_id.employee_id', 'job_id.user_id.employee_id.work_email')
     def _compute_apply_vector(self):
-        if self.apply_method != 'email':
-            return
-        job = self.job_id
-        if job and job.alias_id.alias_full_name:
-            self.apply_vector = job.alias_id.alias_full_name
-        elif job and job.user_id and job.user_id.employee_id:
-            self.apply_vector = job.user_id.employee_id.work_email
-        else:
-            self.apply_vector = False
+        for record in self:
+            if record.apply_method != 'email':
+                continue
+            job = record.job_id
+            if job and job.alias_id.alias_full_name:
+                record.apply_vector = job.alias_id.alias_full_name
+            elif job and job.user_id and job.user_id.employee_id:
+                record.apply_vector = job.user_id.employee_id.work_email
+            else:
+                record.apply_vector = False
 
     def unlink(self):
         for job_post in self:
@@ -228,9 +229,9 @@ class HrJobPost(models.Model):
                         'line_8': _("Campaign End Date:"),
                         'line_9': _("Company:"),
                         'job': post.job_id.name,
-                        'status': dict(post._fields['status'].selection).get(post.status),
+                        'status': dict(post._fields['status']._description_selection(self.env)).get(post.status),
                         'status_message': post.status_message,
-                        'method': dict(post._fields['apply_method'].selection).get(post.apply_method),
+                        'method': dict(post._fields['apply_method']._description_selection(self.env)).get(post.apply_method),
                         'vector': post.apply_vector,
                         'start_date': post.campaign_start_date,
                         'end_date': post.campaign_end_date or _('No Limit'),

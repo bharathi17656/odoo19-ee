@@ -378,7 +378,8 @@ class MainComponent extends Component {
             return;
         }
         if (barcode) {
-            this.actionMutex.exec(async () => this.env.model.processBarcode(barcode));
+            const cleanedBarcode = this.barcodeService.cleanBarcode(barcode);
+            this.actionMutex.exec(async () => this.env.model.processBarcode(cleanedBarcode));
             if ("vibrate" in window.navigator) {
                 window.navigator.vibrate(100);
             }
@@ -429,7 +430,9 @@ class MainComponent extends Component {
     async exit(ev) {
         this.state.cameraScannedEnabled = false;
         if (this.state.view === "barcodeLines") {
-            await this.env.model.beforeQuit();
+            await this.actionMutex.exec(async () => {
+                await this.env.model.beforeQuit();
+            });
             this._exit();
         } else {
             this.toggleBarcodeLines();
@@ -632,10 +635,13 @@ class MainComponent extends Component {
     async _onRefreshState(paramsRefresh) {
         const { recordId, lineId } = paramsRefresh || {};
         const { route, params } = this.env.model.getActionRefresh(recordId);
-        const result = await rpc(route, params);
-        await this.env.model.refreshCache(result.data.records);
-        await this.toggleBarcodeLines(lineId);
-        this.render();
+
+        await this.actionMutex.exec(async () => {
+            const result = await rpc(route, params);
+            await this.env.model.refreshCache(result.data.records);
+            await this.toggleBarcodeLines(lineId);
+            this.render();
+        });
     }
 
     /**

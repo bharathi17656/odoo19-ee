@@ -6,15 +6,16 @@
 # Martin Trigaux, 2023
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Abe Manyo (abem)" <abem@odoo.com>, 2025.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Abe Manyo (abem)" <abem@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# "Nurul Aini Akrima Sabila (nuaas)" <nuaas@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-21 18:42+0000\n"
-"PO-Revision-Date: 2025-11-14 07:46+0000\n"
-"Last-Translator: \"Abe Manyo (abem)\" <abem@odoo.com>\n"
+"POT-Creation-Date: 2026-03-06 18:45+0000\n"
+"PO-Revision-Date: 2026-09-17 08:33+0000\n"
+"Last-Translator: \"Nurul Aini Akrima Sabila (nuaas)\" <nuaas@odoo.com>\n"
 "Language-Team: Indonesian <https://translate.odoo.com/projects/odoo-19/"
 "hr_payroll_account/id/>\n"
 "Language: id\n"
@@ -22,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: hr_payroll_account
 #: model:ir.model.fields,field_description:hr_payroll_account.field_account_bank_statement_line__payslip_count
@@ -146,7 +147,7 @@ msgstr "Kode Bank"
 #. module: hr_payroll_account
 #: model_terms:ir.ui.view,arch_db:hr_payroll_account.res_config_settings_view_form
 msgid "Batch Account Move Lines"
-msgstr "Baris Pergerakkan Akun Batch"
+msgstr "Baris Pergerakan Akun Batch"
 
 #. module: hr_payroll_account
 #: model:ir.model.fields,field_description:hr_payroll_account.field_hr_payslip__batch_payroll_move_lines
@@ -154,7 +155,7 @@ msgstr "Baris Pergerakkan Akun Batch"
 #: model:ir.model.fields,field_description:hr_payroll_account.field_res_company__batch_payroll_move_lines
 #: model:ir.model.fields,field_description:hr_payroll_account.field_res_config_settings__batch_payroll_move_lines
 msgid "Batch Payroll Move Lines"
-msgstr "Baris Pergerakkan Payroll Batch"
+msgstr "Baris Pergerakan Payroll Batch"
 
 #. module: hr_payroll_account
 #: model:ir.model,name:hr_payroll_account.model_res_company
@@ -165,14 +166,6 @@ msgstr "Perusahaan"
 #: model:ir.model,name:hr_payroll_account.model_res_config_settings
 msgid "Config Settings"
 msgstr "Pengaturan Konfigurasi"
-
-#. module: hr_payroll_account
-#. odoo-javascript
-#: code:addons/hr_payroll_account/static/src/components/payrun_card/payrun_card.xml:0
-#: model_terms:ir.ui.view,arch_db:hr_payroll_account.hr_payslip_run_view_kanban
-#: model_terms:ir.ui.view,arch_db:hr_payroll_account.hr_payslip_view_form
-msgid "Create Draft Entry"
-msgstr "Buat Entri Draft"
 
 #. module: hr_payroll_account
 #: model_terms:ir.actions.act_window,help:hr_payroll_account.action_res_partner_bank_account_form
@@ -209,7 +202,7 @@ msgstr "Grid Debit Pajak"
 #. module: hr_payroll_account
 #: model:ir.model.fields,help:hr_payroll_account.field_hr_salary_rule__account_debit
 msgid "Default account defined on the journal of the salary structure."
-msgstr ""
+msgstr "Akun default didefinisikan di jurnal struktur gaji."
 
 #. module: hr_payroll_account
 #: model:ir.model.fields,field_description:hr_payroll_account.field_account_chart_template__display_name
@@ -240,7 +233,7 @@ msgstr "Distribution Analytic Account"
 #. module: hr_payroll_account
 #: model:ir.model.fields,field_description:hr_payroll_account.field_account_move_line__employee_bank_account_id
 msgid "Employee Bank Account"
-msgstr ""
+msgstr "Akun Bank Karyawan"
 
 #. module: hr_payroll_account
 #: model:ir.model,name:hr_payroll_account.model_hr_version
@@ -261,7 +254,7 @@ msgid ""
 "but also disable single payment generations."
 msgstr ""
 "Aktifkan opsi ini untuk menggabungkan semua entri akuntansi untuk periode "
-"yang sama ke satu baris pergerakkan akun. Ini akan menganonimkan entri-entri "
+"yang sama ke satu baris pergerakan akun. Ini akan menganonimkan entri-entri "
 "akuntansi tapi juga menonaktifkan pembuatan pembayaran tunggal."
 
 #. module: hr_payroll_account
@@ -269,6 +262,7 @@ msgstr ""
 msgid ""
 "Enable this option to set the employee on the journal items of the payslips."
 msgstr ""
+"Aktifkan opsi ini untuk menetapkan karyawan di item jurnal dari payslip."
 
 #. module: hr_payroll_account
 #: model:ir.model.fields,help:hr_payroll_account.field_hr_salary_rule__split_move_lines
@@ -277,11 +271,14 @@ msgid ""
 "the payslip line name. It could be useful for deduction/reimbursement or "
 "salary adjustments for instance."
 msgstr ""
+"Aktifkan opsi ini untuk memisahkan entri akuntansi untuk peraturan ini "
+"menurut nama baris payslip. Ini dapat berguna untuk pengurangan/penebusan "
+"atau penyesuaian gaji."
 
 #. module: hr_payroll_account
 #: model:ir.model.fields,field_description:hr_payroll_account.field_hr_salary_rule__not_computed_in_net
 msgid "Excluded from Net"
-msgstr ""
+msgstr "Excluded from Net"
 
 #. module: hr_payroll_account
 #: model_terms:ir.actions.act_window,help:hr_payroll_account.action_res_partner_bank_account_form
@@ -294,7 +291,7 @@ msgstr ""
 #. module: hr_payroll_account
 #: model_terms:ir.ui.view,arch_db:hr_payroll_account.hr_payslip_run_view_kanban
 msgid "Generated Journal Entries"
-msgstr "Entri-Entri Jurnal Dibuat"
+msgstr "Entri Jurnal Dibuat"
 
 #. module: hr_payroll_account
 #: model:ir.model.fields,field_description:hr_payroll_account.field_account_setup_bank_manual_config__has_alt_bank_account
@@ -328,6 +325,9 @@ msgid ""
 "Net salary rule in the journal entries. A specific debit/credit account "
 "should be set to consider it independently."
 msgstr ""
+"Bila dicentang, hasil dari peraturan ini tidak akan dihitung di peraturan "
+"gaji Bersih di entri jurnal. Akun debit/kredit tertentu harus ditetapkan "
+"untuk menganggapnya independen."
 
 #. module: hr_payroll_account
 #. odoo-python
@@ -365,8 +365,9 @@ msgstr "Entri Jurnal"
 
 #. module: hr_payroll_account
 #: model_terms:ir.ui.view,arch_db:hr_payroll_account.hr_payslip_run_view_kanban
+#, fuzzy
 msgid "Journal Entry <br/>"
-msgstr ""
+msgstr "Entri Jurnal <br/>"
 
 #. module: hr_payroll_account
 #: model:ir.model,name:hr_payroll_account.model_account_move_line
@@ -386,7 +387,7 @@ msgstr "Pergerakan"
 #. module: hr_payroll_account
 #: model:ir.model.fields,field_description:hr_payroll_account.field_hr_payslip_run__move_state
 msgid "Move State"
-msgstr "Status Pergerakkan"
+msgstr "Status Pergerakan"
 
 #. module: hr_payroll_account
 #: model_terms:ir.ui.view,arch_db:hr_payroll_account.hr_salary_rule_view_form
@@ -441,7 +442,7 @@ msgstr "SLR"
 #. odoo-python
 #: code:addons/hr_payroll_account/models/account_chart_template.py:0
 msgid "Salaries"
-msgstr "Gaji-Gaji"
+msgstr "Gaji"
 
 #. module: hr_payroll_account
 #: model:ir.model.fields,field_description:hr_payroll_account.field_hr_payroll_structure__journal_id
@@ -462,12 +463,12 @@ msgstr "Struktur Gaji"
 #. module: hr_payroll_account
 #: model:ir.model.fields,field_description:hr_payroll_account.field_hr_salary_rule__employee_move_line
 msgid "Set employee on account line"
-msgstr ""
+msgstr "Tetapkan karyawan di baris akun"
 
 #. module: hr_payroll_account
 #: model:ir.model.fields,field_description:hr_payroll_account.field_hr_salary_rule__split_move_lines
 msgid "Split on names"
-msgstr ""
+msgstr "Pisahkan di nama"
 
 #. module: hr_payroll_account
 #. odoo-python
@@ -519,6 +520,15 @@ msgid "This will replace the employee existing bank account."
 msgstr "Ini akan menggantikan akun bank karyawan saat ini."
 
 #. module: hr_payroll_account
+#. odoo-javascript
+#: code:addons/hr_payroll_account/static/src/components/payrun_card/payrun_card.xml:0
+#: model_terms:ir.ui.view,arch_db:hr_payroll_account.hr_payslip_run_view_kanban
+#: model_terms:ir.ui.view,arch_db:hr_payroll_account.hr_payslip_view_form
+#, fuzzy
+msgid "Validate"
+msgstr "Validasi"
+
+#. module: hr_payroll_account
 #. odoo-python
 #: code:addons/hr_payroll_account/models/hr_payslip.py:0
 msgid "You can only register payment for posted journal entries."
@@ -544,6 +554,9 @@ msgstr "Anda tidak dapat membuat entri jurnal untuk payslip yang dibayar."
 #: code:addons/hr_payroll_account/models/account_journal.py:0
 msgid "You cannot delete the journal linked to a Salary Structure"
 msgstr "Anda tidak dapat menghapus jurnal yang di-link ke Struktur Gaji"
+
+#~ msgid "Create Draft Entry"
+#~ msgstr "Buat Entri Draft"
 
 #~ msgid ""
 #~ "Some contracts for these payslips have no structure type, employees: %s"

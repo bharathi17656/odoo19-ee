@@ -2,6 +2,15 @@ import { OptionsDropdown } from "@knowledge/components/options_dropdown/options_
 import { knowledgeTopbar } from "@knowledge/components/topbar/topbar";
 import { defineMailModels } from "@mail/../tests/mail_test_helpers";
 import {
+    animationFrame,
+    click,
+    expect,
+    runAllTimers,
+    setInputFiles,
+    test,
+    waitFor,
+} from "@odoo/hoot";
+import {
     asyncStep,
     contains,
     defineModels,
@@ -19,22 +28,18 @@ import {
 import { serializeDateTime } from "@web/core/l10n/dates";
 import { user } from "@web/core/user";
 
-import { expect, test } from "@odoo/hoot";
-import { click, runAllTimers, waitFor } from "@odoo/hoot-dom";
-import { animationFrame } from "@odoo/hoot-mock";
-
 class KnowledgeArticle extends models.ServerModel {
     _name = "knowledge.article";
 
-    category = fields.Generic({ default: "private" });
-    user_can_write = fields.Generic({ default: true });
-    user_has_access = fields.Generic({ default: true });
+    category = fields.Selection({ default: "private" });
+    user_can_write = fields.Boolean({ default: true });
+    user_has_access = fields.Boolean({ default: true });
     last_edition_date = fields.Datetime({
         string: "Last Modified on",
         default: (record) => record.create_date,
     });
     last_edition_uid = fields.Many2one({ relation: "res.users" });
-    article_properties_definition = fields.Generic({ default: [] });
+    article_properties_definition = fields.PropertiesDefinition({ default: [] });
 
     action_send_to_trash(ids) {
         this.write(ids, { active: false, to_delete: true });
@@ -51,7 +56,12 @@ class KnowledgeArticle extends models.ServerModel {
             favorite_ids: [],
         };
     }
+
+    has_access = function () {
+        return Promise.resolve(true);
+    };
 }
+
 class KnowledgeArticleThread extends models.ServerModel {}
 class KnowledgeCover extends models.ServerModel {}
 
@@ -175,6 +185,29 @@ test("Add/Remove Cover", async () => {
     await waitFor(".o_select_media_dialog");
     // search should be populated with article name
     expect(".o_select_media_dialog input.o_we_search").toHaveValue("Bloups");
+});
+
+test("Abort article cover upload", async () => {
+    const mockServer = await makeMockServer();
+    const articleId = mockServer.env["knowledge.article"].create({ name: "Bloups" });
+    onRpc(`/knowledge/article/${articleId}/add_random_cover`, () => ({ error: "key_not_found" }));
+    mockService("upload", {
+        uploadFiles(_files, _options, _onUploaded, setAbortCallback) {
+            asyncStep("upload started");
+            setAbortCallback(() => asyncStep("upload aborted"));
+            return new Promise(() => {});
+        },
+    });
+
+    await mountTopbar(articleId);
+    await openOptionsDropdown();
+    await click(".dropdown-item:contains('Add Cover')");
+    await waitFor(".o_select_media_dialog");
+    await click(".o_select_media_dialog .o_upload_media_button");
+    await setInputFiles(new File(["test"], "cover.png", { type: "image/png" }));
+    await waitForSteps(["upload started"]);
+    await click(".o_select_media_dialog .modal-footer .btn-secondary:contains('Discard')");
+    await waitForSteps(["upload aborted"]);
 });
 
 test("Add Properties", async () => {
@@ -334,7 +367,6 @@ test("Send Article to Trash", async () => {
 
 test.tags("desktop");
 test("Toggle Properties Panel (desktop)", async () => {
-    onRpc("knowledge.article", "has_access", () => true);
     const mockServer = await makeMockServer();
     const parentId = mockServer.env["knowledge.article"].create({
         name: "parent",
@@ -404,7 +436,6 @@ test("Toggle Properties Panel (desktop)", async () => {
 
 test.tags("mobile");
 test("Toggle Properties Panel (Mobile)", async () => {
-    onRpc("knowledge.article", "has_access", () => true);
     const mockServer = await makeMockServer();
     const parentId = mockServer.env["knowledge.article"].create({
         name: "parent",

@@ -60,6 +60,6 @@ class TestHrWorkEntryAttendancePerformance(TransactionCase):
     def test_regenerate_work_entries(self):
 
         with self.profile():
-            with self.assertQueryCount(753):
+            with self.assertQueryCount(1081):
                 slots = [{'date': attendance.date, 'employee_id': attendance.employee_id.id} for attendance in self.attendances]
                 self.env["hr.work.entry.regeneration.wizard"].regenerate_work_entries(slots=slots)

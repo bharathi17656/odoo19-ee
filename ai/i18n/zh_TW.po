@@ -8,13 +8,14 @@
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Tony Ng (ngto)" <ngto@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.3+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:41+0000\n"
-"PO-Revision-Date: 2025-11-08 19:31+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-09-25 17:44+0000\n"
+"PO-Revision-Date: 2026-09-07 08:11+0000\n"
+"Last-Translator: \"Tony Ng (ngto)\" <ngto@odoo.com>\n"
 "Language-Team: Chinese (Traditional Han script) <https://translate.odoo.com/"
 "projects/odoo-19/ai/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -22,29 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
-
-#. module: ai
-#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_read_group
-msgid ""
-"\n"
-"            **Tool Name: Read group**\n"
-"\n"
-"            Searches a particular model using a domain. The provided domain "
-"must be in valid JSON format.\n"
-"        "
-msgstr ""
-
-#. module: ai
-#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_search
-msgid ""
-"\n"
-"            **Tool Name: search**\n"
-"\n"
-"            Searches a particular model using a domain. The provided domain "
-"must be in valid JSON format.\n"
-"        "
-msgstr ""
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: ai
 #: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_get_fields
@@ -87,6 +66,35 @@ msgid ""
 "Make 3 parallel calls.\n"
 "        "
 msgstr ""
+"\n"
+"            請只列出單一模型內可用於搜尋範圍篩選及分組的可搜尋欄位。\n"
+"            這是建立有效搜尋範圍的必要條件。若某個欄位未有在此處列出，便表示"
+"無法使用。\n"
+"\n"
+"            傳回資料格式：\n"
+"            ```\n"
+"            field_name|display_name|type|sortable|groupable|description\n"
+"            partner_id|客戶|many2one (res.partner)|true|true|此訂單的客戶\n"
+"            date_order|訂單日期|datetime|true|true|下單日期\n"
+"            order_line|訂單資料行|one2many (sale.order.line)|false|false|此訂"
+"單所載的資料行\n"
+"            state|狀態|selection|true|true|訂單狀態\n"
+"            ```\n"
+"\n"
+"            重點：\n"
+"            - ⚠️ 只會傳回可搜尋欄位。其他欄位不可用於搜尋範圍。\n"
+"            - 資料關係：括號內顯示相關模型（適用於 many2one、one2many、"
+"many2many）\n"
+"            - 只有關係欄位才可用於跨越其他模型存取資料\n"
+"            - 字面值欄位（例如 char、text、float）不可用於跨模型存取\n"
+"            - sortable 表示該欄位可否用作 order_by 參數\n"
+"            - groupable 表示該欄位若未能在搜尋檢視畫面使用時，可否用於分組\n"
+"\n"
+"            💡 系統效能提示：若要探索多個模型，請使用同一則訊息，並在訊息內召"
+"用此工具多次。\n"
+"            例如：想探索 sale.order、product.product 及 res.partner？請同時發"
+"出 3 次並行的召用。\n"
+"        "
 
 #. module: ai
 #: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_compute_report_measures
@@ -254,6 +262,16 @@ msgid ""
 msgstr ""
 
 #. module: ai
+#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_read_group
+#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_search
+msgid ""
+"\n"
+"            Searches a particular model using a domain. The provided domain "
+"must be in valid JSON format.\n"
+"        "
+msgstr ""
+
+#. module: ai
 #: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_adjust_search
 msgid ""
 "\n"
@@ -303,6 +321,12 @@ msgstr ""
 #: code:addons/ai/models/ai_agent.py:0 code:addons/ai/models/ai_composer.py:0
 msgid "%s (copy)"
 msgstr "%s (副本)"
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/llm_providers.py:0
+msgid "%s is no longer available. Please select a newer model."
+msgstr ""
 
 #. module: ai
 #: model_terms:ir.ui.view,arch_db:ai.ai_log_action
@@ -364,7 +388,7 @@ msgstr ""
 #. module: ai
 #: model:ir.model.constraint,message:ai.constraint_discuss_channel_ai_channel_type_check
 msgid "AI Agent can only be set for ai_chat or livechat channels."
-msgstr ""
+msgstr "AI 代理只限於 ai_chat 或 livechat（線上客服）頻道設定。"
 
 #. module: ai
 #: model:ir.actions.server,name:ai.ir_cron_generate_embedding_ir_actions_server
@@ -607,12 +631,6 @@ msgid "An error occured"
 msgstr ""
 
 #. module: ai
-#. odoo-javascript
-#: code:addons/ai/static/src/discuss/core/common/thread_model_patch.js:0
-msgid "An error occurred while generating the AI response."
-msgstr ""
-
-#. module: ai
 #: model:ir.model.fields.selection,name:ai.selection__ai_agent__response_style__analytical
 msgid "Analytical"
 msgstr "分析性"
@@ -781,6 +799,11 @@ msgid "Customize to control relevance and formatting."
 msgstr "自訂設定，以控制相關程度及格式。"
 
 #. module: ai
+#: model:ir.model.fields,field_description:ai.field_ai_agent__deprecated_model_replacement_hint
+msgid "Deprecated Model Replacement Hint"
+msgstr ""
+
+#. module: ai
 #. odoo-javascript
 #: code:addons/ai/static/src/ai_json_schema/ai_json_schema.xml:0
 #: model:ir.model.fields,field_description:ai.field_ai_agent__subtitle
@@ -819,6 +842,7 @@ msgstr "討論群組"
 #: model:ir.model.fields,field_description:ai.field_ir_actions_server__display_name
 #: model:ir.model.fields,field_description:ai.field_ir_attachment__display_name
 #: model:ir.model.fields,field_description:ai.field_ir_http__display_name
+#: model:ir.model.fields,field_description:ai.field_ir_model_fields__display_name
 #: model:ir.model.fields,field_description:ai.field_mail_composer_mixin__display_name
 #: model:ir.model.fields,field_description:ai.field_mail_render_mixin__display_name
 #: model:ir.model.fields,field_description:ai.field_mail_template__display_name
@@ -894,6 +918,12 @@ msgstr "失敗的"
 
 #. module: ai
 #. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "Failed to fetch URL: %s"
+msgstr ""
+
+#. module: ai
+#. odoo-python
 #: code:addons/ai/models/ai_agent_source.py:0
 msgid "Failed to fetch the content of the source."
 msgstr ""
@@ -911,6 +941,16 @@ msgid "Field Selector"
 msgstr "欄位選擇器"
 
 #. module: ai
+#: model:ir.model.fields,field_description:ai.field_ir_model_fields__ttype
+msgid "Field Type"
+msgstr ""
+
+#. module: ai
+#: model:ir.model,name:ai.model_ir_model_fields
+msgid "Fields"
+msgstr ""
+
+#. module: ai
 #: model:ir.model.fields.selection,name:ai.selection__ai_agent_source__type__binary
 msgid "File"
 msgstr "文件"
@@ -919,6 +959,13 @@ msgstr "文件"
 #: model:ir.model.fields,field_description:ai.field_ai_agent_source__file_size
 msgid "File Size"
 msgstr "文件大小"
+
+#. module: ai
+#: model:ir.model.fields,help:ai.field_ai_agent__response_style
+msgid ""
+"For thinking models (e.g. gpt-5): Analytical: Medium thinking, Balanced: Low "
+"thinking, Creative: Minimal thinking"
+msgstr ""
 
 #. module: ai
 #. odoo-javascript
@@ -932,7 +979,7 @@ msgid "Get help on a record"
 msgstr ""
 
 #. module: ai
-#: model:ir.model.fields.selection,name:ai.selection__ai_embedding__embedding_model__gemini-embedding-001
+#: model:ir.model.fields.selection,name:ai.selection__ai_embedding__embedding_model__gemini-embedding-2
 msgid "Google"
 msgstr "Google"
 
@@ -968,6 +1015,7 @@ msgstr "你好，有甚麼需要幫忙？"
 #: model:ir.model.fields,field_description:ai.field_ir_actions_server__id
 #: model:ir.model.fields,field_description:ai.field_ir_attachment__id
 #: model:ir.model.fields,field_description:ai.field_ir_http__id
+#: model:ir.model.fields,field_description:ai.field_ir_model_fields__id
 #: model:ir.model.fields,field_description:ai.field_mail_composer_mixin__id
 #: model:ir.model.fields,field_description:ai.field_mail_render_mixin__id
 #: model:ir.model.fields,field_description:ai.field_mail_template__id
@@ -1178,6 +1226,12 @@ msgstr ""
 
 #. module: ai
 #. odoo-python
+#: code:addons/ai/utils/llm_providers.py:0
+msgid "No embedding configuration found for the provider"
+msgstr ""
+
+#. module: ai
+#. odoo-python
 #: code:addons/ai/models/ai_agent.py:0
 msgid "No embedding model found for the selected provider"
 msgstr ""
@@ -1230,6 +1284,18 @@ msgstr "線上"
 #. odoo-python
 #: code:addons/ai/models/ai_agent_source.py:0
 msgid "Only administrators can create sources from URLs."
+msgstr ""
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/llm_api_service.py:0
+msgid "Oops! Your API key seems incorrect. Update it from the Settings."
+msgstr ""
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/models/ai_agent.py:0
+msgid "Oops, it looks like our AI is unreachable"
 msgstr ""
 
 #. module: ai
@@ -1516,6 +1582,12 @@ msgstr ""
 
 #. module: ai
 #. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "The site's rules (robots.txt) prevent reading this page."
+msgstr ""
+
+#. module: ai
+#. odoo-python
 #: code:addons/ai/utils/tools_schema/validators.py:0
 msgid ""
 "The type of the parameter '%(name)s' is incorrect. It should be '%"
@@ -1641,6 +1713,18 @@ msgid "URL"
 msgstr "網址"
 
 #. module: ai
+#. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "URL %(url)s returned non-HTML content: %(content_type)s"
+msgstr ""
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "URL %s returned empty content"
+msgstr ""
+
+#. module: ai
 #. odoo-javascript
 #: code:addons/ai/static/src/editor/embedded_components/core/voice_transcription.js:0
 msgid "Unable to start the recording."
@@ -1679,12 +1763,12 @@ msgstr "使用這個"
 #. module: ai
 #: model_terms:ir.ui.view,arch_db:ai.res_config_settings_view_form
 msgid "Use your own ChatGPT account"
-msgstr ""
+msgstr "使用你自己的 ChatGPT 帳戶"
 
 #. module: ai
 #: model_terms:ir.ui.view,arch_db:ai.res_config_settings_view_form
 msgid "Use your own Google Gemini account"
-msgstr ""
+msgstr "使用你自己的 Google Gemini 帳戶"
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ai_agent_source__user_has_access
@@ -1702,6 +1786,12 @@ msgstr ""
 #: code:addons/ai/static/src/im_status_patch.xml:0
 msgid "User is online"
 msgstr "使用者在線"
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/models/ai_agent.py:0
+msgid "Using %(llm_model_label)s based on your agent setup."
+msgstr ""
 
 #. module: ai
 #. odoo-javascript
@@ -1774,6 +1864,11 @@ msgstr ""
 #: code:addons/ai/static/src/ai_prompt/ai_field_selector_plugin.js:0
 msgid "fa-hashtag"
 msgstr "fa-hashtag"
+
+#. module: ai
+#: model:ir.model.fields.selection,name:ai.selection__ir_model_fields__ttype__vector
+msgid "vector"
+msgstr ""
 
 #~ msgid ""
 #~ "\n"

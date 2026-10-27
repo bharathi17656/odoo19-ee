@@ -3,14 +3,14 @@
 # * databases
 #
 # Odoo Translation Bot <c3p@odoo.com>, 2025.
-# "Kwanghee Park (kwpa)" <kwpa@odoo.com>, 2025.
+# "Kwanghee Park (kwpa)" <kwpa@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-10 20:15+0000\n"
-"PO-Revision-Date: 2025-11-20 08:15+0000\n"
+"POT-Creation-Date: 2026-07-03 17:41+0000\n"
+"PO-Revision-Date: 2026-02-02 13:41+0000\n"
 "Last-Translator: \"Kwanghee Park (kwpa)\" <kwpa@odoo.com>\n"
 "Language-Team: Korean <https://translate.odoo.com/projects/odoo-19/databases/"
 "ko/>\n"
@@ -19,7 +19,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
+
+#. module: databases
+#. odoo-python
+#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
+msgid "%(nb_failed_dbs)s databases could not be synchronized.\n"
+msgstr ""
 
 #. module: databases
 #. odoo-python
@@ -28,10 +34,30 @@ msgid "%(nb_new_dbs)s new databases, %(nb_updated_dbs)s updated."
 msgstr "%(nb_new_dbs)s 신규 데이터베이스, %(nb_updated_dbs)s 업데이트 완료."
 
 #. module: databases
+#. odoo-python
+#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
+msgid "- … and %(nb_dbs)d more!\n"
+msgstr ""
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid ""
+"<span class=\"o_form_label\">\n"
+"                                Manage access:\n"
+"                            </span>\n"
+"                            <span class=\"text-muted\">\n"
+"                                useful to cut all access at once\n"
+"                            </span>"
+msgstr ""
+
+#. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
 #: model_terms:ir.ui.view,arch_db:databases.project_project_view_form_simplified_template
-msgid "<span class=\"o_wrap_label\"><span class=\"o_form_label\">Fetch</span></span>"
+msgid ""
+"<span class=\"o_wrap_label\"><span class=\"o_form_label\">Fetch</span></span>"
 msgstr ""
+"<span class=\"o_wrap_label\"><span class=\"o_form_label\">가져오기</span></"
+"span>"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
@@ -43,7 +69,7 @@ msgstr "<span>문서</span>"
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
 #: model_terms:ir.ui.view,arch_db:databases.project_project_view_form_simplified_template
 msgid "<span>Draft Journal Entries</span>"
-msgstr ""
+msgstr "<span>미결 전표 항목</span>"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
@@ -54,12 +80,12 @@ msgstr "<span>세금 신고</span>"
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
 msgid "API credentials to Odoo.com"
-msgstr ""
+msgstr "Odoo.com에 대한 API 자격 증명"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
 msgid "Add a user"
-msgstr ""
+msgstr "사용자 추가"
 
 #. module: databases
 #: model:res.groups,name:databases.group_databases_manager
@@ -74,17 +100,23 @@ msgstr ""
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_nb_users
 msgid "Amount of Users"
-msgstr ""
+msgstr "사용자 수"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_nb_documents
 msgid "Amount of documents in Inbox"
-msgstr ""
+msgstr "받은편지함의 문서 수"
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "An error occurred: %s"
+msgstr "오류 발생: %s"
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
+msgid ""
+"Automatically connect to SaaS databases using Odoo.com as an OAuth provider."
 msgstr ""
 
 #. module: databases
@@ -140,31 +172,37 @@ msgid "Database"
 msgstr "데이터베이스"
 
 #. module: databases
+#. odoo-python
+#: code:addons/databases/api.py:0
+msgid "Database \"%s\" not found"
+msgstr "데이터베이스 \"%s\" 를 찾을 수 없습니다"
+
+#. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_api_key
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_api_key
 msgid "Database API Key"
-msgstr ""
+msgstr "데이터베이스 API 키"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_api_login
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_api_login
 msgid "Database API Login"
-msgstr ""
+msgstr "데이터베이스 API 로그인"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_api_key_to_use
 msgid "Database Api Key To Use"
-msgstr ""
+msgstr "사용할 데이터베이스 API 키"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_can_access
 msgid "Database Can Access"
-msgstr ""
+msgstr "데이터베이스 액세스 가능"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_kpi_base_definition_id
 msgid "Database Kpi Base Definition"
-msgstr ""
+msgstr "데이터베이스 KPI의 기본 정의"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_name
@@ -175,7 +213,7 @@ msgstr "데이터베이스 이름"
 #. module: databases
 #: model:ir.model,name:databases.model_databases_synchronization_wizard
 msgid "Database Synchronization Wizard"
-msgstr ""
+msgstr "데이터베이스 동기화 마법사"
 
 #. module: databases
 #: model:project.project,name:databases.database_default_template
@@ -190,6 +228,7 @@ msgstr "데이터베이스 URL"
 
 #. module: databases
 #: model:ir.model,name:databases.model_databases_user
+#: model:ir.model.fields,field_description:databases.field_res_users__database_user_ids
 msgid "Database User"
 msgstr "데이터베이스 사용자"
 
@@ -201,7 +240,7 @@ msgstr "데이터베이스 사용자"
 #. module: databases
 #: model:ir.model,name:databases.model_databases_manage_users_wizard
 msgid "Database Users Invitation Wizard"
-msgstr ""
+msgstr "데이터베이스 사용자 초대 마법사"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_version
@@ -222,6 +261,7 @@ msgstr ""
 #: model:ir.ui.menu,name:databases.menu_main_databases
 #: model:res.groups.privilege,name:databases.res_groups_privilege_databases
 #: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
 msgid "Databases"
 msgstr "데이터베이스"
 
@@ -247,6 +287,7 @@ msgstr "작성 취소"
 #: model:ir.model.fields,field_description:databases.field_project_project__display_name
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__display_name
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:databases.field_res_users__display_name
 msgid "Display Name"
 msgstr "표시명"
 
@@ -265,7 +306,7 @@ msgstr "초안"
 #. odoo-javascript
 #: code:addons/databases/static/src/views/databases_project_list/databases_project_list_renderer.js:0
 msgid "Draft entries in journal %(journal_name)s"
-msgstr ""
+msgstr "%(journal_name)s 전표 초안 항목"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__error_message
@@ -278,8 +319,14 @@ msgstr "오류 메시지"
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 #: code:addons/databases/wizard/databases_synchronization_wizard.py:0
 msgid ""
-"Error while connecting to %(url)s: We are missing the database name, the api"
-" login or the api key\n"
+"Error while connecting to %(url)s: We are missing the database name, the api "
+"login or the api key\n"
+msgstr ""
+
+#. module: databases
+#. odoo-python
+#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
+msgid "Error while creating an API key on %(nb_dbs)d databases:\n"
 msgstr ""
 
 #. module: databases
@@ -291,13 +338,8 @@ msgstr ""
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_synchronization_wizard.py:0
-msgid "Error while getting KPIs from %(dbname)s: %(message)s\n"
-msgstr ""
-
-#. module: databases
-#. odoo-python
-#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
-msgid "Error while getting users from %(dbname)s: %(message)s\n"
+msgid ""
+"Error while fetching information from %(host_names)s on %(ip)s: %(message)s\n"
 msgstr ""
 
 #. module: databases
@@ -327,13 +369,13 @@ msgstr "문서 가져오기"
 #: model:ir.model.fields,field_description:databases.field_project_project__database_fetch_draft_entries
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_fetch_draft_entries
 msgid "Fetch Draft Journal Entries"
-msgstr ""
+msgstr "미결 전표 항목 가져오기"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_fetch_tax_returns
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_fetch_tax_returns
 msgid "Fetch Tax Returns"
-msgstr ""
+msgstr "세금 신고서 가져오기"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_synchronization_wizard__fetched_values
@@ -365,6 +407,7 @@ msgstr "호스팅"
 #: model:ir.model.fields,field_description:databases.field_project_project__id
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__id
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__id
+#: model:ir.model.fields,field_description:databases.field_res_users__id
 msgid "ID"
 msgstr "ID"
 
@@ -387,7 +430,7 @@ msgstr "초대"
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "Invitation is done"
-msgstr ""
+msgstr "초대 완료"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.databases_manage_users_wizard_view_form
@@ -450,6 +493,11 @@ msgid "Mode"
 msgstr "모드"
 
 #. module: databases
+#: model:ir.model.fields,field_description:databases.field_res_config_settings__module_databases_auth
+msgid "Module Databases Auth"
+msgstr ""
+
+#. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_user__name
 msgid "Name"
 msgstr "이름"
@@ -462,7 +510,7 @@ msgstr "신규"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_synchronization_wizard__new_properties
 msgid "New KPIs to add:"
-msgstr ""
+msgstr "새로 추가할 KPI:"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
@@ -488,12 +536,12 @@ msgstr "Odoo 온라인"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__databases_apikey
 msgid "Odoo.com API Key"
-msgstr ""
+msgstr "Odoo.com API 키"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__databases_apiuser
 msgid "Odoo.com API User"
-msgstr ""
+msgstr "Odoo.com API 사용자"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
@@ -504,8 +552,9 @@ msgstr ""
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
+#, fuzzy
 msgid "Odoo.com Connection &amp; Security page"
-msgstr ""
+msgstr "Odoo.com 연결 &amp; 보안 페이지"
 
 #. module: databases
 #: model:ir.model.fields.selection,name:databases.selection__project_project__database_hosting__paas
@@ -523,20 +572,21 @@ msgstr "온프레미스"
 #: model_terms:ir.actions.act_window,help:databases.action_view_tasks_all
 msgid ""
 "Organize your tasks by dispatching them across the pipeline.<br>\n"
-"                Collaborate efficiently by chatting in real-time or via email."
+"                Collaborate efficiently by chatting in real-time or via "
+"email."
 msgstr ""
 
 #. module: databases
 #: model:ir.model.fields.selection,name:databases.selection__project_project__database_hosting__other
 #: model:ir.model.fields.selection,name:databases.selection__project_template_create_wizard__database_hosting__other
 msgid "Outside of Odoo"
-msgstr ""
+msgstr "Odoo 외부"
 
 #. module: databases
 #. odoo-javascript
 #: code:addons/databases/static/src/views/databases_project_list/databases_project_list_renderer.js:0
 msgid "Planned activities of type %(return_name)s"
-msgstr ""
+msgstr "%(return_name)s 유형별 활동 계획"
 
 #. module: databases
 #: model:ir.model,name:databases.model_project_project
@@ -585,6 +635,7 @@ msgstr "제거"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
 msgid "Remove User"
 msgstr "사용자 제거"
 
@@ -595,6 +646,11 @@ msgid "Remove Users"
 msgstr "사용자 제거"
 
 #. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid "Remove this user from all databases"
+msgstr ""
+
+#. module: databases
 #: model:ir.ui.menu,name:databases.menu_reporting
 msgid "Reporting"
 msgstr "보고"
@@ -603,6 +659,21 @@ msgstr "보고"
 #: model_terms:ir.ui.view,arch_db:databases.view_databases_list
 msgid "Responsible"
 msgstr "담당자"
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid "Revoke all access"
+msgstr ""
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
+msgid "SaaS SSO Auto-login"
+msgstr ""
+
+#. module: databases
+#: model:ir.model.fields,field_description:databases.field_res_config_settings__databases_saas_single_sign_on
+msgid "Saas SSO"
+msgstr ""
 
 #. module: databases
 #. odoo-python
@@ -653,20 +724,14 @@ msgstr "메시지 요약"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_nb_synchro_errors
 msgid "Synchronization Errors Count"
-msgstr ""
-
-#. module: databases
-#. odoo-python
-#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
-msgid "Synchronization done successfully!"
-msgstr ""
+msgstr "동기화 오류 횟수"
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/models/project_project.py:0
 #: code:addons/databases/wizard/databases_synchronization_wizard.py:0
 msgid "Synchronization of %d databases"
-msgstr ""
+msgstr "데이터베이스 %d개 동기화 중"
 
 #. module: databases
 #: model:ir.actions.server,name:databases.action_synchronize_database
@@ -678,7 +743,7 @@ msgstr "동기화"
 #. module: databases
 #: model:ir.actions.server,name:databases.action_synchronize_all_databases
 msgid "Synchronize all the Databases"
-msgstr ""
+msgstr "모든 데이터베이스 동기화"
 
 #. module: databases
 #: model_terms:ir.actions.act_window,help:databases.action_view_databases_all
@@ -698,15 +763,7 @@ msgstr "작업"
 #. odoo-javascript
 #: code:addons/databases/static/src/views/databases_project_list/databases_project_list_renderer.js:0
 msgid "Tax return %(return_name)s"
-msgstr ""
-
-#. module: databases
-#. odoo-python
-#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
-msgid ""
-"The database %(url)s is registered as a saas database in odoo.com. As it "
-"seems to be configured we have left it as is.\n"
-msgstr ""
+msgstr "세금 신고서 %(return_name)s"
 
 #. module: databases
 #. odoo-python
@@ -721,11 +778,24 @@ msgid "These users were successfully removed from %(nb_databases)s databases."
 msgstr ""
 
 #. module: databases
+#. odoo-python
+#: code:addons/databases/models/res_users.py:0
+msgid "This user has no access to remove."
+msgstr ""
+
+#. module: databases
 #: model:ir.model.constraint,message:databases.constraint_project_project_database_url_required
 msgid "Uh-oh! It seems we are missing a url for a database!"
 msgstr ""
 
 #. module: databases
+#. odoo-python
+#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
+msgid "Unreachable"
+msgstr ""
+
+#. module: databases
+#: model:ir.model,name:databases.model_res_users
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__user_ids
 #: model:res.groups,name:databases.group_databases_user
 msgid "User"
@@ -745,7 +815,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "User removal is done"
-msgstr ""
+msgstr "사용자 제거 완료"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.view_databases_list
@@ -760,6 +830,20 @@ msgstr "버전"
 #. module: databases
 #: model:ir.model.fields,help:databases.field_databases_synchronization_wizard__notify_user
 msgid ""
-"Whether the user should be notified once the cron has finished synchronizing"
-" the databases"
+"Whether the user should be notified once the cron has finished synchronizing "
+"the databases"
 msgstr ""
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid ""
+"You can't revoke your own access. You wouldn't want to lock yourself out!"
+msgstr ""
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid "remote user"
+msgstr ""
+
+#~ msgid "Synchronization done successfully!"
+#~ msgstr "동기화가 성공적으로 완료되었습니다!"

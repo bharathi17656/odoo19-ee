@@ -12,9 +12,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:40+0000\n"
-"PO-Revision-Date: 2025-11-16 17:54+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-03 17:42+0000\n"
+"PO-Revision-Date: 2025-12-16 04:16+0000\n"
+"Last-Translator: \"Chloe Wang (chwa)\" <chwa@odoo.com>\n"
 "Language-Team: Chinese (Simplified Han script) <https://translate.odoo.com/"
 "projects/odoo-19/pos_iot/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.res_config_view_form_inherit_pos_iot
@@ -66,6 +66,12 @@ msgstr "条形码扫描器/读卡器"
 #: model:ir.model.fields,help:pos_iot.field_pos_config__iface_print_via_proxy
 msgid "Bypass browser printing and prints via the hardware proxy."
 msgstr "绕过浏览器打印，通过硬件代理进行打印。"
+
+#. module: pos_iot
+#. odoo-javascript
+#: code:addons/pos_iot/static/src/app/screens/scale_screen/scale_service.js:0
+msgid "Cannot weigh product – %(msg)s"
+msgstr ""
 
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.pos_iot_config_view_form
@@ -354,12 +360,6 @@ msgstr "请检查IoT Box是否仍连接。"
 
 #. module: pos_iot
 #. odoo-javascript
-#: code:addons/pos_iot/static/src/app/utils/payment/payment_interface_iot.js:0
-msgid "Please check if the terminal is still connected."
-msgstr "请检查打印机是否仍连接。"
-
-#. module: pos_iot
-#. odoo-javascript
 #: code:addons/pos_iot/static/src/app/services/pos_store.js:0
 msgid "Please process or cancel the current transaction."
 msgstr "请处理或取消当前的交易。"
@@ -394,12 +394,6 @@ msgstr "通过代理打印"
 #: code:addons/pos_iot/static/src/app/utils/printer/iot_printer.js:0
 msgid "Printing failed"
 msgstr "打印失败"
-
-#. module: pos_iot
-#. odoo-javascript
-#: code:addons/pos_iot/static/src/app/utils/printer/iot_printer.js:0
-msgid "Printing warning"
-msgstr ""
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_printer__proxy_ip
@@ -445,6 +439,14 @@ msgstr "打印机的IP地址或主机名"
 
 #. module: pos_iot
 #. odoo-javascript
+#: code:addons/pos_iot/static/src/app/utils/payment/payment_interface_iot.js:0
+msgid ""
+"The IoT Box cannot detect the payment terminal. Please check if the terminal "
+"is still connected."
+msgstr ""
+
+#. module: pos_iot
+#. odoo-javascript
 #: code:addons/pos_iot/static/src/app/utils/printer/iot_printer.js:0
 msgid ""
 "The IoT Box is connected, but the receipt printer isn't. In order to "
@@ -454,6 +456,10 @@ msgid ""
 "printer\n"
 "2/ for network printers, ensure the printer is connected to the internet."
 msgstr ""
+"物联网盒子已连接，但收据打印机未连接。要继续操作，请确保打印机已连接：\n"
+"\n"
+"1/ 对于 USB 打印机，检查物联网盒子和收据打印机之间的电缆\n"
+"2/ 对于网络打印机，确保打印机已连接到互联网。"
 
 #. module: pos_iot
 #: model:ir.model.fields,help:pos_iot.field_res_config_settings__module_pos_iot_ingenico
@@ -522,6 +528,9 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pos_iot.res_config_view_form_inherit_pos_iot
 msgid "none"
 msgstr "无"
+
+#~ msgid "Please check if the terminal is still connected."
+#~ msgstr "请检查打印机是否仍连接。"
 
 #~ msgid "Action identifier:"
 #~ msgstr "动作标识："

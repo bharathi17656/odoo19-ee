@@ -4,13 +4,14 @@
 #
 # Odoo Translation Bot <c3p@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-10 20:15+0000\n"
-"PO-Revision-Date: 2025-11-17 03:33+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-03 17:41+0000\n"
+"PO-Revision-Date: 2026-10-08 09:39+0000\n"
+"Last-Translator: Alina Lisnenko <alina.lisnenko@erp.co.ua>\n"
 "Language-Team: Ukrainian <https://translate.odoo.com/projects/odoo-19/"
 "databases/uk/>\n"
 "Language: uk\n"
@@ -19,47 +20,80 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
+
+#. module: databases
+#. odoo-python
+#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
+msgid "%(nb_failed_dbs)s databases could not be synchronized.\n"
+msgstr "%(nb_failed_dbs)s Бази даних не вдалося синхронізувати.\n"
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_synchronization_wizard.py:0
 msgid "%(nb_new_dbs)s new databases, %(nb_updated_dbs)s updated."
+msgstr "%(nb_new_dbs)s Оновлено нові бази даних: « %(nb_updated_dbs)s »."
+
+#. module: databases
+#. odoo-python
+#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
+msgid "- … and %(nb_dbs)d more!\n"
+msgstr "- … та ще %(nb_dbs)d!\n"
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid ""
+"<span class=\"o_form_label\">\n"
+"                                Manage access:\n"
+"                            </span>\n"
+"                            <span class=\"text-muted\">\n"
+"                                useful to cut all access at once\n"
+"                            </span>"
 msgstr ""
+"<span class=\"o_form_label\">\n"
+"                                Управління доступом:\n"
+"                           </span>\n"
+"                            <span class=\"text-muted\"> \n"
+"                                корисно для одночасного блокування всього "
+"доступу\n"
+"                           </span>"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
 #: model_terms:ir.ui.view,arch_db:databases.project_project_view_form_simplified_template
-msgid "<span class=\"o_wrap_label\"><span class=\"o_form_label\">Fetch</span></span>"
+msgid ""
+"<span class=\"o_wrap_label\"><span class=\"o_form_label\">Fetch</span></span>"
 msgstr ""
+"<span class=\"o_wrap_label\"><span class=\"o_form_label\">Отримати</span></"
+"span>"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
 #: model_terms:ir.ui.view,arch_db:databases.project_project_view_form_simplified_template
 msgid "<span>Documents</span>"
-msgstr ""
+msgstr "<span>Документи</span>"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
 #: model_terms:ir.ui.view,arch_db:databases.project_project_view_form_simplified_template
 msgid "<span>Draft Journal Entries</span>"
-msgstr ""
+msgstr "<span>Чернетки записів у щоденнику</span>"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
 #: model_terms:ir.ui.view,arch_db:databases.project_project_view_form_simplified_template
 msgid "<span>Tax Returns</span>"
-msgstr ""
+msgstr "<span>Податкові декларації</span>"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
 msgid "API credentials to Odoo.com"
-msgstr ""
+msgstr "Повноваження API для Odoo.com"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
 msgid "Add a user"
-msgstr ""
+msgstr "Додати користувача"
 
 #. module: databases
 #: model:res.groups,name:databases.group_databases_manager
@@ -69,23 +103,31 @@ msgstr "Адміністратор"
 #. module: databases
 #: model:res.groups,comment:databases.group_databases_manager
 msgid "Administrator can manage the client databases"
-msgstr ""
+msgstr "Адміністратор може керувати базами даних клієнтів"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_nb_users
 msgid "Amount of Users"
-msgstr ""
+msgstr "Кількість користувачів"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_nb_documents
 msgid "Amount of documents in Inbox"
-msgstr ""
+msgstr "Кількість документів у папці «Вхідні»"
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "An error occurred: %s"
+msgstr "Сталася помилка: %s"
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
+msgid ""
+"Automatically connect to SaaS databases using Odoo.com as an OAuth provider."
 msgstr ""
+"Автоматично підключайтеся до баз даних SaaS, використовуючи Odoo.com як "
+"постачальника OAuth."
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.databases_manage_users_wizard_view_form
@@ -115,7 +157,7 @@ msgstr "Продовжити"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_synchronization_wizard__created_database_ids
 msgid "Created Database"
-msgstr ""
+msgstr "Створено базу даних"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__create_uid
@@ -140,31 +182,37 @@ msgid "Database"
 msgstr "База даних"
 
 #. module: databases
+#. odoo-python
+#: code:addons/databases/api.py:0
+msgid "Database \"%s\" not found"
+msgstr "База даних «%s » не знайдена"
+
+#. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_api_key
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_api_key
 msgid "Database API Key"
-msgstr ""
+msgstr "Ключ API бази даних"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_api_login
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_api_login
 msgid "Database API Login"
-msgstr ""
+msgstr "Логін API бази даних"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_api_key_to_use
 msgid "Database Api Key To Use"
-msgstr ""
+msgstr "Ключ API бази даних для використання"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_can_access
 msgid "Database Can Access"
-msgstr ""
+msgstr "Доступ до бази даних"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_kpi_base_definition_id
 msgid "Database Kpi Base Definition"
-msgstr ""
+msgstr "База даних Kpi Base Definition"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_name
@@ -175,12 +223,12 @@ msgstr "Назва бази даних"
 #. module: databases
 #: model:ir.model,name:databases.model_databases_synchronization_wizard
 msgid "Database Synchronization Wizard"
-msgstr ""
+msgstr "Майстер синхронізації баз даних"
 
 #. module: databases
 #: model:project.project,name:databases.database_default_template
 msgid "Database Template"
-msgstr ""
+msgstr "Шаблон бази даних"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_url
@@ -190,23 +238,24 @@ msgstr "URL бази даних"
 
 #. module: databases
 #: model:ir.model,name:databases.model_databases_user
+#: model:ir.model.fields,field_description:databases.field_res_users__database_user_ids
 msgid "Database User"
-msgstr ""
+msgstr "Користувач бази даних"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_user_ids
 msgid "Database Users"
-msgstr ""
+msgstr "Користувачі бази даних"
 
 #. module: databases
 #: model:ir.model,name:databases.model_databases_manage_users_wizard
 msgid "Database Users Invitation Wizard"
-msgstr ""
+msgstr "Майстер запрошення користувачів бази даних"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_version
 msgid "Database Version"
-msgstr ""
+msgstr "Версія бази даних"
 
 #. module: databases
 #. odoo-python
@@ -215,6 +264,8 @@ msgid ""
 "Database synchronization is running in the background. You will be notified "
 "upon completion."
 msgstr ""
+"У фоновому режимі виконується синхронізація бази даних. Ви отримаєте "
+"повідомлення після її завершення."
 
 #. module: databases
 #: model:ir.actions.act_window,name:databases.action_view_databases_all
@@ -222,18 +273,19 @@ msgstr ""
 #: model:ir.ui.menu,name:databases.menu_main_databases
 #: model:res.groups.privilege,name:databases.res_groups_privilege_databases
 #: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
 msgid "Databases"
 msgstr "Бази даних"
 
 #. module: databases
 #: model:ir.actions.server,name:databases.ir_cron_synchronize_databases_with_odoocom_ir_actions_server
 msgid "Databases: pull databases from Odoo.com and synchronize"
-msgstr ""
+msgstr "Бази даних: отримувати бази даних з Odoo.com та синхронізувати їх"
 
 #. module: databases
 #: model:ir.actions.server,name:databases.ir_cron_synchronize_databases_ir_actions_server
 msgid "Databases: synchronize"
-msgstr ""
+msgstr "Бази даних: синхронізувати"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.databases_manage_users_wizard_view_form
@@ -247,6 +299,7 @@ msgstr "Відмінити"
 #: model:ir.model.fields,field_description:databases.field_project_project__display_name
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__display_name
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:databases.field_res_users__display_name
 msgid "Display Name"
 msgstr "Назва для відображення"
 
@@ -265,7 +318,7 @@ msgstr "Чернетка"
 #. odoo-javascript
 #: code:addons/databases/static/src/views/databases_project_list/databases_project_list_renderer.js:0
 msgid "Draft entries in journal %(journal_name)s"
-msgstr ""
+msgstr "Створюйте чернетки записів у щоденнику %(journal_name)s"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__error_message
@@ -278,67 +331,72 @@ msgstr "Повідомлення про помилку"
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 #: code:addons/databases/wizard/databases_synchronization_wizard.py:0
 msgid ""
-"Error while connecting to %(url)s: We are missing the database name, the api"
-" login or the api key\n"
+"Error while connecting to %(url)s: We are missing the database name, the api "
+"login or the api key\n"
 msgstr ""
+"Помилка під час підключення до %(url)s: Відсутня назва бази даних, логін API "
+"або ключ API\n"
+
+#. module: databases
+#. odoo-python
+#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
+msgid "Error while creating an API key on %(nb_dbs)d databases:\n"
+msgstr "Помилка під час створення ключа API у базах даних %(nb_dbs)d:\n"
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "Error while creating users on %(dbname)s: %(message)s\n"
-msgstr ""
+msgstr "Помилка під час створення користувачів на %(dbname)s: %(message)s\n"
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_synchronization_wizard.py:0
-msgid "Error while getting KPIs from %(dbname)s: %(message)s\n"
+msgid ""
+"Error while fetching information from %(host_names)s on %(ip)s: %(message)s\n"
 msgstr ""
-
-#. module: databases
-#. odoo-python
-#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
-msgid "Error while getting users from %(dbname)s: %(message)s\n"
-msgstr ""
+"Помилка під час отримання інформації з %(host_names)s на %(ip)s: %(message)"
+"s\n"
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_synchronization_wizard.py:0
 msgid "Error while listing databases from %(dbname)s: %(message)s\n"
-msgstr ""
+msgstr "Помилка під час переліку баз даних з %(dbname)s: %(message)s\n"
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "Error while removing users from %(dbname)s: %(message)s\n"
-msgstr ""
+msgstr "Помилка під час видалення користувачів із %(dbname)s: %(message)s\n"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__everywhere_user_ids
 msgid "Everywhere User"
-msgstr ""
+msgstr "Користувач Всюди"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_fetch_documents
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_fetch_documents
 msgid "Fetch Documents"
-msgstr ""
+msgstr "Завантажити документи"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_fetch_draft_entries
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_fetch_draft_entries
 msgid "Fetch Draft Journal Entries"
-msgstr ""
+msgstr "Завантажити чернетки записів у журналі"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_fetch_tax_returns
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_fetch_tax_returns
 msgid "Fetch Tax Returns"
-msgstr ""
+msgstr "Отримати податкові декларації"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_synchronization_wizard__fetched_values
 msgid "Fetched Values"
-msgstr ""
+msgstr "Отримані значення"
 
 #. module: databases
 #: model_terms:ir.actions.act_window,help:databases.action_view_databases_all
@@ -346,11 +404,13 @@ msgid ""
 "Get all your Odoo databases summarized, and perform mass action like "
 "inviting users."
 msgstr ""
+"Отримайте зведену інформацію про всі ваші бази даних Odoo та виконуйте "
+"масові дії, такі як запрошення користувачів."
 
 #. module: databases
 #: model:ir.model.constraint,message:databases.constraint_project_project_database_url_unique
 msgid "Hey, this URL is already hooked up to a database!"
-msgstr ""
+msgstr "Гей, ця URL-адреса вже підключена до бази даних!"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_hosting
@@ -365,6 +425,7 @@ msgstr "Хостинг"
 #: model:ir.model.fields,field_description:databases.field_project_project__id
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__id
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__id
+#: model:ir.model.fields,field_description:databases.field_res_users__id
 msgid "ID"
 msgstr "ID"
 
@@ -387,7 +448,7 @@ msgstr "Запрошення"
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "Invitation is done"
-msgstr ""
+msgstr "Запрошення готове"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.databases_manage_users_wizard_view_form
@@ -408,7 +469,7 @@ msgstr "KPI"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_last_synchro
 msgid "Last Synchronization"
-msgstr ""
+msgstr "Остання синхронізація"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__write_uid
@@ -432,7 +493,7 @@ msgstr "Остання аутентифікація"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_user__local_user_id
 msgid "Local User"
-msgstr ""
+msgstr "Місцевий користувач"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_user__login
@@ -442,12 +503,17 @@ msgstr "Логін"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_kpi_properties
 msgid "Metrics"
-msgstr ""
+msgstr "Метрики"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__mode
 msgid "Mode"
 msgstr "Режим"
+
+#. module: databases
+#: model:ir.model.fields,field_description:databases.field_res_config_settings__module_databases_auth
+msgid "Module Databases Auth"
+msgstr "Модуль Auth бази даних"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_user__name
@@ -462,12 +528,12 @@ msgstr "Новий"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_synchronization_wizard__new_properties
 msgid "New KPIs to add:"
-msgstr ""
+msgstr "Нові KPI, які слід додати:"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
 msgid "New databases will be based on the selected project template."
-msgstr ""
+msgstr "Нові бази даних будуть базуватися на обраному шаблоні Проекту."
 
 #. module: databases
 #: model_terms:ir.actions.act_window,help:databases.action_view_tasks_all
@@ -488,12 +554,12 @@ msgstr "Odoo Online"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__databases_apikey
 msgid "Odoo.com API Key"
-msgstr ""
+msgstr "Odoo.com API Key"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__databases_apiuser
 msgid "Odoo.com API User"
-msgstr ""
+msgstr "Odoo.com API User"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
@@ -501,11 +567,13 @@ msgid ""
 "Odoo.com API keys are managed in the <em>Developer API Keys</em> section of "
 "your"
 msgstr ""
+"Ключі API Odoo.com управляються у розділі «Ключі API для розробників» ( <em>)"
+"</em> вашого"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
 msgid "Odoo.com Connection &amp; Security page"
-msgstr ""
+msgstr "Сторінка безпеки &amp; на сайті Odoo.com"
 
 #. module: databases
 #: model:ir.model.fields.selection,name:databases.selection__project_project__database_hosting__paas
@@ -523,20 +591,24 @@ msgstr "На своєму сервері"
 #: model_terms:ir.actions.act_window,help:databases.action_view_tasks_all
 msgid ""
 "Organize your tasks by dispatching them across the pipeline.<br>\n"
-"                Collaborate efficiently by chatting in real-time or via email."
+"                Collaborate efficiently by chatting in real-time or via "
+"email."
 msgstr ""
+"Організуйте свої завдання, розподіляючи їх по конвеєру.<br>\n"
+"                Ефективно співпрацюйте, спілкуючись у чаті в режимі "
+"реального часу або електронною поштою."
 
 #. module: databases
 #: model:ir.model.fields.selection,name:databases.selection__project_project__database_hosting__other
 #: model:ir.model.fields.selection,name:databases.selection__project_template_create_wizard__database_hosting__other
 msgid "Outside of Odoo"
-msgstr ""
+msgstr "За межами Odoo"
 
 #. module: databases
 #. odoo-javascript
 #: code:addons/databases/static/src/views/databases_project_list/databases_project_list_renderer.js:0
 msgid "Planned activities of type %(return_name)s"
-msgstr ""
+msgstr "Заплановані заходи типу %(return_name)s"
 
 #. module: databases
 #: model:ir.model,name:databases.model_project_project
@@ -551,27 +623,27 @@ msgstr "Шаблон проекту"
 #. module: databases
 #: model:ir.model,name:databases.model_project_template_create_wizard
 msgid "Project Template create Wizard"
-msgstr ""
+msgstr "Майстер створення шаблону Проекту"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__databases_project_template_id
 msgid "Project template"
-msgstr ""
+msgstr "Шаблон проекту"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_synchronization_wizard__property_definition
 msgid "Property Definition"
-msgstr ""
+msgstr "Визначення властивості"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
 msgid "Regular Project"
-msgstr ""
+msgstr "Звичайний проект"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__removable_user_ids
 msgid "Removable User"
-msgstr ""
+msgstr "Користувач, якого можна видалити"
 
 #. module: databases
 #: model:ir.model.fields.selection,name:databases.selection__databases_manage_users_wizard__mode__remove
@@ -585,14 +657,20 @@ msgstr "Вилучити"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
 msgid "Remove User"
-msgstr ""
+msgstr "Видалити користувача"
 
 #. module: databases
 #: model:ir.actions.server,name:databases.action_remove_users
 #: model_terms:ir.ui.view,arch_db:databases.view_databases_list
 msgid "Remove Users"
 msgstr "Вилучити користувачів"
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid "Remove this user from all databases"
+msgstr "Видалити цього користувача з усіх баз даних"
 
 #. module: databases
 #: model:ir.ui.menu,name:databases.menu_reporting
@@ -605,18 +683,37 @@ msgid "Responsible"
 msgstr "Відповідальний"
 
 #. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid "Revoke all access"
+msgstr "Скасувати весь доступ"
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
+msgid "SaaS SSO Auto-login"
+msgstr "SaaS SSO Автоматичний вхід"
+
+#. module: databases
+#: model:ir.model.fields,field_description:databases.field_res_config_settings__databases_saas_single_sign_on
+msgid "Saas SSO"
+msgstr "Saas SSO"
+
+#. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid ""
 "Select the users you want to invite to the %(nb_databases)s selected "
 "databases."
 msgstr ""
+"Виберіть користувачів, яких ви хочете запросити до вибраних баз даних %"
+"(nb_databases)s."
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "Select the users you want to invite to the database %(database_name)s."
 msgstr ""
+"Виберіть користувачів, яких ви хочете запросити до бази даних %"
+"(database_name)s."
 
 #. module: databases
 #. odoo-python
@@ -625,6 +722,8 @@ msgid ""
 "Select the users you want to remove from the %(nb_databases)s selected "
 "databases."
 msgstr ""
+"Виберіть користувачів, яких ви хочете запросити до вибраних баз даних %"
+"(nb_databases)s."
 
 #. module: databases
 #. odoo-python
@@ -632,6 +731,8 @@ msgstr ""
 msgid ""
 "Select the users you want to remove from the database %(database_name)s."
 msgstr ""
+"Виберіть користувачів, яких ви хочете видалити з бази даних %(database_name)"
+"s."
 
 #. module: databases
 #: model:ir.actions.act_window,name:databases.action_databases_configuration
@@ -648,25 +749,19 @@ msgstr "Область"
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__summary_message
 #: model:ir.model.fields,field_description:databases.field_databases_synchronization_wizard__summary_message
 msgid "Summary Message"
-msgstr ""
+msgstr "Підсумкове повідомлення"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_nb_synchro_errors
 msgid "Synchronization Errors Count"
-msgstr ""
-
-#. module: databases
-#. odoo-python
-#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
-msgid "Synchronization done successfully!"
-msgstr ""
+msgstr "Кількість помилок синхронізації"
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/models/project_project.py:0
 #: code:addons/databases/wizard/databases_synchronization_wizard.py:0
 msgid "Synchronization of %d databases"
-msgstr ""
+msgstr "Синхронізація баз даних %d"
 
 #. module: databases
 #: model:ir.actions.server,name:databases.action_synchronize_database
@@ -678,7 +773,7 @@ msgstr "Синхронізуйте"
 #. module: databases
 #: model:ir.actions.server,name:databases.action_synchronize_all_databases
 msgid "Synchronize all the Databases"
-msgstr ""
+msgstr "Синхронізувати всі бази даних"
 
 #. module: databases
 #: model_terms:ir.actions.act_window,help:databases.action_view_databases_all
@@ -686,6 +781,9 @@ msgid ""
 "Synchronize to automatically fetch Odoo Online databases, or set an API Key "
 "to connect to On Premise or Odoo.sh ones."
 msgstr ""
+"Виконайте синхронізацію, щоб автоматично завантажити бази даних Odoo Online, "
+"або вкажіть ключ API для підключення до локальних баз даних або баз даних "
+"Odoo.sh."
 
 #. module: databases
 #: model:ir.actions.act_window,name:databases.action_view_tasks_all
@@ -698,34 +796,39 @@ msgstr "Завдання"
 #. odoo-javascript
 #: code:addons/databases/static/src/views/databases_project_list/databases_project_list_renderer.js:0
 msgid "Tax return %(return_name)s"
-msgstr ""
-
-#. module: databases
-#. odoo-python
-#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
-msgid ""
-"The database %(url)s is registered as a saas database in odoo.com. As it "
-"seems to be configured we have left it as is.\n"
-msgstr ""
+msgstr "Податкова декларація %(return_name)s"
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "These users were successfully invited to %(nb_databases)s databases."
-msgstr ""
+msgstr "Цих користувачів було успішно запрошено до баз даних %(nb_databases)s."
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "These users were successfully removed from %(nb_databases)s databases."
-msgstr ""
+msgstr "Цих користувачів було успішно видалено з баз даних %(nb_databases)s."
+
+#. module: databases
+#. odoo-python
+#: code:addons/databases/models/res_users.py:0
+msgid "This user has no access to remove."
+msgstr "Цей користувач не має доступу до видалення."
 
 #. module: databases
 #: model:ir.model.constraint,message:databases.constraint_project_project_database_url_required
 msgid "Uh-oh! It seems we are missing a url for a database!"
-msgstr ""
+msgstr "Ой! Схоже, у нас відсутній URL-адресу бази даних!"
 
 #. module: databases
+#. odoo-python
+#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
+msgid "Unreachable"
+msgstr "Недоступно"
+
+#. module: databases
+#: model:ir.model,name:databases.model_res_users
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__user_ids
 #: model:res.groups,name:databases.group_databases_user
 msgid "User"
@@ -734,18 +837,18 @@ msgstr "Користувач"
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
 msgid "User Management"
-msgstr ""
+msgstr "Управління користувачами"
 
 #. module: databases
 #: model:res.groups,comment:databases.group_databases_user
 msgid "User can access the client databases"
-msgstr ""
+msgstr "Користувач має доступ до клієнтських баз даних"
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "User removal is done"
-msgstr ""
+msgstr "Видалення користувача здійснюється"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.view_databases_list
@@ -760,6 +863,20 @@ msgstr "Версія"
 #. module: databases
 #: model:ir.model.fields,help:databases.field_databases_synchronization_wizard__notify_user
 msgid ""
-"Whether the user should be notified once the cron has finished synchronizing"
-" the databases"
+"Whether the user should be notified once the cron has finished synchronizing "
+"the databases"
 msgstr ""
+"Чи слід повідомляти користувача після завершення синхронізації баз даних за "
+"допомогою cron"
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid ""
+"You can't revoke your own access. You wouldn't want to lock yourself out!"
+msgstr ""
+"Ви не можете скасувати власний доступ. Ви ж не хочете залишитися за блоком!"
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid "remote user"
+msgstr "віддалений користувач"

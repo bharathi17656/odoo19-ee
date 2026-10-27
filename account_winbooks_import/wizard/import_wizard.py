@@ -91,10 +91,14 @@ class AccountWinbooksImportWizard(models.TransientModel):
                     'active': not rec.get('ISLOCKED'),
                     'category_id': [(6, 0, [category_data.get(rec.get('CATEGORY'))])] if category_data.get(rec.get('CATEGORY')) else False
                 }
-                if partner_data_dict.get(rec.get('NUMBER')):
-                    for key, value in partner_data_dict[rec.get('NUMBER')].items():
-                        if value:  # Winbooks has different partners for customer/supplier. Here we merge the data of the 2
+                if existing_data := partner_data_dict.get(rec.get('NUMBER')):
+                    for key, value in existing_data.items():
+                        if value and key not in ('vat', 'country_id'):
                             data[key] = value
+                    # vat should be coupled with the country
+                    if existing_data['vat'] and (existing_data['country_id'] or not data['country_id']):
+                        data['vat'] = existing_data['vat']
+                        data['country_id'] = existing_data['country_id']
                 if rec.get('NAME2'):
                     data['child_ids'] = [Command.create({'name': rec['NAME2']})]
                 # manage the bank account of the partner
@@ -671,7 +675,7 @@ class AccountWinbooksImportWizard(models.TransientModel):
                 return tag_ids
             indexes = [i for i, x in enumerate(string) if x in ('+', '-')] + [len(string)]
             for i in range(len(indexes) - 1):
-                tag_name = string[indexes[i]: indexes[i + 1]]
+                tag_name = string[indexes[i] + 1: indexes[i + 1]]
                 tag_id = tags_cache.get(tag_name, False)
                 if not tag_id:
                     tag_id = self.env['account.account.tag'].with_context(lang='en_US').search([('name', '=', tag_name), ('applicability', '=', 'taxes')])

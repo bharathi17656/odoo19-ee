@@ -13,6 +13,7 @@ patch(PosStore.prototype, {
             this.config.iface_electronic_scale &&
             this.config._is_eu_country &&
             this.models["product.product"].some((product) => product.to_weight);
+
         this.config.isCertified = this.isCertified;
         this.config.showCertificationWarning = this.isScaleIconVisible && !this.isCertified;
     },

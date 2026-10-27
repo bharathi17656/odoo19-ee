@@ -1,12 +1,12 @@
 import { definePosModels } from "@point_of_sale/../tests/unit/data/generate_model_definitions";
-import { setupPosEnv } from "@point_of_sale/../tests/unit/utils";
 import { test, expect } from "@odoo/hoot";
 import { getUrbanPiperFilledOrder } from "@pos_urban_piper/../tests/unit/utils";
+import { setupPosEnvForPrepDisplay } from "@pos_enterprise/../tests/unit/utils";
 
 definePosModels();
 
 test("getOrderData & getProviderState", async () => {
-    const store = await setupPosEnv();
+    const store = await setupPosEnvForPrepDisplay();
     expect(store.enabledProviders).toEqual({ doordash: true });
     expect(store.delivery_order_count).toEqual(1);
     expect(store.total_new_order).toEqual(2);

@@ -1,5 +1,5 @@
 # coding: utf-8
-from odoo import Command
+from odoo import Command, fields
 from .common import TestCoEdiCommon
 from odoo.tests import tagged
 from odoo.tools import mute_logger, misc
@@ -236,3 +236,14 @@ class TestColombianInvoice(TestCoEdiCommon):
 
             expected_debit_note_xml = misc.file_open('l10n_co_edi/tests/accepted_debit_note_2.xml', 'rb').read()
             self.l10n_co_assert_generated_file_equal(debit_note, expected_debit_note_xml)
+
+    def test_direct_payment_only_on_edi_documents(self):
+        """ The payment option is required on direct payments but hidden on
+        the moves that are not sent to the DIAN (ex: bank journal entries)
+        """
+        entry = self.create_line_for_reconciliation(100.0, 100.0, self.company_data['currency'], fields.Date.today(), account_1=self.company_data['default_account_receivable']).move_id
+        invoice = self.init_invoice('out_invoice', partner=self.partner_a, invoice_date=fields.Date.today(), products=self.product_a)
+        self.assertEqual(entry.date, entry.invoice_date_due)
+        self.assertEqual(invoice.date, invoice.invoice_date_due)
+        self.assertFalse(entry.l10n_co_edi_is_direct_payment)
+        self.assertTrue(invoice.l10n_co_edi_is_direct_payment)

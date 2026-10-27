@@ -12,7 +12,7 @@ class ResPartner(models.Model):
         'hr.employee', 'work_contact_id', string='Employees', groups="hr.group_hr_user",
         help="Related employees based on their private address")
     employees_count = fields.Integer(compute='_compute_employees_count', groups="hr.group_hr_user")
-    employee = fields.Boolean(help="Whether this contact is an Employee.", compute='_compute_employee', store=True, readonly=False)
+    employee = fields.Boolean(help="Whether this contact is an Employee.", compute='_compute_employee', store=True, readonly=False, copy=False)
 
     def _compute_employees_count(self):
         for partner in self:
@@ -49,8 +49,10 @@ class ResPartner(models.Model):
         pstl_addr = {
             'contact_type': 'employee',
             'street': employee_id.private_street,
+            'street2': employee_id.private_street2,
             'zip': employee_id.private_zip,
             'city': employee_id.private_city,
+            'state': employee_id.private_state_id.code,
             'country': employee_id.private_country_id.code,
         }
         return [pstl_addr] + super()._get_all_addr()
@@ -67,7 +69,7 @@ class ResPartner(models.Model):
 
     @api.ondelete(at_uninstall=False)
     def _unlink_contact_rel_employee(self):
-        partners = self.filtered(lambda partner: partner.employee)
+        partners = self.filtered(lambda partner: partner.sudo().employee_ids)
         if len(self) == 1 and len(partners) == 1 and self.id == partners[0].id:
             raise UserError(_('You cannot delete contact that are linked to an employee, please archive them instead.'))
         if partners:

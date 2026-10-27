@@ -20,13 +20,14 @@
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Vytenis Viruišis <vytenis@users.noreply.translate.odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:41+0000\n"
-"PO-Revision-Date: 2025-11-08 19:44+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-17 17:43+0000\n"
+"PO-Revision-Date: 2026-10-05 22:33+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "planning/lt/>\n"
 "Language: lt\n"
@@ -34,9 +35,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < "
-"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 :"
-" n % 1 != 0 ? 2: 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 "
+": n % 1 != 0 ? 2: 3);\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: planning
 #. odoo-python
@@ -456,6 +457,119 @@ msgid ""
 "                </div>\n"
 "            </body>"
 msgstr ""
+"<style>\n"
+"                    .planning_mail_template_button {\n"
+"                        padding: 5px 10px;\n"
+"                        text-decoration: none;\n"
+"                        border: 1px;\n"
+"                        border-radius: 3px;\n"
+"                        text-align: center;\n"
+"                        color: #374151;\n"
+"                        background-color: #E7E9ED;\n"
+"                        border: solid #E7E9ED;\n"
+"                        flex: 1 1 40%;\n"
+"                    }\n"
+"                    .top_button {\n"
+"                        color: #FFFFFF;\n"
+"                        background-color: #714B67;\n"
+"                        border: solid #714B67;\n"
+"                        flex: 1 1 60%;\n"
+"                    }\n"
+"                    .button_box {\n"
+"                        display: flex;\n"
+"                        flex-wrap: wrap;\n"
+"                        gap: 10px;\n"
+"                        margin: 20px 15px 0px 15px;\n"
+"                    }\n"
+"               </style>\n"
+"                <body> <div>\n"
+"                    <p t-if=\"ctx.get('employee_name')\"> Gerb. <t t-"
+"out=\"ctx['employee_name']\">Anita Oliver</t>,</p>\n"
+"                    <p t-else=\"\">Sveiki,</p>\n"
+"                    <br/>\n"
+"                   <p t-if=\"ctx.get('open_shift_available')\"> Turime naują "
+"laisvą pamainą:</p>\n"
+"                    <p t-else=\"\">Jums buvo paskirta ši pamaina:</p>\n"
+"                    <table style=\"margin-left: 30px;\">\n"
+"                       <tr t-if=\"(ctx.get('start_datetime') and ctx.get"
+"('end_datetime'))                                   or ctx.get"
+"('allocated_hours')                                   or ctx.get"
+"('allocated_percentage')\">\n"
+"                            <th style=\"padding: 5px; text-align: left;\"> "
+"Data</th>\n"
+"                            <td style=\"padding: 5px;\">\n"
+"                               <span t-if=\"ctx.get('start_datetime') and "
+"ctx.get('end_datetime')\" t-out=\"'%s ⟶ %s' % "
+"(                                     "
+"ctx['start_datetime'],                                     "
+"ctx['end_datetime'],                                 )\"> \n"
+"                                    2021 m. gegužės 31 d., 8:00 val. ⟶ 2021 "
+"m. gegužės 31 d., 16:00 val.\n"
+"                               </span>\n"
+"                                <span t-if=\"ctx.get('allocated_hours')\" "
+"style=\"opacity: 0.5;\"> \n"
+"                                    (<t t-out=\"ctx['allocated_hours']\">"
+"4:00</t>h)\n"
+"                               </span>\n"
+"                                <span t-if=\"ctx.get('allocated_percentage') "
+"and ctx['allocated_percentage'] != '100'\" style=\"opacity: 0.5;\"> \n"
+"                                    (<t t-"
+"out=\"ctx['allocated_percentage']\">50</t>%)\n"
+"                               </span>\n"
+"                            </td> \n"
+"                       </tr>\n"
+"                        <tr t-if=\"object.role_id\"> \n"
+"                           <th style=\"padding: 5px; text-align: left;\"> "
+"Pareigos</th>\n"
+"                            <td style=\"padding: 5px;\" t-"
+"out=\"object.role_id.name or ''\">Barmenas</td>\n"
+"                        </tr>\n"
+"                       <tr t-if=\"hasattr(object, 'project_id') and "
+"object.project_id\">\n"
+"                            <th style=\"padding: 5px; text-align: left;\"> "
+"Projektas</th>\n"
+"                            <td style=\"padding: 5px;\" t-out=\"object.sudo()"
+".project_id.name or ''\">Susibūrimas</td>\n"
+"                        </tr>\n"
+"                       <tr t-if=\"hasattr(object, 'sale_line_id') and "
+"object.sale_line_id\">\n"
+"                            <th style=\"padding: 5px; text-align: left;\"> "
+"Pardavimo užsakymo prekė</th>\n"
+"                            <td style=\"padding: 5px;\" t-out=\"object.sudo()"
+".sale_line_id.name or ''\">Kava</td>\n"
+"                        </tr>\n"
+"                       <tr t-if=\"hasattr(object, 'name') and object.name\">"
+"\n"
+"                            <th style=\"padding: 5px; text-align: left;\"> "
+"Pastaba</th>\n"
+"                            <td style=\"padding: 5px;\" t-out=\"object.name "
+"or ''\">/</td>\n"
+"                        </tr>\n"
+"                   </table>\n"
+"                    <div class=\"button_box\"> \n"
+"                       <a t-if=\"ctx.get('available_link')\" t-att-"
+"href=\"ctx['available_link']\" target=\"_blank\" "
+"class=\"planning_mail_template_button top_button\"> Paskirkite man šią "
+"pamainą</a>\n"
+"                        <a t-if=\"ctx.get('unavailable_link')\" t-att-"
+"href=\"ctx['unavailable_link']\" target=\"_blank\" "
+"class=\"planning_mail_template_button top_button\">Aš negaliu dirbti</a>\n"
+"                        <a t-if=\"ctx.get('google_url')\" t-att-"
+"href=\"ctx['google_url']\" target=\"_blank\" "
+"class=\"planning_mail_template_button\">Įtraukti į „Google“ kalendorių</a>\n"
+"                        <a t-if=\"ctx.get('iCal_url')\" t-att-"
+"href=\"ctx['iCal_url']\" target=\"_blank\" "
+"class=\"planning_mail_template_button\">Įtraukti į „iCal“/„Outlook“</a>\n"
+"                    </div>\n"
+"                   <br/>\n"
+"                    <p t-if=\"ctx.get('open_shift_available')\"> Jei esate "
+"suinteresuotas ir galite dirbti, prašome paskirti sau šią laisvą pamainą.</p>"
+"\n"
+"                    <p t-else=\"\">Jei dabartinė pamaina jums netinka, "
+"raginame kreiptis į kolegas ir paprašyti pasikeisti pamainomis. Galbūt jie "
+"bus suinteresuoti pasikeisti pamainomis su jumis.</p>\n"
+"                </div>\n"
+"           </body>"
 
 #. module: planning
 #: model:mail.template,body_html:planning.email_template_planning_planning
@@ -524,6 +638,69 @@ msgid ""
 "                </div>\n"
 "            </body>"
 msgstr ""
+"<style>\n"
+"                .planning_mail_template_button {\n"
+"                    padding: 5px 10px;\n"
+"                    text-decoration: none;\n"
+"                    border: 1px;\n"
+"                    border-radius: 3px;\n"
+"                    display: inline-block; \n"
+"                    width: 190px;\n"
+"                    text-align: center;\n"
+"                }\n"
+"               </style>\n"
+"                <body> <div>\n"
+"                    <p t-if=\"ctx.get('employee')\"> Gerb. <t t-"
+"out=\"ctx['employee'].name or ''\">Anita Oliver</t>,</p>\n"
+"                    <p t-else=\"\">Sveiki,</p>\n"
+"                    <br/>\n"
+"                   <p t-if=\"ctx.get('start_datetime') and ctx.get"
+"('end_datetime')\"> \n"
+"                        Jūsų artimiausios pamainos nuo <t t-out=\"format_date"
+"(ctx['start_datetime'])\">2021 m. gegužės 5 d.</t>\n"
+"                        iki <t t-out=\"format_date(ctx['end_datetime'])\">"
+"2021 m. gegužės 11 d.</t> jau paskelbtos.\n"
+"                   </p>\n"
+"                    <div style=\"display: flex; margin: 15px;\"> \n"
+"                       <div t-if=\"ctx.get('planning_url')\" style=\"margin-"
+"right: 15px;\">\n"
+"                            <a t-att-href=\"ctx['planning_url']\" "
+"target=\"_blank\" class=\"planning_mail_template_button\" t-attf-"
+"style=\"color: {{object.company_id.email_primary_color or '#FFFFFF'}}; "
+"background-color: {{object.company_id.email_secondary_color or '#875A7B'}}"
+";\"> Peržiūrėti savo tvarkaraštį</a>\n"
+"                        </div>\n"
+"                       <div t-if=\"ctx.get('planning_url_ics')\">\n"
+"                            <a t-att-href=\"ctx['planning_url_ics']\" "
+"target=\"_blank\" class=\"planning_mail_template_button\" style=\"color: "
+"#374151; background-color: #E7E9ED; border: solid #E7E9ED;\"> Įtraukti į "
+"kalendorių</a>\n"
+"                        </div>\n"
+"                   </div>\n"
+"                    <br/> \n"
+"                   <p t-if=\"ctx.get('slot_unassigned') or "
+"(object.allow_self_unassign and object.self_unassign_days_before)\">\n"
+"                        <t t-if=\"ctx.get('slot_unassigned')\"> \n"
+"                            Taip pat norėtume priminti, kad yra keletas "
+"laisvų pamainų, todėl, jei esate suinteresuotas ir galite dirbti, prašome "
+"prisiskirti prie tų pamainų.\n"
+"                       </t>\n"
+"                        <t t-if=\"object.allow_self_unassign and "
+"object.self_unassign_days_before\"> \n"
+"                            Jei negalite dirbti jums paskirtos pamainos, "
+"prašome atšaukti savo registraciją per <t t-"
+"out=\"object.self_unassign_days_before or ''\">5</t> dieną (-as) iki "
+"pamainos pradžios.\n"
+"                       </t>\n"
+"                    </p> \n"
+"                   <p t-if=\"ctx.get('message')\" t-out=\"ctx['message']\"/>"
+"\n"
+"                    <p t-if=\"object.allow_self_unassign\"> Jei dabartinis "
+"jūsų grafikas jums netinka, raginame kreiptis į kolegas ir paprašyti "
+"pasikeisti pamainomis. Galbūt jie bus suinteresuoti pasikeisti pamainomis su "
+"jumis.</p>\n"
+"                </div>\n"
+"           </body>"
 
 #. module: planning
 #: model:ir.model.constraint,message:planning.constraint_planning_recurrency_check_until_limit
@@ -963,6 +1140,7 @@ msgstr "Atmesti"
 #: model:ir.model.fields,field_description:planning.field_hr_departure_wizard__display_name
 #: model:ir.model.fields,field_description:planning.field_hr_employee__display_name
 #: model:ir.model.fields,field_description:planning.field_hr_employee_public__display_name
+#: model:ir.model.fields,field_description:planning.field_ir_actions_report__display_name
 #: model:ir.model.fields,field_description:planning.field_planning_analysis_report__display_name
 #: model:ir.model.fields,field_description:planning.field_planning_calendar_resource__display_name
 #: model:ir.model.fields,field_description:planning.field_planning_planning__display_name
@@ -998,6 +1176,9 @@ msgid ""
 "Drag a shift to another day to reschedule it, or to another row to reassign "
 "the shift. Press CTRL (or Cmd on Mac) while dragging a shift to duplicate it."
 msgstr ""
+"Pervilkite pamainą į kitą dieną, kad pakeistumėte jos grafiką, arba į kitą "
+"eilutę, kad ją perpaskirtumėte. Paspauskite klavišą CTRL (arba Cmd „Mac“ "
+"kompiuteryje), vilkdami pamainą, kad ją nukopijuotumėte."
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_slot__duration
@@ -1216,6 +1397,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_hr_departure_wizard__id
 #: model:ir.model.fields,field_description:planning.field_hr_employee__id
 #: model:ir.model.fields,field_description:planning.field_hr_employee_public__id
+#: model:ir.model.fields,field_description:planning.field_ir_actions_report__id
 #: model:ir.model.fields,field_description:planning.field_planning_analysis_report__id
 #: model:ir.model.fields,field_description:planning.field_planning_calendar_resource__id
 #: model:ir.model.fields,field_description:planning.field_planning_planning__id
@@ -1932,6 +2114,11 @@ msgid "Repetitions"
 msgstr ""
 
 #. module: planning
+#: model:ir.model,name:planning.model_ir_actions_report
+msgid "Report Action"
+msgstr ""
+
+#. module: planning
 #: model:ir.ui.menu,name:planning.planning_menu_reporting
 msgid "Reporting"
 msgstr "Ataskaitos"
@@ -2241,6 +2428,12 @@ msgstr ""
 
 #. module: planning
 #. odoo-python
+#: code:addons/planning/wizard/planning_send.py:0
+msgid "Shifts published — employees without a work email were skipped"
+msgstr ""
+
+#. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning_slot.py:0
 msgid "Shifts reset to draft"
 msgstr ""
@@ -2293,6 +2486,22 @@ msgstr ""
 #. module: planning
 #: model:ir.model.fields.selection,name:planning.selection__res_company__planning_employee_unavailabilities__switch
 msgid "Switch shifts with other employees"
+msgstr ""
+
+#. module: planning
+#. odoo-python
+#: code:addons/planning/models/ir_actions_report.py:0
+msgid ""
+"The Planning report cannot be added to the print menu. Please use the Print "
+"action available in the Planning calendar and Gantt views."
+msgstr ""
+
+#. module: planning
+#. odoo-python
+#: code:addons/planning/models/ir_actions_report.py:0
+msgid ""
+"The Planning report cannot be printed from here. Please use the Print action "
+"available in the Planning calendar and Gantt views."
 msgstr ""
 
 #. module: planning
@@ -2376,13 +2585,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/planning/models/planning_template.py:0
 msgid ""
-"The start hour cannot be before the end hour for a one-day shift template."
-msgstr ""
-
-#. module: planning
-#. odoo-python
-#: code:addons/planning/wizard/planning_send.py:0
-msgid "The work email is missing for the following employees:"
+"The start hour cannot be after the end hour for a one-day shift template."
 msgstr ""
 
 #. module: planning
@@ -2754,6 +2957,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_role_view_tree
 msgid "e.g. John Doe"
 msgstr "pvz.: Jonas Jonaitis"
+
+#. module: planning
+#: model_terms:ir.ui.view,arch_db:planning.planning_view_kanban
+msgid "h"
+msgstr ""
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_kanban_inherit

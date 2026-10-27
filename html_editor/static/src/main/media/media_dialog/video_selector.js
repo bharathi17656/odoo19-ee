@@ -16,7 +16,7 @@ class VideoOption extends Component {
         label: { type: String, optional: true },
         onChangeOption: Function,
         onChangeStartAt: Function,
-        value: { type: String, optional: true },
+        value: { type: [String, Boolean], optional: true },
         name: { type: String, optional: true },
     };
 
@@ -182,7 +182,7 @@ export class VideoSelector extends Component {
             if (option.id === optionId) {
                 // used "0" here, to set the initial "startAt" value if option is toggled on,
                 // for other option it works as truthy value.
-                return { ...option, value: !option.value && "00:00" };
+                return { ...option, value: !option.value ? "00:00" : "" };
             }
             return option;
         });
@@ -220,7 +220,7 @@ export class VideoSelector extends Component {
 
         const options = {};
         if (this.props.isForBgVideo && URL.canParse(url)) {
-            const parsedUrl = new URL(this.state.urlInput);
+            const parsedUrl = new URL(url);
             const urlParams = parsedUrl.searchParams;
             const startFrom =
                 urlParams.get("start") || urlParams.get("startTime") || urlParams.get("t");
@@ -306,16 +306,20 @@ export class VideoSelector extends Component {
     async prepareVimeoPreviews() {
         await Promise.all(
             this.props.vimeoPreviewIds.map(async (videoId) => {
-                const { thumbnail_url: thumbnailSrc } = await this.http.get(
-                    `https://vimeo.com/api/oembed.json?url=http%3A//vimeo.com/${encodeURIComponent(
-                        videoId
-                    )}`
-                );
-                this.state.vimeoPreviews.push({
-                    id: videoId,
-                    thumbnailSrc,
-                    src: `https://player.vimeo.com/video/${encodeURIComponent(videoId)}`,
-                });
+                try {
+                    const { thumbnail_url: thumbnailSrc } = await this.http.get(
+                        `https://vimeo.com/api/oembed.json?url=http%3A//vimeo.com/${encodeURIComponent(
+                            videoId
+                        )}`
+                    );
+                    this.state.vimeoPreviews.push({
+                        id: videoId,
+                        thumbnailSrc,
+                        src: `https://player.vimeo.com/video/${encodeURIComponent(videoId)}`,
+                    });
+                } catch (err) {
+                    console.warn(`Could not get video #${videoId} from vimeo: ${err}`);
+                }
             })
         );
     }
@@ -345,7 +349,7 @@ export class VideoSelector extends Component {
                     value = urlParams.get("startTime") || urlParams.get("start");
                     break;
                 default:
-                    value = this.state.urlInput.includes(urlParameter);
+                    value = this.state.urlInput.includes(urlParameter) ? "00:00" : "";
             }
             if (option.id === "start_from" && value === "0") {
                 return { ...option, value: "00:00" };

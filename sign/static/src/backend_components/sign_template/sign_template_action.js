@@ -52,6 +52,7 @@ export class SignTemplate extends Component {
             discardChanges : () => {},
             isDiscardingChanges: false,
         });
+        this.signStatus.discardChanges = () => this.discardChanges();
 
         onWillStart(async () => {
             if (!this.templateID) {
@@ -125,6 +126,8 @@ export class SignTemplate extends Component {
             deleteDocument: (documentId) => this.deleteDocument(documentId),
             moveDocumentUp: (documentId) => this.moveDocument(documentId, -1),
             moveDocumentDown: (documentId) => this.moveDocument(documentId, 1),
+            onUpdateDocument: this.onUpdateDocument.bind(this),
+            saveManually: () => this.signStatus.save(),
         }
     }
 
@@ -132,11 +135,10 @@ export class SignTemplate extends Component {
         const duplicatedTemplateIds = await this.orm.call("sign.template", "copy", [
             [this.signTemplate.id],
         ]);
-
         this.action.doAction({
             type: "ir.actions.client",
             tag: "sign.Template",
-            name: _t("Edit Template"),
+            name: this.signTemplate.display_name,
             params: {
                 id: duplicatedTemplateIds[0],
             },
@@ -191,8 +193,8 @@ export class SignTemplate extends Component {
                 this.updateSigners(updatedInfo);
                 this.state.nextId = this.state.signers.length;
 
-                /* We must have at least one signer after load. */
-                if (updatedInfo.length == 0)
+                /* We must have at least one signer after load, unless the template has sign requests. */
+                if (updatedInfo.length == 0 && !this.hasSignRequests)
                     this.pushNewSigner();
 
                 /* Set callback for tracking number of items of each signer and load font. */
@@ -228,8 +230,8 @@ export class SignTemplate extends Component {
     }
 
     async pushNewSigner() {
-        const name = _t("Signer %s", this.state.signers.length + 1);
-        const [roleId] = await this.orm.create('sign.item.role', [{ name }]);
+        const name = _t("Signer ") + (this.state.nextId + 1).toString();
+        const roleId = await this.orm.call('sign.template', 'create_item_and_role', [this.state.selectedDocumentId, name]);
         const colorId = this.getNextColor();
         this.state.signers.push({
             'id': this.state.nextId,
@@ -390,6 +392,34 @@ export class SignTemplate extends Component {
         return this.action.doAction("sign.sign_template_action", { clearBreadcrumbs: true });
     }
 
+    /**
+     * Discards unsaved sign-item edits in place for all active documents. Keeps the current action and PDF
+     * iframes mounted, fetch the items info from the back-end and assign them to the front-end to replace drafts visually.
+     */
+    async discardChanges() {
+        this.signStatus.isTemplateChanged = false;
+        this.signStatus.isDiscardingChanges = true;
+        try {
+            const activeDocuments = this.state.documents.filter((document) => !document.deleted);
+            for (const document of activeDocuments) {
+                const [radioSets, signItems] = await Promise.all([
+                    this.orm.call("sign.document", "get_radio_sets_dict", [document.id]),
+                    this.orm.call("sign.item", "search_read", [[["document_id", "=", document.id]]], { context: user.context }),
+                ]);
+                signItems.forEach((item) => {
+                    item.type_id = item.type_id[0];
+                    item.radio_set_id = item.radio_set_id[0];
+                    item.roleName = item.responsible_id[1];
+                    item.document_id = item.document_id[0];
+                });
+                document.iframe?.discardUnsavedChanges(signItems, radioSets);
+            }
+            this.updateSignItemsCount();
+        } finally {
+            this.signStatus.isDiscardingChanges = false;
+        }
+    }
+
     async onTemplateSaveClick() {
         const templateId = this.signTemplate.id;
         this.state.properties = await this.orm.call("sign.template", "write", [[templateId], { active: true }]);
@@ -501,6 +531,34 @@ export class SignTemplate extends Component {
                     resolve(false);
                 }
             });
+        });
+    }
+
+    async onUpdateDocument(documentId, file) {
+        /* Update document by duplicating and archiving the current template. */
+        new Promise((resolve) => {
+            this.dialog.add(ConfirmationDialog, {
+                title: _t("Replace Document"),
+                body: _t(
+                    "Updating a document generates a new template with the same sign items. " +
+                    "The copied items will land in the same coordinates as their originals if the " +
+                    "number of pages match with the previous PDF. Do you want to proceed?"
+                ),
+                confirmLabel: _t("Replace Document"),
+                confirm: () => resolve(true),
+                cancelLabel: _t("Discard"),
+                cancel: () => resolve(false),
+                dismiss: () => resolve(false),
+            });
+        }).then(async (confirmed) => {
+            if (!confirmed)
+                return;
+            const action = await this.orm.call(
+                "sign.template",
+                "update_document",
+                [[this.signTemplate.id], documentId, file]
+            );
+            this.action.doAction(action, { clearBreadcrumbs: true });
         });
     }
 }

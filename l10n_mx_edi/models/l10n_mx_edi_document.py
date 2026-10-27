@@ -16,10 +16,11 @@ from pytz import timezone
 from werkzeug.urls import url_quote_plus
 
 from odoo import _, api, models, modules, fields, tools, SUPERUSER_ID
+from odoo.exceptions import UserError
 from odoo.fields import Domain
-from odoo.tools import frozendict, remove_accents
 from odoo.tools.float_utils import float_is_zero, float_round
 from odoo.addons.base.models.ir_qweb import keep_query
+from odoo.tools.misc import clean_context
 
 CFDI_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 CANCELLATION_REASON_SELECTION = [
@@ -252,7 +253,7 @@ class L10n_Mx_EdiDocument(models.Model):
                 lambda x: x._action_retry_invoice_try_cancel(),
             ),
             'payment_sent_failed': (
-                None,
+                lambda x: x.move_id,
                 lambda x: x.move_id._l10n_mx_edi_cfdi_payment_try_send(),
             ),
             'payment_cancel_failed': (
@@ -287,6 +288,9 @@ class L10n_Mx_EdiDocument(models.Model):
     def _compute_show_button_needed(self):
         """ Compute whatever or not the 'show' button should be displayed. """
         for doc in self:
+            if doc.state.startswith('payment_') and not doc.move_id:
+                doc.show_button_needed = False
+                continue
             doc.show_button_needed = doc.state.startswith('payment_') or doc.state.startswith('ginvoice_')
 
     # -------------------------------------------------------------------------
@@ -357,6 +361,20 @@ class L10n_Mx_EdiDocument(models.Model):
             limit=1,
         )
 
+    def _get_original_document(self):
+        """
+        Get the document for which the current document is the substitution.
+        """
+        self.ensure_one()
+        if not self.attachment_origin:
+            return self.env['l10n_mx_edi.document']
+        origin_uuid = self.attachment_origin
+        doc_id = self.id
+        return self.env['l10n_mx_edi.document'].search(
+            [('id', '!=', doc_id), ('attachment_uuid', '=like', origin_uuid[3:])],
+            limit=1,
+        )
+
     def action_show_document(self):
         """ View the record(s) owning this document. """
         self.ensure_one()
@@ -393,8 +411,7 @@ class L10n_Mx_EdiDocument(models.Model):
 
     def action_force_payment_cfdi(self):
         """ Force the CFDI for the PUE payment document."""
-        self.ensure_one()
-        self.move_id.l10n_mx_edi_cfdi_payment_force_try_send()
+        raise UserError(_("You can no longer send a CFDI for a PUE payment."))
 
     def action_cancel(self):
         """ Cancel the document. """
@@ -495,15 +512,13 @@ class L10n_Mx_EdiDocument(models.Model):
 
     @api.model
     def _cfdi_sanitize_to_legal_name(self, name):
-        """ We remove the SA de CV / SL de CV / S de RL de CV and accents as they are never in the official name in the XML.
+        """ We remove the SA de CV / SL de CV / S de RL de CV as they are never in the official name in the XML.
 
         :param name: The name to clean.
         :return: The formatted name.
         """
         regex = r"(?i:\s+(s\.?\s?(a\.?)( de c\.?v\.?|)|(s\.?\s?(a\.?s\.?)|s\.? en c\.?( por a\.?)?|s\.?\s?c\.?\s?(l\.?(\s?\(?limitada)?\)?|s\.?(\s?\(?suplementada\)?)?)|s\.? de r\.?l\.?)))\s*$"
-        unaccented = remove_accents(re.sub(regex, "", name or ''))
-        # ñ character should stay as-is because unlike accents, the mexican government saves this letter that way...
-        return ''.join(c if name[i] not in 'üÜñÑ' else name[i] for i, c in enumerate(unaccented)).upper()
+        return re.sub(regex, "", name or '').upper()
 
     @api.model
     def _add_base_cfdi_values(self, cfdi_values):
@@ -792,7 +807,6 @@ class L10n_Mx_EdiDocument(models.Model):
         """
         receptor = cfdi_values['receptor']
         customer = receptor['customer']
-        ieps_breakdown = receptor['to_public'] or customer.l10n_mx_edi_ieps_breakdown
         if 'tax_objected' not in base_line:
             taxes = base_line['tax_ids'].flatten_taxes_hierarchy().filtered(lambda tax: tax.l10n_mx_tax_type != 'local')
             if not taxes:
@@ -815,14 +829,18 @@ class L10n_Mx_EdiDocument(models.Model):
                 # No VAT
                 and all(tax.l10n_mx_tax_type != 'iva' for tax in taxes if tax.amount >= 0.0)
                 # Partner IEPS breakdown
-                and ieps_breakdown
+                and customer.l10n_mx_edi_ieps_breakdown
             ):
                 tax_objected = '07'
             else:
                 tax_objected = '02'
             base_line['tax_objected'] = tax_objected
 
-        base_line['ieps_breakdown'] = base_line['tax_objected'] != '08' and ieps_breakdown
+        base_line['ieps_breakdown'] = (
+            cfdi_values.get('is_global')
+            or base_line['tax_objected'] == '07'
+            or customer.l10n_mx_edi_ieps_breakdown and base_line['tax_objected'] != '08'
+        )
 
     @api.model
     def _add_tax_objected_cfdi_values(self, cfdi_values, base_lines):
@@ -852,7 +870,7 @@ class L10n_Mx_EdiDocument(models.Model):
 
         for base_line in base_lines:
             is_negative = base_line['tax_details']['raw_total_excluded_currency'] < 0.0
-            if is_negative and not base_line['special_type']:
+            if is_negative:
                 base_line['special_type'] = 'global_discount'
         return base_lines
 
@@ -938,39 +956,7 @@ class L10n_Mx_EdiDocument(models.Model):
                     new_taxes_data.append(tax_data)
 
     @api.model
-    def _add_base_lines_cfdi_values(self, cfdi_values, base_lines, global_invoice=False):
-        """ Add the values about the lines to 'cfdi_values'.
-
-        :param cfdi_values:     The current CFDI values.
-        :param base_lines:      A list of dictionaries representing the lines of the document.
-        :param global_invoice:  Indicate if the document is a global invoice.
-        """
-        AccountTax = self.env['account.tax']
-        currency = cfdi_values['currency']
-        company = cfdi_values['company']
-        is_refund_gi = cfdi_values['receptor']['uso_cfdi'] == 'G02'
-        cfdi_values['base_lines'] = base_lines
-
-        # Manage tax breakdown.
-        self._dispatch_base_lines_tax_breakdown_taxes(cfdi_values, base_lines)
-
-        # Add 'raw_gross_total_excluded_currency' (a.k.a. 'importe') / 'raw_discount_amount_currency' (a.k.a. 'descuento').
-        # Round all the values with 6 digits and ensure ROUND(SUM(...)) gives exactly the expected total of the document.
-        AccountTax._round_raw_total_excluded(
-            base_lines=base_lines,
-            company=cfdi_values['company'],
-            precision_digits=6,
-            apply_strict_tolerance=True,
-        )
-        AccountTax._add_and_round_raw_gross_total_excluded_and_discount(
-            base_lines=base_lines,
-            company=cfdi_values['company'],
-            precision_digits=6,
-            account_discount_base_lines=True,
-            apply_strict_tolerance=True,
-        )
-
-        # Pre-compute some values in base_line under 'l10n_mx_cfdi_values' and a grouping key per tax_data under 'l10n_mx_tax_grouping_key'.
+    def _prefill_base_lines_with_cfdi_values(self, cfdi_values, base_lines, global_invoice=False, is_refund_gi=False):
         for base_line in base_lines:
             tax_details = base_line['tax_details']
             product = base_line['product_id']
@@ -1001,7 +987,7 @@ class L10n_Mx_EdiDocument(models.Model):
             elif is_refund_gi:
                 base_line_cfdi_values['clave_prod_serv'] = '84111506'
                 base_line_cfdi_values['clave_unidad'] = 'ACT'
-                base_line_cfdi_values['description'] = "Devoluciones, descuentos o bonificaciones"
+                base_line_cfdi_values['description'] = base_line['name']
                 base_line_cfdi_values['no_identificacion'] = product.default_code
                 base_line_cfdi_values['cuenta_predial'] = product.l10n_mx_edi_predial_account
                 base_line_cfdi_values['unidad'] = (base_line['uom_id'].name or '').upper()
@@ -1059,127 +1045,203 @@ class L10n_Mx_EdiDocument(models.Model):
                 else:
                     tax_grouping_key['tasade'] = None
 
-        # Populate 'traslados_list' / 'retenciones_list' for each base_line.
-        def regular_tax_grouping_function(base_line, tax_data):
-            return (
-                tax_data['l10n_mx_tax_grouping_key']
-                if tax_data
-                and not tax_data['l10n_mx_tax_grouping_key']['local_tax_name']
-                else None
+    @api.model
+    def _regular_tax_data_per_base_line_grouping_function(self, base_line, tax_data):
+        return (
+            tax_data['l10n_mx_tax_grouping_key']
+            if tax_data
+            and not tax_data['l10n_mx_tax_grouping_key']['local_tax_name']
+            else None
+        )
+
+    @api.model
+    def _prefill_base_lines_with_regular_taxes_data(self, base_lines, company=None):
+        AccountTax = self.env['account.tax']
+        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, self._regular_tax_data_per_base_line_grouping_function)
+        if company:
+            AccountTax._round_raw_tax_amounts(
+                base_lines_aggregated_values=base_lines_aggregated_values,
+                company=company,
+                precision_digits=6,
+                apply_strict_tolerance=True,
             )
 
-        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, regular_tax_grouping_function)
-        AccountTax._round_raw_tax_amounts(
-            base_lines_aggregated_values=base_lines_aggregated_values,
-            company=company,
-            precision_digits=6,
-            apply_strict_tolerance=True,
-        )
         for base_line, aggregated_values in base_lines_aggregated_values:
+            l10n_mx_cfdi_values = base_line['l10n_mx_cfdi_values']
+            l10n_mx_cfdi_values['retenciones_list'] = []
+            l10n_mx_cfdi_values['traslados_list'] = []
             for grouping_key, values in aggregated_values.items():
                 if not grouping_key:
                     continue
 
                 is_withholding = grouping_key['is_withholding']
                 tax_values = {
+                    '_grouping_key': grouping_key,
                     'impuesto': grouping_key['impuesto'],
                     'tipo_factor': grouping_key['tipo_factor'],
                     'tasa_o_cuota': grouping_key['tasa_o_cuota'],
-                    'importe': float_round(values['raw_tax_amount_currency'] * (-1 if is_withholding else 1), precision_digits=6),
+                    'raw_importe': values['raw_tax_amount_currency'] * (-1 if is_withholding else 1),
                 }
 
                 if grouping_key['tipo_factor'] == 'Cuota':
                     if grouping_key['scale_from_quantity']:
-                        tax_values['base'] = float_round(base_line['quantity'], precision_digits=6)
+                        tax_values['raw_base'] = base_line['quantity']
                     elif grouping_key['product_field']:
-                        tax_values['base'] = float_round(base_line['product_id'][grouping_key['product_field']], precision_digits=6)
+                        tax_values['raw_base'] = base_line['product_id'][grouping_key['product_field']]
                     else:
-                        tax_values['base'] = 0.0
+                        tax_values['raw_base'] = 0.0
                 else:
-                    tax_values['base'] = float_round(values['raw_base_amount_currency'], precision_digits=6)
-                    if float_is_zero(tax_values['base'], precision_digits=6):
+                    tax_values['raw_base'] = values['raw_base_amount_currency']
+                    if float_is_zero(tax_values['raw_base'], precision_digits=6):
                         tax_values['base'] = 0.000001
 
                 target_list = 'retenciones_list' if is_withholding else 'traslados_list'
-                base_line['l10n_mx_cfdi_values'][target_list].append(tax_values)
+                l10n_mx_cfdi_values[target_list].append(tax_values)
 
-        # Populate 'traslados_list' / 'retenciones_list' for the whole document.
-        cfdi_values['retenciones_list'] = []
-        cfdi_values['retenciones_reduced_list'] = []
-        cfdi_values['traslados_list'] = []
-
-        values_per_grouping_key = AccountTax._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
-        for grouping_key, values in values_per_grouping_key.items():
-            if not grouping_key:
-                continue
-
-            is_withholding = grouping_key['is_withholding']
-
-            tax_values = {
-                'impuesto': grouping_key['impuesto'],
-                'tipo_factor': grouping_key['tipo_factor'],
-                'tasa_o_cuota': grouping_key['tasa_o_cuota'],
-                'importe': values['tax_amount_currency'] * (-1 if is_withholding else 1),
-            }
-            if grouping_key['tipo_factor'] == 'Cuota':
-                if grouping_key['scale_from_quantity']:
-                    tax_values['base'] = sum(
-                        float_round(base_line['quantity'], precision_digits=6)
-                        for base_line, _taxes_data in values['base_line_x_taxes_data']
-                    )
-                elif grouping_key['product_field']:
-                    tax_values['base'] = sum(
-                        float_round(base_line['product_id'][grouping_key['product_field']], precision_digits=6)
-                        for base_line, _taxes_data in values['base_line_x_taxes_data']
-                        if base_line['product_id']
-                    )
-                else:
-                    tax_values['base'] = 0.0
+    @api.model
+    def _local_tax_data_per_base_line_grouping_function(self, base_line, tax_data):
+        grouping_key = (
+            tax_data['l10n_mx_tax_grouping_key']
+            if tax_data
+               and tax_data['l10n_mx_tax_grouping_key']['local_tax_name']
+            else None
+        )
+        if grouping_key is not None:
+            if tax_data['tax'].amount_type in ('fixed', 'code'):
+                grouping_key['tasade'] = grouping_key['tasa_o_cuota']
             else:
-                tax_values['base'] = values['raw_base_amount_currency']
+                grouping_key['tasade'] = grouping_key['tasa_o_cuota'] * 100.0
 
-            target_list = 'retenciones_list' if is_withholding else 'traslados_list'
-            cfdi_values[target_list].append(tax_values)
+        return grouping_key
 
-            if is_withholding:
-                cfdi_values['retenciones_reduced_list'].append(dict(tax_values))
+    @api.model
+    def _prefill_base_lines_with_local_taxes_data(self, base_lines):
+        base_lines_aggregated_values = self.env['account.tax']._aggregate_base_lines_tax_details(base_lines, self._local_tax_data_per_base_line_grouping_function)
+        for base_line, aggregated_values in base_lines_aggregated_values:
+            l10n_mx_cfdi_values = base_line['l10n_mx_cfdi_values']
+            l10n_mx_cfdi_values['local_retenciones_list'] = []
+            l10n_mx_cfdi_values['local_traslados_list'] = []
+            for grouping_key, values in aggregated_values.items():
+                if not grouping_key:
+                    continue
 
-        # Populate 'local_traslados_list' / 'local_retenciones_list' for the whole document.
-        cfdi_values['local_retenciones_list'] = []
-        cfdi_values['local_traslados_list'] = []
+                is_withholding = grouping_key['is_withholding']
+                tax_values = {
+                    '_grouping_key': grouping_key,
+                    'local_tax_name': grouping_key['local_tax_name'],
+                    'tasade': grouping_key['tasade'],
+                    'impuesto': grouping_key['impuesto'],
+                    'tipo_factor': grouping_key['tipo_factor'],
+                    'tasa_o_cuota': grouping_key['tasa_o_cuota'],
+                    'raw_importe': values['tax_amount_currency'] * (-1 if is_withholding else 1),
+                    'raw_base': values['base_amount_currency'],
+                }
 
-        def local_tax_grouping_function(base_line, tax_data):
-            grouping_key = (
-                tax_data['l10n_mx_tax_grouping_key']
-                if tax_data
-                and tax_data['l10n_mx_tax_grouping_key']['local_tax_name']
-                else None
-            )
-            if grouping_key is not None:
-                if tax_data['tax'].amount_type in ('fixed', 'code'):
-                    grouping_key['tasade'] = grouping_key['tasa_o_cuota']
+                if grouping_key['tipo_factor'] == 'Cuota':
+                    if grouping_key['scale_from_quantity']:
+                        tax_values['raw_base'] = base_line['quantity']
+                    elif grouping_key['product_field']:
+                        tax_values['raw_base'] = base_line['product_id'][grouping_key['product_field']]
+                    else:
+                        tax_values['raw_base'] = 0.0
                 else:
-                    grouping_key['tasade'] = grouping_key['tasa_o_cuota'] * 100.0
+                    tax_values['raw_base'] = values['raw_base_amount_currency']
 
-            return grouping_key
+                target_list = 'local_retenciones_list' if grouping_key['is_withholding'] else 'local_traslados_list'
+                l10n_mx_cfdi_values[target_list].append(tax_values)
 
-        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, local_tax_grouping_function)
-        values_per_grouping_key = AccountTax._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
-        for grouping_key, values in values_per_grouping_key.items():
-            if not grouping_key:
-                continue
+    @api.model
+    def _prepare_document_taxes_data(self, base_line_cfdi_values_list):
+        results = {
+            'retenciones_list': {},
+            'traslados_list': {},
+            'local_retenciones_list': {},
+            'local_traslados_list': {},
+        }
+        for target_list, aggregated_values in results.items():
+            for base_line_cfdi_values in base_line_cfdi_values_list:
+                for tax_values in base_line_cfdi_values[target_list]:
+                    grouping_key = tax_values['_grouping_key']
+                    if grouping_key not in aggregated_values:
+                        aggregated_values[grouping_key] = {
+                            **tax_values,
+                            'raw_base': 0.0,
+                            'raw_importe': 0.0,
+                        }
+                    aggregated_values[grouping_key]['raw_base'] += tax_values['raw_base']
+                    aggregated_values[grouping_key]['raw_importe'] += tax_values['raw_importe']
 
-            is_withholding = grouping_key['is_withholding']
-            target_list = 'local_retenciones_list' if grouping_key['is_withholding'] else 'local_traslados_list'
-            cfdi_values[target_list].append({
-                'local_tax_name': grouping_key['local_tax_name'],
-                'tasade': grouping_key['tasade'],
-                'impuesto': grouping_key['impuesto'],
-                'tipo_factor': grouping_key['tipo_factor'],
-                'tasa_o_cuota': grouping_key['tasa_o_cuota'],
-                'importe': values['tax_amount_currency'] * (-1 if is_withholding else 1),
-                'base': values['base_amount_currency'],
-            })
+        return {k: v.values() for k, v in results.items()}
+
+    @api.model
+    def _add_base_lines_cfdi_values(self, cfdi_values, base_lines, global_invoice=False):
+        """ Add the values about the lines to 'cfdi_values'.
+
+        :param cfdi_values:     The current CFDI values.
+        :param base_lines:      A list of dictionaries representing the lines of the document.
+        :param global_invoice:  Indicate if the document is a global invoice.
+        """
+        AccountTax = self.env['account.tax']
+        currency = cfdi_values['currency']
+        is_refund_gi = cfdi_values['receptor']['uso_cfdi'] == 'G02'
+        cfdi_values['base_lines'] = base_lines
+
+        # Manage tax breakdown.
+        self._dispatch_base_lines_tax_breakdown_taxes(cfdi_values, base_lines)
+
+        # Add 'raw_gross_total_excluded_currency' (a.k.a. 'importe') / 'raw_discount_amount_currency' (a.k.a. 'descuento').
+        # Round all the values with 6 digits and ensure ROUND(SUM(...)) gives exactly the expected total of the document.
+        AccountTax._round_raw_total_excluded(
+            base_lines=base_lines,
+            company=cfdi_values['company'],
+            precision_digits=6,
+            apply_strict_tolerance=True,
+        )
+        AccountTax._add_and_round_raw_gross_total_excluded_and_discount(
+            base_lines=base_lines,
+            company=cfdi_values['company'],
+            precision_digits=6,
+            account_discount_base_lines=True,
+            apply_strict_tolerance=True,
+        )
+
+        # Add 'l10n_mx_cfdi_values' to each base_line.
+        self._prefill_base_lines_with_cfdi_values(cfdi_values, base_lines, global_invoice=global_invoice, is_refund_gi=is_refund_gi)
+
+        # Add '[local_]retenciones_list' / '[local_]traslados_list' to each base_line.
+        # Fill 'base' / 'importe' using 6 decimals.
+        self._prefill_base_lines_with_regular_taxes_data(base_lines, cfdi_values['company'])
+        self._prefill_base_lines_with_local_taxes_data(base_lines)
+        for target_list in ('retenciones_list', 'traslados_list', 'local_retenciones_list', 'local_traslados_list'):
+            for base_line in base_lines:
+                for tax_values in base_line['l10n_mx_cfdi_values'][target_list]:
+                    tax_values['base'] = float_round(tax_values['raw_base'], precision_digits=6) or 0.000001
+                    tax_values['importe'] = float_round(tax_values['raw_importe'], precision_digits=6)
+
+        # Add '[local_]retenciones_list' / '[local_]traslados_list' for the whole document.
+        # Fill 'base' / 'importe' using 2 decimals.
+        cfdi_values.update(self._prepare_document_taxes_data([x['l10n_mx_cfdi_values'] for x in base_lines]))
+        for target_list in ('retenciones_list', 'traslados_list', 'local_retenciones_list', 'local_traslados_list'):
+            for tax_values in cfdi_values[target_list]:
+                tax_values['base'] = currency.round(tax_values['raw_base'])
+                tax_values['importe'] = currency.round(tax_values['raw_importe'])
+        cfdi_values['retenciones_reduced_list'] = cfdi_values['retenciones_list']
+
+        # Add 'total[_local]_impuestos_trasladados' / 'total[_local]_impuestos_retenidos'.
+        # Fill 'base' / 'importe' using 2 decimals.
+        for target_sum, target_list in (
+            ('total_impuestos_trasladados', 'traslados_list'),
+            ('total_local_impuestos_trasladados', 'local_traslados_list'),
+            ('total_impuestos_retenidos', 'retenciones_list'),
+            ('total_local_impuestos_retenidos', 'local_retenciones_list'),
+        ):
+            tax_amounts = [
+                x['importe']
+                for x in cfdi_values[target_list]
+                if x.get('tipo_factor') != 'Exento'
+            ]
+            cfdi_values[target_sum] = sum(tax_amounts)
+            cfdi_values[f'need_{target_sum}'] = bool(tax_amounts)
 
         # Add 'conceptos_list'.
         cfdi_values['conceptos_list'] = [
@@ -1201,26 +1263,11 @@ class L10n_Mx_EdiDocument(models.Model):
             cfdi_values['subtotal'] += values['total_excluded_currency']
             cfdi_values['total'] += values['total_excluded_currency'] + values['tax_amount_currency']
 
-        # Document's tax totals.
-        for target_key, list_key in (
-            ('total_impuestos_trasladados', 'traslados_list'),
-            ('total_local_impuestos_trasladados', 'local_traslados_list'),
-            ('total_impuestos_retenidos', 'retenciones_list'),
-            ('total_local_impuestos_retenidos', 'local_retenciones_list'),
-        ):
-            tax_amounts = [
-                x['importe']
-                for x in cfdi_values[list_key]
-                if x.get('tipo_factor') != 'Exento'
-            ]
-            cfdi_values[target_key] = sum(tax_amounts)
-            cfdi_values[f'need_{target_key}'] = bool(tax_amounts)
-
         # Cleanup attributes for Exento taxes/descuento.
         if currency.is_zero(cfdi_values['descuento']):
             cfdi_values['descuento'] = None
         for concepto in cfdi_values['conceptos_list']:
-            if currency.is_zero(concepto['descuento']):
+            if float_is_zero(concepto['descuento'], precision_digits=6):
                 concepto['descuento'] = None
             for key in ('traslados_list', 'retenciones_list'):
                 for tax_values in concepto[key]:
@@ -1293,25 +1340,18 @@ class L10n_Mx_EdiDocument(models.Model):
     # -------------------------------------------------------------------------
 
     @api.model
-    def _get_global_invoice_cfdi_sequence(self, company):
+    def _get_global_invoice_cfdi_sequence(self, company, create_if_missing=True):
         """ Get or create the ir.sequence to be used to get the global invoice document name.
 
-        :param company: The company owning the sequence.
-        :return:        An ir.sequence record.
+        :param company:             The company owning the sequence.
+        :param create_if_missing:   Create the sequence if not exists yet.
+        :return:                    An ir.sequence record.
         """
-        code = 'l10n_mx_global_invoice_cfdi'
-        sequence = self.env['ir.sequence'].sudo().search([('code', '=', code), ('company_id', '=', company.id)], limit=1)
-        if not sequence:
-            sequence = self.env['ir.sequence'].sudo().create({
-                'name': f"Global Invoice CFDI ({company.name})",
-                'code': code,
-                'company_id': company.id,
-                'prefix': 'GINV/',
-                'implementation': 'standard',
-                'use_date_range': True,
-                'padding': 5,
-            })
-        return sequence
+        sequence = company.l10n_mx_edi_global_invoice_sequence_id
+        if sequence:
+            return sequence
+        if not sequence and create_if_missing:
+            return company._create_l10n_mx_edi_global_invoice_sequence()
 
     @api.model
     def _consume_global_invoice_cfdi_sequence(self, sequence, number_next):
@@ -1321,7 +1361,7 @@ class L10n_Mx_EdiDocument(models.Model):
         :param number_next:     The consumed number.
         :return:
         """
-        sequence.number_next = number_next + 1
+        sequence.sudo().number_next = number_next + 1
         sequence.flush_recordset(fnames=['number_next'])
 
     @api.model
@@ -1346,6 +1386,7 @@ class L10n_Mx_EdiDocument(models.Model):
                     rates.append(1 / line['rate'])
         rate = sum(rates) / len(rates) if rates else None
 
+        cfdi_values['is_global'] = True
         self._add_base_cfdi_values(cfdi_values)
         self._add_currency_cfdi_values(cfdi_values, currency)
         self._add_document_origin_cfdi_values(cfdi_values, origin)
@@ -1394,7 +1435,9 @@ class L10n_Mx_EdiDocument(models.Model):
         self._add_base_lines_cfdi_values(cfdi_values, new_base_lines, global_invoice=True)
 
         # Sequence:
-        sequence = self._get_global_invoice_cfdi_sequence(cfdi_values['root_company'])
+        sequence = self._get_global_invoice_cfdi_sequence(cfdi_values['company'], create_if_missing=False)
+        if not sequence:
+            sequence = self._get_global_invoice_cfdi_sequence(cfdi_values['root_company'])
         cfdi_date = fields.Date.context_today(self)
         str_date = fields.Date.to_string(cfdi_date)
         folio = str(sequence.number_next)
@@ -1728,7 +1771,7 @@ class L10n_Mx_EdiDocument(models.Model):
                 data=payload,
                 headers=headers,
                 verify=True,
-                timeout=20,
+                timeout=(20, 120),
             )
         except requests.exceptions.RequestException as req_e:
             return {'status': 'error', 'message': str(req_e)}
@@ -1869,7 +1912,7 @@ Content-Disposition: form-data; name="xml"; filename="xml"
         :return                     The newly created or updated document.
         """
         def create_attachment(attachment_values):
-            return self.env['ir.attachment'].with_user(SUPERUSER_ID).create({
+            return self.env['ir.attachment'].with_context(clean_context(self.env.context)).with_user(SUPERUSER_ID).create({
                 **attachment_values,
                 'res_model': records._name,
                 'res_id': records.id if len(records) == 1 else None,
@@ -1915,12 +1958,12 @@ Content-Disposition: form-data; name="xml"; filename="xml"
                 'datetime': today,
             })
 
-            # During Global Invoice creation, this method is called from an empty recordset `records=self.env['l10n_mx_edi.document']`.
-            # In that case we want the attachment res_id to be the newly created document.
-            # sudo because attachment made by SUPERUSER requires group_system to modify
-            result_attachment = result_document.attachment_id
-            if result_attachment.res_model == result_document._name and not result_attachment.res_id:
-                result_attachment.with_user(SUPERUSER_ID).res_id = result_document.id
+        # During Global Invoice creation, this method is called from an empty recordset `records=self.env['l10n_mx_edi.document']`.
+        # In that case we want the attachment res_id to be the newly created document.
+        # sudo because attachment made by SUPERUSER requires group_system to modify
+        result_attachment = result_document.attachment_id
+        if result_attachment.res_model == result_document._name and not result_attachment.res_id:
+            result_attachment.with_user(SUPERUSER_ID).res_id = result_document.id
 
         return result_document
 
@@ -2196,6 +2239,34 @@ Content-Disposition: form-data; name="xml"; filename="xml"
                 self.env.cr.commit()
             return
 
+        # This fix has updated the python code and "l10n_mx_edi.payment20" template.
+        # Both changes depend on each other and if the template is not updated, the payment
+        # CFDI can be rejected with the following error: [Code : CRP20274]
+        # This dirty fix applies the required changes in the template if not updated.
+        if qweb_template == 'l10n_mx_edi.payment20':
+            view = self.sudo().env.ref(qweb_template)
+            arch = view.arch
+            to_update = False
+
+            old_attrs = (
+                "t-att-BaseDR=\"invoice_values['format_float'](tax_values['base'])\"",
+                "t-att-ImporteDR=\"invoice_values['format_float'](tax_values['importe'])\"",
+                "t-att-BaseP=\"format_float(tax_values['base'])\"",
+                "t-att-ImporteP=\"format_float(tax_values['importe'])\"",
+            )
+            new_attrs = (
+                "t-att-BaseDR=\"invoice_values['format_float'](tax_values['base'], precision=6)\"",
+                "t-att-ImporteDR=\"invoice_values['format_float'](tax_values['importe'], precision=6)\"",
+                "t-att-BaseP=\"format_float(tax_values['base'], precision=6)\"",
+                "t-att-ImporteP=\"format_float(tax_values['importe'], precision=6)\"",
+            )
+            for old, new in zip(old_attrs, new_attrs):
+                if old in view.arch:
+                    arch = arch.replace(old, new)
+                    to_update = True
+            if to_update:
+                view.arch = arch
+
         # == Generate the CFDI ==
         certificate_sudo = cfdi_values['certificate'].sudo()
         self._clean_cfdi_values(cfdi_values)
@@ -2362,6 +2433,7 @@ Content-Disposition: form-data; name="xml"; filename="xml"
             client = Client(wsdl=url, transport=transport)
             response = client.service.Consulta(params)
             fetched_state = response['Estado'] if hasattr(response, 'Estado') else ''
+            fetched_cancel_status = response['EstatusCancelacion'] if hasattr(response, 'EstatusCancelacion') else ''
             # pylint: disable=broad-except
         except Exception as e:
             return {
@@ -2369,7 +2441,11 @@ Content-Disposition: form-data; name="xml"; filename="xml"
                 'value': 'error',
             }
 
-        if fetched_state == 'Vigente':
+        # Documents that are Cancelado con aceptación report as 'valid' during
+        # the 72 hour processing window. Since current code cannot differentiate
+        # between in process and rejected cancellation documents, in-process
+        # cancellation documents should stay 'not_defined'.
+        if fetched_state == 'Vigente' and fetched_cancel_status != 'En proceso':
             return {'value': 'valid'}
         elif fetched_state == 'Cancelado':
             return {'value': 'cancelled'}
@@ -2390,7 +2466,8 @@ Content-Disposition: form-data; name="xml"; filename="xml"
             self.move_id._l10n_mx_edi_cfdi_invoice_update_sat_state(self, sat_state, error=error)
             return True
         elif self.state in ('payment_sent', 'payment_cancel'):
-            self.move_id._l10n_mx_edi_cfdi_payment_update_sat_state(self, sat_state, error=error)
+            if self.move_id:
+                self.move_id._l10n_mx_edi_cfdi_payment_update_sat_state(self, sat_state, error=error)
             return True
         else:
             source_records = self._get_source_records()
@@ -2406,6 +2483,7 @@ Content-Disposition: form-data; name="xml"; filename="xml"
         :param: cadena:         The path to the cadenaoriginal xslt file.
         """
         self.ensure_one()
+        self.sat_state = self.sat_state  # force update write_date - see _fetch_and_update_sat_status
 
         cfdi_infos = self.env['l10n_mx_edi.document']._decode_cfdi_attachment(self.attachment_id.raw)
         if not cfdi_infos:
@@ -2421,8 +2499,8 @@ Content-Disposition: form-data; name="xml"; filename="xml"
         if self.sat_state != sat_results['value']:
             self._update_document_sat_state(sat_results['value'], error=sat_results.get('error'))
 
-            if self._can_commit():
-                self.env.cr.commit()
+        if self._can_commit():
+            self.env.cr.commit()
 
         return sat_results
 
@@ -2489,12 +2567,31 @@ Content-Disposition: form-data; name="xml"; filename="xml"
         :param batch_size:      The maximum size of the batch of documents to process to avoid timeout.
         :param extra_domain:    An optional extra domain to be injected when searching for documents to update.
         """
+        now = fields.Datetime.now()
         domain = self._get_update_sat_status_domain(extra_domain=extra_domain)
-        domain = Domain.AND([domain, [('write_date', '>=', fields.Date.today() - timedelta(days=60))]])
-        documents = self.search(domain, limit=batch_size + 1, order='write_date')
 
-        for counter, document in enumerate(documents):
-            if counter == batch_size:
-                self.env.ref('l10n_mx_edi.ir_cron_update_pac_status_invoice')._trigger()
-            else:
-                document._update_sat_state()
+        # 1. Outgoing documents (state != 'invoice_received', checked up to 60 days, re-checked if > 4h ago)
+        out_domain = Domain.AND([domain, [
+            ('state', '!=', 'invoice_received'),
+            ('write_date', '<=', now - timedelta(hours=4)),
+            ('create_date', '>=', now - timedelta(days=60)),
+        ]])
+        documents = self.search(out_domain, limit=batch_size + 1, order='create_date, id')
+
+        # 2. Vendor bills (state == 'invoice_received', checked up to 7 days, re-checked if > 12 hours ago)
+        if len(documents) <= batch_size:  # we want to enter even if we are exactly at the batch size to check if we need to retrigger
+            in_domain = Domain.AND([domain, [
+                ('state', '=', 'invoice_received'),
+                ('write_date', '<=', now - timedelta(hours=12)),
+                ('create_date', '>=', now - timedelta(days=7)),
+            ]])
+            remaining_limit = batch_size + 1 - len(documents)
+            vendor_docs = self.search(in_domain, limit=remaining_limit, order='create_date, id')
+            documents |= vendor_docs
+
+        need_retrigger = len(documents) > batch_size
+        for document in documents[:batch_size]:
+            document._update_sat_state()
+
+        if need_retrigger:
+            self.env.ref('l10n_mx_edi.ir_cron_update_pac_status_invoice')._trigger()

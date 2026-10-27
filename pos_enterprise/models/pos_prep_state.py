@@ -55,34 +55,38 @@ class PosPreparationState(models.Model):
                 'stage_id': pdis_state.stage_id.id,
                 'last_stage_change': pdis_state.last_stage_change
             })
-            self._record_stage_change_prep_time(pdis_state, old_last_stage_change, prep_order_completion_time)
-
+            self._record_stage_change_prep_time(pdis_state, old_last_stage_change, {})
+        # Only compute the completion_time once all the lines of the order have been updated
+        for pdis_state in self:
+            self._record_completion_time(pdis_state, prep_order_completion_time)
         p_dis = self.env['pos.prep.display'].browse(int(prep_display_id))
         p_dis._notify('CHANGE_STATE_STAGE', {'pdis_state_stages': pdis_state_stages, 'prep_order_completion_time': prep_order_completion_time})
 
         return True
 
     def _record_stage_change_prep_time(self, pdis_state, old_last_stage_change, prep_order_completion_time):
+        pos_order_line = pdis_state.prep_line_id.pos_order_line_id
         # If new stage is the first one & line is not done, it means the order has been reset
         if pdis_state.stage_id.is_stage_position(0):
-            if pdis_state.prep_line_id.pos_order_line_id.preparation_time != -1:
-                pdis_state.prep_line_id.pos_order_line_id.preparation_time = -1
-            if pdis_state.prep_line_id.pos_order_line_id.service_time != -1:
-                pdis_state.prep_line_id.pos_order_line_id.service_time = -1
-        # If new stage is the second last one & line is done, write the preparation_time
-        if len(pdis_state.stage_id) > 1:
-            if pdis_state.prep_line_id.pos_order_line_id.preparation_time == -1 and pdis_state.stage_id.is_stage_position(-2):
-                pdis_state.prep_line_id.pos_order_line_id.preparation_time = compute_seconds_since(old_last_stage_change)
-        # If new stage is the last one & line is done, write the service_time
-        if pdis_state.prep_line_id.pos_order_line_id.service_time == -1 and pdis_state.stage_id.is_stage_position(-1):
-            pdis_state.prep_line_id.pos_order_line_id.service_time = compute_seconds_since(old_last_stage_change)
+            if pos_order_line.preparation_time != -1:
+                pos_order_line.preparation_time = -1
+            if pos_order_line.service_time != -1:
+                pos_order_line.service_time = -1
+        # With less than 3 stages, there is no service stage: preparation ends on the last stage
+        has_service_stage = len(pdis_state.stage_id.prep_display_id.stage_ids) >= 3
+        if pos_order_line.preparation_time == -1 and pdis_state.stage_id.is_stage_position(-2 if has_service_stage else -1):
+            pos_order_line.preparation_time = compute_seconds_since(old_last_stage_change)
+        # If new stage is the last one & line is done & there are atleast 3 stages, write the service_time
+        if has_service_stage and pos_order_line.service_time == -1 and pdis_state.stage_id.is_stage_position(-1):
+            pos_order_line.service_time = compute_seconds_since(old_last_stage_change)
 
-        # If the order is done, write the completion_time
+    def _record_completion_time(self, pdis_state, prep_order_completion_time):
+        # If the orders is done, write the completioin_time
         # Also, if all the quantities are cancelled (don't have pos_order_line_id in that case), no need to update the completion_time
-        if pdis_state.stage_id.is_stage_position(-1) and pdis_state.prep_line_id.prep_order_id.id not in prep_order_completion_time and pdis_state.prep_line_id.prep_order_id.prep_line_ids.pos_order_line_id:
+        if pdis_state.stage_id.is_stage_position(-1) and pdis_state.prep_line_id.prep_order_id.prep_line_ids.pos_order_line_id:
             order_completion_seconds = max(
                 pdis_state.prep_line_id.prep_order_id.prep_line_ids.pos_order_line_id.mapped(
-                    lambda line: line.service_time + line.preparation_time
+                    lambda line: max(line.service_time, 0) + max(line.preparation_time, 0)
                 )
             )
             order_completion_minutes = int(order_completion_seconds / 60)

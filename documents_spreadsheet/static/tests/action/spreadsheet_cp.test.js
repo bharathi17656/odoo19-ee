@@ -8,7 +8,13 @@ import { createSpreadsheet } from "@documents_spreadsheet/../tests/helpers/sprea
 import { beforeEach, describe, expect, getFixture, test } from "@odoo/hoot";
 import { animationFrame } from "@odoo/hoot-mock";
 import { Model } from "@odoo/o-spreadsheet";
-import { contains, getService, MockServer, mockService } from "@web/../tests/web_test_helpers";
+import {
+    contains,
+    getService,
+    MockServer,
+    mockService,
+    patchWithCleanup,
+} from "@web/../tests/web_test_helpers";
 
 defineDocumentSpreadsheetModels();
 describe.current.tags("desktop");
@@ -152,7 +158,7 @@ test("Freeze&Share spreadsheet from control panel", async function () {
             expect.step("open_share");
         },
     });
-    await createSpreadsheet({
+    const { model: modelBis } = await createSpreadsheet({
         serverData,
         spreadsheetId,
         mockRPC: async function (route, args) {
@@ -168,12 +174,22 @@ test("Freeze&Share spreadsheet from control panel", async function () {
             }
         },
     });
+    const dispatched = [];
+    const oldDispatch = modelBis.dispatch;
+    patchWithCleanup(modelBis, {
+        dispatch: (command, args) => {
+            dispatched.push(command);
+            return oldDispatch(command, args);
+        },
+    });
+
     expect(target.querySelector(".spreadsheet_share_dropdown")).toBe(null);
     await contains(".o-topbar-menu[data-id=file]").click();
     await contains(".o-menu-item[data-name=share]").click();
     await contains(".o-menu-item[data-name=freeze_and_share]").click();
 
     expect.verifySteps(["spreadsheet_shared", "open_share"]);
+    expect(dispatched).toInclude("LOG_DATASOURCE_EXPORT");
 });
 
 test("Share spreadsheet from control panel", async function () {
@@ -200,6 +216,32 @@ test("Share spreadsheet from control panel", async function () {
     expect(target.querySelector(".spreadsheet_share_dropdown")).toBe(null);
     await contains("button:contains(Share)").click();
     expect.verifySteps(["open_share"]);
+});
+
+test("Share button is hidden when document is archived (Trash)", async function () {
+    const spreadsheetId = 789;
+    const model = new Model();
+    const serverData = getBasicServerData();
+    serverData.models["documents.document"].records = [
+        { id: 1, type: "folder" },
+        {
+            name: "My spreadsheet",
+            id: spreadsheetId,
+            spreadsheet_data: JSON.stringify(model.exportData()),
+            folder_id: 1,
+            active: false,
+        },
+    ];
+
+    await createSpreadsheet({ serverData, spreadsheetId });
+
+    expect("o-spreadsheet-topbar button:contains(Share)").toHaveCount(0, {
+        message: "Share button should be hidden for archived spreadsheets",
+    });
+    await contains(".o-topbar-menu[data-id=file]").click();
+    expect(".o-menu-item[data-name=share]").toHaveCount(0, {
+        message: "Share menu should be hidden for archived spreadsheets",
+    });
 });
 
 test("toggle favorite", async function () {

@@ -30,7 +30,7 @@ CATALOG52 = [
 REFUND_REASON = [
     ('01', 'Cancellation of the operation'),
     ('02', 'Cancellation by error in the RUC'),
-    ('03', 'Correction by error in the description'),
+    ('03', 'Correction by error in the description and/or SUNAT product code'),
     ('04', 'Global discount'),
     ('05', 'Discount per item'),
     ('06', 'Total refund'),
@@ -60,9 +60,10 @@ class AccountMove(models.Model):
         selection=[
             ('01', 'Default interest'),
             ('02', 'Increase in value'),
-            ('03', 'Penalties / other concepts'),
+            ('03', 'Other concepts'),
             ('11', 'Adjustments of export operations'),
             ('12', 'Adjustments affecting the IVAP'),
+            ('13', 'Penalties'),
         ],
         string="Debit Reason",
         help='It contains all possible values for the charge reason according to Catalog No. 10')
@@ -72,7 +73,7 @@ class AccountMove(models.Model):
         help="Peru: Reason given by the user for cancelling this move, structure of voided summary: sac:VoidReasonDescription.")
     l10n_pe_edi_operation_type = fields.Selection(
         selection=[
-            ('0101', '[0101] Internal sale'),
+            ('0101', '[0101] Internal sale not subject to detraction or perception'),
             ('0112', '[0112] Internal Sale - Sustains Natural Person Deductible Expenses'),
             ('0113', '[0113] Internal Sale-NRUS'),
             ('0200', '[0200] Export of Goods'),
@@ -85,13 +86,14 @@ class AccountMove(models.Model):
             ('0207', '[0207] Exportation of Services - Supply of electric power in favor of subjects domiciled in ZED'),
             ('0208', '[0208] Exportation of Services - Provision of services partially carried out abroad'),
             ('0301', '[0301] Operations with air waybill (issued in the national scope)'),
-            ('0302', '[0302] Passenger rail transport operations'), ('0303', '[0303] Oil royalty Pay Operations'),
+            ('0302', '[0302] Passenger rail transport operations'), ('0303', '[0303] Oil royalty Pay Operations (Obsolete)'),
             ('0401', '[0401] Non-domiciled sales that do not qualify as an export'),
             ('1001', '[1001] Operation Subject to Detraction'),
             ('1002', '[1002] Operation Subject to Detraction - Hydrobiological Resources'),
             ('1003', '[1003] Operation Subject to Drawdown - Passenger Transport Services'),
             ('1004', '[1004] Operation Subject to Drawdown - Cargo Transportation Services'),
-            ('2001', '[2001] Operation Subject to Perception')
+            ('2001', '[2001] Operation Subject to Perception'),
+            ('2106', '[2106] National sale to tourists - Tax Free'),
         ],
         string="Operation Type (PE)",
         store=True, readonly=False,
@@ -184,7 +186,10 @@ class AccountMove(models.Model):
                 move.state == 'draft'
                 and move.country_code == 'PE'
                 and move.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code != '6'
-                and move.l10n_pe_edi_operation_type in ('0200', '0201', '0202', '0203', '0204', '0205', '0206', '0207', '0208')
+                and (
+                    move.l10n_pe_edi_operation_type in ('0200', '0201', '0202', '0203', '0204', '0205', '0206', '0207', '0208')
+                    or move.l10n_pe_edi_operation_type == '2106' and move.move_type == 'out_invoice'
+                )
                 and move.journal_id.type == 'sale'
             )
         )
@@ -240,14 +245,22 @@ class AccountMove(models.Model):
         national_bank_account_number = national_bank_account[0].acc_number if national_bank_account else False
         has_installments = len(self.line_ids.filtered(lambda l: l.display_type == 'payment_term')) > 1
 
+        # SUNAT requires the detraction amount to always be in PEN.
+        # amount_total_signed is in the company currency, which is normally PEN.
+        # When the company currency is not PEN, we must convert to PEN explicitly.
+        pen_currency = self.env.ref('base.PEN')
+        amount_in_pen = self.currency_id._convert(
+            self.amount_total, pen_currency, self.company_id, self.invoice_date or fields.Date.today()
+        )
+
         return {
             'id': 'Detraccion',
-            'currency': self.company_id.currency_id,
+            'currency': pen_currency,
             'payment_means_id': line.product_id.l10n_pe_withhold_code,
             'payee_financial_account': national_bank_account_number,
             'payment_means_code': '999',
-            'spot_amount': float_round(self.amount_total * (max_percent / 100.0), precision_rounding=0.01),
-            'amount': float_round(self.amount_total_signed * (max_percent / 100.0), precision_rounding=1),
+            'spot_amount': float_round(self.amount_total * (max_percent / 100.0), precision_rounding=1 if self.currency_id == pen_currency else self.currency_id.rounding),
+            'amount': float_round(amount_in_pen * (max_percent / 100.0), precision_rounding=1),
             'payment_percent': max_percent,
             'has_installments': has_installments,
         }
@@ -315,6 +328,9 @@ class AccountMove(models.Model):
                 break
 
         serie_folio = self._l10n_pe_edi_get_serie_folio()
+        partner_identification_type = self.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code
+        if not partner_identification_type and self.partner_id.country_id and self.partner_id.country_code != 'PE':
+            partner_identification_type = '0'
         qr_code_values = [
             self.company_id.vat,
             self.company_id.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code,
@@ -323,7 +339,7 @@ class AccountMove(models.Model):
             igv_tax_amount,
             str(self.amount_total),
             fields.Date.to_string(self.date),
-            self.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code,
+            partner_identification_type,
             self.commercial_partner_id.vat or '00000000',
             signature_hash,
         ]
@@ -362,3 +378,13 @@ class AccountMove(models.Model):
         if self.l10n_latam_use_documents and self.company_id.country_id.code == 'PE':
             return 'l10n_pe_edi.report_invoice_document'
         return super()._get_name_invoice_report()
+
+    def _check_document_type_discount(self):
+        for move in self:
+            if move.l10n_pe_edi_is_required and move.l10n_latam_document_type_id.code in ('07', '08') and any(move.invoice_line_ids.mapped('discount')):
+                raise UserError(_("Credit and Debit notes with discounts are not allowed in SUNAT. "
+                                  "Please adjust the lines to confirm the document."))
+
+    def _post(self, soft=True):
+        self._check_document_type_discount()
+        return super()._post(soft)

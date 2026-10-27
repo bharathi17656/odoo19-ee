@@ -7,12 +7,9 @@ import { IotWebRtc } from "./iot_webrtc";
 
 export const PRINTER_MESSAGES = {
     ERROR_FAILED: _t("Failed to initiate print"),
-    ERROR_OFFLINE: _t("Printer is not ready"),
     ERROR_TIMEOUT: _t("Printing timed out"),
-    ERROR_NO_PAPER: _t("Out of paper"),
     ERROR_UNREACHABLE: _t("Printer is unreachable"),
     ERROR_UNKNOWN: _t("Unknown printer error occurred"),
-    WARNING_LOW_PAPER: _t("Paper is low"),
 };
 
 export const FDM_MESSAGES = {
@@ -45,8 +42,8 @@ export const FDM_MESSAGES = {
  * HTTP POST method and then using the websocket.
  */
 export class IotHttpService {
-    longpollingFailedTimestamp = null;
-    connectionStatus = "webrtc"; // webrtc, longpolling, websocket, offline
+    webRtcFailedTimestamp = null;
+    connectionStatus = "longpolling"; // webrtc, longpolling, websocket, offline
     connectionTypes = [
         this._webRtc.bind(this),
         this._longpolling.bind(this),
@@ -75,53 +72,57 @@ export class IotHttpService {
 
     cacheIotBoxRecords(boxes) {
         for (const box of boxes) {
-            this.cachedIotBoxes[box.id] = { ip: box.ip, identifier: box.identifier };
+            this.cachedIotBoxes[box.id] = { ip: box.ip, identifier: box.identifier, version: box.version };
         }
     }
 
     async getIotBoxData(iotBoxId) {
-        const record = await this.orm.searchRead("iot.box", [["id", "=", iotBoxId]], ["id", "ip", "identifier"]);
+        const record = await this.orm.searchRead("iot.box", [["id", "=", iotBoxId]], ["id", "ip", "identifier", "version"]);
         if (!record) {
             throw new Error(`No IoT Box found`);
         }
         return record;
     }
 
-    _ensureLongpollingEnabled() {
+    _ensureWebRtcEnabled() {
         if (
-            this.longpollingFailedTimestamp &&
-            Date.now() - this.longpollingFailedTimestamp < 5 * 60 * 1000
+            this.webRtcFailedTimestamp &&
+            Date.now() - this.webRtcFailedTimestamp < 20 * 60 * 1000
         ) {
-            throw new Error("Longpolling is temporarily disabled due to a recent failure.");
+            throw new Error("WebRTC is temporarily disabled due to a recent failure.");
         }
     }
 
-    async _webRtc({ identifier, deviceIdentifier, data, messageId, onSuccess, onFailure, messageType }) {
-        await this.webRtc.onMessage(identifier, deviceIdentifier, messageId, onSuccess, onFailure);
-        if (data) {
-            await this.webRtc.sendMessage(identifier, {
-                device_identifier: deviceIdentifier,
-                data,
-                ...data, // compatibility with v19.1+ IoT Boxes
-            }, messageId, messageType);
+    async _webRtc({ identifier, version, deviceIdentifier, data, messageId, onSuccess, onFailure, messageType }) {
+        if (/\d{4}\.\d{2}\.\d{2}/.test(version)) {
+            throw new Error("IoT box does not support WebRTC, skipping.");
+        }
+        this._ensureWebRtcEnabled();
+        try {
+            await this.webRtc.onMessage(identifier, deviceIdentifier, messageId, onSuccess, onFailure);
+            if (data) {
+                await this.webRtc.sendMessage(identifier, {
+                    device_identifier: deviceIdentifier,
+                    data,
+                }, messageId, messageType);
+            }
+        } catch (error) {
+            this.webRtcFailedTimestamp = Date.now();
+            throw error;
         }
         this.connectionStatus = "webrtc";
     }
 
     async _longpolling({ ip, deviceIdentifier, data, messageId, onSuccess, onFailure }) {
-        this._ensureLongpollingEnabled();
-        try {
-            this.longpolling.onMessage(ip, deviceIdentifier, onSuccess, onFailure, messageId);
-            if (data) {
-                const response =
-                    await this.longpolling.sendMessage(ip, { device_identifier: deviceIdentifier, data }, messageId, true);
-                if (response?.result === false) {
-                    onFailure({status: "disconnected"}, deviceIdentifier, messageId);
-                }
-            }
-        } catch (e) {
-            this.longpollingFailedTimestamp = Date.now();
-            throw e;
+        const onMessagePromise = this.longpolling.onMessage(ip, deviceIdentifier, onSuccess, onFailure, messageId);
+        if (!data) {
+            return await onMessagePromise;
+        }
+
+        const response =
+            await this.longpolling.sendMessage(ip, { device_identifier: deviceIdentifier, data }, messageId, true);
+        if (response?.result === false || response?.result?.status === "disconnected") {  // compat. v19.1+ IoT Boxes
+            onFailure({ status: "disconnected" }, deviceIdentifier, messageId);
         }
         this.connectionStatus = "longpolling";
     }
@@ -155,11 +156,11 @@ export class IotHttpService {
         if (!this.cachedIotBoxes[iotBoxId]) {
             this.cacheIotBoxRecords(await this.getIotBoxData(iotBoxId))
         }
-        const { ip, identifier } = this.cachedIotBoxes[iotBoxId];
+        const { ip, identifier, version } = this.cachedIotBoxes[iotBoxId];
 
         // if we target the box instead of a device, we want longpolling to handle action as messageType
         const messageType = deviceIdentifier === identifier ? data.action : undefined;
-        const params = { ip, identifier, data, messageType, ...arguments[0] };
+        const params = { ip, identifier, version, data, messageType, ...arguments[0] };
 
         for (const connectionType of this.connectionTypes) {
             try {

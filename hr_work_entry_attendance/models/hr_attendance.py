@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from datetime import datetime, time
+from pytz import timezone, utc
 from odoo.exceptions import UserError
 
 from odoo import api, models, _
@@ -21,11 +22,34 @@ class HrAttendance(models.Model):
         # Upon creating or closing an attendance, create the work entry directly if the attendance
         # was created within an already generated period
         # This code assumes that attendances are not created/written in big batches
-        work_entries_vals_list = []
+        start_dates, stop_dates = [], []
         for attendance in self:
-            # Filter closed attendances
+            # Only closed attendances can generate work entries
             if not attendance.check_out:
                 continue
+
+            calendar = attendance._get_employee_calendar()
+            resource = attendance.employee_id.resource_id
+            tz_name = (calendar.tz if calendar else resource.tz) or 'UTC'
+            tz = timezone(tz_name)
+            check_in_local = utc.localize(attendance.check_in).astimezone(tz)
+            start_dates.append(tz.localize(datetime.combine(check_in_local.date(), time.min)).astimezone(utc).replace(tzinfo=None))
+            check_out_local = utc.localize(attendance.check_out).astimezone(tz)
+            stop_dates.append(tz.localize(datetime.combine(check_out_local.date(), time.max)).astimezone(utc).replace(tzinfo=None))
+
+        if not start_dates and not stop_dates:
+            return
+        start_window = min(start_dates)
+        stop_window = max(stop_dates)
+        attendances = self.search([
+            ('employee_id', 'in', self.employee_id.ids),
+            ('check_in', '>=', start_window),
+            ('check_in', '<=', stop_window),
+            ('check_out', '!=', False),
+        ])
+
+        work_entries_vals_list = []
+        for attendance in attendances:
             contracts = attendance.employee_id.sudo()._get_versions_with_contract_overlap_with_period(
                 attendance.check_in.date(), attendance.check_out.date())
             for contract in contracts:
@@ -37,13 +61,13 @@ class HrAttendance(models.Model):
             new_work_entries = self.env['hr.work.entry'].sudo().create(work_entries_vals_list)
             if new_work_entries:
                 # Fetch overlapping work entries, grouped by employees
-                start = min((datetime.combine(a.check_in, time.min) for a in self if a.check_in), default=False)
-                stop = max((datetime.combine(a.check_out, time.max) for a in self if a.check_out), default=False)
-                work_entry_groups = self.env['hr.work.entry'].sudo()._read_group([
-                    ('date', '<=', stop),
-                    ('date', '>=', start),
-                    ('employee_id', 'in', self.employee_id.ids),
-                ], ['employee_id'], ['id:recordset'])
+                work_entry_groups = self.env['hr.work.entry'].sudo()._read_group(Domain.OR([
+                    Domain.AND([
+                        Domain('employee_id', '=', work_entry.employee_id.id),
+                        Domain('date', '=', work_entry.date),
+                    ])
+                    for work_entry in new_work_entries
+                ]), ['employee_id'], ['id:recordset'])
                 work_entries_by_employee = {
                     employee.id: records
                     for employee, records in work_entry_groups
@@ -124,5 +148,5 @@ class HrAttendance(models.Model):
             res = super().unlink()
         if work_entries:
             slots = [{'date': work_entry.date, 'employee_id': work_entry.employee_id.id} for work_entry in work_entries]
-            self.env["hr.work.entry.regeneration.wizard"].regenerate_work_entries(slots=slots, record_ids=work_entries.ids)
+            self.env["hr.work.entry.regeneration.wizard"].sudo().regenerate_work_entries(slots=slots, record_ids=work_entries.ids)
         return res

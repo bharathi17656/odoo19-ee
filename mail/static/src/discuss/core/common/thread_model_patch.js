@@ -181,10 +181,11 @@ const threadPatch = {
                 // starts from most recent persistent messages to find early
                 for (let i = this.persistentMessages.length - 1; i >= 0; i--) {
                     const message = this.persistentMessages[i];
-                    if (!message.isSelfAuthored) {
-                        continue;
-                    }
-                    if (message.id > this.lastMessageSeenByAllId) {
+                    if (
+                        !message.isSelfAuthored ||
+                        message.isNotification ||
+                        message.id > this.lastMessageSeenByAllId
+                    ) {
                         continue;
                     }
                     res = message;
@@ -227,17 +228,23 @@ const threadPatch = {
         });
         this.scrollUnread = true;
         // memberBusSubscription
-        this.toggleBusSubscription = fields.Attr(false, {
+        // Start with `not_member` not to trigger a subscription if the user is not a member
+        // initially, only when switching from `member_xxx` to `not_member` following a leave.
+        this.toggleBusSubscription = fields.Attr("not_member", {
             /** @this {import("models").Thread} */
             compute() {
-                return (
-                    this.model === "discuss.channel" &&
-                    this.self_member_id?.memberSince >=
-                        this.store.env.services.bus_service.startedAt
-                );
+                if (!this.self_member_id) {
+                    return "not_member";
+                }
+                return this.self_member_id.memberSince >=
+                    this.store.env.services.bus_service.startedAt
+                    ? "member_after_start"
+                    : "member_before_start";
             },
             onUpdate() {
-                this.store.updateBusSubscription();
+                if (this.toggleBusSubscription !== "member_before_start") {
+                    this.store.updateBusSubscription();
+                }
             },
         });
         this.typingMembers = fields.Many("discuss.channel.member", { inverse: "threadAsTyping" });
@@ -283,7 +290,7 @@ const threadPatch = {
     },
     /** @returns {import("models").ChannelMember} */
     computeCorrespondent() {
-        if (this.channel_type === "channel") {
+        if (["channel", "group"].includes(this.channel_type)) {
             return undefined;
         }
         const correspondents = this.correspondents;
@@ -374,7 +381,9 @@ const threadPatch = {
         if (this.isChatChannel && this.self_member_id?.message_unread_counter_ui) {
             return this.self_member_id.message_unread_counter_ui;
         }
-        if (this.discussAppCategory?.id === "channels") {
+        // Sub channels have no category of their own: they follow the one of their parent.
+        const category = this.discussAppCategory ?? this.parent_channel_id?.discussAppCategory;
+        if (category?.id === "channels") {
             if (this.store.settings.channel_notifications === "no_notif") {
                 return 0;
             }
@@ -485,6 +494,7 @@ const threadPatch = {
             const command = commandRegistry.get(firstWord, false);
             if (
                 command &&
+                (!command.condition || command.condition({ store: this.store, thread: this })) &&
                 (!command.channel_types || command.channel_types.includes(this.channel_type))
             ) {
                 await this.executeCommand(command, textContent);

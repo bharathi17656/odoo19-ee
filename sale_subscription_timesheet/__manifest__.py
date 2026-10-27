@@ -8,6 +8,7 @@
     'summary': 'Project sales subscriptions',
     'description': 'Bridge created to add computation of timesheet to subscription',
     'depends': ['project_sale_subscription', 'sale_timesheet'],
+    'data': ['views/sale_subscription_portal_timesheet_templates.xml'],
     'installable': True,
     'auto_install': True,
     'author': 'Odoo S.A.',

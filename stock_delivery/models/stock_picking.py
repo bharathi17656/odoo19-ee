@@ -33,8 +33,11 @@ class StockPicking(models.Model):
 
     @api.depends('partner_id', 'carrier_id.max_weight', 'carrier_id.max_volume', 'carrier_id.must_have_tag_ids', 'carrier_id.excluded_tag_ids', 'move_ids.product_id.product_tag_ids', 'move_ids.product_id.weight', 'move_ids.product_id.volume')
     def _compute_allowed_carrier_ids(self):
+        all_carriers = self.env['delivery.carrier'].search(
+            self.env['delivery.carrier']._check_company_domain(self.company_id)
+        )
         for picking in self:
-            carriers = self.env['delivery.carrier'].search(self.env['delivery.carrier']._check_company_domain(picking.company_id))
+            carriers = all_carriers.filtered(lambda c: not c.company_id or c.company_id == picking.company_id)
             picking.allowed_carrier_ids = carriers.available_carriers(picking.partner_id, picking) if picking.partner_id else carriers
 
     @api.depends('carrier_id', 'carrier_tracking_ref')
@@ -46,7 +49,7 @@ class StockPicking(models.Model):
     def _compute_return_picking(self):
         for picking in self:
             if picking.carrier_id and picking.carrier_id.can_generate_return:
-                picking.is_return_picking = any(m.origin_returned_move_id for m in picking.move_ids)
+                picking.is_return_picking = any(m.origin_returned_move_id and m.location_dest_usage == 'internal' for m in picking.move_ids)
             else:
                 picking.is_return_picking = False
 
@@ -68,6 +71,21 @@ class StockPicking(models.Model):
     def _cal_weight(self):
         for picking in self:
             picking.weight = sum(move.weight for move in picking.move_ids if move.state != 'cancel')
+
+    def button_validate(self):
+        res = super().button_validate()
+        if res is not True:
+            return res
+        for picking in self:
+            # `_get_new_picking_values` is used to propagate the carrier before a picking is created (i.e. carrier is set on an SO).
+            # Whereas this case handles the propagation of carrier after the picking validation as the carrier maybe set
+            # at later stages as well, specifically at the picking level rather than on the Sales Order.
+            # This ensures the behavior is consistent across all scenarios (push + pull, all pull, and all push rules).
+            if picking.carrier_id:
+                picking._get_next_transfers().filtered(
+                    lambda p: not p.carrier_id and any(rule.propagate_carrier for rule in p.move_ids.rule_id)
+                ).write({'carrier_id': picking.carrier_id.id, 'carrier_tracking_ref': picking.carrier_tracking_ref})
+        return res
 
     def _carrier_exception_note(self, exception):
         self.ensure_one()
@@ -173,7 +191,7 @@ class StockPicking(models.Model):
             if not delivery_lines:
                 delivery_lines = sale_order._create_delivery_line(self.carrier_id, self.carrier_price)
             vals = self._prepare_sale_delivery_line_vals()
-            delivery_lines[0].write(vals)
+            delivery_lines[0].with_context(allow_delivery_cost_update=True).write(vals)
 
     def open_website_url(self):
         self.ensure_one()
@@ -202,7 +220,7 @@ class StockPicking(models.Model):
 
     def cancel_shipment(self):
         for picking in self:
-            picking.carrier_id.cancel_shipment(self)
+            picking.carrier_id.cancel_shipment(picking)
             msg = "Shipment %s cancelled" % picking.carrier_tracking_ref
             picking.message_post(body=msg)
             picking.carrier_tracking_ref = False

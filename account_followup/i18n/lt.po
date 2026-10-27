@@ -21,13 +21,14 @@
 # Mantas Kriaučiūnas Baltix <mantas@akl.lt>, 2022
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:45+0000\n"
-"PO-Revision-Date: 2025-11-16 05:23+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-04-10 18:46+0000\n"
+"PO-Revision-Date: 2026-10-06 09:36+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "account_followup/lt/>\n"
 "Language: lt\n"
@@ -35,15 +36,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < "
-"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 :"
-" n % 1 != 0 ? 2: 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 "
+": n % 1 != 0 ? 2: 3);\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: account_followup
 #. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 msgid "%(company)s Payment Reminder - %(partner)s"
-msgstr ""
+msgstr "%(company)s Priminimas apie mokėjimą – %(partner)s"
 
 #. module: account_followup
 #. odoo-python
@@ -54,17 +55,12 @@ msgstr ""
 #. module: account_followup
 #: model:ir.actions.report,print_report_name:account_followup.action_report_followup
 msgid "'Follow-up ' + object.display_name"
-msgstr ""
+msgstr "'Tolesni veiksmai' + object.display_name"
 
 #. module: account_followup
 #: model:account_followup.followup.line,name:account_followup.demo_followup_line1
 msgid "15 Days"
 msgstr "15 dienų"
-
-#. module: account_followup
-#: model_terms:ir.ui.view,arch_db:account_followup.followup_filter_info_template
-msgid "2023-09-06"
-msgstr ""
 
 #. module: account_followup
 #: model:account_followup.followup.line,name:account_followup.demo_followup_line2
@@ -126,6 +122,41 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p>\n"
+"                       <t t-if=\"object.id != "
+"object.commercial_partner_id.id\"> Gerb. „ <t t-out=\"object.name or ''\"/> "
+"“ (<t t-out=\"object.commercial_partner_id.name or ''\"/>),</t>\n"
+"                        <t t-else=\"\">Gerb. „ <t t-out=\"object.name or "
+"''\"/> “,</t>\n"
+"                        <br/>\n"
+"                        Nepaisant keleto priminimų, jūsų sąskaita vis dar "
+"nėra apmokėta.\n"
+"                        Jei per artimiausias 8 dienas nebus sumokėta visa "
+"suma, be atskiro įspėjimo bus imtasi teisinių veiksmų skolai išieškoti.\n"
+"                        Tikiuosi, kad šių veiksmų neprireiks, o informacija "
+"apie mokėtinas sumas pateikta žemiau.\n"
+"                        Jei turite klausimų šiuo klausimu, nedvejodami "
+"kreipkitės į mūsų apskaitos skyrių.\n"
+"                       <br/> \n"
+"                        Su pagarba,\n"
+"                       <br/>\n"
+"                        <t t-if=\"not is_html_empty"
+"(object._get_followup_responsible().signature)\"> \n"
+"                           <br/>\n"
+"                            <t t-out=\"object._get_followup_responsible()"
+".signature\"/> \n"
+"                       </t>\n"
+"                        <t t-else=\"\"> \n"
+"                           <br/> \n"
+"                            --\n"
+"                           <br/>\n"
+"                            <t t-out=\"object._get_followup_responsible()"
+".name\"/> \n"
+"                       </t>\n"
+"                    </p> \n"
+"               </div> \n"
+"            "
 
 #. module: account_followup
 #: model:mail.template,body_html:account_followup.demo_followup_email_template_2
@@ -171,6 +202,45 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p>\n"
+"                       <t t-if=\"object.id != "
+"object.commercial_partner_id.id\"> Gerb. „ <t t-out=\"object.name or ''\"/> "
+"“ (<t t-out=\"object.commercial_partner_id.name or ''\"/>),</t>\n"
+"                        <t t-else=\"\">Gerb. „ <t t-out=\"object.name or "
+"''\"/> “,</t>\n"
+"                        <br/>\n"
+"                        Mums labai gaila, kad, nepaisant išsiųsto priminimo, "
+"jūsų sąskaita dabar yra smarkiai pradelsta.\n"
+"                       <br/> \n"
+"                        Būtina nedelsiant atlikti mokėjimą, kitaip turėsime "
+"apsvarstyti galimybę užblokuoti jūsų sąskaitą, o tai reiškia, kad "
+"nebegalėsime tiekti jūsų įmonei (prekių/paslaugų). Prašome imtis atitinkamų "
+"priemonių, kad šis mokėjimas būtų atliktas per artimiausias 8 dienas.\n"
+"                       <br/> \n"
+"                        Jei kyla problemų dėl sąskaitos apmokėjimo, apie "
+"kurias mes nežinome, nedvejodami susisiekite su mūsų apskaitos skyriumi, kad "
+"galėtume greitai išspręsti šį klausimą.\n"
+"                       <br/> \n"
+"                        Informacija apie mokėtinas sumas pateikta žemiau.\n"
+"                       <br/> \n"
+"                        Su pagarba,\n"
+"                       <t t-if=\"not is_html_empty"
+"(object._get_followup_responsible().signature)\">\n"
+"                            <br/> \n"
+"                           <t t-out=\"object._get_followup_responsible()"
+".signature\"/>\n"
+"                        </t> \n"
+"                       <t t-else=\"\">\n"
+"                            <br/> \n"
+"                            --\n"
+"                           <br/>\n"
+"                            <t t-out=\"object._get_followup_responsible()"
+".name\"/> \n"
+"                       </t>\n"
+"                    </p> \n"
+"               </div> \n"
+"            "
 
 #. module: account_followup
 #: model:mail.template,body_html:account_followup.email_template_followup_1
@@ -224,6 +294,53 @@ msgid ""
 "                </div>\n"
 "            "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p>\n"
+"                       <t t-if=\"object.id != "
+"object.commercial_partner_id.id\"> Gerb. „ <t t-out=\"object.name or ''\"/> "
+"“ (<t t-out=\"object.commercial_partner_id.name or ''\"/>),</t>\n"
+"                        <t t-else=\"\">Gerb. „ <t t-out=\"object.name or "
+"''\"/> “,</t>\n"
+"                    </p>\n"
+"                   <p> \n"
+"                        Norėtume Jus informuoti, kad Jūsų sąskaitoje yra "
+"neapmokėtas likutis <b><t t-out=\"format_amount"
+"(object.total_overdue_followup, object.currency_id) or ''\"/></b> .\n"
+"                        Maloniai prašome sumokėti šią sumą per artimiausius "
+"<b>8 dienas</b>.\n"
+"                   </p>\n"
+"                    <p t-if=\"object._show_pay_now_button()\"> \n"
+"                       <a t-att-href=\"'/my/invoices/overdue'\" "
+"style=\"padding: 8px 12px; font-size: 12px; color: #FFFFFF; text-decoration: "
+"none !important; font-weight: 400; background-color: #875A7B; border: 0px "
+"solid #875A7B; border-radius:3px\"> Sumokėti dabar</a>\n"
+"                    </p>\n"
+"                   <p> \n"
+"                        Jei mokėjimas jau buvo atliktas, prašome ignoruoti "
+"šį pranešimą.\n"
+"                        Jei turite klausimų arba reikalinga pagalba, "
+"nedvejodami kreipkitės į mūsų apskaitos skyrių.\n"
+"                   </p>\n"
+"                    <p> \n"
+"                        Dėkojame už bendradarbiavimą sprendžiant šį "
+"klausimą.\n"
+"                   </p>\n"
+"                    <p> \n"
+"                        Su pagarba,\n"
+"                   </p>\n"
+"                    <p> \n"
+"                       <t t-if=\"not is_html_empty"
+"(object._get_followup_responsible().signature)\">\n"
+"                            <t t-out=\"object._get_followup_responsible()"
+".signature\"/> \n"
+"                       </t>\n"
+"                        <t t-else=\"\"> \n"
+"                           <t t-out=\"object._get_followup_responsible()"
+".name\"/>\n"
+"                        </t> \n"
+"                   </p>\n"
+"                </div> \n"
+"            "
 
 #. module: account_followup
 #: model_terms:ir.ui.view,arch_db:account_followup.res_partner_view_form
@@ -422,6 +539,18 @@ msgid ""
 "Best Regards,\n"
 "\n"
 msgstr ""
+"Gerb. „ %s “,\n"
+"\n"
+"\n"
+"Išskyrus atvejus, kai klaida buvo mūsų, atrodo, kad ši suma vis dar nėra "
+"apmokėta. Prašome imtis atitinkamų priemonių, kad šis mokėjimas būtų "
+"atliktas per artimiausias 8 dienas.\n"
+"\n"
+"Jei mokėjimas buvo atliktas po šio laiško išsiuntimo, prašome ignoruoti šį "
+"pranešimą. Nedvejodami kreipkitės į mūsų apskaitos skyrių.\n"
+"\n"
+"Su pagarba,\n"
+"\n"
 
 #. module: account_followup
 #. odoo-python
@@ -603,6 +732,8 @@ msgid ""
 "notifications about any email reply made by the partner on the reminder "
 "email."
 msgstr ""
+"Jei pasirinksite naudotojus, jie bus pridėti kaip kontakto sekėjai ir gaus "
+"pranešimus apie visus kontakto atsakymus į priminimo el. laišką"
 
 #. module: account_followup
 #: model:ir.model.fields.selection,name:account_followup.selection__res_partner__followup_status__in_need_of_action
@@ -750,9 +881,13 @@ msgid "Origin"
 msgstr "Kilmė"
 
 #. module: account_followup
+#: model_terms:ir.ui.view,arch_db:account_followup.customer_statements_search_view
+msgid "Overdue Customer Invoices"
+msgstr ""
+
+#. module: account_followup
 #. odoo-python
 #: code:addons/account_followup/models/res_partner.py:0
-#: model_terms:ir.ui.view,arch_db:account_followup.customer_statements_search_view
 msgid "Overdue Invoices"
 msgstr "Pradelstos sąskaitos faktūros"
 
@@ -764,7 +899,7 @@ msgstr "Partneris"
 #. module: account_followup
 #: model:mail.template,name:account_followup.email_template_followup_1
 msgid "Payment Reminder"
-msgstr ""
+msgstr "Priminimas dėl apmokėjimo"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_account_followup_manual_reminder__print
@@ -1067,6 +1202,8 @@ msgid ""
 "object._get_followup_responsible().company_id).name }} Payment Reminder - "
 "{{ object.commercial_company_name }}"
 msgstr ""
+"{{ (object.company_id or object._get_followup_responsible().company_id)"
+".name }} Priminimas apie mokėjimą – {{ object.commercial_company_name }}"
 
 #~ msgid "%s (copy)"
 #~ msgstr "%s (kopija)"

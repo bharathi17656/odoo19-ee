@@ -60,7 +60,7 @@ patch(PosStore.prototype, {
             return await super.addLineToCurrentOrder(vals, opt, configure);
         }
     },
-    async printReceipt({ order = this.get_order() } = {}) {
+    async printReceipt({ order = this.getOrder() } = {}) {
         if (this.useBlackBoxSweden()) {
             if (order) {
                 if (order.nb_print > 1) {

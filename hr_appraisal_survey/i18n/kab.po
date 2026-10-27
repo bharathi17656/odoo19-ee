@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
+"POT-Creation-Date: 2026-10-09 17:45+0000\n"
 "PO-Revision-Date: 2025-11-17 03:47+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Kabyle <https://translate.odoo.com/projects/odoo-19/"
@@ -48,27 +48,38 @@ msgstr ""
 #: model:mail.template,body_html:hr_appraisal_survey.mail_template_appraisal_ask_feedback
 msgid ""
 "<p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"                    Dear <t t-out=\"object.partner_id.name or 'participant'\">[participant]</t>,\n"
+"                    Dear <t t-out=\"object.partner_id.name or "
+"'participant'\">[participant]</t>,\n"
 "                    <br/>\n"
-"                    As part of our 360° feedback process, <t t-out=\"ctx.get('logged_user')\">[Current user]</t> would love\n"
-"                    to get your insights on <t t-out=\"ctx.get('employee')\">[the employee]</t>'s performance.\n"
+"                    As part of our 360° feedback process, <t t-"
+"out=\"ctx.get('logged_user')\">[Current user]</t> would love\n"
+"                    to get your insights on <t t-out=\"ctx.get('employee')"
+"\">[the employee]</t>'s performance.\n"
 "                    <br/>\n"
-"                    Your feedback is valuable in helping us recognize strengths and identify growth opportunities.\n"
+"                    Your feedback is valuable in helping us recognize "
+"strengths and identify growth opportunities.\n"
 "                    <br/>\n"
-"                    It should only take a few minutes, and you can submit your feedback via the link below:\n"
+"                    It should only take a few minutes, and you can submit "
+"your feedback via the link below:\n"
 "                    <br/>\n"
 "                    </p><div class=\"text-center my-4\">\n"
-"                        <a t-att-href=\"object.get_start_url()\" t-attf-style=\"background-color: {{user.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: {{user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; font-size:13px;\">\n"
+"                        <a t-att-href=\"object.get_start_url()\" t-attf-"
+"style=\"background-color: {{user.company_id.email_secondary_color or "
+"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"{{user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
+"font-size:13px;\">\n"
 "                            Give your feedback\n"
 "                        </a>\n"
 "                    </div>\n"
-"                    Please complete the survey before <t t-out=\"ctx.get('deadline')\">[the specified deadline]</t>.\n"
+"                    Please complete the survey before <t t-"
+"out=\"ctx.get('deadline')\">[the specified deadline]</t>.\n"
 "                    <br/>\n"
 "                    Thank you for your time and honesty!\n"
 "                    <br/>\n"
 "                    <t t-if=\"ctx.get('user_body')\">\n"
 "                        <div class=\"my-3 py-2 px-3 bg-secondary\">\n"
-"                            <t t-out=\"ctx.get('user_body')\">[Optional comment]</t>\n"
+"                            <t t-out=\"ctx.get('user_body')\">[Optional "
+"comment]</t>\n"
 "                        </div>\n"
 "                    </t>\n"
 "                \n"
@@ -89,8 +100,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/hr_appraisal_survey/models/hr_appraisal.py:0
 msgid ""
-"A new 360 Feedback report has been completed for the appraisal of "
-"%(employee_name)s."
+"A new 360 Feedback report has been completed for the appraisal of %"
+"(employee_name)s."
 msgstr ""
 
 #. module: hr_appraisal_survey
@@ -154,14 +165,6 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.x_360_5_5
 msgid "Almost always"
-msgstr ""
-
-#. module: hr_appraisal_survey
-#. odoo-python
-#: code:addons/hr_appraisal_survey/wizard/appraisal_ask_feedback.py:0
-msgid ""
-"An appraisal feedback was requested. Please take time to fill the <a "
-"href=\"%s\" target=\"_blank\">survey</a>"
 msgstr ""
 
 #. module: hr_appraisal_survey
@@ -512,8 +515,8 @@ msgstr ""
 #: model_terms:survey.question,description:hr_appraisal_survey.appraisal_1
 msgid ""
 "It is the joint responsibility of the employee and the supervisor "
-"(appraiser) to establish a feasible work plan for the coming year, including"
-" major employee responsibilities and corresponding benchmarks against which "
+"(appraiser) to establish a feasible work plan for the coming year, including "
+"major employee responsibilities and corresponding benchmarks against which "
 "results will be evaluated."
 msgstr ""
 
@@ -838,8 +841,8 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model:mail.template,subject:hr_appraisal_survey.mail_template_appraisal_ask_feedback
 msgid ""
-"Take part in {{ ctx.get('employee_id') and ctx['employee_id'].name or 'this'"
-" }} appraisal"
+"Take part in {{ ctx.get('employee_id') and ctx['employee_id'].name or "
+"'this' }} appraisal"
 msgstr ""
 
 #. module: hr_appraisal_survey
@@ -921,8 +924,8 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model_terms:survey.question,description:hr_appraisal_survey.appraisal_1
 msgid ""
-"To assist employees in their professional growth, through the identification"
-" of strengths and opportunities for development"
+"To assist employees in their professional growth, through the identification "
+"of strengths and opportunities for development"
 msgstr ""
 
 #. module: hr_appraisal_survey
@@ -938,8 +941,8 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_5_1
 msgid ""
-"Use the following space to make any comments regarding the above performance"
-" evaluation."
+"Use the following space to make any comments regarding the above performance "
+"evaluation."
 msgstr ""
 
 #. module: hr_appraisal_survey
@@ -966,9 +969,13 @@ msgstr ""
 #: model_terms:survey.survey,description:hr_appraisal_survey.appraisal_360_feedback_template
 msgid ""
 "Welcome to this survey, <br><br>\n"
-"                You've been asked to participate to a 360 Feedback. It's a small survey that will allow managers to get more feedback about their employee. \n"
-"                By working with him/her, you're the best to share your thoughts and explain how your collaboration was.<br><br>\n"
-"                Your answers will be viewed only by the managers. This is not an anonymous survey."
+"                You've been asked to participate to a 360 Feedback. It's a "
+"small survey that will allow managers to get more feedback about their "
+"employee. \n"
+"                By working with him/her, you're the best to share your "
+"thoughts and explain how your collaboration was.<br><br>\n"
+"                Your answers will be viewed only by the managers. This is "
+"not an anonymous survey."
 msgstr ""
 
 #. module: hr_appraisal_survey

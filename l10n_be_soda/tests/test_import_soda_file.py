@@ -47,6 +47,42 @@ class TestSodaFile(AccountTestInvoicingCommon, MailCommon):
             self.assertRecordValues(result_move.line_ids.account_id, [{'code': '453000'}, {'code': '455000'}, {'code': '618000'}])
             self.assertEqual(result_move.date.strftime("%Y-%m-%d"), '2021-10-23')
 
+    def test_soda_multiple_files_import(self):
+        with file_open(self.soda_file_path, 'rb') as soda_file_1:
+            soda_file_1 = soda_file_1.read()
+        with file_open(self.soda_file_path_with_new, 'rb') as soda_file_2:
+            soda_file_2 = soda_file_2.read()
+
+        attachments = self.env['ir.attachment'].create([
+            {
+                'mimetype': 'application/xml',
+                'name': 'soda_testing_file.xml',
+                'raw': soda_file_1,
+            },
+            {
+                'mimetype': 'application/xml',
+                'name': 'soda_file_path_with_new.xml',
+                'raw': soda_file_2,
+            },
+        ])
+
+        wizard_action = self.misc_journal.create_document_from_attachment(attachments.ids)
+        self.assertEqual(wizard_action['res_model'], 'soda.import.wizard')
+        wizard = self.env['soda.import.wizard'].search([('id', '=', wizard_action['res_id'])])
+        result_moves = wizard._action_save_and_import()
+
+        self.assertRecordValues(result_moves[0].line_ids, [
+            {'debit': 0, 'credit': 4000.00, 'name': 'Withholding Taxes'},
+            {'debit': 0, 'credit': 11655.10, 'name': 'Special remuneration'},
+            {'debit': 15655.10, 'credit': 0, 'name': 'Remuneration'},
+        ])
+
+        self.assertRecordValues(result_moves[1].line_ids, [
+            {'debit': 0, 'credit': 4000, 'name': ''},
+            {'debit': 0, 'credit': 11655.1, 'name': 'Special remuneration'},
+            {'debit': 15655.1, 'credit': 0, 'name': 'Remuneration'},
+        ])
+
     def test_soda_file_import_multicompany(self):
         expected_ref = 'social_secretariat-8908749-2021/10'
         company2 = self._create_company(name='company2')

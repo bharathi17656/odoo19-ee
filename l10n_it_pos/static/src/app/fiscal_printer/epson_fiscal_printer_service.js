@@ -18,6 +18,7 @@ import {
     OpenDrawer,
     RTStatus,
     DirectIO,
+    GetSerialNumber,
 } from "@l10n_it_pos/app/fiscal_printer/commands";
 
 const DEFAULT_TIMEOUT = 10000;
@@ -58,6 +59,16 @@ class EpsonFiscalPrinter extends Reactive {
         return this.sendCommand(command, { timeout, devid });
     }
 
+    async printNonFiscalReceipt({ timeout, devid, order, isBasicPrint, isEarlyPrint } = {}) {
+        const command = await this.command.create(FiscalReceipt, {
+            order,
+            isFiscal: false,
+            isBasicPrint: isBasicPrint,
+            isEarlyPrint: isEarlyPrint,
+        });
+        return this.sendCommand(command, { timeout, devid });
+    }
+
     async printXReport({ timeout, devid } = {}) {
         const command = await this.command.create(XReport);
         return this.sendCommand(command, { timeout, devid });
@@ -93,14 +104,19 @@ class EpsonFiscalPrinter extends Reactive {
         return this.sendCommand(command, { timeout, devid });
     }
 
+    async getPrinterSerialNumber({ timeout, devid } = {}) {
+        const command = await this.command.create(GetSerialNumber);
+        const result = await this.sendCommand(command, { timeout, devid });
+        return result.addInfo.serialNumber;
+    }
+
+    /*
+     * DirectIO is used to send a wide range of commands to the printer using native PDU communication protocol strings.
+     * Refer to the printer "Communication Protocol" documentation for the command reference.
+     */
     async directIO(cmd, data, { timeout, devid } = {}) {
         const command = await this.command.create(DirectIO, { command: cmd, data });
         return this.sendCommand(command, { timeout, devid });
-    }
-
-    async getPrinterSerialNumber() {
-        const result = await this.directIO("3217", "01");
-        return result.addInfo.responseData;
     }
 
     /*

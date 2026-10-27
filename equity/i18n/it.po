@@ -2,14 +2,14 @@
 # This file contains the translation of the following modules:
 # * equity
 #
-# "Marianna Ciofani (cima)" <cima@odoo.com>, 2025.
+# "Marianna Ciofani (cima)" <cima@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:40+0000\n"
-"PO-Revision-Date: 2025-11-14 09:54+0000\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2026-10-15 13:08+0000\n"
 "Last-Translator: \"Marianna Ciofani (cima)\" <cima@odoo.com>\n"
 "Language-Team: Italian <https://translate.odoo.com/projects/odoo-19/equity/"
 "it/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__securities
@@ -181,12 +181,12 @@ msgstr ""
 "identificazione dei clienti, siamo tenuti a segnalare le persone fisiche che "
 "direttamente o indirettamente\n"
 "                        detiene o controlla almeno il 25% del capitale o dei "
-"diritti di voto di <b><t t-out=\"user_id.company_id.name\"/></b>. <br/> <br/>"
-"\n"
+"diritti di voto di <b><t t-out=\"user_id.company_id.name\"/></b>. <br/> <br/"
+">\n"
 "                        Compila la richiesta Titolare effettivo:<br/>\n"
-"                        <a t-attf-href="
-"\"/my/ubo?{{object._get_equity_url_params()}}\" class=\"btn btn-primary\""
-">Completa Titolare effettivo</a> <br/> <br/>\n"
+"                        <a t-attf-href=\"/my/ubo?"
+"{{object._get_equity_url_params()}}\" class=\"btn btn-primary\">Completa "
+"Titolare effettivo</a> <br/> <br/>\n"
 "                        Grazie,\n"
 "                        <t t-if=\"user_id.signature\">\n"
 "                            <br/>--<br/>\n"
@@ -310,8 +310,9 @@ msgid ""
 msgstr ""
 "Un istituto di credito o finanziario situato in un Paese elencato dal regio "
 "decreto del 19 luglio 2013 che redige un elenco di Paesi terzi\n"
-"                            equivalenti per una diligenza semplificata ("
-"articolo 37, paragrafo 2, comma 1, punti 2 e 5, della legge antiriciclaggio);"
+"                            equivalenti per una diligenza semplificata "
+"(articolo 37, paragrafo 2, comma 1, punti 2 e 5, della legge "
+"antiriciclaggio);"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
@@ -323,6 +324,12 @@ msgstr ""
 "Società quotata: società le cui azioni sono negoziate in un mercato "
 "regolamentato di uno Stato membro dello Spazio\n"
 "                            economico europeo, oppure"
+
+#. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_transaction.py:0
+msgid "A partner cannot have transactions in different currencies."
+msgstr "Un partner non può avere transazioni in valute diverse."
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
@@ -449,6 +456,11 @@ msgid "CEO"
 msgstr "CEO"
 
 #. module: equity
+#: model:ir.model.fields,field_description:equity.field_equity_transaction__can_change_currency
+msgid "Can Change Currency"
+msgstr "È possibile cambiare la valuta"
+
+#. module: equity
 #. odoo-python
 #: code:addons/equity/models/equity_transaction.py:0
 msgid "Can only exercise options, please select an options class"
@@ -467,6 +479,13 @@ msgid "Cannot change security class type because it has linked transactions"
 msgstr ""
 "Impossibile modificare il tipo di classe di sicurezza perché contiene "
 "transazioni collegate"
+
+#. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_ubo.py:0
+msgid "Cannot create new UBO for an existing holder"
+msgstr ""
+"Impossibile creare un nuovo titolare effettivo per un titolare esistente"
 
 #. module: equity
 #. odoo-python
@@ -503,6 +522,7 @@ msgid "Clear"
 msgstr "Cancella"
 
 #. module: equity
+#: model:ir.model.fields,field_description:equity.field_equity_cap_table__company_id
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__partner_id
 #: model:ir.model.fields,field_description:equity.field_equity_ubo__partner_id
 #: model:ir.model.fields,field_description:equity.field_equity_valuation__partner_id
@@ -526,6 +546,13 @@ msgstr "Azienda - Cat 2. Controllo esercitato mediante altri strumenti"
 #: model:ir.model.fields.selection,name:equity.selection__equity_ubo__control_method__co_3
 msgid "Company - Cat 3. Executive officer"
 msgstr "Azienda - Cat 3. Dirigente"
+
+#. module: equity
+#: model:ir.model.fields,help:equity.field_equity_transaction__company_id
+#: model:ir.model.fields,help:equity.field_equity_ubo__company_id
+#: model:ir.model.fields,help:equity.field_equity_valuation__company_id
+msgid "Company to which this record is visible"
+msgstr "Azienda a cui è visibile questo record"
 
 #. module: equity
 #: model:ir.ui.menu,name:equity.menu_equity_configuration
@@ -641,8 +668,8 @@ msgid ""
 "Definitions: \"beneficial owners\", \"control\", \"shareholder holding 25% "
 "or more\", \"decision makers\""
 msgstr ""
-"Definizioni: \"titolari effettivi\", \"controllo\", "
-"\"azionista che detiene 25% o più\", \"decision maker\""
+"Definizioni: \"titolari effettivi\", \"controllo\", \"azionista che detiene "
+"25% o più\", \"decision maker\""
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__destination_class_id
@@ -1420,6 +1447,12 @@ msgid "Partner"
 msgstr "Partner"
 
 #. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_ubo.py:0
+msgid "Partner is not allowed to fill UBO form"
+msgstr "Il partner non è autorizzato a compilare il modulo Titolare effettivo"
+
+#. module: equity
 #. odoo-javascript
 #: code:addons/equity/static/src/components/ubo_form/holder_edit_dialog.xml:0
 #: model:ir.model.fields,help:equity.field_res_partner__ubo_pep
@@ -1674,10 +1707,11 @@ msgid ""
 "The \"Transaction Price\" total is not counting the prices of options "
 "issuance transactions because that is a strike price."
 msgstr ""
-"Il totale \"N. titoli\" non conteggia le transazioni di \"Esercizio opzioni\""
-" (perché vengono conteggiate al momento dell'\"Emissione opzioni\"). Il "
-"totale \"Prezzo di transazione\" non conteggia i prezzi delle transazioni di "
-"emissione delle opzioni perché si tratta di un prezzo di esercizio."
+"Il totale \"N. titoli\" non conteggia le transazioni di \"Esercizio "
+"opzioni\" (perché vengono conteggiate al momento dell'\"Emissione "
+"opzioni\"). Il totale \"Prezzo di transazione\" non conteggia i prezzi delle "
+"transazioni di emissione delle opzioni perché si tratta di un prezzo di "
+"esercizio."
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
@@ -1764,7 +1798,6 @@ msgstr "Valore totale"
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_valuation__event__transaction
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_form
-#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_form
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_search
 msgid "Transaction"
 msgstr "Operazione"
@@ -1785,7 +1818,6 @@ msgstr "Tipo di operazione"
 #: model:ir.actions.act_window,name:equity.action_equity_transaction
 #: model:ir.ui.menu,name:equity.menu_equity_ownership_transactions
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_list
-#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_list
 msgid "Transactions"
 msgstr "Transazioni"
 
@@ -1901,12 +1933,14 @@ msgstr "Carica il modulo UBO"
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__valuation
 #: model:ir.model.fields,field_description:equity.field_equity_valuation__valuation
 #: model:ir.ui.menu,name:equity.menu_equity_reporting_valuation
+#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_form
 msgid "Valuation"
 msgstr "Valorizzazione"
 
 #. module: equity
 #: model:ir.actions.act_window,name:equity.action_equity_valuation
 #: model:ir.ui.menu,name:equity.menu_equity_ownership_valuations
+#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_list
 msgid "Valuations"
 msgstr "Valutazioni"
 
@@ -1919,6 +1953,13 @@ msgstr "Periodo di maturazione, termine di esercizio, ecc."
 #: model:res.groups,name:equity.group_equity_viewer
 msgid "Viewer"
 msgstr "Visualizzatore"
+
+#. module: equity
+#: model:ir.model.fields,field_description:equity.field_equity_transaction__company_id
+#: model:ir.model.fields,field_description:equity.field_equity_ubo__company_id
+#: model:ir.model.fields,field_description:equity.field_equity_valuation__company_id
+msgid "Visible to"
+msgstr "Visibile a"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__votes
@@ -1995,6 +2036,16 @@ msgid ""
 msgstr ""
 "È possibile rimuovere qualsiasi azionista che detenga meno del 25% delle "
 "azioni o dei diritti di voto."
+
+#. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_transaction.py:0
+msgid ""
+"You cannot change the equity currency because this partner already has "
+"existing transactions."
+msgstr ""
+"Non è possibile modificare la valuta di riferimento poiché questo partner ha "
+"già transazioni esistenti."
 
 #. module: equity
 #. odoo-javascript

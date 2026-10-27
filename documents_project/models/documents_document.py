@@ -60,6 +60,13 @@ class DocumentsDocument(models.Model):
         if project_base_folder and project_base_folder in self and not project_base_folder.active:
             raise ValidationError(_("You cannot archive the project base folder (%s).", project_base_folder.name))
 
+    @api.model
+    def _get_no_unlink_domain(self):
+        # Avoid deleting (even inaccessible) projects' folders.
+        ProjectSudo = self.env['project.project'].sudo().with_context(active_test=False)
+        folder_ids = ProjectSudo._search([('documents_folder_id', '!=', False)]).subselect('documents_folder_id')
+        return super()._get_no_unlink_domain() | Domain('id', 'in', folder_ids)
+
     @api.constrains('company_id')
     def _check_company_fits_projects_and_settings(self):
         folders = self.filtered(lambda d: d.type == 'folder')

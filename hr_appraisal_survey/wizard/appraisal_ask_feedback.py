@@ -190,8 +190,6 @@ class AppraisalAskFeedback(models.TransientModel):
                 self.appraisal_id.with_context(mail_activity_quick_update=True).activity_schedule(
                     'mail.mail_activity_data_todo', self.deadline,
                     summary=_('Fill the feedback form on survey'),
-                    note=_('An appraisal feedback was requested. Please take time to fill the <a href="%s" target="_blank">survey</a>',
-                        answer.get_start_url()),
                     user_id=employee.user_id.id)
 
         self.appraisal_id.employee_feedback_ids |= self.employee_ids

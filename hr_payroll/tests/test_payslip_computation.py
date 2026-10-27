@@ -254,7 +254,7 @@ class TestPayslipComputation(TestPayslipContractBase):
 
     def test_payslip_generation_with_overtime_work_rate(self):
         """ Test the computation of overtime amount in the payslip as per rate. """
-        work_entry = self.env['hr.work.entry'].create(self.env['hr.version']._generate_work_entries_postprocess([{
+        self.env['hr.work.entry'].create(self.env['hr.version']._generate_work_entries_postprocess([{
             'name': 'Overtime Work',
             'employee_id': self.richard_emp.id,
             'version_id': self.contract_cdi.id,
@@ -262,7 +262,6 @@ class TestPayslipComputation(TestPayslipContractBase):
             'date_start': datetime(2024, 12, 16, 18, 0, 0),
             'date_stop': datetime(2024, 12, 16, 22, 0, 0),
         }]))
-        work_entry.action_validate()
         payslip = self.env['hr.payslip'].create({
             'name': 'Payslip of Richard',
             'employee_id': self.richard_emp.id,
@@ -588,21 +587,12 @@ class TestPayslipComputation(TestPayslipContractBase):
             'date': date(2016, 1, 1),
             'duration': 1,
         })
-        # Cannot edit validated work entries linked to a payslip
+        # Validated work entries linked to a payslip can be edited
         self.assertEqual(richard_work_entry.state, 'draft')
         self.assertFalse(richard_work_entry.has_payslip, False)
         self.richard_payslip.action_payslip_done()
         self.assertEqual(richard_work_entry.state, 'validated')
         self.assertEqual(richard_work_entry.has_payslip, True)
-        with self.assertRaises(UserError):
-            richard_work_entry.write({'state': 'draft'})
-        # Entry reset on payslip cancellation
-        self.richard_payslip.action_payslip_cancel()
-        self.assertEqual(richard_work_entry.state, 'draft')
-        # Edit is allowed for entries not linked to a payslip
-        self.assertEqual(richard_work_entry.has_payslip, False)
-        richard_work_entry.write({'state': 'validated'})
-        self.assertEqual(richard_work_entry.state, 'validated')
         richard_work_entry.write({'state': 'draft'})
         self.assertEqual(richard_work_entry.state, 'draft')
 
@@ -631,3 +621,154 @@ class TestPayslipComputation(TestPayslipContractBase):
         dup_payslip.action_payslip_cancel()
         self.assertTrue(all(entry.state == 'draft' for entry in work_entries))
         self.assertTrue(all(not entry.has_payslip for entry in work_entries))
+
+    def test_out_of_contract_worked_days(self):
+        self.contract_cdi.write({
+            'contract_date_start': datetime.strptime('2025-06-15', '%Y-%m-%d'),
+            'contract_date_end': datetime.strptime('2025-07-15', '%Y-%m-%d'),
+        })
+        payslips = self.env['hr.payslip'].create([
+            {
+                'name': 'February',  # Before contract
+                'employee_id': self.richard_emp.id,
+                'version_id': self.contract_cdi.id,
+                'struct_id': self.developer_pay_structure.id,
+                'date_from': date(2025, 2, 1),
+                'date_to': date(2025, 2, 28),
+            },
+            {
+                'name': 'June',  # Partial overlap
+                'employee_id': self.richard_emp.id,
+                'version_id': self.contract_cdi.id,
+                'struct_id': self.developer_pay_structure.id,
+                'date_from': date(2025, 6, 1),
+                'date_to': date(2025, 6, 30),
+            },
+            {
+                'name': 'November',  # After contract
+                'employee_id': self.richard_emp.id,
+                'version_id': self.contract_cdi.id,
+                'struct_id': self.developer_pay_structure.id,
+                'date_from': date(2025, 11, 1),
+                'date_to': date(2025, 11, 30),
+            },
+        ])
+        payslips._compute_worked_days_line_ids()
+        expectations = {
+            'February': (20.0, 140.0),
+            'June':     (10.0, 70.0),
+            'November': (20.0, 140.0),
+        }
+        out_of_contract_code = self.env.ref('hr_work_entry.hr_work_entry_type_out_of_contract').code
+        for payslip in payslips:
+            line = payslip.worked_days_line_ids.filtered(lambda l: l.code == out_of_contract_code)
+            exp_days, exp_hours = expectations[payslip.name]
+            self.assertAlmostEqual(line.number_of_days, exp_days, places=2, msg=f"Wrong days for {payslip.name}")
+            self.assertAlmostEqual(line.number_of_hours, exp_hours, places=2, msg=f"Wrong hours for {payslip.name}")
+
+    def test_payslip_fully_flexible_employee_without_calendar(self):
+        """
+        Test that payslips and worked days lines are computed for fully flexible employees.
+        """
+        flexible_employee = self.env['hr.employee'].create({
+            'name': 'Fully Flexible Employee',
+            'company_id': self.env.company.id,
+            'resource_calendar_id': False,
+        })
+        flexible_contract = self.env['hr.version'].create({
+            'name': 'Contract - Fully Flexible Employee',
+            'employee_id': flexible_employee.id,
+            'contract_date_start': date(2024, 1, 1),
+            'date_version': date(2024, 1, 1),
+            'wage': 5000.0,
+            'structure_type_id': self.structure_type.id,
+            'resource_calendar_id': False,
+        })
+        # Create a payslip for the flexible employee
+        payslip = self.env['hr.payslip'].create({
+            'name': 'Test Payslip - Fully Flexible Employee',
+            'employee_id': flexible_employee.id,
+            'version_id': flexible_contract.id,
+            'struct_id': self.developer_pay_structure.id,
+            'date_from': date(2024, 1, 1),
+            'date_to': date(2024, 1, 31),
+        })
+        payslip._compute_worked_days_line_ids()
+        self.assertIsNotNone(
+            payslip.worked_days_line_ids,
+            "Worked days lines should be generated for fully flexible employees"
+        )
+        payslip.compute_sheet()
+        self.assertTrue(
+            payslip.line_ids,
+            "Payslip lines should be generated for fully flexible employees"
+        )
+        self.assertEqual(payslip.basic_wage, 5000.0,
+                     "Basic wage should equal contract wage for flexible employees")
+        self.assertGreater(payslip.net_wage, 0,
+                      "Net wage should be greater than 0 for flexible employees")
+        self.assertGreater(payslip.gross_wage, 0,
+                        "Gross wage should be computed for flexible employees")
+        self.assertAlmostEqual(payslip.net_wage, 7905.0, places=2,
+                          msg="Net wage computation changed for flexible employees - possible regression")
+
+    def test_warning_cleared_after_recompute(self):
+        payslip = self.env['hr.payslip'].create({
+            'name': 'Payslip Test Warning',
+            'employee_id': self.richard_emp.id,
+            'version_id': self.contract_cdi.id,
+            'struct_id': self.developer_pay_structure.id,
+            'date_from': date(2026, 1, 1),
+            'date_to': date(2026, 1, 31),
+        })
+
+        payslip.compute_sheet()
+        payslip.action_payslip_done()
+
+        # Make a modification on the version that should trigger the warning on the payslip
+        # Note: we need to wait a bit before writing on the version to ensure that the payslip has been fully computed and the warning triggered before the write
+        # ,otherwise the warning will not be triggered at all and the test will be invalid.
+        self.richard_emp.write({
+            'wage': 10000.0,
+        })
+
+        # Cancel & draft the payslip
+        payslip.action_payslip_cancel()
+        payslip.action_payslip_draft()
+
+        # Recompute & validate the payslip again
+        payslip.compute_sheet()
+        payslip.action_payslip_done()
+
+        self.assertFalse(payslip.has_wrong_data, "Warning should not reappear after recompute.")
+
+    def test_structure_without_worked_days_clears_lines(self):
+        '''Changing the structure type to one that does not use worked days lines should clear the worked days lines immediately.'''
+        no_worked_days_structure = self.env['hr.payroll.structure'].create({
+            'name': '13th Month Structure',
+            'type_id': self.developer_pay_structure.type_id.id,
+            'use_worked_day_lines': False,
+            'country_id': self.env.ref('base.be').id if self.env.ref('base.be', False) else False,
+        })
+
+        self.richard_payslip._compute_worked_days_line_ids()
+        self.assertTrue(
+            self.richard_payslip.worked_days_line_ids,
+            "Initial payslip should have worked day lines generated."
+        )
+
+        with Form(self.richard_payslip) as payslip_form:
+            payslip_form.struct_id = no_worked_days_structure
+
+        self.assertFalse(
+            self.richard_payslip.worked_days_line_ids,
+            "Worked days lines must be cleared immediately when switching to a structure with use_worked_day_lines=False."
+        )
+
+        with Form(self.richard_payslip) as payslip_form:
+            payslip_form.struct_id = self.developer_pay_structure
+
+        self.assertTrue(
+            self.richard_payslip.worked_days_line_ids,
+            "Worked days lines should be re-computed when switching back to a regular structure."
+        )

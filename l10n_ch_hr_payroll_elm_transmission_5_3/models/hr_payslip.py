@@ -10,6 +10,11 @@ class HrPayslip(models.Model):
         ('retired_wave_deduct', "Retired with Waive of Pension Deduct")
     ], ondelete={'retired_wave_deduct': 'cascade'})
 
+    def _has_lpp_in_percentage(self):
+        # To be overriden in ELM 5.3 certification module
+        self.ensure_one()
+        return self.version_id.l10n_ch_lpp_in_percentage
+
     def _get_data_files_to_update(self):
         return super()._get_data_files_to_update() + [(
             'l10n_ch_hr_payroll_elm_transmission_5_3', [

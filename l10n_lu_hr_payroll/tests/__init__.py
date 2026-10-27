@@ -3,3 +3,4 @@
 from . import common
 from . import test_monthly_declaration
 from . import test_contract_template_whitelist
+from . import test_lu_payroll_indexation

@@ -29,7 +29,7 @@ export class MainMenu extends Component {
         onWillStart(async () => {
             const data = await rpc("/stock_barcode/get_main_menu_data");
             this.locationsEnabled = data.groups.locations;
-            this.packagesEnabled = data.groups.package;
+            this.packageEnabled = data.groups.package;
             this.trackingEnabled = data.groups.tracking;
             this.quantCount = data.quant_count;
             this.soundEnable = data.play_sound;
@@ -64,7 +64,8 @@ export class MainMenu extends Component {
         this.dialogService.add(ManualBarcodeScanner, {
             facingMode: "environment",
             onResult: (barcode) => {
-                this._onBarcodeScanned(barcode);
+                const cleanedBarcode = this.barcodeService.cleanBarcode(barcode);
+                this._onBarcodeScanned(cleanedBarcode);
                 res(barcode);
             },
             onError: (error) => rej(error),

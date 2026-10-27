@@ -25,7 +25,7 @@ class HrPayslip(models.Model):
     def _get_warnings_by_slip(self):
         warnings_by_slip = super()._get_warnings_by_slip()
         for slip in self.filtered(
-            lambda slip: slip.state in ['draft', 'validated'] and slip.struct_id and not slip.journal_id
+            lambda slip: slip.state in ['draft', 'validated'] and slip.struct_id and not slip.with_company(slip.company_id).journal_id
         ):
             warnings_by_slip[slip].append({
                 'message': _("Account Journal not configured on Structure"),
@@ -37,7 +37,7 @@ class HrPayslip(models.Model):
 
     def action_payslip_cancel(self):
         moves = self.mapped('move_id')
-        moves._unlink_or_reverse()
+        moves.sudo()._unlink_or_reverse()
         return super().action_payslip_cancel()
 
     def action_payslip_done(self):
@@ -48,10 +48,16 @@ class HrPayslip(models.Model):
         if any(slip.state == 'paid' for slip in self):
             raise ValidationError(_("You can't create a journal entry for a paid payslip."))
         res = super().action_payslip_done()
-        self.filtered('journal_id')._action_create_account_move()
+        for company, slips in self.grouped('company_id').items():
+            slips.with_company(company).filtered('journal_id')._action_create_account_move()
         return res
 
     def _action_create_account_move(self):
+        """ Create accounting entries for payslips belonging to the company in the current context.
+
+        This method must be called separately for each company, with the
+        corresponding company set in the context.
+        """
         precision = self.env['decimal.precision'].precision_get('Payroll')
 
         all_payslips = self
@@ -252,24 +258,28 @@ class HrPayslip(models.Model):
         )
 
     def _get_existing_lines(self, line_ids, line, account_id, debit, credit):
-        existing_lines = (
+        distribution = line.salary_rule_id.analytic_distribution or line.slip_id.version_id.analytic_distribution
+        return (
             line_id for line_id in line_ids if
             line_id['name'] == (line.name if line.salary_rule_id.split_move_lines else line.salary_rule_id.name)
             and line_id['account_id'] == account_id
             and ((line_id['debit'] > 0 and credit <= 0) or (line_id['credit'] > 0 and debit <= 0))
-            and (
-                    (
-                        not line_id['analytic_distribution'] and
-                        not line.salary_rule_id.analytic_distribution and
-                        not line.slip_id.version_id.analytic_distribution
-                    )
-                    or line_id['analytic_distribution'] and any(acc_id in line_id['analytic_distribution'] for acc_id in line.salary_rule_id.distribution_analytic_account_ids)
-                    or line_id['analytic_distribution'] and any(acc_id in line_id['analytic_distribution'] for acc_id in line.slip_id.version_id.distribution_analytic_account_ids)
-
-                )
+            and line_id['analytic_distribution'] == distribution
             and self._check_debit_credit_tags(line_id, line, account_id)
         )
-        return existing_lines
+
+    # TODO master: remove this method no longer used
+    def _check_partially_matching_accounts(self, line_id, line):
+        keys = line_id['analytic_distribution']
+        unravelled_keys = []
+        for key in keys:
+            ids = key.split(',')
+            unravelled_keys += ids
+
+        result = any(str(acc_id.id) in unravelled_keys for acc_id in line.salary_rule_id.distribution_analytic_account_ids) \
+            or any(str(acc_id.id) in unravelled_keys for acc_id in line.slip_id.version_id.distribution_analytic_account_ids)
+
+        return result
 
     def _create_account_move(self, values):
         return self.env['account.move'].sudo().create(values)
@@ -287,11 +297,13 @@ class HrPayslip(models.Model):
             raise UserError(self.env._('An employee bank account is untrusted'))
         if any(m.state != 'posted' for m in self.move_id):
             raise UserError(self.env._("You can only register payment for posted journal entries."))
-
         return self.move_id.line_ids.action_register_payment(
-            ctx={"default_partner_id": self.employee_id.work_contact_id.id,
-                 "default_partner_bank_id": self.employee_id.primary_bank_account_id.id,
-                 "default_company_id": self.company_id.id})
+            ctx={
+                "default_partner_id": self.employee_id.work_contact_id.id,
+                "default_partner_bank_id": self.employee_id.primary_bank_account_id.id,
+                "default_company_id": self.company_id.id,
+                "payment_consider_partner": True,
+            })
 
     def action_open_move(self):
         return {

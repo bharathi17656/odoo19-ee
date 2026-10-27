@@ -25,13 +25,15 @@
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Vytenis Viruišis <vytenis@users.noreply.translate.odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Greta Šeštokė <greta@vialaurea.com>, 2026.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:41+0000\n"
-"PO-Revision-Date: 2025-11-08 19:34+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-09-11 17:44+0000\n"
+"PO-Revision-Date: 2026-10-05 22:33+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "helpdesk/lt/>\n"
 "Language: lt\n"
@@ -39,9 +41,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < "
-"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 :"
-" n % 1 != 0 ? 2: 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 "
+": n % 1 != 0 ? 2: 3);\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__answered_customer_message_count
@@ -72,7 +74,7 @@ msgstr "# Skubių kreipinių"
 #. odoo-python
 #: code:addons/helpdesk/models/res_partner.py:0
 msgid "%(partner_name)s's Tickets"
-msgstr ""
+msgstr "%(partner_name)sBilietai"
 
 #. module: helpdesk
 #. odoo-python
@@ -113,12 +115,15 @@ msgstr ""
 #: model_terms:digest.tip,tip_description:helpdesk.digest_tip_helpdesk_0
 msgid "<b class=\"tip_title\">Tip: Create tickets from incoming emails</b>"
 msgstr ""
+"<b class=\"tip_title\">Patarimas: kurkite užklausas iš gaunamų el. laiškų</b>"
 
 #. module: helpdesk
 #. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 msgid "<b>Drag &amp; drop</b> the card to change the stage of your ticket."
 msgstr ""
+"<b>Pervilkite kortelę iš „ &amp; “ į „</b> “, kad pakeistumėte savo "
+"užklausos etapą."
 
 #. module: helpdesk
 #. odoo-javascript
@@ -134,7 +139,7 @@ msgid ""
 "        Dear <t t-out=\"object.sudo().partner_id.name or 'Madam/Sir'\">Madam/"
 "Sir</t>,<br/><br/>\n"
 "        We would like to inform you that we have closed your ticket "
-"(reference <t t-out=\"object.id or ''\">15</t>). \n"
+"(reference <t t-out=\"object.ticket_ref or ''\">15</t>).\n"
 "        We trust that the services provided have met your expectations and "
 "that you have found a satisfactory resolution to your issue.<br/><br/>\n"
 "        However, if you have any further questions or comments, please do "
@@ -150,23 +155,23 @@ msgid ""
 "        "
 msgstr ""
 "<div>\n"
-"        Gerbiamas/-a <t t-out="
-"\"object.sudo().partner_id.name or 'Madam/Sir'\">Pone/Ponia</t>,<br/><br/>\n"
-"        Norime Jus informuoti, kad jūsų užklausa (nuorodos numeris <t t-out="
-"\"object.id or ''\">15</t>) buvo uždaryta. \n"
-"        Tikimės, kad suteiktos paslaugos atitiko jūsų lūkesčius ir kad "
-"problema buvo išspręsta jums priimtinu būdu.<br/><br/>\n"
-"        Tačiau jei turite papildomų klausimų ar pastabų, nedvejodami "
-"atsakykite į šį el. laišką, kad būtų vėl atidaryta jūsų užklausa. \n"
-"        Mūsų komanda visada pasiruošusi jums padėti ir mielai suteikia "
-"pagalbą.<br/><br/>\n"
-"        Ačiū, kad pasirinkote mūsų paslaugas ir už bendradarbiavimą viso "
-"proceso metu. Labai vertiname jūsų pasitikėjimą ir džiaugiamės, kad galime "
-"jums padėti.<br/><br/>\n"
-"        Pagarbiai,<br/><br/>\n"
-"        <t t-out=\"object.team_id.name or 'Helpdesk'\">Pagalbos Tarnybos</t> "
-"komanda.\n"
-"    </div>\n"
+"        Gerb. „ <t t-out=\"object.sudo().partner_id.name or 'Madam/Sir'\">“ "
+"ponia/ponas</t>,<br/><br/>\n"
+"        Norėtume Jus informuoti, kad uždarėme Jūsų užklausą (nuoroda <t t-"
+"out=\"object.ticket_ref or ''\">15</t>).\n"
+"        Tikimės, kad suteiktos paslaugos atitiko Jūsų lūkesčius ir kad Jūsų "
+"problema buvo išspręsta Jums priimtinu būdu.<br/><br/>\n"
+"        Tačiau, jei turite kokių nors papildomų klausimų ar pastabų, "
+"nedvejodami atsakykite į šį el. laišką, kad vėl atidarytume Jūsų užklausą. \n"
+"        Mūsų komanda visada pasirengusi Jums padėti ir mielai atsakysime į "
+"visus Jūsų klausimus.<br/><br/>\n"
+"        Dėkojame, kad pasirinkote mūsų paslaugas ir už bendradarbiavimą viso "
+"proceso metu. Mes tikrai vertiname Jūsų pasitikėjimą ir džiaugiamės galėdami "
+"Jums padėti.<br/><br/>\n"
+"        Su pagarba,<br/><br/>\n"
+"        „ <t t-out=\"object.team_id.name or 'Helpdesk'\">“ Pagalbos Tarnyba</"
+"t> komanda.\n"
+"   </div> \n"
 "        "
 
 #. module: helpdesk
@@ -249,6 +254,82 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"    <t t-set=\"access_token\" t-value=\"object._rating_get_access_token()\"/>"
+"\n"
+"   <t t-set=\"partner\" t-value=\"object._rating_get_partner()\"/>\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"style=\"width:100%; margin:0;\"> \n"
+"   <tbody>\n"
+"        <tr> <td valign=\"top\" style=\"font-size: 14px;\">\n"
+"            <t t-if=\"partner.name\"> \n"
+"                Sveiki, <t t-out=\"partner.name or ''\">Brandon Freeman</t>"
+",<br/><br/>\n"
+"           </t>\n"
+"            <t t-else=\"\"> \n"
+"                Sveiki,<br/>\n"
+"            </t>\n"
+"            Prašome skirti šiek tiek laiko ir įvertinti mūsų paslaugas, "
+"susijusias su užklausimu „<strong t-out=\"object.name or ''\">: stalo kojos "
+"yra nesubalansuotos</strong> “\n"
+"           <t t-if=\"object._rating_get_operator().name\"> \n"
+"                priskirtas <strong t-out=\"object._rating_get_operator()"
+".name or ''\">Mitchell Admin</strong>.<br/>\n"
+"            </t>\n"
+"           <t t-else=\"\"> \n"
+"                .<br/><br/>\n"
+"           </t>\n"
+"        </td> </tr>\n"
+"        <tr> <td style=\"text-align: center;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"style=\"width:100%; margin: 32px 0px 32px 0px; display: inline-table;\"> \n"
+"               <tr><td style=\"font-size: 14px; text-align:center;\"> \n"
+"                   <strong> Pasakykite, ką manote apie mūsų paslaugas</"
+"strong><br/>\n"
+"                   <span style=\"text-color: #888888\"> (spustelėkite vieną "
+"iš šių šypsenėlių)</span>\n"
+"                </td></tr>\n"
+"                <tr> <td style=\"font-size: 14px;\">\n"
+"                    <table style=\"width:100%;text-align:center;margin-"
+"top:2rem;\"> \n"
+"                       <tr>\n"
+"                            <td> \n"
+"                               <a t-attf-href=\"/rate/{{ access_token }}/5\" "
+"t-att-class=\"'pe-none' if object._rating_get_operator() else ''\">\n"
+"                                    <img alt=\"Happy\" src=\"/rating/static/"
+"src/img/rating_5.png\" title=\"Happy\"/> \n"
+"                               </a>\n"
+"                            </td> \n"
+"                           <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/"
+"3\" t-att-class=\"'pe-none' if object._rating_get_operator() else ''\"> \n"
+"                                   <img alt=\"Neutral\" src=\"/rating/static/"
+"src/img/rating_3.png\" title=\"Neutral\"/>\n"
+"                                </a> \n"
+"                           </td>\n"
+"                            <td> \n"
+"                               <a t-attf-href=\"/rate/{{ access_token }}/1\" "
+"t-att-class=\"'pe-none' if object._rating_get_operator() else ''\">\n"
+"                                    <img alt=\"Unhappy\" src=\"/rating/"
+"static/src/img/rating_1.png\" title=\"Unhappy\"/> \n"
+"                               </a>\n"
+"                            </td> \n"
+"                       </tr>\n"
+"                    </table> \n"
+"               </td></tr> \n"
+"           </table>\n"
+"        </td> </tr>\n"
+"        <tr> <td valign=\"top\" style=\"font-size: 14px;\"> \n"
+"            Dėkojame už jūsų atsiliepimą. Jis padeda mums nuolat tobulėti.\n"
+"           <br/><br/> <span style=\"margin: 0px 0px 0px 0px; font-size: "
+"12px; opacity: 0.5; color: #454748;\"> Ši klientų apklausa buvo išsiųsta, "
+"nes jūsų užklausa buvo perkelta į etapą „ <b t-out=\"object.stage_id.name or "
+"''\">“ („Vyksta“)</b>.</span>\n"
+"        </td></tr>\n"
+"    </tbody> \n"
+"   </table>\n"
+"</div> \n"
+"        "
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.new_ticket_request_email_template
@@ -284,47 +365,47 @@ msgid ""
 "    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
 "        <t t-if=\"hasattr(object.team_id, 'website_id') and "
 "object.team_id.use_website_helpdesk_form\">\n"
-"            <a t-attf-style=\"background-color: "
-"{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
-"8px 16px; text-decoration: none; color: "
-"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
-"font-size: 13px;\" t-att-href=\"'%s%s' % (object.team_id.website_id.domain "
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"'%s%s' % (object.team_id.website_id.domain "
 "or '', object.get_portal_url())\" target=\"_blank\">View Ticket</a>\n"
 "        </t>\n"
 "        <t t-else=\"\">\n"
-"            <a t-attf-style=\"background-color: "
-"{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
-"8px 16px; text-decoration: none; color: "
-"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
-"font-size:13px;\" t-att-href=\"object.get_portal_url()\" "
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"object.get_portal_url()\" "
 "target=\"_blank\">View Ticket</a>\n"
 "        </t>\n"
 "        <t t-if=\"hasattr(object.team_id, 'website_id') and "
 "object.team_id.allow_portal_ticket_closing\">\n"
-"            <a t-attf-style=\"background-color: "
-"{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
-"8px 16px; text-decoration: none; color: "
-"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
-"font-size:13px;\" t-att-href=\"'%s/my/ticket/close/%s/%s' % "
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"'%s/my/ticket/close/%s/%s' % "
 "(object.team_id.website_id.domain or '', object.id, object.access_token)\" "
 "target=\"_blank\">Close Ticket</a>\n"
 "        </t>\n"
 "        <t t-elif=\"object.team_id.allow_portal_ticket_closing\">\n"
-"            <a t-attf-style=\"background-color: "
-"{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
-"8px 16px; text-decoration: none; color: "
-"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
-"font-size:13px;\" t-att-href=\"'/my/ticket/close/%s/%s' % (object.id, "
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"'/my/ticket/close/%s/%s' % (object.id, "
 "object.access_token)\" target=\"_blank\">Close Ticket</a>\n"
 "        </t>\n"
 "        <t t-if=\"object.team_id.use_website_helpdesk_forum or "
 "object.team_id.use_website_helpdesk_knowledge or "
 "object.team_id.use_website_helpdesk_slides\">\n"
-"            <a t-attf-style=\"background-color: "
-"{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
-"8px 16px; text-decoration: none; color: "
-"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
-"font-size:13px;\" t-att-href=\"object.team_id.feature_form_url\" "
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"object.team_id.feature_form_url\" "
 "target=\"_blank\">Visit Help Center</a>\n"
 "        </t><br/><br/>\n"
 "    </div>\n"
@@ -334,6 +415,88 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"    Gerb. <t t-out=\"object.sudo().partner_id.name or object.sudo()"
+".partner_name or 'Madam/Sir'\">ponia/ponas</t>,<br/><br/>\n"
+"    Jūsų užklausa\n"
+"   <t t-if=\"hasattr(object.team_id, 'website_id') and object.get_portal_url"
+"()\">\n"
+"        <a t-attf-href=\"{{ object.team_id.website_id.domain }}/my/ticket/{{ "
+"object.id }}/{{ object.access_token }}\" t-out=\"object.name or ''\"> Stalo "
+"kojos yra nesubalansuotos</a>\n"
+"    </t>\n"
+"    buvo gauta ir šiuo metu ją nagrinėja mūsų <t t-out=\"object.team_id.name "
+"or ''\">VIP pagalbos</t> komanda.<br/><br/>\n"
+"    Jūsų užklausos numeris yra <strong><t t-out=\"object.ticket_ref or ''\">"
+"15</t></strong>.<br/><br/>\n"
+"\n"
+"    Norėdami pateikti papildomą informaciją, tiesiog atsakykite į šį el. "
+"laišką.<br/><br/>\n"
+"   <t t-if=\"object.team_id.show_knowledge_base\"> \n"
+"        Nesivaržykite apsilankyti mūsų <a t-attf-href=\"{{ "
+"object.team_id.get_knowledge_base_url() }}\">pagalbos centre</a>. Galbūt ten "
+"rasite atsakymą į savo klausimą.\n"
+"       <br/><br/> \n"
+"   </t>\n"
+"    <t t-if=\"object.team_id.allow_portal_ticket_closing\"> \n"
+"        Jei mūsų pagalba nebereikalinga, galite uždaryti savo užklausą. "
+"Dėkojame už bendradarbiavimą.<br/><br/>\n"
+"   </t>\n"
+"\n"
+"    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\"> \n"
+"       <t t-if=\"hasattr(object.team_id, 'website_id') and "
+"object.team_id.use_website_helpdesk_form\">\n"
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: {"
+"{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"'%s%s' % (object.team_id.website_id.domain "
+"or '', object.get_portal_url())\" target=\"_blank\"> Peržiūrėti užklausą</a>"
+"\n"
+"        </t>\n"
+"       <t t-else=\"\">\n"
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: {"
+"{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"object.get_portal_url()\" target=\"_blank\"> "
+"Peržiūrėti užklausą</a>\n"
+"        </t>\n"
+"       <t t-if=\"hasattr(object.team_id, 'website_id') and "
+"object.team_id.allow_portal_ticket_closing\">\n"
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: {"
+"{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"'%s/my/ticket/close/%s/%s' % "
+"(object.team_id.website_id.domain or '', object.id, object.access_token)\" "
+"target=\"_blank\"> Uždaryti užklausą</a>\n"
+"        </t>\n"
+"       <t t-elif=\"object.team_id.allow_portal_ticket_closing\">\n"
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: {"
+"{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"'/my/ticket/close/%s/%s' % (object.id, "
+"object.access_token)\" target=\"_blank\"> Uždaryti užklausą</a>\n"
+"        </t>\n"
+"       <t t-if=\"object.team_id.use_website_helpdesk_forum or "
+"object.team_id.use_website_helpdesk_knowledge or "
+"object.team_id.use_website_helpdesk_slides\">\n"
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: {"
+"{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"object.team_id.feature_form_url\" "
+"target=\"_blank\"> Apsilankykite pagalbos centre</a>\n"
+"        </t><br/><br/> \n"
+"   </div> \n"
+"\n"
+"    Su pagarba,<br/><br/>\n"
+"    „ <t t-out=\"object.team_id.name or 'Helpdesk'\">“ pagalbos tarnybos</t> "
+"komanda\n"
+"</div>\n"
+"        "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
@@ -381,6 +544,10 @@ msgid ""
 "will automatically be sent by email to the customer when their ticket "
 "reaches the corresponding stage with the email template set.</span>"
 msgstr ""
+"<i class=\"fa fa-lightbulb-o\"/>\n"
+"                                    <span class=\"ms-2\">Vertinimo prašymas "
+"bus automatiškai išsiųstas klientui el. paštu, kai jo užklausa pasieks "
+"atitinkamą etapą, jei bus nustatytas el. laiško šablonas.</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -393,6 +560,13 @@ msgid ""
 "tickets<br/>\n"
 "                                </span>"
 msgstr ""
+"<i class=\"fa fa-lightbulb-o\"/>\n"
+"                                <span class=\"ms-2\">\n"
+"                                    Įveskite „ <b> “ /ticket</b>, kad "
+"sukurtumėte užklausas<br/>\n"
+"                                    Įveskite „ <b> “ /search_tickets</b>, "
+"kad surastumėte užklausas<br/>\n"
+"                                </span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -455,7 +629,7 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
 msgid "<span class=\"o_stat_text order-2\">Tickets</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text order-2\">Bilietai</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -518,7 +692,7 @@ msgstr "SLA sėkmės rodiklis"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "<span>Tickets Closed</span>"
-msgstr ""
+msgstr "<span>Uždaryti prašymai</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
@@ -531,6 +705,8 @@ msgid ""
 "<span>Your ticket has successfully been closed. Thank you for your "
 "collaboration.</span>"
 msgstr ""
+"<span>Jūsų užklausa buvo sėkmingai uždaryta. Dėkojame už bendradarbiavimą.</"
+"span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -641,6 +817,8 @@ msgid ""
 "Adapt your <b>pipeline</b> to your workflow by adding <b>stages</b> <i>(e.g. "
 "Awaiting Customer Feedback, etc.).</i>"
 msgstr ""
+"Pritaikykite savo „ <b>“ procesą</b> prie savo darbo eigos, pridėdami „ <b>“ "
+"etapus</b> <i>(pvz., „Laukiama kliento atsiliepimo“ ir pan.).</i>"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_stage_action
@@ -648,11 +826,13 @@ msgstr ""
 msgid ""
 "Adapt your pipeline to your workflow and track the progress of your tickets."
 msgstr ""
+"Pritaikykite savo procesą prie savo darbo eigos ir stebėkite užklausų "
+"vykdymo pažangą."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
 msgid "Add details about this ticket..."
-msgstr ""
+msgstr "Pridėti informacijos apie šį prašymą..."
 
 #. module: helpdesk
 #. odoo-javascript
@@ -745,11 +925,13 @@ msgid ""
 "Allow customers to help each other on a forum. Share answers from your "
 "tickets directly."
 msgstr ""
+"Leiskite klientams padėti vieni kitiems forume. Tiesiogiai dalinkitės "
+"atsakymais iš savo užklausų."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Allow your customers to close their own tickets"
-msgstr ""
+msgstr "Leiskite savo klientams patiems uždaryti savo užklausas"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_helpdesk_stage_delete_wizard
@@ -786,6 +968,8 @@ msgid ""
 "Assign tickets to the appropriate team members by defining who can work on "
 "tickets with certain tags."
 msgstr ""
+"Paskirkite užklausas atitinkamiems komandos nariams, nustatydami, kas gali "
+"dirbti su užklausomis, pažymėtomis tam tikromis žymėmis."
 
 #. module: helpdesk
 #. odoo-python
@@ -831,6 +1015,9 @@ msgid ""
 "cannot be accessed by the customer, as it belongs to a helpdesk team that is "
 "not publicly available, or there is no customer associated with the ticket."
 msgstr ""
+"Šiuo metu peržiūros galimybės nėra. Klientas negali pasiekti šio užklausos, "
+"nes ji priklauso Pagalbos Tarnybos komandai, kuri nėra viešai prieinama, "
+"arba su užklausa nėra susietas joks klientas."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_attachment_count
@@ -840,7 +1027,7 @@ msgstr "Prisegtukų skaičius"
 
 #. module: helpdesk
 #: model:res.groups,name:helpdesk.group_auto_assignment
-msgid "Auto Assigment"
+msgid "Auto Assignment"
 msgstr ""
 
 #. module: helpdesk
@@ -849,6 +1036,8 @@ msgid ""
 "Automate the assignment of new tickets to the right people, and make sure "
 "all tickets are being handled"
 msgstr ""
+"Automatizuokite naujų užklausų priskyrimą tinkamiems asmenims ir "
+"užtikrinkite, kad visos užklausos būtų tvarkomos"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__auto_assignment
@@ -933,7 +1122,7 @@ msgstr "Vid. Atviros Valandos"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Bill the time spent on your tickets to your customers"
-msgstr ""
+msgstr "Apskaitykite klientams laiką, praleistą tvarkant jų užklausas"
 
 #. module: helpdesk
 #. odoo-python
@@ -1001,7 +1190,7 @@ msgstr "Uždaryti"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Close Ticket"
-msgstr ""
+msgstr "Uždaryti kreipinį"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__close_date
@@ -1011,7 +1200,7 @@ msgstr "Uždarymo data"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Close inactive tickets automatically"
-msgstr ""
+msgstr "Automatiškai uždaryti neaktyvius prašymus"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -1164,7 +1353,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model,website_form_label:helpdesk.model_helpdesk_ticket
 msgid "Create a Ticket"
-msgstr ""
+msgstr "Sukurkite bilietą/pagalbos užklausą"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.email_template_action_helpdesk
@@ -1178,11 +1367,14 @@ msgid ""
 "Create teams to organize your tickets by expertise or geographical region, "
 "and define a different workflow for each team."
 msgstr ""
+"Sukurkite komandas, kad galėtumėte tvarkyti užklausas pagal kompetenciją "
+"arba geografinį regioną, ir kiekvienai komandai nustatykite skirtingą darbo "
+"eigą."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Create tickets by sending an email to an alias"
-msgstr ""
+msgstr "Sukurkite užklausas, išsiųsdami el. laišką į aliasą"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_7days_success
@@ -1296,7 +1488,7 @@ msgstr "Klientai"
 #. odoo-python
 #: code:addons/helpdesk/models/helpdesk_team.py:0
 msgid "Customers will be added to the followers of their tickets."
-msgstr ""
+msgstr "Klientai bus pridėti prie jų užklausų stebėtojų sąrašo."
 
 #. module: helpdesk
 #. odoo-javascript
@@ -1402,7 +1594,7 @@ msgstr "Atmesti"
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__assign_method__tags
 msgid "Dispatch tickets based on tags"
-msgstr ""
+msgstr "Užsakymų paskirstymas pagal žymes"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_digest_digest__display_name
@@ -1437,12 +1629,12 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__assign_method__balanced
 msgid "Each user has an equal number of open tickets"
-msgstr ""
+msgstr "Kiekvienas vartotojas turi vienodą skaičių atvirų užklausų"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__assign_method__randomly
 msgid "Each user is assigned an equal number of tickets"
-msgstr ""
+msgstr "Kiekvienam vartotojui skiriamas vienodas bilietų skaičius"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_email
@@ -1466,6 +1658,12 @@ msgid ""
 "Otherwise it will be sent from the company's email address, or from the "
 "catchall (as defined in the System Parameters)."
 msgstr ""
+"Kai užklausa pasiekia šį etapą, klientui automatiškai išsiunčiamas el. "
+"laiškas.\n"
+"Pagal numatytuosius nustatymus el. laiškas bus išsiųstas iš Pagalbos "
+"Tarnybos komandos el. pašto aliaso.\n"
+"Priešingu atveju jis bus išsiųstas iš įmonės el. pašto adreso arba iš „"
+"catchall“ (kaip apibrėžta sistemos parametruose)."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__email_cc
@@ -1501,6 +1699,8 @@ msgid ""
 "Enter the <b>subject</b> of your ticket <br/><i>(e.g. Problem with my "
 "installation, Wrong order, etc.).</i>"
 msgstr ""
+"Įveskite bilieto <br/><i> „ <b>“ temą </b> (pvz., „Problema su įdiegimu“, „"
+"Neteisingas užsakymas“ ir pan.).</i>"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_status__exceeded_hours
@@ -1531,7 +1731,7 @@ msgstr "Neįvykdyti SLA"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__sla_failed
 msgid "Failed SLA Ticket"
-msgstr ""
+msgstr "Nepavykęs SLA užklausos bilietas"
 
 #. module: helpdesk
 #. odoo-javascript
@@ -1563,12 +1763,12 @@ msgstr "Sutrauktas"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Follow All Team's Tickets"
-msgstr ""
+msgstr "Sekite visus komandos užklausimus"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_my_home_helpdesk_ticket
 msgid "Follow all your helpdesk tickets"
-msgstr ""
+msgstr "Sekite visus savo Pagalbos Tarnybos užklausimus"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search_base
@@ -1604,6 +1804,9 @@ msgid ""
 "Get in touch with your website visitors, and engage them with scripted "
 "chatbot conversations. Create and search tickets from your conversations."
 msgstr ""
+"Užmegzkite ryšį su savo svetainės lankytojais ir įtraukite juos į iš anksto "
+"paruoštus pokalbius su pokalbių robotu. Kurkite ir ieškokite užklausų iš "
+"savo pokalbių."
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_analysis_action
@@ -1612,11 +1815,13 @@ msgid ""
 "Get statistics on your tickets and how long it takes to assign and resolve "
 "them."
 msgstr ""
+"Gaukite statistinius duomenis apie savo užklausas ir apie tai, kiek laiko "
+"užtrunka jų priskyrimas ir išsprendimas."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Get tickets through an online form"
-msgstr ""
+msgstr "Įsigykite bilietus užpildydami internetinę formą"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_giftcards
@@ -1636,6 +1841,9 @@ msgid ""
 "followers. Employees automatically get access to the tickets they are "
 "assigned to."
 msgstr ""
+"Suteikite darbuotojams prieigą prie jūsų Pagalbos Tarnybos komandos arba "
+"užklausų, pridėdami juos kaip sekėjus. Darbuotojai automatiškai gauna "
+"prieigą prie jiems priskirtų užklausų."
 
 #. module: helpdesk
 #. odoo-python
@@ -1645,6 +1853,9 @@ msgid ""
 "followers. Customers automatically get access to their tickets in their "
 "portal."
 msgstr ""
+"Suteikite portalo vartotojams prieigą prie jūsų Pagalbos Tarnybos komandos "
+"arba užklausų, pridėdami juos kaip sekėjus. Klientai automatiškai gauna "
+"prieigą prie savo užklausų portale."
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_report_analysis__kanban_state__done
@@ -1779,33 +1990,33 @@ msgstr "Pagalbos tarnybos komandos"
 #: model:ir.model,name:helpdesk.model_helpdesk_ticket
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
 msgid "Helpdesk Ticket"
-msgstr "Pagalbos tarnybos kreipiniai"
+msgstr "Pagalbos kreipiniai"
 
 #. module: helpdesk
 #: model:ir.actions.server,name:helpdesk.ir_cron_auto_close_ticket_ir_actions_server
 msgid "Helpdesk Ticket: Automatically close the tickets"
-msgstr ""
+msgstr "Pagalbos Tarnybos užklausos: Automatiškai uždaryti užklausas"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_graph_main
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_pivot_main
 msgid "Helpdesk Tickets"
-msgstr "Pagalbos tarnybos kreipiniai"
+msgstr "Pagalbos kreipiniai"
 
 #. module: helpdesk
 #: model:mail.template,name:helpdesk.solved_ticket_request_email_template
 msgid "Helpdesk: Ticket Closed"
-msgstr ""
+msgstr "Pagalbos Tarnyba: Užklausa uždaryta"
 
 #. module: helpdesk
 #: model:mail.template,name:helpdesk.rating_ticket_request_email_template
 msgid "Helpdesk: Ticket Rating Request"
-msgstr ""
+msgstr "Pagalbos Tarnyba: Prašymas įvertinti užklausą"
 
 #. module: helpdesk
 #: model:mail.template,name:helpdesk.new_ticket_request_email_template
 msgid "Helpdesk: Ticket Received"
-msgstr ""
+msgstr "Pagalbos Tarnyba: gautas prašymas"
 
 #. module: helpdesk
 #. odoo-javascript
@@ -1825,7 +2036,7 @@ msgstr "Aukštas prioritetas"
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_stage__rotting_threshold_days
 msgid "Highlight tickets that haven't been updated for this many days."
-msgstr ""
+msgstr "Išskirkite bilietus, kurie nebuvo atnaujinti jau tiek dienų."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -2072,13 +2283,13 @@ msgstr "Vėluojančios veiklos"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_data
 msgid "Latest Ratings"
-msgstr ""
+msgstr "Naujausi įvertinimai"
 
 #. module: helpdesk
 #. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 msgid "Let's create your first <b>ticket</b>."
-msgstr ""
+msgstr "Sukurkime jūsų pirmąjį „ <b>“ užklausą</b>."
 
 #. module: helpdesk
 #. odoo-javascript
@@ -2087,12 +2298,14 @@ msgid ""
 "Let's go back to the <b>kanban view</b> to get an overview of your next "
 "tickets."
 msgstr ""
+"Grįžkime prie „ <b>“ kanban peržiūros</b>, kad susipažintume su jūsų "
+"artimiausiais uždaviniais."
 
 #. module: helpdesk
 #. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 msgid "Let's view your <b>team's tickets</b>."
-msgstr ""
+msgstr "Peržiūrėkime jūsų „ <b>“ komandos užklausas</b>."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_livechat
@@ -2127,12 +2340,14 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Make sure tickets are handled on time"
-msgstr ""
+msgstr "Užtikrinkite, kad užklausos būtų tvarkomos laiku"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_action_main
 msgid "Make sure tickets are handled on time by using SLA Policies.<br>"
 msgstr ""
+"Užtikrinkite, kad užklausos būtų tvarkomos laiku, taikydami SLA "
+"taisykles.<br>"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__time
@@ -2140,6 +2355,8 @@ msgid ""
 "Maximum number of working hours a ticket should take to reach the target "
 "stage, starting from the date it was created."
 msgstr ""
+"Maksimalus darbo valandų skaičius, per kurį užklausa turėtų pasiekti tikslą, "
+"skaičiuojant nuo jos sukūrimo dienos."
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.rating_rating_action_helpdesk
@@ -2147,6 +2364,8 @@ msgid ""
 "Measure your customer satisfaction by sending rating requests when your "
 "tickets are solved."
 msgstr ""
+"Įvertinkite klientų pasitenkinimą siųsdami prašymus palikti vertinimą, kai "
+"užklausos bus išspręstos."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__medium_id
@@ -2279,6 +2498,8 @@ msgid ""
 "New tickets will automatically be assigned to the team members that are "
 "available, according to their working hours and their time off."
 msgstr ""
+"Nauji užklausimai bus automatiškai priskiriami laisviems komandos nariams, "
+"atsižvelgiant į jų darbo valandas ir laisvadienius."
 
 #. module: helpdesk
 #. odoo-python
@@ -2367,7 +2588,7 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_my_ticket_action_no_create
 msgid "No tickets found"
-msgstr ""
+msgstr "Bilietų nerasta"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_main_my
@@ -2375,7 +2596,7 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_team
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_unassigned
 msgid "No tickets found. Let's create one!"
-msgstr ""
+msgstr "Bilietų nerasta. Sukurkime vieną!"
 
 #. module: helpdesk
 #. odoo-python
@@ -2397,7 +2618,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage_delete_wizard__ticket_count
 msgid "Number of Tickets"
-msgstr ""
+msgstr "Bilietų skaičius"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_has_error_counter
@@ -2421,21 +2642,23 @@ msgstr "Žinučių su pristatymo klaida skaičius"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "Number of open tickets with at least one SLA failed."
 msgstr ""
+"Atvirų užklausų, kuriose bent vienas SLA reikalavimas nebuvo įvykdytas, "
+"skaičius."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_open_ticket_count
 msgid "Number of other open tickets from the same partner"
-msgstr ""
+msgstr "Kitų to paties partnerio atvirų užklausų skaičius"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_ticket_count
 msgid "Number of other tickets from the same partner"
-msgstr ""
+msgstr "Kitų to paties partnerio užklausų skaičius"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "Number of tickets closed in the past 7 days."
-msgstr ""
+msgstr "Per pastarąsias 7 dienas uždarytų užklausų skaičius."
 
 #. module: helpdesk
 #: model:helpdesk.stage,name:helpdesk.stage_on_hold
@@ -2459,7 +2682,7 @@ msgstr "Atidaryti"
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 msgid "Open Tickets"
-msgstr ""
+msgstr "# Atidarytų kreipinių"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__open_hours
@@ -2470,7 +2693,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 msgid "Open the ticket."
-msgstr ""
+msgstr "Atidarykite užklausą."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_force_thread_id
@@ -2516,7 +2739,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_ticket_ids
 msgid "Partner Tickets"
-msgstr ""
+msgstr "Partnerių bilietai"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__privacy_visibility
@@ -2540,11 +2763,28 @@ msgid ""
 "be modified on each ticket individually by adding or removing the portal "
 "user as follower."
 msgstr ""
+"Asmenys, kuriems bus matoma šis Pagalbos Tarnybos komanda ir jos užklausos.\n"
+"\n"
+"- Pakviestieji vidiniai vartotojai: vidiniai vartotojai gali pasiekti "
+"komandą ir užklausas, kurias jie seka. Šią prieigą galima keisti kiekvienoje "
+"užklausoje atskirai, pridedant arba pašalinant vartotoją iš sekėjų sąrašo.\n"
+"Vartotojas, turintis Pagalbos Tarnybos > administratoriaus prieigos teisių "
+"lygį, vis tiek gali pasiekti šią komandą ir jos užklausas, net jei jis nėra "
+"aiškiai įtrauktas į sekėjų sąrašą.\n"
+"\n"
+"- Visi vidiniai vartotojai: visi vidiniai vartotojai gali pasiekti komandą "
+"ir visus jos užklausimus be išimčių.\n"
+"\n"
+"- Pakviestieji portalo vartotojai ir visi vidiniai vartotojai: visi vidiniai "
+"vartotojai gali pasiekti komandą ir visus jos užklausimus be išimčių.\n"
+"Portalo vartotojai gali pasiekti tik tuos užklausimus, kuriuos seka. Šią "
+"prieigą galima keisti kiekvienam užklausimui atskirai, pridedant arba "
+"pašalinant portalo vartotoją iš stebinčiųjų sąrašo."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "People to whom this team and its tickets will be visible"
-msgstr ""
+msgstr "Asmenys, kuriems bus matoma ši komanda ir jos užklausos"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__rating_percentage_satisfaction
@@ -2555,7 +2795,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 msgid "Percentage of tickets that were closed without failing any SLAs."
-msgstr ""
+msgstr "Užbaigtų užklausų, kurios nepažeidė jokių SLA, procentinė dalis."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
@@ -2563,6 +2803,8 @@ msgid ""
 "Percentage of tickets whose SLAs have successfully been reached on time over "
 "the total number of tickets closed within the past 7 days."
 msgstr ""
+"Bilietų, kurių SLA buvo sėkmingai įvykdyti laiku, procentinė dalis, "
+"palyginti su bendru per pastarąsias 7 dienas uždarytų bilietų skaičiumi."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -2579,7 +2821,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__auto_close_day
 msgid "Period of inactivity after which tickets will be automatically closed."
-msgstr ""
+msgstr "Neaktyvumo laikotarpis, po kurio užklausos bus automatiškai uždarytos."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
@@ -2645,6 +2887,7 @@ msgstr "Portalo dalijimasis"
 msgid ""
 "Portal users will be removed from the followers of the team and its tickets."
 msgstr ""
+"Portalo vartotojai bus pašalinti iš komandos sekėjų sąrašo ir jos užklausų."
 
 #. module: helpdesk
 #: model:ir.actions.server,name:helpdesk.action_open_customer_preview
@@ -2757,6 +3000,8 @@ msgid ""
 "Receive notifications whenever tickets are created, rated or discussed on in "
 "this team"
 msgstr ""
+"Gaukite pranešimus, kai šioje komandoje sukuriami, vertinami ar aptariami "
+"užklausimai"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_force_thread_id
@@ -2891,6 +3136,8 @@ msgid ""
 "SLA Policies that will automatically apply to the tickets submitted by this "
 "customer."
 msgstr ""
+"SLA taisyklės, kurios bus automatiškai taikomos šio kliento pateiktiems "
+"prašymams."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
@@ -2982,7 +3229,7 @@ msgstr "Pavyzdis"
 #. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 msgid "Save this ticket and the modifications you've made to it."
-msgstr ""
+msgstr "Išsaugokite šį prašymą ir jame atliktus pakeitimus."
 
 #. module: helpdesk
 #. odoo-javascript
@@ -3023,7 +3270,7 @@ msgstr "Ieškoti pagal etapą"
 #. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 msgid "Search%(left)s Tickets%(right)s"
-msgstr ""
+msgstr "Ieškoti „%(left)s “ bilietų%(right)s"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__access_token
@@ -3034,7 +3281,7 @@ msgstr "Apsaugos prieigos raktas"
 #. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 msgid "Select the <b>customer</b> of your ticket."
-msgstr ""
+msgstr "Pasirinkite savo bilieto „ <b>“ klientą</b>."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -3059,6 +3306,11 @@ msgid ""
 "team. Automatically send an email to customers when a ticket reaches a "
 "specific stage in a helpdesk team by setting this template on that stage."
 msgstr ""
+"Siųskite klientams patvirtinimo el. laišką, pranešdami, kad jų Pagalbos "
+"Tarnybos užklausa buvo gauta ir šiuo metu ją nagrinėja Pagalbos Tarnybos "
+"komanda. Automatiškai siųskite el. laišką klientams, kai užklausa pasiekia "
+"tam tikrą etapą Pagalbos Tarnybos komandoje, nustatydami šį šabloną tam "
+"etapui."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -3090,7 +3342,7 @@ msgstr "Nustatymai"
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.portal_share_action
 msgid "Share Ticket"
-msgstr ""
+msgstr "Pasidalinti užklausą"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -3172,6 +3424,8 @@ msgid ""
 "Stages the team will use. This team's tickets will only be able to be in "
 "these stages."
 msgstr ""
+"Etapai, kuriuos naudos komanda. Šios komandos užklausos galės būti tik "
+"šiuose etapuose."
 
 #. module: helpdesk
 #. odoo-python
@@ -3246,7 +3500,7 @@ msgstr "Žymos"
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_tag_action
 msgid "Tags are perfect for organizing your tickets."
-msgstr ""
+msgstr "Žymės puikiai tinka bilietams tvarkyti."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
@@ -3288,7 +3542,7 @@ msgstr "Šablonai"
 #. odoo-python
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
 msgid "The customer cannot belong to a different company than the ticket."
-msgstr ""
+msgstr "Klientas negali priklausyti kitai įmonei nei nurodyta užklausime."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_model_id
@@ -3314,7 +3568,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 msgid "The team does not allow ticket closing through portal"
-msgstr ""
+msgstr "Komanda neleidžia uždaryti užklausų per portalą"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__exclude_stage_ids
@@ -3326,7 +3580,7 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
 msgid "There are currently no Ticket for your account."
-msgstr ""
+msgstr "Šiuo metu jūsų paskyroje nėra jokių užklausų."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.ticket_creation
@@ -3338,6 +3592,8 @@ msgstr "Šis"
 msgid ""
 "This SLA Policy will apply to tickets matching ALL of the following criteria:"
 msgstr ""
+"Ši SLA politika bus taikoma užklausoms, atitinkančioms VISUS šiuos "
+"kriterijus:"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__campaign_id
@@ -3360,20 +3616,20 @@ msgid ""
 "This is the source of the link, e.g. Search Engine, another domain, or name "
 "of email list"
 msgstr ""
-"Tai yra nuotraukos šaltinis, pvz., paieškos variklis, kitas adresas ar "
-"laiškų sąrašo pavadinimas"
+"Tai yra nuorodos šaltinis, pvz., paieškos variklis, kitas adresas ar laiškų "
+"sąrašo pavadinimas"
 
 #. module: helpdesk
 #. odoo-python
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
 msgid "This ticket was closed %s hours after its SLA deadline."
-msgstr ""
+msgstr "Šis užklausimas buvo uždarytas %s valandų po SLA termino."
 
 #. module: helpdesk
 #. odoo-python
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
 msgid "This ticket was successfully closed %s hours before its SLA deadline."
-msgstr ""
+msgstr "Šis užklausimas buvo sėkmingai uždarytas %s valandų prieš SLA terminą."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_helpdesk_stage_delete_confirmation_wizard
@@ -3381,6 +3637,7 @@ msgid ""
 "This will archive the stages and all of the tickets they contain from the "
 "following teams:"
 msgstr ""
+"Tai archyvuos etapus ir visus juose esančius užklausimus iš šių komandų:"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.mail_activity_type_action_config_helpdesk
@@ -3422,17 +3679,21 @@ msgstr "Bilieto analizė"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_closed
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__ticket_closed
 msgid "Ticket Closed"
-msgstr ""
+msgstr "Užklausa uždaryta"
 
 #. module: helpdesk
 #: model:mail.template,subject:helpdesk.solved_ticket_request_email_template
-msgid "Ticket Closed - Reference {{ object.id if object.id else 15 }}"
+msgid ""
+"Ticket Closed - Reference {{ object.ticket_ref if object.ticket_ref else "
+"15 }}"
 msgstr ""
+"Užklausa uždaryta – Nuoroda {{ object.ticket_ref if object.ticket_ref else "
+"15 }}"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__ticket_count
 msgid "Ticket Count"
-msgstr ""
+msgstr "Bilietų skaičius"
 
 #. module: helpdesk
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_new
@@ -3444,24 +3705,24 @@ msgstr "Bilietas sukurtas"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__create_date
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__create_date
 msgid "Ticket Creation Date"
-msgstr ""
+msgstr "Bilieto sukūrimo data"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__sla_deadline
 msgid "Ticket Deadline"
-msgstr ""
+msgstr "Bilietų įsigijimo terminas"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_ref
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__ticket_ref
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_ref
 msgid "Ticket IDs Sequence"
-msgstr ""
+msgstr "Tickets Sequence"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__ticket_properties
 msgid "Ticket Properties"
-msgstr ""
+msgstr "Bilieto savybės"
 
 #. module: helpdesk
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_rated
@@ -3472,23 +3733,23 @@ msgstr "Bilietas įvertintas"
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_sla_status
 msgid "Ticket SLA Status"
-msgstr ""
+msgstr "Bilieto SLA būsena"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_tag_assignment__tag_id
 msgid "Ticket Tag"
-msgstr ""
+msgstr "Bilieto žymė"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.quick_create_ticket_form
 msgid "Ticket Title"
-msgstr ""
+msgstr "Bilieto pavadinimas"
 
 #. module: helpdesk
 #. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 msgid "Ticket closed by the customer"
-msgstr ""
+msgstr "Užklausa uždaryta kliento iniciatyva"
 
 #. module: helpdesk
 #: model:mail.message.subtype,description:helpdesk.mt_ticket_new
@@ -3549,7 +3810,7 @@ msgstr "Bilietų paieška"
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_stage__fold
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__fold
 msgid "Tickets in a folded stage are considered as closed."
-msgstr ""
+msgstr "Bilietai, esantys sulankstymo etape, laikomi uždarytais."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_helpdesk_sale_timesheet
@@ -3574,7 +3835,7 @@ msgstr "Darbo apskaitos žiniaraščiai"
 #. module: helpdesk
 #: model:digest.tip,name:helpdesk.digest_tip_helpdesk_0
 msgid "Tip: Create tickets from incoming emails"
-msgstr ""
+msgstr "Patarimas: kurkite užklausas iš gaunamų el. laiškų"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_my_ticket_action_no_create
@@ -3587,6 +3848,10 @@ msgid ""
 "                Collaborate efficiently by chatting in real-time or via "
 "email."
 msgstr ""
+"Norėdami atlikti užduotis, planuokite veiklą ir naudokitės užklausų "
+"būsena.<BR>\n"
+"                Veiksmingai bendradarbiaukite bendraudami pokalbių "
+"svetainėje realiuoju laiku arba el. paštu."
 
 #. module: helpdesk
 #. odoo-javascript
@@ -3621,7 +3886,7 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Track customer satisfaction on tickets"
-msgstr ""
+msgstr "Stebėkite klientų pasitenkinimą pagal užklausas"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_report_analysis_action
@@ -3630,11 +3895,13 @@ msgid ""
 "Track the performance of your teams, the success rate of your tickets, and "
 "how quickly you reach your service level agreements (SLAs)."
 msgstr ""
+"Stebėkite savo komandų veiklos rezultatus, užklausų sėkmės rodiklį ir tai, "
+"kaip greitai pasiekiate paslaugų lygio susitarimus (SLA)."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Track the time spent on tickets"
-msgstr ""
+msgstr "Sekite laiką, praleistą sprendžiant užklausas"
 
 #. module: helpdesk
 #. odoo-javascript
@@ -3651,7 +3918,7 @@ msgstr "Įrašytos išimties veiklos tipas."
 #. odoo-python
 #: code:addons/helpdesk/models/helpdesk_stage.py:0
 msgid "Unarchive Tickets"
-msgstr ""
+msgstr "Išimti bilietus iš archyvo"
 
 #. module: helpdesk
 #. odoo-python
@@ -3725,6 +3992,9 @@ msgid ""
 "customers. Add new people to the followers' list to make them aware of the "
 "progress of this ticket."
 msgstr ""
+"Naudokitės pokalbių funkcija <b>, siųskite el. laiškus</b> ir efektyviai "
+"bendraukite su savo klientais. Pridėkite naujus žmones į sekėjų sąrašą, kad "
+"jie būtų informuoti apie šio užklausimo eigą."
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_res_users
@@ -3769,6 +4039,8 @@ msgid ""
 "We hope to have addressed your request satisfactorily. If you no longer need "
 "our assistance, please close this ticket. Thank you for your collaboration."
 msgstr ""
+"Tikimės, kad patenkinome jūsų prašymą. Jei mūsų pagalbos nebereikia, "
+"uždarykite šį prašymą. Dėkojame už bendradarbiavimą."
 
 #. module: helpdesk
 #: model_terms:helpdesk.team,description:helpdesk.helpdesk_team1
@@ -3780,6 +4052,11 @@ msgid ""
 "            Support is mainly provided in English. We can also assist in "
 "Spanish, French, and Dutch."
 msgstr ""
+"Teikiame pagalbą 24 valandas per parą, 7 dienas per savaitę, nuo pirmadienio "
+"iki penktadienio. Atsakymai į užklausas paprastai pateikiami per 2 darbo "
+"dienas.<br>\n"
+"            Pagalba teikiama daugiausia anglų kalba. Taip pat galime padėti "
+"ispanų, prancūzų ir olandų kalbomis."
 
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_website
@@ -3853,6 +4130,12 @@ msgid ""
 "Would you like to unarchive all of the tickets contained in these stages as "
 "well?"
 msgstr ""
+"Ar norėtumėte taip pat išarchyvuoti visus šiuose etapuose esančius prašymus?"
+
+#. module: helpdesk
+#: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_twitter
+msgid "X"
+msgstr ""
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_helpdesk_stage_delete_wizard
@@ -3860,6 +4143,8 @@ msgid ""
 "You cannot delete stages containing tickets. You can either archive them or "
 "first delete all of their tickets."
 msgstr ""
+"Etapų, kuriuose yra užklausų, negalima ištrinti. Juos galima arba "
+"archyvuoti, arba pirmiausia ištrinti visas juose esančias užklausas."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_helpdesk_stage_delete_wizard
@@ -3867,6 +4152,8 @@ msgid ""
 "You cannot delete stages containing tickets. You should first delete all of "
 "their tickets."
 msgstr ""
+"Etapų, kuriuose yra užklausų, ištrinti negalima. Pirmiausia turite ištrinti "
+"visas jų užklausas."
 
 #. module: helpdesk
 #: model:ir.model.constraint,message:helpdesk.constraint_res_users_target_closed_not_zero
@@ -3882,11 +4169,13 @@ msgid ""
 "You cannot update the company of this partner because it would lead to "
 "inconsistency with some of its tickets."
 msgstr ""
+"Jūs negalite atnaujinti šio partnerio įmonės duomenų, nes tai sukeltų "
+"neatitikimus su kai kuriais jo užsakymais."
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_sla
 msgid "You completed all your tickets on time."
-msgstr ""
+msgstr "Jūs laiku užbaigėte visus savo užsakymus."
 
 #. module: helpdesk
 #. odoo-python
@@ -3897,7 +4186,7 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.ticket_invitation_follower
 msgid "You have been invited to follow Ticket Document :"
-msgstr ""
+msgstr "Jūs esate pakviestas sekti bilieto dokumentą:"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -3944,12 +4233,12 @@ msgstr "eMokymas"
 #. module: helpdesk
 #: model_terms:digest.tip,tip_description:helpdesk.digest_tip_helpdesk_0
 msgid "generate tickets in your pipeline."
-msgstr ""
+msgstr "sukurkite užklausas savo procese."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.ticket_creation
 msgid "has been created from ticket:"
-msgstr ""
+msgstr "Sukurta pagal užklausą:"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -3966,7 +4255,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
 msgid "tickets"
-msgstr ""
+msgstr "bilietai"
 
 #. module: helpdesk
 #. odoo-python
@@ -3991,6 +4280,48 @@ msgstr "{{ object.name }}"
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
 msgid "👤 Unassigned"
 msgstr ""
+
+#~ msgid ""
+#~ "<div>\n"
+#~ "        Dear <t t-out=\"object.sudo().partner_id.name or 'Madam/"
+#~ "Sir'\">Madam/Sir</t>,<br/><br/>\n"
+#~ "        We would like to inform you that we have closed your ticket "
+#~ "(reference <t t-out=\"object.id or ''\">15</t>). \n"
+#~ "        We trust that the services provided have met your expectations "
+#~ "and that you have found a satisfactory resolution to your issue.<br/><br/"
+#~ ">\n"
+#~ "        However, if you have any further questions or comments, please do "
+#~ "not hesitate to reply to this email to re-open your ticket. \n"
+#~ "        Our team is always here to help you and we will be happy to "
+#~ "assist you with any further concerns you may have.<br/><br/>\n"
+#~ "        Thank you for choosing our services and for your cooperation "
+#~ "throughout this process. We truly value your business and appreciate the "
+#~ "opportunity to serve you.<br/><br/>\n"
+#~ "        Kind regards,<br/><br/>\n"
+#~ "        <t t-out=\"object.team_id.name or 'Helpdesk'\">Helpdesk</t> "
+#~ "Team.\n"
+#~ "    </div>\n"
+#~ "        "
+#~ msgstr ""
+#~ "<div>\n"
+#~ "        Gerbiamas/-a <t t-out=\"object.sudo().partner_id.name or 'Madam/"
+#~ "Sir'\">Pone/Ponia</t>,<br/><br/>\n"
+#~ "        Norime Jus informuoti, kad jūsų užklausa (nuorodos numeris <t t-"
+#~ "out=\"object.id or ''\">15</t>) buvo uždaryta. \n"
+#~ "        Tikimės, kad suteiktos paslaugos atitiko jūsų lūkesčius ir kad "
+#~ "problema buvo išspręsta jums priimtinu būdu.<br/><br/>\n"
+#~ "        Tačiau jei turite papildomų klausimų ar pastabų, nedvejodami "
+#~ "atsakykite į šį el. laišką, kad būtų vėl atidaryta jūsų užklausa. \n"
+#~ "        Mūsų komanda visada pasiruošusi jums padėti ir mielai suteikia "
+#~ "pagalbą.<br/><br/>\n"
+#~ "        Ačiū, kad pasirinkote mūsų paslaugas ir už bendradarbiavimą viso "
+#~ "proceso metu. Labai vertiname jūsų pasitikėjimą ir džiaugiamės, kad "
+#~ "galime jums padėti.<br/><br/>\n"
+#~ "        Pagarbiai,<br/><br/>\n"
+#~ "        <t t-out=\"object.team_id.name or 'Helpdesk'\">Pagalbos Tarnybos</"
+#~ "t> komanda.\n"
+#~ "    </div>\n"
+#~ "        "
 
 #~ msgid "<strong class=\"col-lg-2\">Managed by</strong>"
 #~ msgstr "<strong class=\"col-lg-2\">Tvarkomas asmens</strong>"

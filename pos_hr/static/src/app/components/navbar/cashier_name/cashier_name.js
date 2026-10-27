@@ -5,7 +5,11 @@ import { useCashierSelector } from "@pos_hr/app/utils/select_cashier_mixin";
 patch(CashierName.prototype, {
     setup() {
         super.setup(...arguments);
-        this.cashierSelector = useCashierSelector();
+        if (this.pos.config.module_pos_hr) {
+            this.cashierSelector = useCashierSelector({
+                onScan: (employee) => this.pos.setCashier(employee),
+            });
+        }
     },
     //@Override
     get avatar() {
@@ -27,5 +31,11 @@ patch(CashierName.prototype, {
     },
     async selectCashier(pin = false, login = false, list = false) {
         return await this.cashierSelector(...arguments);
+    },
+    async onCashierClick() {
+        if (!this.pos.config.module_pos_hr) {
+            return;
+        }
+        return this.selectCashier(false, true, true);
     },
 });

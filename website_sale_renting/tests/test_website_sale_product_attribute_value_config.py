@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
 
 from odoo.fields import Command
 from odoo.tests import tagged
@@ -77,6 +78,7 @@ class TestWebsiteSaleRentingProductAttributeValueConfig(TestProductAttributeValu
                 [('3 Hours', f'$\xa0{price_3_hours}'), ('1 Week', f'$\xa0{price_1_week}')],
             )
 
+    @freeze_time('2026-08-03 12:34:56')
     def test_product_attribute_value_config_get_combination_info(self):
         # make sure the pricelist has a 10% discount
         self.env['product.pricelist.item'].create({

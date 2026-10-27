@@ -6,15 +6,28 @@ from unittest.mock import patch
 import requests
 
 from odoo import Command
+from odoo.addons.delivery_starshipit.models.starshipit_service import Starshipit
 from odoo.tests import TransactionCase, tagged
+from odoo.exceptions import UserError
 
 
 @contextmanager
-def _mock_starshipit_call(simulate_async_price=False):
-    price_is_available = False
+def _mock_starshipit_call(
+    simulate_unavailable_price=False,
+    simulate_error=False,
+    simulate_error_for=None,
+):
+
+    def _should_simulate_error(url):
+        if simulate_error_for:
+            if isinstance(simulate_error_for, str):
+                return simulate_error_for in url
+            else:
+                return any(endpoint in url for endpoint in simulate_error_for)
+        else:
+            return simulate_error
 
     def _mock_request(*args, **kwargs):
-        nonlocal price_is_available
         method = kwargs.get('method') or args[0]
         url = kwargs.get('url') or args[1]
         data = kwargs.get('json') or {}
@@ -33,7 +46,10 @@ def _mock_starshipit_call(simulate_async_price=False):
             'POST': {
                 'deliveryservices': {
                     'success': True,
-                    'services': [{'carrier': 'CourierPost', 'carrier_name': 'Courier Post', 'service_name': 'Courier Post Island', 'service_code': 'CP01IL', 'total_price': 4.20}]
+                    'services': [
+                        {'carrier': 'CourierPostA', 'carrier_name': 'Courier Post A', 'service_name': 'Courier Post Island A', 'service_code': 'CP01ILA', 'total_price': 4.20},
+                        {'carrier': 'CourierPostB', 'carrier_name': 'Courier Post B', 'service_name': 'Courier Post Island B', 'service_code': 'CP01ILB', 'total_price': 6.20},
+                    ]
                 },
                 'rates': {
                     'success': True,
@@ -58,18 +74,29 @@ def _mock_starshipit_call(simulate_async_price=False):
             }
         }
 
-        if simulate_async_price and method == 'GET' and 'orders' in url:
-            if not price_is_available:
-                # Simulate a Starshipit call that doesn't return the shipping price yet
-                responses['GET']['orders']['order'].pop('total_shipping_price')
-                price_is_available = True
+        if simulate_unavailable_price and method == 'GET' and 'orders' in url:
+            # Simulate a Starshipit call that doesn't return the shipping price yet
+            responses['GET']['orders']['order'].pop('total_shipping_price')
 
         for endpoint, content in responses[method].items():
             if endpoint in url:
                 response = requests.Response()
-                response._content = json.dumps(content).encode()
-                response.status_code = 200
-                return response
+                if _should_simulate_error(url):
+                    # Simulate error on Starshpit call
+                    response._content = json.dumps({
+                        'success': False,
+                        'errors': [{
+                            "message": "General Exception",
+                            "details": "Simulated error for testing purposes."
+                        }]
+                    }).encode()
+                    response.status_code = 500
+                    return response
+
+                else:
+                    response._content = json.dumps(content).encode()
+                    response.status_code = 200
+                    return response
 
         raise Exception('unhandled request url %s' % url)
 
@@ -95,7 +122,7 @@ class TestDeliveryStarShipIt(TransactionCase):
             'phone': '0353483783',
         })
         cls.au_partner = cls.env['res.partner'].create({
-            'name': 'Deco Addict',
+            'name': 'Acme Corporation',
             'is_company': True,
             'street': '26 Acheron Road',
             'street2': False,
@@ -103,7 +130,7 @@ class TestDeliveryStarShipIt(TransactionCase):
             'country_id': cls.env.ref('base.au').id,
             'zip': 3840,
             'state_id': cls.env.ref('base.state_au_7').id,
-            'email': 'deco.addict82@example.com',
+            'email': 'acme.corp82@example.com',
             'phone': '0353229781',
         })
 
@@ -251,7 +278,7 @@ class TestDeliveryStarShipIt(TransactionCase):
             ]
         })
 
-        with _mock_starshipit_call(simulate_async_price=True):
+        with _mock_starshipit_call(simulate_unavailable_price=True):
             sale_order.set_delivery_line(self.starshipit, 0)
             sale_order.action_confirm()
             picking = sale_order.picking_ids[0]
@@ -264,6 +291,7 @@ class TestDeliveryStarShipIt(TransactionCase):
             initial_delivery_line = sale_order.order_line.filtered('is_delivery')
             self.assertEqual(initial_delivery_line.price_unit, 0.0, "Initial SO delivery line cost should be 0.0.")
 
+        with _mock_starshipit_call(simulate_unavailable_price=False):
             self.env['stock.picking']._cron_starshipit_fetch_and_update_prices(auto_commit=False)
 
             self.assertEqual(picking.carrier_price, 4.20, "Final carrier_price on picking should be updated by the cron.")
@@ -273,7 +301,7 @@ class TestDeliveryStarShipIt(TransactionCase):
     def test_partner_address_street2(self):
         """ Ensure street2 is taken into account if not False """
         au_partner_2 = self.env['res.partner'].create({
-            'name': 'Deco Addict',
+            'name': 'Acme Corporation',
             'street': 'Unit 12 Floor 15',
             'street2': '26 Acheron Road',
             'city': 'Hazelwood North',
@@ -289,3 +317,116 @@ class TestDeliveryStarShipIt(TransactionCase):
         # With street2
         partner_details = starshipit_service._populate_partner_details(au_partner_2)
         self.assertEqual(partner_details['street'], 'Unit 12 Floor 15 26 Acheron Road')
+
+    def test_retry_shipping_after_label_failure(self):
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.au_partner.id,
+            'order_line': [
+                Command.create({'product_id': self.product_to_ship1.id})
+            ]
+        })
+
+        # Simulate error in label creation step
+        with _mock_starshipit_call(simulate_error_for="shipment"):
+            sale_order.set_delivery_line(self.starshipit, 0)
+            sale_order.action_confirm()
+            picking = sale_order.picking_ids[0]
+
+            picking.action_assign()
+            picking.move_ids.picked = True
+            with self.assertRaises(UserError):
+                picking._action_done()
+
+        # Simulate successful retry
+        with _mock_starshipit_call(simulate_error=False):
+            picking._action_done()
+            pdf = picking.message_ids.attachment_ids.filtered(lambda m: m.datas == b'WW91J3JlIGEgY3VyaW91cyBvbmUgYXJlbid0IHlvdQ==')
+            self.assertNotEqual(pdf, self.env['ir.attachment'], "Label should be created successfully on retry.")
+
+    def test_create_delivery_method_from_so(self):
+        """ Test the creation of a delivery method from a sale order. """
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.au_partner.id,
+            'order_line': [Command.create({'product_id': self.product_to_ship1.id})]
+        })
+        # Open "Add Shipping" Wizard in sale order
+        wiz_action = sale_order.action_open_delivery_wizard()
+        add_shipping_wizard = self.env[wiz_action['res_model']].with_context(wiz_action['context']).create({
+            'carrier_id': self.starshipit.id,
+            'order_id': sale_order.id
+        })
+        with _mock_starshipit_call():
+            # Open "Get more delivery methods" Wizard from "Add Shipping" Wizard
+            new_delivery_method_wiz_action = add_shipping_wizard.create_new_starshipit_delivery_method()
+            new_delivery_method_wiz = self.env[new_delivery_method_wiz_action['res_model']].with_context(new_delivery_method_wiz_action['context']).create({})
+
+            # Select a service and validate
+            new_delivery_method_wiz['selected_service_code'] = 'CP01ILB'
+            result_action = new_delivery_method_wiz.action_validate()
+            self.assertNotEqual(result_action['context']['default_carrier_id'], self.starshipit.id, "A new carrier id should have been created.")
+
+            # Redirected to the "Add Shipping" Wizard with the new carrier
+            new_add_shipping_wizard = self.env[result_action['res_model']].with_context(result_action['context']).create({})
+            self.assertEqual(new_add_shipping_wizard.carrier_id.starshipit_service_code, 'CP01ILB', "A new carrier id should have been created with the selected service code.")
+
+    def test_rate_streetless_address(self):
+        """ A streetless address is rejected before reaching the api, whether or not the rate is
+        computed for a partial express checkout address.
+        """
+        partial_partner = self.env['res.partner'].create({
+            'name': 'Express Checkout Buyer',
+            'city': 'Hazelwood North',
+            'country_id': self.env.ref('base.au').id,
+            'zip': 3840,
+            'state_id': self.env.ref('base.state_au_7').id,
+            # No street / street2: this is what Apple Pay discloses before authorization.
+        })
+        sale_order = self.env['sale.order'].create({
+            'partner_id': partial_partner.id,
+            'order_line': [Command.create({'product_id': self.product_to_ship1.id})],
+        })
+
+        for partial_address in (True, False):
+            with self.subTest(partial_address=partial_address):
+                order = sale_order.with_context(
+                    express_checkout_partial_delivery_address=partial_address
+                )
+                with patch.object(Starshipit, '_send_request') as mocked_request:
+                    rate = self.starshipit.rate_shipment(order)
+                self.assertFalse(rate['success'])
+                mocked_request.assert_not_called()
+                # The street is only reported as missing outside of the express checkout flow,
+                # where the customer can still complete their address.
+                if partial_address:
+                    self.assertNotIn('street', rate['error_message'])
+                else:
+                    self.assertIn('street', rate['error_message'])
+
+    def test_rate_incomplete_warehouse_address(self):
+        """ An incomplete warehouse address is rejected before reaching the api. """
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.au_partner.id,
+            'order_line': [Command.create({'product_id': self.product_to_ship1.id})],
+        })
+        sale_order.warehouse_id.partner_id.city = False
+
+        with patch.object(Starshipit, '_send_request') as mocked_request:
+            rate = self.starshipit.rate_shipment(sale_order)
+        self.assertFalse(rate['success'])
+        self.assertIn('city', rate['error_message'])
+        mocked_request.assert_not_called()
+
+    def test_rate_api_error_does_not_abort_rating(self):
+        """ An api error is returned as an unsuccessful rate rather than raised.
+        """
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.au_partner.id,
+            'order_line': [Command.create({'product_id': self.product_to_ship1.id})],
+        })
+
+        with patch.object(
+            Starshipit, '_send_request', side_effect=UserError('Invalid Starshipit credentials.')
+        ):
+            rate = self.starshipit.rate_shipment(sale_order)
+        self.assertFalse(rate['success'])
+        self.assertEqual(rate['error_message'], 'Invalid Starshipit credentials.')

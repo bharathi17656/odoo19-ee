@@ -2,7 +2,7 @@
 
 from odoo import models, api, _
 from odoo.tools import html2plaintext, is_html_empty
-from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 
 
 class StockPicking(models.Model):
@@ -139,7 +139,7 @@ class StockPicking(models.Model):
             picking['note'] = False if is_html_empty(picking['note']) else html2plaintext(picking['note'])
 
         data['config'] = self.picking_type_id._get_barcode_config()
-        if self.return_id:
+        if self._should_ignore_backorders():
             data['config']['create_backorder'] = 'never'
         data['line_view_id'] = self.env.ref('stock_barcode.stock_move_line_product_selector').id
         data['form_view_id'] = self.env.ref('stock_barcode.stock_picking_barcode').id
@@ -204,7 +204,10 @@ class StockPicking(models.Model):
         barcode_type = None
         nomenclature = self.env.company.nomenclature_id
         if nomenclature.is_gs1_nomenclature:
-            parsed_results = nomenclature.parse_barcode(barcode)
+            try:
+                parsed_results = nomenclature.parse_barcode(barcode)
+            except ValidationError:
+                parsed_results = False
             if parsed_results:
                 # filter with the last feasible rule
                 for result in parsed_results[::-1]:

@@ -10,7 +10,6 @@
         <field name="filter_date_range" eval="False"/>
         <field name="filter_analytic_groupby" eval="True"/>
         <field name="filter_journals" eval="True"/>
-        <field name="allow_account_audit_status_on_lines" eval="True"/>
         <field name="country_id" ref="base.lu"/>
         <field name="filter_multi_company">selector</field>
         <field name="custom_handler_model_id" ref="model_l10n_lu_report_handler"/>
@@ -486,7 +485,7 @@
                                         <field name="code">LU_BS_209</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
-                                        <field name="account_codes_formula">503</field>
+                                        <field name="account_codes_formula">502</field>
                                     </record>
                                     <record id="account_financial_report_l10n_lu_bs_line_1_4_3_3" model="account.report.line">
                                         <field name="name">3. Other investments</field>
@@ -496,7 +495,7 @@
                                         <field name="code">LU_BS_195</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
-                                        <field name="account_codes_formula">502 + 508</field>
+                                        <field name="account_codes_formula">503 + 508</field>
                                     </record>
                                 </field>
                             </record>
@@ -654,22 +653,10 @@
                                 <field name="name@lb">V. Profitt oder Verloscht bruecht</field>
                                 <field name="code">LU_BS_319</field>
                                 <field name="expression_ids">
-                                    <record id="account_financial_report_l10n_lu_bs_line_2_1_5_past_pnl" model="account.report.expression">
-                                        <field name="label">past_pnl</field>
-                                        <field name="engine">aggregation</field>
-                                        <field name="subformula">cross_report(l10n_lu_reports.account_financial_report_l10n_lu_pl)</field>
-                                        <field name="formula">LU_PL_669.balance</field>
-                                        <field name="date_scope">to_beginning_of_fiscalyear</field>
-                                    </record>
-                                    <record id="account_financial_report_l10n_lu_bs_line_2_1_5_accounts" model="account.report.expression">
-                                        <field name="label">accounts</field>
-                                        <field name="engine">account_codes</field>
-                                        <field name="formula">-14</field>
-                                    </record>
                                     <record id="account_financial_report_l10n_lu_bs_line_2_1_5_balance" model="account.report.expression">
                                         <field name="label">balance</field>
-                                        <field name="engine">aggregation</field>
-                                        <field name="formula">LU_BS_319.past_pnl + LU_BS_319.accounts</field>
+                                        <field name="engine">account_codes</field>
+                                        <field name="formula">-14\(142)</field>
                                     </record>
                                 </field>
                             </record>

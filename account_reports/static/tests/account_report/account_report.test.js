@@ -15,7 +15,7 @@ import {
 } from "@web/../tests/web_test_helpers";
 import { WebClient } from "@web/webclient/webclient";
 import { download } from "@web/core/network/download";
-
+import { animationFrame, queryAll } from "@odoo/hoot-dom";
 // Due to dependency with mail module, we have to define their models for our tests.
 defineModels(mailModels);
 
@@ -68,7 +68,7 @@ const getOptionMockResponse = {
             "name": "A column",
             "column_group_key": "some_key",
             "expression_label": "a_column",
-            "sortable": false,
+            "sortable": true,
             "figure_type": "string",
             "blank_if_zero": false,
             "style": ""
@@ -91,6 +91,34 @@ const getReportInformationMockResponse = {
         {
             "id": "~account.report~14|~res.partner~1",
             "name": "A partner",
+            "columns": [
+                {
+                    "auditable": false,
+                    "blank_if_zero": false,
+                    "column_group_key": "some_key",
+                    "currency": null,
+                    "currency_symbol": "",
+                    "digits": 1,
+                    "expression_label": "a_column",
+                    "figure_type": "string",
+                    "green_on_positive": false,
+                    "has_sublines": false,
+                    "is_zero": false,
+                    "name": "",
+                    "no_format": null,
+                    "report_line_id": null,
+                    "sortable": false
+                },
+            ],
+            "level": 1,
+            "trust": "normal",
+            "unfoldable": true,
+            "unfolded": false,
+            "expand_function": "some_expand_function"
+        },
+        {
+            "id": "~account.report~14|~res.partner~2",
+            "name": "B partner",
             "columns": [
                 {
                     "auditable": false,
@@ -191,6 +219,9 @@ test("Test unfold loaded line", async() => {
             if (method === "get_annotations") {
                 return [];
             }
+            if (method === "sort_lines") {
+                return [3, 0, 1, 2];
+            }
         }
     };
     onRpc(mockRpcReport);
@@ -202,15 +233,25 @@ test("Test unfold loaded line", async() => {
         params: {},
     })
 
-    await click(".btn_foldable");
+    await click(".btn_foldable:first");
     await contains(".unfolded", { count: 1 });
-    await click(".btn_foldable");
+    await click(".btn_foldable:first");
     await contains(".unfolded", { count: 0 });
-    await click(".btn_foldable");
+    await click(".btn_foldable:first");
     await contains(".unfolded", { count: 1 });
+    await click(".btn_foldable:first");
+    await contains(".unfolded", { count: 0 });
 
     // Only one call to get_expanded_lines, as we unfolded/folded/unfolded the same line
     expect(mockRpcReport.getExpandedLineCallCount).toEqual(1);
+
+    await click(".btn_sortable");
+    await animationFrame();
+    const lines = queryAll(".line_name");
+    expect(lines[0].textContent).toBe("B partner");
+    expect(lines[1].textContent).toBe("A partner");
+    await contains("div.name:contains('first move line')", {count: 0});
+    await contains("div.name:contains('second move line')", {count: 0});
 });
 
 test("can execute account report download actions", async function () {

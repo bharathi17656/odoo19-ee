@@ -3,15 +3,16 @@
 # * hr_appraisal_survey
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Fernanda Alvarez (mfar)" <mfar@odoo.com>, 2025.
-# "Patricia Gutiérrez (pagc)" <pagc@odoo.com>, 2025.
+# "Fernanda Alvarez (mfar)" <mfar@odoo.com>, 2025, 2026.
+# "Patricia Gutiérrez (pagc)" <pagc@odoo.com>, 2025, 2026.
+# Grace Conlon <grco@odoo.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-10-08 02:40+0000\n"
-"Last-Translator: \"Fernanda Alvarez (mfar)\" <mfar@odoo.com>\n"
+"POT-Creation-Date: 2026-10-09 17:45+0000\n"
+"PO-Revision-Date: 2026-04-18 11:13+0000\n"
+"Last-Translator: \"Patricia Gutiérrez (pagc)\" <pagc@odoo.com>\n"
 "Language-Team: Spanish (Latin America) <https://translate.odoo.com/projects/"
 "odoo-19/hr_appraisal_survey/es_419/>\n"
 "Language: es_419\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
@@ -88,15 +89,15 @@ msgid ""
 msgstr ""
 "<p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
 "                    Apreciable <t t-out=\"object.partner_id.name or "
-"'participant'\">[participante]</t>,\n"
+"'participante'\">[participante]</t>,\n"
 "                    <br/>\n"
 "                    Como parte de nuestro proceso de retroalimentación 360, "
-"a <t t-out=\"ctx.get('logged_user')\">[usuario actual]</t> le encantaría\n"
-"                    escuchar tus comentarios sobre el desempeño de <t t-"
+"a <t t-out=\"ctx.get('logged_user')\">[usuario actual]</t> le gustaría\n"
+"                    conocer tu opinión sobre el desempeño de <t t-"
 "out=\"ctx.get('employee')\">[empleado]</t>.\n"
 "                    <br/>\n"
-"                    Tu retroalimentación nos ayudará a reconocer fortalezas "
-"e identificar áreas de crecimiento.\n"
+"                    Tu retroalimentación nos ayudará a reconocer sus "
+"fortalezas e identificar áreas de crecimiento.\n"
 "                    <br/>\n"
 "                    Solo te tomará algunos minutos y puedes enviar tus "
 "comentarios a través del siguiente enlace:\n"
@@ -107,18 +108,18 @@ msgstr ""
 "'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: "
 "{{user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
 "font-size:13px;\">\n"
-"                            Proporciona tus comentarios\n"
+"                            Envía tu retroalimentación\n"
 "                        </a>\n"
 "                    </div>\n"
-"                    Completa esta información antes de la siguiente fecha: "
-"<t t-out=\"ctx.get('deadline')\">[plazo límite]</t>.\n"
+"                    Completa la encuesta antes de la siguiente fecha: <t t-"
+"out=\"ctx.get('deadline')\">[fecha límite]</t>\n"
 "                    <br/>\n"
 "                    Agradecemos tu tiempo y honestidad.\n"
 "                    <br/>\n"
 "                    <t t-if=\"ctx.get('user_body')\">\n"
 "                        <div class=\"my-3 py-2 px-3 bg-secondary\">\n"
-"                            <t t-out=\"ctx.get('user_body')\">[Comentarios "
-"opcionales]</t>\n"
+"                            <t t-out=\"ctx.get('user_body')\">[Comentario "
+"opcional]</t>\n"
 "                        </div>\n"
 "                    </t>\n"
 "                \n"
@@ -211,16 +212,6 @@ msgstr "Plantilla de encuesta permitida"
 #: model:survey.question.answer,value:hr_appraisal_survey.x_360_5_5
 msgid "Almost always"
 msgstr "Casi siempre"
-
-#. module: hr_appraisal_survey
-#. odoo-python
-#: code:addons/hr_appraisal_survey/wizard/appraisal_ask_feedback.py:0
-msgid ""
-"An appraisal feedback was requested. Please take time to fill the <a "
-"href=\"%s\" target=\"_blank\">survey</a>"
-msgstr ""
-"Se solicitó una retroalimentación de evaluación. Tómese el tiempo para "
-"contestar la <a href=\"%s\" target=\"_blank\">encuesta</a>"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_11
@@ -723,7 +714,7 @@ msgstr "Objetivos de rendimiento personal"
 #. odoo-python
 #: code:addons/hr_appraisal_survey/wizard/appraisal_ask_feedback.py:0
 msgid "Please set an Answer Deadline in the future"
-msgstr "Establezca una fecha final de respuesta que sea en el futuro"
+msgstr "Establece una fecha límite de respuesta que esté en el futuro"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_1_2
@@ -932,8 +923,8 @@ msgid ""
 "Take part in {{ ctx.get('employee_id') and ctx['employee_id'].name or "
 "'this' }} appraisal"
 msgstr ""
-"Participar en la evaluación de {{ ctx.get('employee_id') y "
-"ctx['employee_id'].name or 'this' }}"
+"Participa en la evaluación de {{ ctx.get('employee_id') and "
+"ctx['employee_id'].name or 'esta persona' }}"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_4
@@ -952,7 +943,7 @@ msgstr "Habilidades técnicas relacionadas con los requisitos del empleo"
 #. module: hr_appraisal_survey
 #: model_terms:survey.survey,description_done:hr_appraisal_survey.appraisal_360_feedback_template
 msgid "Thanks a lot for your time and participation !"
-msgstr "¡Gracias por su tiempo y participación!"
+msgstr "¡Muchas gracias por tu tiempo y participación!"
 
 #. module: hr_appraisal_survey
 #: model_terms:survey.question,description:hr_appraisal_survey.appraisal_3
@@ -1168,3 +1159,10 @@ msgstr "o"
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
 msgid "to a selection of colleagues you work with."
 msgstr "a algunos de los compañeros con los que trabajas."
+
+#~ msgid ""
+#~ "An appraisal feedback was requested. Please take time to fill the <a "
+#~ "href=\"%s\" target=\"_blank\">survey</a>"
+#~ msgstr ""
+#~ "Se solicitó una retroalimentación de evaluación. Tómese el tiempo para "
+#~ "contestar la <a href=\"%s\" target=\"_blank\">encuesta</a>"

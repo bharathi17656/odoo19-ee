@@ -1,4 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+import ast
 
 from odoo import _, models, fields, api
 from odoo.fields import Domain
@@ -108,11 +109,11 @@ class AccountReport(models.AbstractModel):
         We also drop the NOT NULL constraints for fields who are not required in account_analytic_line.
         """
         project_plan, other_plans = self.env['account.analytic.plan']._get_all_plans()
-        analytic_cols = SQL(", ").join(SQL('"account_analytic_line".%s', SQL.identifier(n._column_name())) for n in (project_plan + other_plans))
+        plan_cols = [plan._column_name() for plan in project_plan + other_plans]
+        analytic_cols = SQL(", ").join(SQL.identifier("account_analytic_line", col) for col in plan_cols)
         analytic_distribution_equivalent = SQL('to_jsonb(UNNEST(ARRAY_REMOVE(ARRAY[%s], NULL)))', analytic_cols)
 
         change_equivalence_dict = {
-            'id': SQL("account_analytic_line.id"),
             'balance': SQL("-amount"),
             'display_type': 'product',
             'parent_state': 'posted',
@@ -126,7 +127,7 @@ class AccountReport(models.AbstractModel):
 
         all_stored_aml_fields = {
             field
-            for field, attrs in self.env['account.move.line'].fields_get().items()
+            for field, attrs in self.env['account.move.line'].fields_get(attributes=["type", "store"]).items()
             if attrs['type'] not in ['many2many', 'one2many'] and attrs.get('store')
         }
 
@@ -135,6 +136,7 @@ class AccountReport(models.AbstractModel):
                 change_equivalence_dict[aml_field] = SQL('"account_move_line".%s', SQL.identifier(aml_field))
 
         _stored_fields, fields_to_insert = self.env['account.move.line']._prepare_aml_shadowing_for_report(change_equivalence_dict, prefix_fields_to_insert=False)
+        fields_to_insert = SQL(", ").join([fields_to_insert, *(SQL("%s AS %s", SQL.identifier("account_analytic_line", col), SQL.identifier(f"analytic_plan_{col}")) for col in plan_cols)])
 
         return SQL("""
             (
@@ -153,6 +155,14 @@ class AccountReport(models.AbstractModel):
 
         # We add the domain filter for analytic_distribution here, as the search is not available
         query = super(AccountReport, context_self)._get_report_query(options, date_scope, domain)
+
+        if options.get('analytic_groupby_option') and options.get('analytic_accounts_list') and not options.get('report_cash_basis'):
+            accounts = self.env['account.analytic.account'].browse(options['analytic_accounts_list'])
+            query.add_where(SQL("(%s)", SQL(" OR ").join(
+                SQL("%s IN %s", SQL.identifier("account_move_line", f"analytic_plan_{plan._column_name()}"), tuple(plan_accounts.ids))
+                for plan, plan_accounts in accounts.grouped('root_plan_id').items()
+            )))
+
         if options.get('analytic_accounts'):
             if 'analytic_accounts_list' in options:
                 # the table `account_move_line` will be shadowed by _prepare_lines_for_analytic_groupby and thus analytic_distribution will be a single ID
@@ -169,7 +179,17 @@ class AccountReport(models.AbstractModel):
         column_group_options = self._get_column_group_options(options, params['column_group_key'])
 
         if not column_group_options.get('analytic_groupby_option'):
-            return super(AccountReport, self).action_audit_cell(options, params)
+            action = super().action_audit_cell(options, params)
+            if options.get('column_percent_comparison') == 'analytic_coverage':
+                context = action.get('context', {})
+                context.update({
+                    'selected_analytic_plan': options['analytic_plans_groupby'][0],
+                })
+                action['context'] = context
+                view_id = self.env.ref('account_reports.view_analytic_move_line_tree', raise_if_not_found=False) or False
+                if view_id:
+                    action['views'] = [(view_id.id, 'list')]
+            return action
         else:
             # Start by getting the domain from the options. Note that this domain is targeting account.move.line
             report_line = self.env['account.report.line'].browse(params['report_line_id'])
@@ -188,9 +208,11 @@ class AccountReport(models.AbstractModel):
                 if field.split('.')[0] == 'account_id':
                     field = field.replace('account_id', 'general_account_id')
                     expression = [(field, operator, right_term)]
-                # Replace the 'analytic_distribution' by the account_id domain as we expect for analytic lines.
                 elif field == 'analytic_distribution':
-                    expression = [('auto_account_id', 'in', right_term)]
+                    if options.get('column_percent_comparison') == 'analytic_coverage':
+                        expression = [(1, '=', 1)]
+                    else:
+                        expression = [('auto_account_id', 'in', right_term)]
                 # For other fields not present in on the analytic line model, map them to get the info from the move_line.
                 # Or ignore these conditions if there is no move lines.
                 elif field.split('.')[0] not in AccountAnalyticLine._fields:
@@ -206,6 +228,18 @@ class AccountReport(models.AbstractModel):
 
             action = clean_action(self.env.ref('analytic.account_analytic_line_action_entries')._get_action_dict(), env=self.env)
             action['domain'] = domain
+            if options.get('column_percent_comparison') == 'analytic_coverage':
+                context = ast.literal_eval(action.get('context', "{}"))
+                context.update({
+                    'selected_analytic_plan': options['analytic_plans_groupby'][0],
+                    'group_by': 'move_line_id',
+                })
+                action['context'] = context
+                action['display_name'] += ' - ' + options['selected_analytic_plan_groupby_names'][0]
+                view_id = self.env.ref('account_reports.view_analytic_line_tree', raise_if_not_found=False) or False
+                if view_id:
+                    action['views'] = [(view_id.id, 'list')]
+
             return action
 
     @api.model

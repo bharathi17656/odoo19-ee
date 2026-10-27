@@ -1,10 +1,11 @@
-import { Component, onWillUpdateProps, useState } from "@odoo/owl";
+import { Component, useState } from "@odoo/owl";
 import { SignTemplateSidebarRoleItems } from "./sign_template_sidebar_role_items";
 import { useService } from "@web/core/utils/hooks";
 import { useSignViewButtons } from "@sign/views/hooks";
 import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 import { _t } from "@web/core/l10n/translation";
+import { getDataURLFromFile } from "@web/core/utils/urls";
 
 export class SignTemplateSidebar extends Component {
     static template = "sign.SignTemplateSidebar";
@@ -33,16 +34,18 @@ export class SignTemplateSidebar extends Component {
         moveDocumentUp: { type: Function },
         moveDocumentDown: { type: Function },
         onEditTemplate: { type: Function },
+        onUpdateDocument: { type: Function },
+        saveManually: { type: Function },
     };
 
     setup() {
+        this.action = useService("action");
         this.orm = useService("orm");
         this.state = useState({
             editableDocumentId: false,
         });
         const functions = useSignViewButtons(this.props.signTemplateId);
         Object.assign(this, functions);
-        onWillUpdateProps(() => this.updateSignerNames(this.props.signers));
     }
 
     focusOnNewAddedSigner(roleId) {
@@ -76,7 +79,6 @@ export class SignTemplateSidebar extends Component {
     deleteSigner(signerId, roleId) {
         const updatedSigners = [...this.props.signers].filter(signer => signer.id != signerId);
 
-        this.updateSignerNames(updatedSigners);
         /* After deleting the signer, if no signer is focused, focus the last one in the array. */
         if (!updatedSigners.some(signer => !signer.isCollapsed) && updatedSigners.length > 0)
             updatedSigners[updatedSigners.length - 1].isCollapsed = false;
@@ -85,6 +87,7 @@ export class SignTemplateSidebar extends Component {
         this.props.deleteRole(roleId);
     }
 
+    // TODO: remove in master
     updateSignerNames(signers) {
         let signer_idx = 1;
         const str = _t("Signer")
@@ -181,4 +184,21 @@ export class SignTemplateSidebar extends Component {
         await this.props.moveDocumentDown(documentId);
         this.render();
     }
+
+    async onUpdateDocument(documentId, ev) {
+        /* Check if pdf got uploaded, save manually, and call update document function from props. */
+        const file = ev.target.files && ev.target.files.length && ev.target.files[0];
+        if (!file)
+            return;
+        if (this.props.saveManually) {
+            await this.props.saveManually();
+        }
+        const url = await getDataURLFromFile(file);
+        const fileData = {
+            name: file.name,
+            datas: url.split(",")[1],
+        };
+        await this.props.onUpdateDocument(documentId, fileData);
+    }
+
 }

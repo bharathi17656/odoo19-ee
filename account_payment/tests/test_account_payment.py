@@ -4,8 +4,10 @@ from unittest.mock import patch
 
 from odoo import Command
 from odoo.exceptions import UserError, ValidationError
-from odoo.addons.account_payment.tests.common import AccountPaymentCommon
 from odoo.tests import tagged
+
+from odoo.addons.account_payment.tests.common import AccountPaymentCommon
+from odoo.addons.base.models.ir_qweb import QWebError
 
 
 @tagged('-at_install', 'post_install')
@@ -127,6 +129,44 @@ class TestAccountPayment(AccountPaymentCommon):
             1,
             msg="The refunds count should only consider transactions with operation 'refund'."
         )
+
+    def test_refund_message_author_is_logged_in_user(self):
+        """Ensure that the chatter message author is the user processing the refund."""
+        self.provider.support_refund = 'full_only'
+
+        tx = self._create_transaction('redirect', state='done')
+        tx._post_process()
+
+        with patch.object(
+            self.env.registry['account.payment'], 'message_post', autospec=True
+        ) as message_post_mock:
+            tx.action_refund()
+            author_id = message_post_mock.call_args[1].get("author_id")
+
+        self.assertEqual(author_id, self.user.partner_id.id)
+
+    def test_pending_tx_does_not_cancel_payment(self):
+        """When a token charge results in a 'pending' transaction (e.g SEPA),
+        the payment must stay in draft, and be posted once the tx becomes 'done'"""
+        payment_token = self._create_token()
+        payment = self.env['account.payment'].create({
+            'payment_type': 'inbound',
+            'partner_type': 'customer',
+            'amount': 100.0,
+            'currency_id': self.currency.id,
+            'partner_id': self.partner.id,
+            'journal_id': self.provider.journal_id.id,
+            'payment_method_line_id': self.inbound_payment_method_line.id,
+            'payment_token_id': payment_token.id,
+            'write_off_line_vals': [],
+        })
+
+        with patch.object(self.env.registry['payment.transaction'], '_send_payment_request',
+                          lambda self: self._set_pending()):
+            payment.action_post()
+
+        self.assertEqual(payment.payment_transaction_id.state, 'pending')
+        self.assertEqual(payment.state, 'in_process')
 
     def test_action_post_calls_send_payment_request_only_once(self):
         payment_token = self._create_token()
@@ -340,8 +380,8 @@ class TestAccountPayment(AccountPaymentCommon):
         # Now try to change the journal, and check if the name is now updated
         payment.move_id.button_draft()
         new_journal = journal.copy()
-        new_payment_method_line = new_journal.inbound_payment_method_line_ids[0]
-        new_payment_method_line.write({'payment_account_id': self.company_data['default_account_receivable'].id})
+        new_payment_method_line = new_journal.outbound_payment_method_line_ids[0]
+        new_payment_method_line.write({'payment_account_id': payment.payment_method_line_id.payment_account_id.id})
         payment.write({
             'journal_id': new_journal.id,
             'payment_method_line_id': new_payment_method_line.id,
@@ -377,6 +417,42 @@ class TestAccountPayment(AccountPaymentCommon):
         # _post_process() shouldn't raise an error even though the invoice is cancelled
         tx._post_process()
         self.assertEqual(tx.payment_id.state, 'in_process')
+
+    def test_post_process_only_posts_invoices_of_done_transactions(self):
+        """ When several transactions are post-processed together, only the draft invoices of the
+            confirmed transactions must be posted.
+        """
+        invoice_done, invoice_error = self.env['account.move'].create([{
+            'move_type': 'out_invoice',
+            'partner_id': self.partner.id,
+            'invoice_line_ids': [
+                Command.create({
+                    'name': 'test line',
+                    'price_unit': 100.0,
+                }),
+            ],
+        } for _i in range(2)])
+        tx_done = self._create_transaction(
+            flow='direct',
+            state='pending',
+            reference='tx_done',
+            invoice_ids=[invoice_done.id],
+        )
+        tx_error = self._create_transaction(
+            flow='direct',
+            state='pending',
+            reference='tx_error',
+            invoice_ids=[invoice_error.id],
+        )
+        tx_done._set_done()
+        tx_error._set_error("Payment failed")
+        (tx_done | tx_error)._post_process()
+        self.assertEqual(invoice_done.state, 'posted')
+        self.assertEqual(
+            invoice_error.state,
+            'draft',
+            msg="The invoice of a failed transaction should not be posted.",
+        )
 
     def test_payment_token_for_invoice_partner_is_available(self):
         """Test that the payment token of the invoice partner is available"""
@@ -427,3 +503,116 @@ class TestAccountPayment(AccountPaymentCommon):
             other_invoice.action_post()
             wizard = payment_register_wizard(invoice + other_invoice)
             self.assertEqual(wizard.suitable_payment_token_ids, parent_token)
+
+    def test_generate_and_send_invoice_with_qr_code(self):
+        """Test generating & sending invoices with QR codes enabled."""
+        self.env.company.link_qr_code = True
+        move = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner.id,
+            'invoice_line_ids': [Command.create({'name': "$100", 'price_unit': 100.0})],
+        })
+        move.action_post()
+
+        with patch.object(
+            move.__class__, '_generate_portal_payment_qr', wraps=move._generate_portal_payment_qr,
+        ) as payment_qr_mock:
+            self._assert_does_not_raise(
+                QWebError,
+                self.env['account.move.send']._generate_and_send_invoices(move),
+            )
+            self.assertTrue(payment_qr_mock.called)
+
+    def test_partial_reconcile_with_payments_coming_from_provider(self):
+        """ Test that we not allow partial reconcile on payments coming from
+            payment provider.
+        """
+        provider = self.env['payment.provider'].create({
+            'name': 'Test',
+            'journal_id': self.company_data['default_journal_bank'].id,
+        })
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_a.id,
+            'journal_id': self.company_data['default_journal_sale'].id,
+            'invoice_line_ids': [
+                Command.create({
+                    'account_id': self.company_data['default_account_revenue'].id,
+                    'product_id': self.product_a.id,
+                    'quantity': 1,
+                    'price_unit': 100,
+                })
+            ]
+        })
+        payment_transaction = self.env['payment.transaction'].create({
+            'provider_id': provider.id,
+            'payment_method_id': self.env.ref('payment.payment_method_unknown').id,
+            'invoice_ids': [invoice.id],
+            'partner_id': self.partner_a.id,
+            'amount': 200,
+            'currency_id': invoice.currency_id.id,
+        })
+        payment_transaction._create_payment(payment_method_line_id=self.company_data['default_journal_bank'].inbound_payment_method_line_ids[0].id)
+        payment_transaction._post_process()
+        payment = payment_transaction.payment_id
+        invoice.action_post()
+        payment.action_post()
+        statement_line = self.env['account.bank.statement.line'].create({
+            'journal_id': self.company_data['default_journal_bank'].id,
+            'date': '2026-01-01',
+            'partner_id': self.partner_a.id,
+            'amount': 100.0,
+        })
+        inv_line = payment.move_id.line_ids.filtered(lambda l: l.balance == 200)
+        self.assertFalse(statement_line._get_partial_amounts(-200, inv_line, -100, -100))
+
+    def test_post_process_existing_payment_provider_reference(self):
+        """Provider reference should propagate to a pre-existing payment."""
+        tx = self._create_transaction(
+            "direct",
+            provider_reference="provider_ref",
+            state="done",
+        )
+
+        payment_method_line = tx.provider_id.journal_id.inbound_payment_method_line_ids.filtered(
+            lambda line: line.payment_provider_id == tx.provider_id
+        )
+
+        payment = self.env["account.payment"].create({
+            "amount": tx.amount,
+            "payment_type": "inbound",
+            "currency_id": tx.currency_id.id,
+            "partner_id": tx.partner_id.id,
+            "partner_type": "customer",
+            "journal_id": tx.provider_id.journal_id.id,
+            "company_id": tx.company_id.id,
+            "payment_method_line_id": payment_method_line.id,
+            "memo": tx.reference,
+        })
+        payment.action_post()
+
+        tx.payment_id = payment
+
+        with patch.object(
+                self.env.registry["payment.transaction"],
+                "_create_payment",
+                autospec=True,
+        ) as create_payment_mock:
+            tx._post_process()
+
+        create_payment_mock.assert_not_called()
+
+        expected_reference = f"{tx.reference} - {tx.provider_reference}"
+        self.assertEqual(payment.memo, expected_reference)
+
+        liquidity_lines, counterpart_lines, _writeoff_lines = payment._seek_for_lines()
+        expected_line_name = f"{payment.payment_method_line_id.name}: {expected_reference}"
+
+        self.assertEqual(
+            liquidity_lines.mapped("name"),
+            [expected_line_name],
+        )
+        self.assertEqual(
+            counterpart_lines.mapped("name"),
+            [expected_line_name],
+        )

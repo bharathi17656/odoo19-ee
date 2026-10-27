@@ -63,16 +63,18 @@ class SddMandate(models.Model):
     def action_validate_mandate(self):
         """ Override of `account_sepa_direct_debit` to create a token when validating mandates."""
         super().action_validate_mandate()
-        sepa_provider_per_company = dict(self.env['payment.provider']._read_group([
+
+        # sudo to let accounting users validate mandates without provider access
+        sepa_provider_per_company_sudo = dict(self.env['payment.provider'].sudo()._read_group([
             *self.env['payment.provider']._check_company_domain(self.company_id),
             ('custom_mode', '=', 'sepa_direct_debit'),
             ('is_published', '=', True),
             ('state', '!=', 'disabled'),
         ], groupby=['company_id'], aggregates=['id:recordset']))
         for mandate in self.filtered(lambda m: m.state == 'active'):
-            provider = sepa_provider_per_company.get(mandate.company_id)
-            if provider:
-                provider[:1]._sdd_create_token_for_mandate(mandate.partner_id, mandate)
+            provider_sudo = sepa_provider_per_company_sudo.get(mandate.company_id)
+            if provider_sudo:
+                provider_sudo[:1]._sdd_create_token_for_mandate(mandate.partner_id, mandate)
 
     def action_view_payment_transactions(self):
         return {
@@ -86,8 +88,17 @@ class SddMandate(models.Model):
     def _get_source_transaction(self):
         """Return the source transaction that initiated the creation of this SDD mandate."""
         self.ensure_one()
-        return self.env['payment.transaction'].search([
-            ('mandate_id', '=', self.id),
-            ('state', '=', 'done'),
-            ('provider_id.custom_mode', '=', 'sepa_direct_debit'),
-        ], limit=1, order='id ASC')
+        return (
+            self
+            .env["payment.transaction"]
+            .sudo()  # To read the `custom_mode` field on `payment.provider`
+            .search(
+                [
+                    ("mandate_id", "=", self.id),
+                    ("state", "=", "done"),
+                    ("provider_id.custom_mode", "=", "sepa_direct_debit"),
+                ],
+                limit=1,
+                order="id ASC",
+            )
+        )

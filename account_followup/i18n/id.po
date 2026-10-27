@@ -7,15 +7,16 @@
 # Martin Trigaux, 2022
 # Abe Manyo, 2023
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Abe Manyo (abem)" <abem@odoo.com>, 2025.
+# "Abe Manyo (abem)" <abem@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Nurul Aini Akrima Sabila (nuaas)" <nuaas@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:45+0000\n"
-"PO-Revision-Date: 2025-11-16 05:23+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-04-10 18:46+0000\n"
+"PO-Revision-Date: 2026-06-19 13:59+0000\n"
+"Last-Translator: \"Nurul Aini Akrima Sabila (nuaas)\" <nuaas@odoo.com>\n"
 "Language-Team: Indonesian <https://translate.odoo.com/projects/odoo-19/"
 "account_followup/id/>\n"
 "Language: id\n"
@@ -23,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: account_followup
 #. odoo-python
@@ -46,11 +47,6 @@ msgstr "'Follow-up ' + object.display_name"
 #: model:account_followup.followup.line,name:account_followup.demo_followup_line1
 msgid "15 Days"
 msgstr "15 Hari"
-
-#. module: account_followup
-#: model_terms:ir.ui.view,arch_db:account_followup.followup_filter_info_template
-msgid "2023-09-06"
-msgstr "2023-09-06"
 
 #. module: account_followup
 #: model:account_followup.followup.line,name:account_followup.demo_followup_line2
@@ -114,12 +110,11 @@ msgid ""
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
 "                    <p>\n"
-"                        <t t-if="
-"\"object.id != object.commercial_partner_id.id\">Kepada <t t-out="
-"\"object.name or ''\"/> (<t t-out=\"object.commercial_partner_id.name or ''\""
-"/>),</t>\n"
-"                        <t t-else=\"\">Kepada <t t-out=\"object.name or ''\""
-"/>,</t>\n"
+"                        <t t-if=\"object.id != "
+"object.commercial_partner_id.id\">Kepada <t t-out=\"object.name or ''\"/> "
+"(<t t-out=\"object.commercial_partner_id.name or ''\"/>),</t>\n"
+"                        <t t-else=\"\">Kepada <t t-out=\"object.name or ''\"/"
+">,</t>\n"
 "                        <br/>\n"
 "                        Walaupun beberapa pengingat telah dikirim, Anda "
 "masih belum melakukan pembayaran.\n"
@@ -133,18 +128,18 @@ msgstr ""
 "                        <br/>\n"
 "                        Salam Hormat,\n"
 "                        <br/>\n"
-"                        <t t-if="
-"\"not is_html_empty(object._get_followup_responsible().signature)\">\n"
+"                        <t t-if=\"not "
+"is_html_empty(object._get_followup_responsible().signature)\">\n"
 "                            <br/>\n"
-"                            <t t-out="
-"\"object._get_followup_responsible().signature\"/>\n"
+"                            <t t-"
+"out=\"object._get_followup_responsible().signature\"/>\n"
 "                        </t>\n"
 "                        <t t-else=\"\">\n"
 "                            <br/>\n"
 "                            --\n"
 "                            <br/>\n"
-"                            <t t-out="
-"\"object._get_followup_responsible().name\"/>\n"
+"                            <t t-"
+"out=\"object._get_followup_responsible().name\"/>\n"
 "                        </t>\n"
 "                    </p>\n"
 "                </div>\n"
@@ -196,12 +191,11 @@ msgid ""
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
 "                    <p>\n"
-"                        <t t-if="
-"\"object.id != object.commercial_partner_id.id\">Kepada <t t-out="
-"\"object.name or ''\"/> (<t t-out=\"object.commercial_partner_id.name or ''\""
-"/>),</t>\n"
-"                        <t t-else=\"\">Kepada <t t-out=\"object.name or ''\""
-"/>,</t>\n"
+"                        <t t-if=\"object.id != "
+"object.commercial_partner_id.id\">Kepada <t t-out=\"object.name or ''\"/> "
+"(<t t-out=\"object.commercial_partner_id.name or ''\"/>),</t>\n"
+"                        <t t-else=\"\">Kepada <t t-out=\"object.name or ''\"/"
+">,</t>\n"
 "                        <br/>\n"
 "                        Kami kecewa karena akun Anda sekarang melewati masa "
 "tenggat pembayaran, walaupun kami sudah mengirimkan pengingat untuk Anda.\n"
@@ -216,22 +210,22 @@ msgstr ""
 "tidak kami sadari, jangan ragu untuk menghubungi departemen akuntansi kami, "
 "supaya kami dapat menyelesaikan masalah tersebut secepat mungkin.\n"
 "                        <br/>\n"
-"                        Detail pembayaran yang jatuh tempo dicetak di bawah."
-"\n"
+"                        Detail pembayaran yang jatuh tempo dicetak di "
+"bawah.\n"
 "                        <br/>\n"
 "                        Salam Hangat,\n"
-"                        <t t-if="
-"\"not is_html_empty(object._get_followup_responsible().signature)\">\n"
+"                        <t t-if=\"not "
+"is_html_empty(object._get_followup_responsible().signature)\">\n"
 "                            <br/>\n"
-"                            <t t-out="
-"\"object._get_followup_responsible().signature\"/>\n"
+"                            <t t-"
+"out=\"object._get_followup_responsible().signature\"/>\n"
 "                        </t>\n"
 "                        <t t-else=\"\">\n"
 "                            <br/>\n"
 "                            --\n"
 "                            <br/>\n"
-"                            <t t-out="
-"\"object._get_followup_responsible().name\"/>\n"
+"                            <t t-"
+"out=\"object._get_followup_responsible().name\"/>\n"
 "                        </t>\n"
 "                    </p>\n"
 "                </div>\n"
@@ -473,7 +467,7 @@ msgstr "Tanggal:"
 #. module: account_followup
 #: model:ir.model.constraint,message:account_followup.constraint_account_followup_followup_line_days_uniq
 msgid "Days of the follow-up lines must be different per company"
-msgstr "Hari-hari baris follow-up yang harus berbeda per perusahaan"
+msgstr "Hari baris follow-up yang harus berbeda per perusahaan"
 
 #. module: account_followup
 #. odoo-python
@@ -677,7 +671,7 @@ msgstr "Pengingat followup keempat"
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__has_moves
 #: model:ir.model.fields,field_description:account_followup.field_res_users__has_moves
 msgid "Has Moves"
-msgstr "Memiliki Pergerakkan"
+msgstr "Memiliki Pergerakan"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_account_followup_followup_line__id
@@ -697,7 +691,7 @@ msgid ""
 "notifications about any email reply made by the partner on the reminder "
 "email."
 msgstr ""
-"Bila ditetapkan, user-user tersebut akan ditambahkan sebagai pengikut pada "
+"Bila ditetapkan, user tersebut akan ditambahkan sebagai pengikut pada "
 "partner dan menerima notifikasi mengenai balasan email yang dibuat oleh "
 "partner pada email pengingat."
 
@@ -833,6 +827,10 @@ msgid ""
 "usually be a placeholder expression that provides the appropriate language, "
 "e.g. {{ object.partner_id.lang }}."
 msgstr ""
+"Bahasa terjemahan opsional (kode ISO) untuk dipilih saat mengirimkan email. "
+"Bila tidak ditetapkan, bahasa utama partner akan digunakan. Ini biasanya "
+"merupakan expression placeholder yang menyediakan bahasa yang sesuai, "
+"contoh. {{ object.partner_id.lang }}."
 
 #. module: account_followup
 #: model_terms:ir.ui.view,arch_db:account_followup.view_account_followup_followup_line_form
@@ -847,9 +845,13 @@ msgid "Origin"
 msgstr "Asal"
 
 #. module: account_followup
+#: model_terms:ir.ui.view,arch_db:account_followup.customer_statements_search_view
+msgid "Overdue Customer Invoices"
+msgstr ""
+
+#. module: account_followup
 #. odoo-python
 #: code:addons/account_followup/models/res_partner.py:0
-#: model_terms:ir.ui.view,arch_db:account_followup.customer_statements_search_view
 msgid "Overdue Invoices"
 msgstr "Faktur Terlambat"
 
@@ -1074,7 +1076,7 @@ msgstr "Total Lewat Jatuh Tempo"
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__total_overdue_followup
 #: model:ir.model.fields,field_description:account_followup.field_res_users__total_overdue_followup
 msgid "Total Overdue Followup"
-msgstr ""
+msgstr "Total Overdue Followup"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__unpaid_invoice_ids
@@ -1177,6 +1179,9 @@ msgstr ""
 "{{ (object.company_id or "
 "object._get_followup_responsible().company_id).name }} Pengingat Pembayaran "
 "- {{ object.commercial_company_name }}"
+
+#~ msgid "2023-09-06"
+#~ msgstr "2023-09-06"
 
 #~ msgid "%s (copy)"
 #~ msgstr "%s (salinan)"

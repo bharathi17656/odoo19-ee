@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import random
+
 from markupsafe import Markup
 
 from odoo import api, fields, models, _
@@ -9,7 +10,6 @@ from odoo.exceptions import AccessDenied, AccessError, UserError
 
 class CrmLead(models.Model):
     _inherit = "crm.lead"
-    _mail_post_access = 'read'
 
     partner_latitude = fields.Float('Geo Latitude', digits=(10, 7))
     partner_longitude = fields.Float('Geo Longitude', digits=(10, 7))
@@ -42,9 +42,15 @@ class CrmLead(models.Model):
 
     def _get_partner_email_update(self, force_void=True):
         self.ensure_one()
-        if self.env.user._is_portal() and self.partner_id.user_id:
+        if 'lead_no_partner_update' in self.env.context:
             return False
         return super()._get_partner_email_update(force_void)
+
+    def _get_partner_phone_update(self, force_void=True):
+        self.ensure_one()
+        if 'lead_no_partner_update' in self.env.context:
+            return False
+        return super()._get_partner_phone_update(force_void)
 
     def write(self, vals):
         if self.env.user._is_portal() and not self.env.su:
@@ -272,7 +278,9 @@ class CrmLead(models.Model):
                         'summary': values['activity_summary'],
                         'date_deadline': values['activity_date_deadline'],
                     })
-            lead.write(lead_values)
+
+            # access checked with '_assert_portal_write_access' at method beginning
+            lead.sudo().write(lead_values)
 
     def update_contact_details_from_portal(self, values):
         self._assert_portal_write_access()
@@ -280,7 +288,13 @@ class CrmLead(models.Model):
             'city', 'zip', 'state_id', 'country_id']
         if any([key not in fields for key in values]):
             raise UserError(_("Not allowed to update the following field(s): %s.", ", ".join([key for key in values if not key in fields])))
-        return self.sudo().write(values)
+        return self.sudo().with_context(lead_no_partner_update=True).write(values)
+
+    def update_stage_from_portal(self, stage_id):
+        """ Allow portal users to update the stage of their assigned leads """
+        self._assert_portal_write_access()
+        self.sudo().write({'stage_id': stage_id})
+        return True
 
     @api.model
     def create_opp_portal(self, values):
@@ -338,3 +352,15 @@ class CrmLead(models.Model):
                     'url': '/my/opportunity/%s' % record.id,
                 }
         return super(CrmLead, self)._get_access_action(access_uid=access_uid, force_website=force_website)
+
+    @api.model
+    def _mail_get_operation_for_mail_message_operation(self, message_operation):
+        # Allow readonly posting for assigned users, to avoid ACLs issue in frontend
+        # as they do not have write access anymore on the lead itself, just specific
+        # controllers and UI
+        assigned = self.filtered_domain([
+            ('partner_assigned_id', 'child_of', self.env.user.commercial_partner_id.id),
+        ]) if message_operation == "create" else self.browse()
+        result = super()._mail_get_operation_for_mail_message_operation(message_operation)
+        result.update(dict.fromkeys(assigned, 'read'))
+        return result

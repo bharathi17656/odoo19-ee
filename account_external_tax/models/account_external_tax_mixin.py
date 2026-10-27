@@ -78,9 +78,6 @@ class AccountExternalTaxMixin(models.AbstractModel):
     @api.model
     def _set_external_taxes(self, mapped_taxes):
         """ Sets extra_tax_data based on a dict that maps line records to base lines. """
-        for line in mapped_taxes:
-            line.tax_ids = False
-
         for line, base_line in mapped_taxes.items():
             extra_tax_data = self.env["account.tax"]._export_base_line_extra_tax_data(base_line)
             line.write({
@@ -127,13 +124,17 @@ class AccountExternalTaxMixin(models.AbstractModel):
         tax_by_name = {}
         for tax_name, tax_values in tax_names.items():
             price_include_override_domain = []
+            type_tax_use_domain = []
             if 'price_include_override' in tax_values:
                 price_include_override_domain = [('price_include_override', '=', tax_values['price_include_override'])]
+            if 'type_tax_use' in tax_values:
+                type_tax_use_domain = [('type_tax_use', '=', tax_values['type_tax_use'])]
 
             existing_tax = self.env['account.tax'].with_context(active_test=not search_archived_taxes).search([
                 *self.env['account.tax']._check_company_domain(company),
                 (tax_key_field, 'in', tax_name),
                 *price_include_override_domain,
+                *type_tax_use_domain,
             ], limit=1)
             if existing_tax:
                 tax_by_name[existing_tax[tax_key_field]] = existing_tax
@@ -153,6 +154,7 @@ class AccountExternalTaxMixin(models.AbstractModel):
 
         for base_line, tax_values_list in base_line_with_tax_values:
             manual_tax_amounts = base_line['manual_tax_amounts'] = {}  # clear old taxes
+            base_line['manual_total_excluded_currency'] = None  # clear old pre-tax base
             for _tax_group_values, tax_values, manual_amounts in tax_values_list:
                 tax_id = str(tax_by_name[tax_values['name']].id)
                 if tax_id in manual_tax_amounts:

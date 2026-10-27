@@ -1,6 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.exceptions import ValidationError
+from freezegun import freeze_time
+
+from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
 from odoo.tests import new_test_user, tagged
 from odoo.tools.float_utils import float_compare
@@ -161,6 +163,31 @@ class TestLoyalty(TestSaleCouponCommon):
         # During the cancel process, we are trying to get `use_count` of the coupon,
         # and we call the `_compute_use_count` that is also in pos_loyalty.
         # This last one will try to find related POS lines while user have not access to POS.
+        order._action_cancel()
+        self.assertFalse(order.coupon_point_ids)
+
+    def test_salesperson_can_cancel_order_with_coupons(self):
+        """Test that a salesperson can cancel an order with coupon points without access error."""
+        user_salesman = new_test_user(
+            self.env, login="user_salesman", groups="sales_team.group_sale_salesman"
+        )
+        self.env["loyalty.program"].create({
+            "name": "10% Discount",
+            "program_type": "coupons",
+            "trigger": "auto",
+            "reward_ids": [Command.create({"reward_type": "discount", "discount": 10})],
+        })
+        order = (
+            self
+            .env["sale.order"]
+            .with_user(user_salesman)
+            .create({
+                "partner_id": self.partner.id,
+                "order_line": [Command.create({"product_id": self.product_a.id})],
+            })
+        )
+        order.action_confirm()
+        self.assertTrue(order.coupon_point_ids)
         order._action_cancel()
         self.assertFalse(order.coupon_point_ids)
 
@@ -1002,23 +1029,35 @@ class TestLoyalty(TestSaleCouponCommon):
 
     def test_ewallet_applied_ewallet_topup_in_order(self):
         self.ewallet.points = 10
-
+        ewallet_top_up = Command.create({
+            'product_id': self.env.ref('loyalty.ewallet_product_50').id,
+            'product_uom_qty': 1,
+            'price_unit': 50,
+        })
         order = self.env['sale.order'].create({
             'partner_id': self.partner.id,
             'order_line': [Command.create({
                 'product_id': self.product_a.id,
                 'points_cost': 100,
                 'product_uom_qty': 1,
-            }), Command.create({
-                'product_id': self.env.ref('loyalty.ewallet_product_50').id,
-                'product_uom_qty': 1,
-            })],
+            }),
+                ewallet_top_up
+            ],
         })
         order._update_programs_and_rewards()
         self._claim_reward(order, self.ewallet_program, coupon=self.ewallet)
         order.action_confirm()
 
         self.assertEqual(self.ewallet.points, 50)
+
+        # Case 2: eWallet top-up should be excluded from the discountable amount when paying with an eWallet
+        order = self.env['sale.order'].create({
+            'partner_id': self.partner.id,
+            'order_line': [ewallet_top_up],
+        })
+        order._update_programs_and_rewards()
+        with self.assertRaisesRegex(UserError, "There is nothing to discount"):
+            self._claim_reward(order, self.ewallet_program, coupon=self.ewallet)
 
     def test_discount_reward_claimable_only_once(self):
         """
@@ -1233,3 +1272,87 @@ class TestLoyalty(TestSaleCouponCommon):
         loyalty_card.action_archive()
         claimable_rewards = sale_order._get_claimable_rewards()
         self.assertFalse(claimable_rewards.get(loyalty_card))
+
+    def test_free_product_sol_is_zero_price(self):
+        self.env['res.config.settings'].create({
+            'group_discount_per_so_line': True,
+        }).execute()
+        loyalty_program = self.env['loyalty.program'].create({
+            'name': 'Loyalty Program',
+            'program_type': 'promotion',
+            'trigger': 'auto',
+            'applies_on': 'both',
+            'rule_ids': [
+                Command.create({
+                    'reward_point_mode': 'unit',
+                    'reward_point_amount': 1,
+                    'product_ids': [self.product_a.id],
+                }),
+            ],
+            'reward_ids': [
+                Command.create({
+                    'reward_type': 'product',
+                    'reward_product_id': self.product_B.id,
+                    'reward_product_qty': 1,
+                    'required_points': 1,
+                }),
+            ],
+        })
+        sale_order = self.empty_order
+        sale_order.write({
+            'order_line': [
+                Command.create({
+                    'product_id': self.product_a.id,
+                    'product_uom_qty': 1,
+                }),
+            ],
+        })
+        sale_order._update_programs_and_rewards()
+        self._claim_reward(sale_order, loyalty_program)
+        # In real use case, so.plan_id is set to False in _verify_cart_after_update in
+        # sale_subscription module. Since discount depends on so.plan_id, this triggers
+        # a recomputation of the discount.
+        # Here we manually call the compute method to simulate the behavior
+        sale_order.order_line._compute_discount()
+        reward_line = sale_order.order_line.filtered('reward_id')
+        self.assertEqual(reward_line.discount, 100)
+        self.assertEqual(reward_line.price_total, 0)
+
+    def test_reapplying_reward_keeps_reward_price_unit(self):
+        """
+        Ensure that re-applying a reward doesn't reset the existing reward line unit price to zero
+        """
+        self.immediate_promotion_program.active = True
+        sale_order = self.empty_order
+        sale_order.write({
+            'order_line': [
+                Command.create({
+                    'product_id': self.product_A.id,
+                    'product_uom_qty': 1,
+                }),
+            ],
+        })
+        sale_order._update_programs_and_rewards()
+        self._claim_reward(sale_order, self.immediate_promotion_program)
+        reward_line = sale_order.order_line.filtered('reward_id')
+        reward_line_price_unit = reward_line.price_unit
+        sale_order._update_programs_and_rewards()
+        self._claim_reward(sale_order, self.immediate_promotion_program)
+        self.assertEqual(reward_line.price_unit, reward_line_price_unit)
+
+    @freeze_time("2026-01-10")
+    def test_expired_ewallet_is_not_claimable(self):
+        self.ewallet.expiration_date = '2026-01-01'
+        sale_order = self.empty_order
+        sale_order.write({
+            'partner_id': self.partner.id,
+            'order_line': [
+                Command.create({
+                    'product_id': self.product_a.id,
+                }),
+            ],
+        })
+        sale_order.action_open_reward_wizard()
+        sale_order._update_programs_and_rewards()
+        claimable_rewards = sale_order._get_claimable_rewards()
+        self.assertFalse(claimable_rewards.get(self.ewallet))

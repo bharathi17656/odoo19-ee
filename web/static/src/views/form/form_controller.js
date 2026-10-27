@@ -42,6 +42,7 @@ import {
     useEffect,
     useRef,
     useState,
+    useSubEnv,
 } from "@odoo/owl";
 import { FetchRecordError } from "@web/model/relational_model/errors";
 import { effect } from "@web/core/utils/reactive";
@@ -209,7 +210,7 @@ export class FormController extends Component {
             this.model.config.fields = fields;
         };
         this.model = useState(useModel(this.props.Model, this.modelParams, { beforeFirstLoad }));
-
+        useSubEnv({ model: this.model });
         onMounted(() => {
             effect(
                 (model) => {
@@ -458,7 +459,11 @@ export class FormController extends Component {
     }
 
     displayName() {
-        return this.model.root.data.display_name || (this.model.root.isNew && _t("New")) || "";
+        return (
+            this.model.root.data.display_name?.split("\n")[0] ||
+            (this.model.root.isNew && _t("New")) ||
+            ""
+        );
     }
 
     async onPagerUpdate({ offset, resIds }) {
@@ -483,8 +488,17 @@ export class FormController extends Component {
     }
 
     beforeVisibilityChange() {
-        if (document.visibilityState === "hidden" && this.formInDialog === 0) {
-            return this.model.root.save();
+        const root = this.model.root;
+        const isEditingX2Many = Object.keys(root.activeFields).some((fieldName) => {
+            const field = root.fields[fieldName];
+            return (
+                ["one2many", "many2many"].includes(field.type) &&
+                !field.relatedPropertyField &&
+                root.data[fieldName].editedRecord
+            );
+        });
+        if (document.visibilityState === "hidden" && this.formInDialog === 0 && !isEditingX2Many) {
+            return root.save();
         }
     }
 

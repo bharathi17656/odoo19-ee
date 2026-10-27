@@ -28,6 +28,20 @@ describe(parseUrl(import.meta.url), () => {
         expect(document.title).toBe("");
     });
 
+    test("fetch with internal URLs works without mocking fetch", async () => {
+        const blob = new Blob([JSON.stringify({ name: "coucou" })], {
+            type: "application/json",
+        });
+        const blobUrl = createObjectURL(blob);
+        const blobResponse = await fetch(blobUrl).then((res) => res.json());
+        const dataResponse = await fetch("data:text/html,<body></body>").then((res) => res.text());
+
+        expect(blobResponse).toEqual({ name: "coucou" });
+        expect(dataResponse).toBe("<body></body>");
+
+        await expect(fetch("http://some.url")).rejects.toThrow(/fetch is not mocked/);
+    });
+
     test("fetch with internal URLs should return default value", async () => {
         mockFetch(expect.step);
 
@@ -154,6 +168,25 @@ describe(parseUrl(import.meta.url), () => {
         const result = await response.text();
 
         expect(result).toBe("some text");
+    });
+
+    test("mock responses: stream", async () => {
+        const encoder = new TextEncoder();
+        mockFetch(
+            () =>
+                new Response(
+                    new ReadableStream({
+                        start(controller) {
+                            controller.enqueue(encoder.encode("streamed content"));
+                            controller.close();
+                        },
+                    })
+                )
+        );
+        const response = await fetch("/stream");
+        const { value } = await response.body.getReader().read();
+        expect(response.headers.get("content-type")).toBe(null);
+        expect(new TextDecoder().decode(value)).toBe("streamed content");
     });
 
     test("mock responses: error handling after reading body", async () => {

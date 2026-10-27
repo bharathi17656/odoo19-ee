@@ -38,15 +38,29 @@ patch(PosStore.prototype, {
         if (!isFiscalPrinterActive(this.config)) {
             return super.printReceipt(...arguments);
         }
+        const isFiscal = !basic && !printBillActionTriggered;
+        let result = {};
 
-        if (!order.nb_print) {
-            const result = order.to_invoice
-                ? await this.fiscalPrinter.printFiscalInvoice()
-                : await this.fiscalPrinter.printFiscalReceipt();
+        if (!isFiscal) {
+            await this.fiscalPrinter.printNonFiscalReceipt({
+                isBasicPrint: basic,
+                isEarlyPrint: printBillActionTriggered,
+            });
+        } else if (!order.it_fiscal_receipt_number) {
+            try {
+                result = order.to_invoice
+                    ? await this.fiscalPrinter.printFiscalInvoice({ order: order })
+                    : await this.fiscalPrinter.printFiscalReceipt({ order: order });
+            } catch (error) {
+                result.success = false;
+                if (!this.data.network.offline) {
+                    throw error;
+                }
+            }
 
             if (result.success) {
                 this.data.write("pos.order", [order.id], {
-                    it_fiscal_receipt_number: result.addInfo.fiscalReceiptNumber,
+                    it_fiscal_receipt_number: `${result.addInfo.fiscalReceiptNumber}|${result.addInfo.serialNumber}`,
                     it_fiscal_receipt_date: result.addInfo.fiscalReceiptDate,
                     it_z_rep_number: result.addInfo.zRepNumber,
                     //update the number of times the order got printed, handling undefined

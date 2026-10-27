@@ -288,7 +288,7 @@ class AccountBatchPayment(models.Model):
 
     @api.depends('state')
     def _compute_display_name(self):
-        state_values = dict(self._fields['state'].selection)
+        state_values = dict(self._fields['state']._description_selection(self.env))
         for batch in self:
             batch.display_name = f'{batch.name} ({state_values.get(batch.state)})'
 
@@ -296,9 +296,18 @@ class AccountBatchPayment(models.Model):
     def _compute_invalid_sct_partners_ids(self):
         sepa_batches = self.filtered(lambda b: b.payment_method_id.code == 'sepa_ct')
         for batch in sepa_batches:
-            batch.invalid_sct_partners_ids = batch.payment_ids.partner_id.filtered(
-                lambda partner: not (partner.city and partner.country_id)
-            )
+            invalid_partners = self.env['res.partner']
+            for partner in batch.payment_ids.partner_id:
+                # sudo needed for accountant users that are not in hr (employee_ids)
+                addresses = partner.sudo()._get_all_addr()
+                has_valid_address = any(
+                    addr.get('city') and addr.get('country')
+                    for addr in addresses
+                )
+                if not has_valid_address:
+                    invalid_partners |= partner
+
+            batch.invalid_sct_partners_ids = invalid_partners
         (self - sepa_batches).invalid_sct_partners_ids = self.env['res.partner']
 
     def action_invalid_partners_from_sct(self):
@@ -357,12 +366,13 @@ class AccountBatchPayment(models.Model):
         specificities in the payments he's put in the batch. He will be able to
         ignore them.
 
-        :return:    A list of dictionaries, each one corresponding to a distinct
-                    warning and containing the following keys:
-                    - 'title': A short name for the warning (mandatory)
-                    - 'records': The recordset of payments concerned by this warning (mandatory)
-                    - 'help': A help text to give the user further information
-                              on the reason this warning exists (optional)
+        :return: A list of dictionaries, each one corresponding to a distinct
+            warning and containing the following keys:
+
+            - ``'title'``: A short name for the warning (mandatory)
+            - ``'records'``: The recordset of payments concerned by this warning (mandatory)
+            - ``'help'``: A help text to give the user further information
+              on the reason this warning exists (optional)
         """
         return []
 
@@ -374,12 +384,13 @@ class AccountBatchPayment(models.Model):
         extension for modules making a specific use of batch payments, such as SEPA
         ones.
 
-        :return:    A list of dictionaries, each one corresponding to a distinct
-                    error and containing the following keys:
-                    - 'title': A short name for the error (mandatory)
-                    - 'records': The recordset of payments facing this error (mandatory)
-                    - 'help': A help text to give the user further information
-                              on how to solve the error (optional)
+        :return: A list of dictionaries, each one corresponding to a distinct
+            error and containing the following keys:
+
+            - ``'title'``: A short name for the error (mandatory)
+            - ``'records'``: The recordset of payments facing this error (mandatory)
+            - ``'help'``: A help text to give the user further information
+              on how to solve the error (optional)
         """
         self.ensure_one()
         #We first try to post all the draft batch payments

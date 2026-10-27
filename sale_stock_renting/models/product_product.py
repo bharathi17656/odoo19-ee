@@ -16,11 +16,11 @@ class ProductProduct(models.Model):
                 product.show_forecasted_qty_status_button = False
 
     @api.depends('type', 'rent_ok', 'qty_available', 'qty_in_rent')
-    @api.depends_context('in_rental_schedule', 'allowed_company_ids')
+    @api.depends_context("display_renting_stock_quantity", "allowed_company_ids")
     def _compute_display_name(self):
         """Override to include the quantity in stock in the rental schedule view."""
         super()._compute_display_name()
-        if self.env.context.get('in_rental_schedule'):
+        if self.env.context.get("display_renting_stock_quantity"):
             storable_rental_products = self.filtered(
                 lambda product: product.rent_ok and product.is_storable
             )
@@ -100,17 +100,10 @@ class ProductProduct(models.Model):
     ):
         self.ensure_one()
 
-        domain = [
-            ('is_rental', '=', True),
-            ('product_id', '=', self.id),
-            ('state', '=', 'sale'),
-        ]
+        domain = self.with_context(warehouse_id=warehouse_id)._get_qty_in_rent_domain()
 
         if ignored_soline_id:
             domain += [('id', '!=', ignored_soline_id)]
-
-        if warehouse_id:
-            domain += [('order_id.warehouse_id', '=', warehouse_id)]
 
         include_bounds = to_date == from_date
         domain += [
@@ -133,17 +126,34 @@ class ProductProduct(models.Model):
         active_lines = self._get_active_rental_lines(
             from_date=pivot_date, to_date=pivot_date, **kwargs
         )
-        active_lines = active_lines.filtered(lambda line:
-            line.rental_status in ('pickup', 'return')
-                and (
-                    not line.order_id.has_pickable_lines
-                    or (
-                        float_is_zero(line.qty_delivered, precision_rounding=line.product_uom_id.rounding)
-                        and self.env.user.has_group('sale_stock_renting.group_rental_stock_picking')
-                    )
-                )
+        pickings_enabled = self.env['sale.order.line']._are_rental_pickings_enabled()
+        qty_in_rent = 0
+        for line in active_lines:
+            if pickings_enabled and float_is_zero(
+                line.qty_delivered, precision_rounding=line.product_uom_id.rounding
+            ):
+                # The pickup transfer is planned, so the whole line is already deducted
+                line_qty = line.product_uom_qty
+            else:
+                # Only the units that left the stock are deducted, and returned ones came back
+                line_qty = line.qty_delivered - line.qty_returned
+            qty_in_rent += line.product_uom_id._compute_quantity(line_qty, self.uom_id, round=False)
+        return qty_in_rent
+
+    def _get_physical_unavailable_qty_in_rent(self, pivot_date, **kwargs):
+        """
+        Return the quantity already taken into account by the current, physical available
+        quantity (qty_available), because it has been picked up but not returned.
+
+        :param datetime pivot_date:
+        :param dict kwargs: search domain restrictions (ignored_soline_id, warehouse_id):
+        """
+        kwargs['rental_pivot_date'] = True
+        active_lines = self._get_active_rental_lines(
+            from_date=pivot_date, to_date=pivot_date, **kwargs
         )
-        return sum(active_lines.mapped('product_uom_qty'))
+        active_lines = active_lines.filtered(lambda line: line.order_id.rental_status == 'return')
+        return sum(line.qty_delivered - line.qty_returned for line in active_lines)
 
     """
         Products with tracking (by serial number)

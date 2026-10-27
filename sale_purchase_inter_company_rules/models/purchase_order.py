@@ -1,4 +1,4 @@
-from odoo import api, fields, models, _
+from odoo import api, Command, fields, models, _
 from odoo.exceptions import UserError
 
 
@@ -62,6 +62,8 @@ class PurchaseOrder(models.Model):
             # lines are browse as sudo to access all data required to be copied on SO line (mainly for company dependent field like taxes)
             for line in rec.order_line.sudo():
                 sale_order_data['order_line'] += [(0, 0, rec._prepare_sale_order_line_data(line, company))]
+
+            rec._set_pcavs_from_order(sale_order_data['order_line'])
             sale_order = self.env['sale.order'].with_context(
                 allowed_company_ids=company.ids,
                 in_rental_app=False,  # avoid creating rental orders if PO is accessed via Rental
@@ -121,6 +123,7 @@ class PurchaseOrder(models.Model):
         price = line.price_unit or 0.0
         quantity = line.product_id and line.product_uom_id._compute_quantity(line.product_qty, line.product_id.uom_id) or line.product_qty
         price = line.product_id and line.product_uom_id._compute_price(price, line.product_id.uom_id) or price
+        product_no_variant_attribute_value_ids = line.product_no_variant_attribute_value_ids
         return {
             'name': line.name,
             'product_uom_qty': quantity,
@@ -130,4 +133,8 @@ class PurchaseOrder(models.Model):
             'discount': line.discount or 0.0,
             'company_id': company.id,
             'display_type': line.display_type,
+            'product_no_variant_attribute_value_ids': [Command.set(product_no_variant_attribute_value_ids.ids)]
         }
+
+    def _set_pcavs_from_order(self, so_lines):
+        pass

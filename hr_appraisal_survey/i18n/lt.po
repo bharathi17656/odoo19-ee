@@ -3,13 +3,14 @@
 # * hr_appraisal_survey
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-16 18:06+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-09 17:45+0000\n"
+"PO-Revision-Date: 2026-10-05 22:33+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "hr_appraisal_survey/lt/>\n"
 "Language: lt\n"
@@ -19,12 +20,12 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
 msgid "- Feedback requested by -"
-msgstr ""
+msgstr "- Atsiliepimą paprašė –"
 
 #. module: hr_appraisal_survey
 #: model:ir.actions.act_window,name:hr_appraisal_survey.survey_survey_action_appraisal
@@ -38,7 +39,7 @@ msgstr "360 laipsnių atsiliepimai"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_hr_appraisal_template__survey_template_ids
 msgid "360 Feedback Survey"
-msgstr ""
+msgstr "360 laipsnių atsiliepimų apklausa"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
@@ -86,11 +87,48 @@ msgid ""
 "                \n"
 "            "
 msgstr ""
+"<p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                    Gerbiamas „ <t t-out=\"object.partner_id.name or "
+"'participant'\"> “ [dalyvis]</t>,\n"
+"                   <br/> \n"
+"                    Vykdydami 360° grįžtamojo ryšio procesą, <t t-"
+"out=\"ctx.get('logged_user')\">[dabartinis vartotojas]</t> norėtų\n"
+"                    gauti jūsų įžvalgas apie <t t-out=\"ctx.get('employee')"
+"\">[darbuotojas]</t> darbo rezultatus.\n"
+"                   <br/> \n"
+"                    Jūsų atsiliepimai mums labai svarbūs, nes padeda "
+"atpažinti stipriąsias puses ir nustatyti tobulėjimo galimybes.\n"
+"                   <br/> \n"
+"                    Tai užtruks tik keletą minučių, o savo atsiliepimus "
+"galite pateikti naudodamiesi žemiau pateikta nuoroda:\n"
+"                   <br/>\n"
+"                    </p> <div class=\"text-center my-4\">\n"
+"                        <a t-att-href=\"object.get_start_url()\" t-attf-"
+"style=\"background-color: {{user.company_id.email_secondary_color or "
+"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"{{user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
+"font-size:13px;\"> \n"
+"                            Pateikite savo atsiliepimus\n"
+"                       </a>\n"
+"                    </div> \n"
+"                    Prašome užpildyti anketą iki <t t-"
+"out=\"ctx.get('deadline')\">[nurodyto termino]</t>.\n"
+"                   <br/> \n"
+"                    Dėkojame už jūsų laiką ir atvirumą!\n"
+"                   <br/>\n"
+"                    <t t-if=\"ctx.get('user_body')\"> \n"
+"                       <div class=\"my-3 py-2 px-3 bg-secondary\">\n"
+"                            <t t-out=\"ctx.get('user_body')\"> [Neprivalomas "
+"komentaras]</t>\n"
+"                        </div>\n"
+"                   </t> \n"
+"                \n"
+"            "
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
 msgid "<span class=\"o_stat_text\">Feedbacks</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Atsiliepimai</span>"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
@@ -104,6 +142,8 @@ msgid ""
 "A new 360 Feedback report has been completed for the appraisal of %"
 "(employee_name)s."
 msgstr ""
+"Parengta nauja 360 laipsnių atsiliepimų ataskaita, skirta %(employee_name)s "
+"vertinimui."
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_1
@@ -118,7 +158,8 @@ msgstr "Gebėjimas sekti ir pabaigti darbą pagal instrukcijas"
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_2_5
 msgid "Ability to manage planning resources, risks, budgets and deadlines"
-msgstr "Gebėjimas valdyti išteklius, rizikas, biudžetus ir galutinius terminus."
+msgstr ""
+"Gebėjimas valdyti išteklius, rizikas, biudžetus ir galutinius terminus."
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_360_4
@@ -169,14 +210,6 @@ msgid "Almost always"
 msgstr ""
 
 #. module: hr_appraisal_survey
-#. odoo-python
-#: code:addons/hr_appraisal_survey/wizard/appraisal_ask_feedback.py:0
-msgid ""
-"An appraisal feedback was requested. Please take time to fill the <a "
-"href=\"%s\" target=\"_blank\">survey</a>"
-msgstr ""
-
-#. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_11
 msgid "Analytical and synthetic mind"
 msgstr "Analitinis ir loginis mąstymas"
@@ -212,7 +245,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/hr_appraisal_survey/wizard/appraisal_ask_feedback.py:0
 msgid "Appraisal: Ask Feedback new template"
-msgstr ""
+msgstr "Vertinimas: Prašyti atsiliepimų – naujas šablonas"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_survey_survey__appraisal_manager_user_ids
@@ -233,18 +266,18 @@ msgstr "Vertintojas"
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_user_input_view_tree
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
 msgid "Ask Feedback"
-msgstr ""
+msgstr "Paprašykite atsiliepimų"
 
 #. module: hr_appraisal_survey
 #: model:ir.model,name:hr_appraisal_survey.model_appraisal_ask_feedback
 msgid "Ask Feedback for Appraisal"
-msgstr ""
+msgstr "Paprašykite atsiliepimo dėl vertinimo"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_hr_appraisal__employee_feedback_ids
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.view_hr_appraisal_tree
 msgid "Asked Feedback"
-msgstr ""
+msgstr "Paprašyta atsiliepimų"
 
 #. module: hr_appraisal_survey
 #: model_terms:survey.question,description:hr_appraisal_survey.appraisal_1
@@ -286,7 +319,7 @@ msgstr "Atšaukti"
 #: code:addons/hr_appraisal_survey/models/survey_survey.py:0
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_select_survey_view_form
 msgid "Choose Survey"
-msgstr ""
+msgstr "Pasirinkite apklausą"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.y_360_5_3
@@ -451,13 +484,13 @@ msgstr ""
 #. odoo-python
 #: code:addons/hr_appraisal_survey/models/hr_appraisal.py:0
 msgid "Feedback Surveys"
-msgstr ""
+msgstr "Atsiliepimų apklausos"
 
 #. module: hr_appraisal_survey
 #. odoo-python
 #: code:addons/hr_appraisal_survey/wizard/appraisal_ask_feedback.py:0
 msgid "Fill the feedback form on survey"
-msgstr ""
+msgstr "Užpildykite atsiliepimų formą apklausoje"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
@@ -467,7 +500,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model:mail.template,name:hr_appraisal_survey.mail_template_appraisal_ask_feedback
 msgid "HR: Ask Feedback 360"
-msgstr ""
+msgstr "HR: Prašyti 360 laipsnių atsiliepimų"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_360_5
@@ -538,6 +571,8 @@ msgid ""
 "input from the appropriate sources of feedback (internal and/or external "
 "customers, peers)."
 msgstr ""
+"Pagrindinė vadovo pareiga – surinkti reikiamą informaciją iš atitinkamų "
+"grįžtamojo ryšio šaltinių (vidinių ir (arba) išorinių klientų, kolegų)."
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__lang
@@ -755,7 +790,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model:ir.model,name:hr_appraisal_survey.model_appraisal_select_survey
 msgid "Select survey type for an appraisal to show its results"
-msgstr ""
+msgstr "Pasirinkite vertinimo apklausos tipą, kad būtų rodomi jos rezultatai"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_ask_feedback_view_form
@@ -770,7 +805,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model:mail.template,description:hr_appraisal_survey.mail_template_appraisal_ask_feedback
 msgid "Sent to employees to gather appraisal feedback"
-msgstr ""
+msgstr "Siunčiama darbuotojams, siekiant surinkti atsiliepimus apie vertinimą"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.y_360_5_4
@@ -822,7 +857,7 @@ msgstr "Apklausa"
 #: code:addons/hr_appraisal_survey/models/hr_appraisal.py:0
 #: code:addons/hr_appraisal_survey/models/survey_survey.py:0
 msgid "Survey Feedback"
-msgstr ""
+msgstr "Apklausos atsiliepimai"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_select_survey__survey_input_ids
@@ -886,6 +921,8 @@ msgid ""
 "The employee may choose to offer comments or explanation regarding the "
 "completed review."
 msgstr ""
+"Darbuotojas gali nuspręsti pateikti pastabas ar paaiškinimus dėl užpildyto "
+"vertinimo."
 
 #. module: hr_appraisal_survey
 #: model_terms:survey.question,description:hr_appraisal_survey.appraisal_1
@@ -919,6 +956,8 @@ msgid ""
 "The survey templates available to choose from for the appraisals that use "
 "this template."
 msgstr ""
+"Apklausų šablonai, iš kurių galima rinktis vertinimams, kuriuose naudojamas "
+"šis šablonas."
 
 #. module: hr_appraisal_survey
 #: model_terms:survey.survey,description:hr_appraisal_survey.appraisal_feedback_template
@@ -926,6 +965,8 @@ msgid ""
 "This survey allows you to give a feedback about your collaboration with an "
 "employee. Filling it helps us improving the appraisal process."
 msgstr ""
+"Ši apklausa leidžia jums pateikti atsiliepimą apie bendradarbiavimą su "
+"darbuotoju. Užpildydami ją, padedate mums tobulinti vertinimo procesą."
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_15
@@ -988,6 +1029,14 @@ msgid ""
 "                Your answers will be viewed only by the managers. This is "
 "not an anonymous survey."
 msgstr ""
+"Sveiki atvykę į šią apklausą, <BR><BR>\n"
+"                Jūsų paprašyta dalyvauti 360 laipsnių atsiliepimų "
+"apklausoje. Tai trumpa apklausa, kuri leis vadovams gauti daugiau "
+"atsiliepimų apie savo darbuotoją. \n"
+"                Kadangi dirbate su juo/ja, jūs geriausiai galite pasidalinti "
+"savo mintimis ir paaiškinti, kaip vyko jūsų bendradarbiavimas.<BR><BR>\n"
+"                Jūsų atsakymus matys tik vadovai. Tai nėra anoniminė "
+"apklausa."
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_360_6
@@ -997,17 +1046,17 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_360_7
 msgid "What's his/her greatest strength?"
-msgstr ""
+msgstr "Koks yra jo/jos didžiausias privalumas?"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_360_8
 msgid "What's his/her greatest weakness?"
-msgstr ""
+msgstr "Koks yra jo/jos didžiausias trūkumas?"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_360_3
 msgid "What's the relation between the employee and you?"
-msgstr ""
+msgstr "Koks yra jūsų ir darbuotojo santykis?"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_360_2
@@ -1030,18 +1079,18 @@ msgstr ""
 #. odoo-python
 #: code:addons/hr_appraisal_survey/models/survey_survey.py:0
 msgid "You can't ask feedback for multiple appraisals at once."
-msgstr ""
+msgstr "Negalima prašyti atsiliepimų apie kelis vertinimus vienu metu."
 
 #. module: hr_appraisal_survey
 #. odoo-python
 #: code:addons/hr_appraisal_survey/models/survey_survey.py:0
 msgid "You can't select multiple feedback templates."
-msgstr ""
+msgstr "Negalima pasirinkti kelių atsiliepimų šablonų."
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
 msgid "ask feedback"
-msgstr ""
+msgstr "paprašyti atsiliepimo"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
@@ -1051,4 +1100,11 @@ msgstr "arba"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
 msgid "to a selection of colleagues you work with."
-msgstr ""
+msgstr "pasirinktiems kolegoms, su kuriais dirbate."
+
+#~ msgid ""
+#~ "An appraisal feedback was requested. Please take time to fill the <a "
+#~ "href=\"%s\" target=\"_blank\">survey</a>"
+#~ msgstr ""
+#~ "Buvo paprašyta pateikti vertinimo atsiliepimą. Prašome skirti laiko "
+#~ "užpildyti „ <a href=\"%s\" target=\"_blank\">“ apklausą</a>"

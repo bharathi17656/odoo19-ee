@@ -4,13 +4,14 @@
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:50+0000\n"
-"PO-Revision-Date: 2025-11-13 13:13+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-03 17:48+0000\n"
+"PO-Revision-Date: 2026-09-21 07:33+0000\n"
+"Last-Translator: \"Malaz Siddig Elsayed Abuidris (msea)\" <msea@odoo.com>\n"
 "Language-Team: Arabic <https://translate.odoo.com/projects/odoo-19/"
 "website_generator/ar/>\n"
 "Language: ar\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: website_generator
 #: model:mail.template,body_html:website_generator.email_template_website_scrapped
@@ -120,6 +121,12 @@ msgid "Done, website generated"
 msgstr "انتهيت، تم إنشاء الموقع الإلكتروني"
 
 #. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "Error"
+msgstr "خطأ "
+
+#. module: website_generator
 #: model:ir.model,name:website_generator.model_ir_http
 msgid "HTTP Routing"
 msgstr "مسار HTTP"
@@ -131,12 +138,6 @@ msgstr "مسار HTTP"
 #: model:ir.model.fields,field_description:website_generator.field_website_page__id
 msgid "ID"
 msgstr "المعرف"
-
-#. module: website_generator
-#. odoo-javascript
-#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
-msgid "If you require more, you can contact us at"
-msgstr "إذا كنت بحاجة إلى المزيد، يمكنك التواصل معنا على"
 
 #. module: website_generator
 #. odoo-javascript
@@ -160,13 +161,13 @@ msgstr "قم باستيراد"
 #. odoo-javascript
 #: code:addons/website_generator/static/src/builder/imported_footer_template_choice.xml:0
 msgid "Imported"
-msgstr ""
+msgstr "تم استيراده"
 
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/builder/imported_footer_plugin.js:0
 msgid "Imported Footer"
-msgstr ""
+msgstr "تم استيراد التذييل"
 
 #. module: website_generator
 #. odoo-javascript
@@ -207,6 +208,12 @@ msgstr "آخر تحديث بواسطة"
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__write_date
 msgid "Last Updated on"
 msgstr "آخر تحديث في"
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
+msgid "Loading..."
+msgstr "جاري التحميل..."
 
 #. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__notified
@@ -300,6 +307,18 @@ msgstr "نجاح"
 
 #. module: website_generator
 #. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
+msgid "The URL is not reachable."
+msgstr "لا يمكن الوصول إلى عنوان URL."
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
+msgid "The URL is reachable."
+msgstr "يمكن الوصول إلى عنوان URL."
+
+#. module: website_generator
+#. odoo-javascript
 #: code:addons/website_generator/static/src/systray_items/generator_request.js:0
 msgid "The import of your website has started!"
 msgstr "بدأت عملية استيراد موقعك الإلكتروني!"
@@ -307,8 +326,20 @@ msgstr "بدأت عملية استيراد موقعك الإلكتروني!"
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
-msgid "The maximum number of pages is 200 by default."
-msgstr "الحد الأقصى لعدد الصفحات هو 200 بشكل افتراضي."
+msgid "The maximum number of pages is 100."
+msgstr "الحد الأقصى لعدد الصفحات هو 100."
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "The provided URL is not allowed"
+msgstr "عنوان URL المقدم غير مسموح به"
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "The provided URL is not reachable"
+msgstr "لا يمكن الوصول إلى عنوان URL المقدم"
 
 #. module: website_generator
 #. odoo-python
@@ -350,10 +381,22 @@ msgid "This can take a few minutes."
 msgstr "قد يستغرق الأمر بضع دقائق."
 
 #. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "Too many requests"
+msgstr "توجد طلبات كثيرة جداً "
+
+#. module: website_generator
 #. odoo-python
 #: code:addons/website_generator/models/page.py:0
 msgid "Top Menu for Website %s"
 msgstr "القائمة العلوية للموقع الإلكتروني %s"
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "URL redirection"
+msgstr "إعادة توجيه عناوين URL"
 
 #. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__target_url
@@ -448,7 +491,7 @@ msgstr "ستتم إعادة توجيهك بمجرد أن يصبح موقعك ا�
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
 msgid "You'll be able to create additional pages later on."
-msgstr ""
+msgstr "ستتمكن من إنشاء صفحات إضافية لاحقًا."
 
 #. module: website_generator
 #: model:mail.template,subject:website_generator.email_template_website_scrapped
@@ -467,11 +510,14 @@ msgstr "و"
 msgid "https://www.odoo.com/"
 msgstr "https://www.odoo.com/"
 
-#. module: website_generator
-#. odoo-javascript
-#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
-msgid "odoo.com/help"
-msgstr "odoo.com/help"
+#~ msgid "If you require more, you can contact us at"
+#~ msgstr "إذا كنت بحاجة إلى المزيد، يمكنك التواصل معنا على"
+
+#~ msgid "The maximum number of pages is 200 by default."
+#~ msgstr "الحد الأقصى لعدد الصفحات هو 200 بشكل افتراضي."
+
+#~ msgid "odoo.com/help"
+#~ msgstr "odoo.com/help"
 
 #~ msgid "support@odoo.com"
 #~ msgstr "support@odoo.com"

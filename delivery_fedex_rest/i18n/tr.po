@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.4+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
+"POT-Creation-Date: 2026-02-20 18:41+0000\n"
 "PO-Revision-Date: 2025-11-21 14:20+0000\n"
 "Last-Translator: Odoo Turkish Import <dyki+tr@odoo.com>\n"
 "Language-Team: Turkish <https://translate.odoo.com/projects/odoo-19/"
@@ -56,8 +56,8 @@ msgid ""
 msgstr ""
 "<b>FedEx gönderi etiketlerinin oluşturulmasını etkinleştirmek için son adım "
 "Sertifikasyon Sürecidir, 'API sertifikasyonuna git' seçeneğine tıklayın ve "
-"hesabınızın etiket oluşturma için onaylanması için gerekli adımları "
-"izleyin.</b>\n"
+"hesabınızın etiket oluşturma için onaylanması için gerekli adımları izleyin."
+"</b>\n"
 "                                <br/>Bu sertifikasyonlar genellikle FedEx "
 "destek ekibiyle e-posta yoluyla iletişime geçmenizi gerektirir."
 
@@ -98,8 +98,8 @@ msgid ""
 "'LB'\">Inches</span>"
 msgstr ""
 "<span invisible=\"fedex_rest_weight_unit != 'KG'\">Santimetre</span>\n"
-"                                <span invisible="
-"\"fedex_rest_weight_unit != 'LB'\">İnç</span>"
+"                                <span invisible=\"fedex_rest_weight_unit != "
+"'LB'\">İnç</span>"
 
 #. module: delivery_fedex_rest
 #: model:ir.model.fields,field_description:delivery_fedex_rest.field_delivery_carrier__fedex_rest_developer_key
@@ -497,6 +497,12 @@ msgstr ""
 "gönderiye eklenmesi veya FedEx'e manuel olarak elektronik ortamda "
 "gönderilmesi için PDF olarak iade edilebilir. Ayrıca gönderi doğrulandıktan "
 "sonra doğrudan FedEx'e ETD bilgisi olarak da gönderilebilir."
+
+#. module: delivery_fedex_rest
+#. odoo-python
+#: code:addons/delivery_fedex_rest/models/delivery_fedex.py:0
+msgid "Freight services for Fedex are not implemented."
+msgstr ""
 
 #. module: delivery_fedex_rest
 #: model:ir.model.fields,field_description:delivery_fedex_rest.field_delivery_carrier__fedex_rest_documentation_type

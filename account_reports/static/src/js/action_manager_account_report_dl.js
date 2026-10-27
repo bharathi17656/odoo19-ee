@@ -9,7 +9,7 @@ async function executeAccountReportDownload({ env, action }) {
 
     try {
         await download({ url, data });
-        if (!data.no_closing_after_download ?? true)
+        if (!data.no_closing_after_download)
             if (data.next_action) {
                 env.services.action.doAction(data.next_action);
             } else {

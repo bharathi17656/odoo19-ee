@@ -23,7 +23,7 @@ AVAILABLE_PRIORITIES = [
 class HrApplicant(models.Model):
     _name = 'hr.applicant'
     _description = "Applicant"
-    _order = "priority desc, id desc"
+    _order = "priority desc, sequence, id desc"
     _inherit = ['mail.thread.cc',
                'mail.thread.main.attachment',
                'mail.thread.blacklist',
@@ -36,7 +36,6 @@ class HrApplicant(models.Model):
     _mailing_enabled = True
     _primary_email = 'email_from'
     _track_duration_field = 'stage_id'
-    _order = "sequence"
 
     sequence = fields.Integer(string='Sequence', index=True, default=10)
     active = fields.Boolean("Active", default=True, help="If the active field is set to false, it will allow you to hide the case without removing it.", index=True)
@@ -83,7 +82,7 @@ class HrApplicant(models.Model):
     last_stage_id = fields.Many2one('hr.recruitment.stage', "Last Stage",
                                     help="Stage of the applicant before being in the current stage. Used for lost cases analysis.")
     categ_ids = fields.Many2many('hr.applicant.category', string="Tags")
-    company_id = fields.Many2one('res.company', "Company", compute='_compute_company', store=True, readonly=False, tracking=True)
+    company_id = fields.Many2one('res.company', "Company", compute='_compute_company', store=True, readonly=False, tracking=True, domain=lambda self: [('id', 'in', self.env.companies.ids)])
     user_id = fields.Many2one(
         'res.users', "Recruiter", compute='_compute_user', domain="[('share', '=', False), ('company_ids', 'in', company_id)]",
         tracking=True, store=True, readonly=False)
@@ -91,7 +90,7 @@ class HrApplicant(models.Model):
     date_open = fields.Datetime("Assigned", readonly=True)
     date_last_stage_update = fields.Datetime("Last Stage Update", index=True, default=fields.Datetime.now)
     priority = fields.Selection(AVAILABLE_PRIORITIES, "Evaluation", default='0')
-    job_id = fields.Many2one('hr.job', "Job Position", domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]", tracking=True, index=True, copy=False)
+    job_id = fields.Many2one('hr.job', "Job Position", domain="company_id and [('company_id', '=', company_id)] or []", tracking=True, index=True, copy=False)
     salary_proposed_extra = fields.Char("Proposed Salary Extra", help="Salary Proposed by the Organisation, extra advantages", tracking=True, groups="hr_recruitment.group_hr_recruitment_user")
     salary_expected_extra = fields.Char("Expected Salary Extra", help="Salary Expected by Applicant, extra advantages", tracking=True, groups="hr_recruitment.group_hr_recruitment_user")
     salary_proposed = fields.Float("Proposed", aggregator="avg", help="Salary Proposed by the Organisation", tracking=True, groups="hr_recruitment.group_hr_recruitment_user")
@@ -243,14 +242,19 @@ class HrApplicant(models.Model):
                 applicant.partner_id = applicant._partner_find_from_emails_single(
                     [applicant.email_from], no_create=False,
                     additional_values={
-                        email_normalized: {'lang': self.env.lang}
+                        email_normalized: {
+                            'lang': self.env.lang,
+                            'name': applicant.partner_name,
+                            'phone': applicant.partner_phone,
+                        },
                     },
                 )
-            if applicant.partner_name and not applicant.partner_id.name:
+                continue
+            if applicant.partner_name and applicant.partner_name != applicant.partner_id.name:
                 applicant.partner_id.name = applicant.partner_name
-            if email_normalized and not applicant.partner_id.email:
+            if email_normalized and email_normalized != applicant.partner_id.email:
                 applicant.partner_id.email = applicant.email_from
-            if applicant.partner_phone and not applicant.partner_id.phone:
+            if applicant.partner_phone and applicant.partner_phone != applicant.partner_id.phone:
                 applicant.partner_id.phone = applicant.partner_phone
 
     @api.depends("email_normalized", "partner_phone_sanitized", "linkedin_profile")
@@ -267,22 +271,7 @@ class HrApplicant(models.Model):
         Note: If self has pool_applicant_id, email, phone number or linkedin set
         this method will include self in the returned count
         """
-        all_emails = {a.email_normalized for a in self if a.email_normalized}
-        all_phones = {a.partner_phone_sanitized for a in self if a.partner_phone_sanitized}
-        all_linkedins = {a.linkedin_profile for a in self if a.linkedin_profile}
-        all_pool_applicants = {a.pool_applicant_id.id for a in self if a.pool_applicant_id}
-
-        domain = Domain.FALSE
-        if all_emails:
-            domain |= Domain("email_normalized", "in", list(all_emails))
-        if all_phones:
-            domain |= Domain("partner_phone_sanitized", "in", list(all_phones))
-        if all_linkedins:
-            domain |= Domain("linkedin_profile", "in", list(all_linkedins))
-        if all_pool_applicants:
-            domain |= Domain("pool_applicant_id", "in", list(all_pool_applicants))
-
-        domain &= Domain("talent_pool_ids", "=", False)
+        domain = self._get_similar_applicants_domain(ignore_talent=True)
         matching_applicants = self.env["hr.applicant"].with_context(active_test=False).search(domain)
 
         email_map = defaultdict(set)
@@ -333,15 +322,12 @@ class HrApplicant(models.Model):
         Returns:
             Domain()
         """
-        domain = Domain.AND([
-            Domain('company_id', 'in', self.mapped('company_id.id')),
-            Domain.OR([
-                Domain("id", "in", self.ids),
-                Domain("email_normalized", "in", [email for email in self.mapped("email_normalized") if email]),
-                Domain("partner_phone_sanitized", "in", [phone for phone in self.mapped("partner_phone_sanitized") if phone]),
-                Domain("linkedin_profile", "in", [linkedin_profile for linkedin_profile in self.mapped("linkedin_profile") if linkedin_profile]),
-                Domain("pool_applicant_id", "in", [pool_applicant.id for pool_applicant in self.mapped("pool_applicant_id") if pool_applicant]),
-            ])
+        domain = Domain.OR([
+            Domain("id", "in", self.ids),
+            Domain("email_normalized", "in", [email for email in self.mapped("email_normalized") if email]),
+            Domain("partner_phone_sanitized", "in", [phone for phone in self.mapped("partner_phone_sanitized") if phone]),
+            Domain("linkedin_profile", "in", [linkedin_profile for linkedin_profile in self.mapped("linkedin_profile") if linkedin_profile]),
+            Domain("pool_applicant_id", "in", [pool_applicant.id for pool_applicant in self.mapped("pool_applicant_id") if pool_applicant]),
         ])
         if ignore_talent:
             domain &= Domain("talent_pool_ids", "=", False)
@@ -543,7 +529,7 @@ class HrApplicant(models.Model):
         domains = []
         # Map statuses to domain filters
         if 'refused' in value:
-            domains.append([('active', '=', True), ('refuse_reason_id', '!=', None)])
+            domains.append([('active', '=', False), ('refuse_reason_id', '!=', None)])
         if 'hired' in value:
             domains.append([('active', '=', True), ('date_closed', '!=', False)])
         if 'archived' in value or False in value:
@@ -574,17 +560,17 @@ class HrApplicant(models.Model):
         stage_ids = stages.sudo()._search(search_domain, order=stages._order)
         return stages.browse(stage_ids)
 
-    @api.depends('job_id', 'department_id')
+    @api.depends('job_id', 'department_id', 'job_id.company_id')
     def _compute_company(self):
         for applicant in self:
             company_id = False
-            if applicant.department_id:
+            if applicant.department_id.company_id == applicant.job_id.company_id:
                 company_id = applicant.department_id.company_id.id
             if not company_id and applicant.job_id:
                 company_id = applicant.job_id.company_id.id
             applicant.company_id = company_id or self.env.company.id
 
-    @api.depends('job_id')
+    @api.depends('job_id', 'job_id.department_id')
     def _compute_department(self):
         for applicant in self:
             applicant.department_id = applicant.job_id.department_id.id
@@ -721,6 +707,11 @@ class HrApplicant(models.Model):
                         model_description="Applicant",
                     )
         return res
+
+    def copy(self, default=None):
+        if self.filtered("is_pool_applicant"):
+            raise UserError(self.env._("You cannot duplicate the talent(s)."))
+        return super().copy(default=default)
 
     @api.model
     def get_empty_list_help(self, help_message):

@@ -3,13 +3,14 @@
 # * ai
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Larissa Manderfeld (lman)" <lman@odoo.com>, 2025.
+# "Larissa Manderfeld (lman)" <lman@odoo.com>, 2025, 2026.
+# Anja Funk <anja.funk@vertrauenbauen.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:41+0000\n"
-"PO-Revision-Date: 2025-11-28 16:16+0000\n"
+"POT-Creation-Date: 2026-09-25 17:44+0000\n"
+"PO-Revision-Date: 2026-10-09 06:33+0000\n"
 "Last-Translator: \"Larissa Manderfeld (lman)\" <lman@odoo.com>\n"
 "Language-Team: German <https://translate.odoo.com/projects/odoo-19/ai/de/>\n"
 "Language: de\n"
@@ -17,41 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14.3\n"
-
-#. module: ai
-#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_read_group
-msgid ""
-"\n"
-"            **Tool Name: Read group**\n"
-"\n"
-"            Searches a particular model using a domain. The provided domain "
-"must be in valid JSON format.\n"
-"        "
-msgstr ""
-"\n"
-"            **Tool-Name: Gruppe lesen**\n"
-"\n"
-"            Sucht ein bestimmtes Modell mittels einer Domain. Die angegebene "
-"Domain muss in einem gültigen JSON-Format sein.\n"
-"        "
-
-#. module: ai
-#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_search
-msgid ""
-"\n"
-"            **Tool Name: search**\n"
-"\n"
-"            Searches a particular model using a domain. The provided domain "
-"must be in valid JSON format.\n"
-"        "
-msgstr ""
-"\n"
-"            **Tool-Name: suchen**\n"
-"\n"
-"            Sucht ein bestimmtes Modell mittels einer Domain. Die angegebene "
-"Domain muss in einem gültigen JSON-Format sein.\n"
-"        "
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: ai
 #: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_get_fields
@@ -449,6 +416,20 @@ msgstr ""
 "        "
 
 #. module: ai
+#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_read_group
+#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_search
+msgid ""
+"\n"
+"            Searches a particular model using a domain. The provided domain "
+"must be in valid JSON format.\n"
+"        "
+msgstr ""
+"\n"
+"            Sucht anhand einer Domain nach einem bestimmten Modell. Die "
+"angegebene Domain muss im gültigen JSON-Format vorliegen.\n"
+"        "
+
+#. module: ai
 #: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_adjust_search
 msgid ""
 "\n"
@@ -546,6 +527,12 @@ msgstr ""
 #: code:addons/ai/models/ai_agent.py:0 code:addons/ai/models/ai_composer.py:0
 msgid "%s (copy)"
 msgstr "%s (Kopie)"
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/llm_providers.py:0
+msgid "%s is no longer available. Please select a newer model."
+msgstr "%s ist nicht mehr verfügbar. Wählen Sie ein neueres Modell aus."
 
 #. module: ai
 #: model_terms:ir.ui.view,arch_db:ai.ai_log_action
@@ -862,12 +849,6 @@ msgid "An error occured"
 msgstr "Es ist ein Fehler aufgetreten"
 
 #. module: ai
-#. odoo-javascript
-#: code:addons/ai/static/src/discuss/core/common/thread_model_patch.js:0
-msgid "An error occurred while generating the AI response."
-msgstr "Beim Generieren der KI-Antwort ist ein Fehler aufgetreten."
-
-#. module: ai
 #: model:ir.model.fields.selection,name:ai.selection__ai_agent__response_style__analytical
 msgid "Analytical"
 msgstr "Analytisch"
@@ -999,7 +980,7 @@ msgstr ""
 #. module: ai
 #: model:ir.model,website_form_label:ai.model_res_partner
 msgid "Create a Customer"
-msgstr "Kunden erstellen"
+msgstr "Kunde erstellen"
 
 #. module: ai
 #: model:ir.model,name:ai.model_ai_topic
@@ -1042,6 +1023,11 @@ msgstr ""
 "Anpassen Sie den Text an, um Relevanz und Formatierung zu kontrollieren."
 
 #. module: ai
+#: model:ir.model.fields,field_description:ai.field_ai_agent__deprecated_model_replacement_hint
+msgid "Deprecated Model Replacement Hint"
+msgstr "Hinweis zum Ersatz veralteter Modelle"
+
+#. module: ai
 #. odoo-javascript
 #: code:addons/ai/static/src/ai_json_schema/ai_json_schema.xml:0
 #: model:ir.model.fields,field_description:ai.field_ai_agent__subtitle
@@ -1080,6 +1066,7 @@ msgstr "Diskussionskanal"
 #: model:ir.model.fields,field_description:ai.field_ir_actions_server__display_name
 #: model:ir.model.fields,field_description:ai.field_ir_attachment__display_name
 #: model:ir.model.fields,field_description:ai.field_ir_http__display_name
+#: model:ir.model.fields,field_description:ai.field_ir_model_fields__display_name
 #: model:ir.model.fields,field_description:ai.field_mail_composer_mixin__display_name
 #: model:ir.model.fields,field_description:ai.field_mail_render_mixin__display_name
 #: model:ir.model.fields,field_description:ai.field_mail_template__display_name
@@ -1157,9 +1144,15 @@ msgstr "Fehlgeschlagen"
 
 #. module: ai
 #. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "Failed to fetch URL: %s"
+msgstr "URL konnte nicht abgerufen werden: %s"
+
+#. module: ai
+#. odoo-python
 #: code:addons/ai/models/ai_agent_source.py:0
 msgid "Failed to fetch the content of the source."
-msgstr ""
+msgstr "Der Inhalt der Quelle konnte nicht abgerufen werden."
 
 #. module: ai
 #. odoo-python
@@ -1175,6 +1168,16 @@ msgid "Field Selector"
 msgstr "Feldauswähler"
 
 #. module: ai
+#: model:ir.model.fields,field_description:ai.field_ir_model_fields__ttype
+msgid "Field Type"
+msgstr "Feldtyp"
+
+#. module: ai
+#: model:ir.model,name:ai.model_ir_model_fields
+msgid "Fields"
+msgstr "Felder"
+
+#. module: ai
 #: model:ir.model.fields.selection,name:ai.selection__ai_agent_source__type__binary
 msgid "File"
 msgstr "Datei"
@@ -1183,6 +1186,15 @@ msgstr "Datei"
 #: model:ir.model.fields,field_description:ai.field_ai_agent_source__file_size
 msgid "File Size"
 msgstr "Dateigröße"
+
+#. module: ai
+#: model:ir.model.fields,help:ai.field_ai_agent__response_style
+msgid ""
+"For thinking models (e.g. gpt-5): Analytical: Medium thinking, Balanced: Low "
+"thinking, Creative: Minimal thinking"
+msgstr ""
+"Für Denkmodelle (z. B. gpt-5): Analytisch: Mittleres Denkvermögen, "
+"Ausgeglichen: Geringes Denkvermögen, Kreativ: Minimales Denkvermögen"
 
 #. module: ai
 #. odoo-javascript
@@ -1196,7 +1208,7 @@ msgid "Get help on a record"
 msgstr "Hilfe bei einem Datensatz erhalten"
 
 #. module: ai
-#: model:ir.model.fields.selection,name:ai.selection__ai_embedding__embedding_model__gemini-embedding-001
+#: model:ir.model.fields.selection,name:ai.selection__ai_embedding__embedding_model__gemini-embedding-2
 msgid "Google"
 msgstr "Google"
 
@@ -1219,7 +1231,7 @@ msgstr "Ist die Einbettungsgenerierung fehlgeschlagen"
 #. odoo-javascript
 #: code:addons/ai/static/src/discuss/thread_patch.js:0
 msgid "Hello, what can I help you with?"
-msgstr "Hallo, wie kann ich Ihnen helfen?"
+msgstr "Guten Tag, wie kann ich Ihnen helfen?"
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ai_agent__id
@@ -1232,6 +1244,7 @@ msgstr "Hallo, wie kann ich Ihnen helfen?"
 #: model:ir.model.fields,field_description:ai.field_ir_actions_server__id
 #: model:ir.model.fields,field_description:ai.field_ir_attachment__id
 #: model:ir.model.fields,field_description:ai.field_ir_http__id
+#: model:ir.model.fields,field_description:ai.field_ir_model_fields__id
 #: model:ir.model.fields,field_description:ai.field_mail_composer_mixin__id
 #: model:ir.model.fields,field_description:ai.field_mail_render_mixin__id
 #: model:ir.model.fields,field_description:ai.field_mail_template__id
@@ -1453,6 +1466,12 @@ msgstr ""
 
 #. module: ai
 #. odoo-python
+#: code:addons/ai/utils/llm_providers.py:0
+msgid "No embedding configuration found for the provider"
+msgstr "Keine Einbettungskonfiguration für den Anbieter gefunden"
+
+#. module: ai
+#. odoo-python
 #: code:addons/ai/models/ai_agent.py:0
 msgid "No embedding model found for the selected provider"
 msgstr "Für den ausgewählten Anbieter wurde kein Einbettungsmodell gefunden."
@@ -1508,6 +1527,20 @@ msgstr "Online"
 #: code:addons/ai/models/ai_agent_source.py:0
 msgid "Only administrators can create sources from URLs."
 msgstr "Nur Administratoren können Quellen aus URL erstellen."
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/llm_api_service.py:0
+msgid "Oops! Your API key seems incorrect. Update it from the Settings."
+msgstr ""
+"Hoppla! Ihr API-Schlüssel scheint nicht korrekt zu sein. Aktualisieren Sie "
+"ihn in den Einstellungen."
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/models/ai_agent.py:0
+msgid "Oops, it looks like our AI is unreachable"
+msgstr "Hoppla, unsere KI scheint nicht erreichbar zu sein"
 
 #. module: ai
 #: model:ir.model.fields.selection,name:ai.selection__ai_embedding__embedding_model__text-embedding-3-small
@@ -1804,6 +1837,12 @@ msgstr "Die Aufforderung, die an die KI gesendet wird, wenn man darauf klickt"
 
 #. module: ai
 #. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "The site's rules (robots.txt) prevent reading this page."
+msgstr "Die Regeln der Website (robots.txt) verhindern das Lesen dieser Seite."
+
+#. module: ai
+#. odoo-python
 #: code:addons/ai/utils/tools_schema/validators.py:0
 msgid ""
 "The type of the parameter '%(name)s' is incorrect. It should be '%"
@@ -1926,7 +1965,7 @@ msgid ""
 "actions\n"
 msgstr ""
 "Art der Serveraktion. Die folgenden Werte sind verfügbar:\n"
-"- „Einen Datensatz aktualieren“: Aktualisieren Sie die Werte eines "
+"- „Einen Datensatz aktualisieren“: Aktualisieren Sie die Werte eines "
 "Datensatzes.\n"
 "- „Aktivität erstellen“: Erstellen Sie eine Aktivität (Dialog)\n"
 "- „E-Mail versenden“: Hinterlassen Sie eine Nachricht, oder Notiz oder "
@@ -1948,6 +1987,18 @@ msgstr ""
 #: model:ir.model.fields.selection,name:ai.selection__ai_agent_source__type__url
 msgid "URL"
 msgstr "URL"
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "URL %(url)s returned non-HTML content: %(content_type)s"
+msgstr "Die URL %(url)s hat keinen HTML-Inhalt zurückgegeben: %(content_type)s"
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "URL %s returned empty content"
+msgstr "URL %s hat leeren Inhalt zurückgegeben"
 
 #. module: ai
 #. odoo-javascript
@@ -2011,6 +2062,13 @@ msgstr "Benutzerfehler"
 #: code:addons/ai/static/src/im_status_patch.xml:0
 msgid "User is online"
 msgstr "Benutzer ist online"
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/models/ai_agent.py:0
+msgid "Using %(llm_model_label)s based on your agent setup."
+msgstr ""
+"%(llm_model_label)s wird entsprechend Ihrer Agentenkonfiguration verwendet."
 
 #. module: ai
 #. odoo-javascript
@@ -2085,6 +2143,44 @@ msgstr "ausgeführt."
 #: code:addons/ai/static/src/ai_prompt/ai_field_selector_plugin.js:0
 msgid "fa-hashtag"
 msgstr "fa-hashtag"
+
+#. module: ai
+#: model:ir.model.fields.selection,name:ai.selection__ir_model_fields__ttype__vector
+msgid "vector"
+msgstr "Vektor"
+
+#~ msgid ""
+#~ "\n"
+#~ "            **Tool Name: Read group**\n"
+#~ "\n"
+#~ "            Searches a particular model using a domain. The provided "
+#~ "domain must be in valid JSON format.\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "            **Tool-Name: Gruppe lesen**\n"
+#~ "\n"
+#~ "            Sucht ein bestimmtes Modell mittels einer Domain. Die "
+#~ "angegebene Domain muss in einem gültigen JSON-Format sein.\n"
+#~ "        "
+
+#~ msgid ""
+#~ "\n"
+#~ "            **Tool Name: search**\n"
+#~ "\n"
+#~ "            Searches a particular model using a domain. The provided "
+#~ "domain must be in valid JSON format.\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ "            **Tool-Name: suchen**\n"
+#~ "\n"
+#~ "            Sucht ein bestimmtes Modell mittels einer Domain. Die "
+#~ "angegebene Domain muss in einem gültigen JSON-Format sein.\n"
+#~ "        "
+
+#~ msgid "An error occurred while generating the AI response."
+#~ msgstr "Beim Generieren der KI-Antwort ist ein Fehler aufgetreten."
 
 #~ msgid "URL content cannot be extracted."
 #~ msgstr "Der Inhalt der URL kann nicht extrahiert werden."

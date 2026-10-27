@@ -1,4 +1,5 @@
 import { _t } from "@web/core/l10n/translation";
+import { sortBy } from "@web/core/utils/arrays";
 
 import { Plugin } from "@html_editor/plugin";
 import { closestElement } from "@html_editor/utils/dom_traversal";
@@ -9,8 +10,19 @@ import { isHtmlContentSupported } from "@html_editor/core/selection_plugin";
 
 import { StudioDynamicPlaceholderPopover } from "./studio_dynamic_placeholder_popover";
 import { visitNode } from "../../utils";
-import { QWebPlugin, TablePlugin, ToolbarPlugin } from "./editor_plugins";
+import { ColorUIPlugin, QWebPlugin, TablePlugin, ToolbarPlugin } from "./editor_plugins";
 import { QWebTablePlugin } from "./qweb_table_plugin";
+
+/**
+ * @typedef {Object} QwebVariableInfo
+ * @property {string} model - The technical model name (e.g. "res.partner").
+ * @property {string} name - The human-readable model name.
+ * @property {boolean} in_foreach - Whether the variable appears inside a `t-foreach`.
+ */
+
+/**
+ * @typedef {Record<string, QwebVariableInfo>} AvailableQwebVariables
+ */
 
 export class ReportEditorPlugin extends Plugin {
     static id = "report_editor_main";
@@ -69,10 +81,13 @@ export class ReportEditorPlugin extends Plugin {
                 commandId: "insertDynamicTable",
             }),
         ],
+        selection_placeholder_container_predicates:
+            this.selection_placeholder_container_predicates.bind(this),
     };
 
     CUSTOM_BRANDING_ATTR = [
         "ws-view-id",
+        "ws-view-name",
         "ws-call-key",
         "ws-call-group-key",
         "ws-real-children",
@@ -88,17 +103,52 @@ export class ReportEditorPlugin extends Plugin {
                 className: "bg-light",
             }
         );
+        this.protectedCracksParents = this.getProtectedLayoutCracksParents();
+    }
+
+    getProtectedLayoutCracksParents() {
+        const parents = new Map();
+        for (const el of this.editable.querySelectorAll(".header,.article,.footer")) {
+            parents.set(el.parentElement, true);
+        }
+        return parents;
+    }
+
+    selection_placeholder_container_predicates(container) {
+        if (this.protectedCracksParents.has(container)) {
+            return false;
+        }
+        if (["header", "footer"].some((cls) => container.classList.contains(cls))) {
+            return true;
+        }
+        if (container.classList.contains("article")) {
+            const viewNode = container.closest("[ws-view-id]");
+            const viewName =
+                viewNode?.getAttribute("t-name") || viewNode?.getAttribute("ws-view-name");
+            if (viewName && viewName.startsWith("web.")) {
+                return false;
+            }
+        }
     }
 
     isInsertAvailable(selection) {
         if (!isHtmlContentSupported(selection)) {
             return;
         }
-        const { anchorNode } = selection;
-        const { availableQwebVariables } = this.getQwebVariables(
-            anchorNode.nodeType === 1 ? anchorNode : anchorNode.parentElement
+        const { availableQwebVariables, initialQwebVar, isEditingFooterHeader } =
+            this.getQwebVariables(this.getPopoverAnchor(selection));
+
+        return !!this.getDefaultVariable(
+            initialQwebVar,
+            availableQwebVariables,
+            isEditingFooterHeader
         );
-        return Object.keys(availableQwebVariables || {}).length > 0;
+    }
+
+    getPopoverAnchor(selection) {
+        selection ||= this.dependencies.selection.getEditableSelection();
+        const { anchorNode } = selection;
+        return anchorNode.nodeType === Node.ELEMENT_NODE ? anchorNode : anchorNode.parentElement;
     }
 
     getTargetedTField() {
@@ -126,7 +176,7 @@ export class ReportEditorPlugin extends Plugin {
         const {
             availableQwebVariables,
             initialQwebVar: defaultQwebVar,
-            isInHeaderFooter,
+            isEditingFooterHeader,
         } = this.getQwebVariables(popoverAnchor);
 
         let initialPath = popoverAnchor.getAttribute("t-field").split(".");
@@ -135,7 +185,11 @@ export class ReportEditorPlugin extends Plugin {
         let resModel = availableQwebVariables[initialQwebVar]?.model;
         if (!resModel) {
             resModel = this.config.reportResModel;
-            initialQwebVar = defaultQwebVar;
+            initialQwebVar = this.getDefaultVariable(
+                defaultQwebVar,
+                availableQwebVariables,
+                isEditingFooterHeader
+            );
             initialPath = false;
         }
 
@@ -150,7 +204,6 @@ export class ReportEditorPlugin extends Plugin {
                 close: () => this.fieldPopover.close(),
                 availableQwebVariables,
                 initialQwebVar,
-                isEditingFooterHeader: !!isInHeaderFooter,
                 resModel,
                 initialPath,
                 initialLabelValue,
@@ -210,17 +263,21 @@ export class ReportEditorPlugin extends Plugin {
         });
     }
 
+    /**
+     * @param {HTMLElement} element
+     * @return {{isEditingFooterHeader: boolean, availableQwebVariables: AvailableQwebVariables, initialQwebVar: string} | {}}
+     */
     getQwebVariables(element) {
         if (!element) {
             return {};
         }
         const nodeOeContext = element.closest("[oe-context]");
         let availableQwebVariables =
-            nodeOeContext && JSON.parse(nodeOeContext.getAttribute("oe-context"));
+            (nodeOeContext && JSON.parse(nodeOeContext.getAttribute("oe-context"))) || {};
 
-        const isInHeaderFooter = closestElement(element, ".header,.footer");
+        const isEditingFooterHeader = !!closestElement(element, ".header,.footer");
         let initialQwebVar;
-        if (isInHeaderFooter) {
+        if (isEditingFooterHeader) {
             const companyVars = Object.entries(availableQwebVariables).filter(
                 ([k, v]) => v.model === "res.company"
             );
@@ -230,10 +287,74 @@ export class ReportEditorPlugin extends Plugin {
             initialQwebVar = this.getOrderedTAs(element)[0] || "";
         }
         return {
-            isInHeaderFooter,
+            isEditingFooterHeader,
             availableQwebVariables,
             initialQwebVar,
         };
+    }
+
+    /**
+     * @param {AvailableQwebVariables} availableQwebVariables
+     * @param {boolean} isEditingFooterHeader
+     * @param {string} resModel
+     * @return {{label: string, value: string}[]}
+     */
+    sortedVariables(availableQwebVariables, isEditingFooterHeader, resModel) {
+        const entries = Object.entries(availableQwebVariables).filter(
+            ([k, v]) => v.in_foreach && !isEditingFooterHeader
+        );
+        const sortFn = ([k, v]) => {
+            let score = 0;
+            if (k === "doc") {
+                score += 2;
+            }
+            if (k === "docs") {
+                score -= 2;
+            }
+            if (k === "o") {
+                score++;
+            }
+            if (v.model === resModel) {
+                score++;
+            }
+            return score;
+        };
+
+        const mapFn = ([k, v]) => ({
+            value: k,
+            label: `${k} (${v.name})`,
+        });
+        return sortBy(entries, sortFn, "desc").map((e) => mapFn(e));
+    }
+
+    /**
+     * @param {string} [initialQwebVar]
+     * @param {AvailableQwebVariables} availableQwebVariables
+     * @param {boolean} isEditingFooterHeader
+     * @return {string|undefined}
+     */
+    getDefaultVariable(initialQwebVar, availableQwebVariables, isEditingFooterHeader) {
+        if (initialQwebVar && initialQwebVar in availableQwebVariables) {
+            return initialQwebVar;
+        }
+        if (isEditingFooterHeader) {
+            const companyVar = Object.entries(availableQwebVariables).find(
+                ([k, v]) => v.model === "res.company"
+            );
+            return companyVar && companyVar[0];
+        }
+        const resModel = this.config.reportResModel;
+        const sortedVariables = this.sortedVariables(
+            availableQwebVariables,
+            isEditingFooterHeader,
+            resModel
+        );
+
+        let defaultVar = sortedVariables.find((v) => ["doc", "o"].includes(v.value));
+        defaultVar ??= sortedVariables.find(
+            (v) => availableQwebVariables[v.value].model === resModel
+        );
+        return defaultVar && defaultVar.value;
     }
 
     getOrderedTAs(node) {
@@ -361,19 +482,20 @@ export class ReportEditorPlugin extends Plugin {
 
     getFieldPopoverParams() {
         const resModel = this.config.reportResModel;
-
-        const { anchorNode } = this.dependencies.selection.getEditableSelection();
-        const popoverAnchor = anchorNode.nodeType === 1 ? anchorNode : anchorNode.parentElement;
-        const { availableQwebVariables, initialQwebVar, isInHeaderFooter } =
+        const popoverAnchor = this.getPopoverAnchor();
+        const { availableQwebVariables, initialQwebVar, isEditingFooterHeader } =
             this.getQwebVariables(popoverAnchor);
-
+        const defaultVariable = this.getDefaultVariable(
+            initialQwebVar,
+            availableQwebVariables,
+            isEditingFooterHeader
+        );
         return {
             popoverAnchor,
             props: {
                 close: () => this.fieldPopover.close(),
                 availableQwebVariables,
-                initialQwebVar,
-                isEditingFooterHeader: !!isInHeaderFooter,
+                initialQwebVar: defaultVariable,
                 resModel,
             },
         };
@@ -436,13 +558,17 @@ export class ReportEditorPlugin extends Plugin {
     }
 }
 
-const REPORT_EDITOR_PLUGINS_MAP = Object.fromEntries(MAIN_PLUGINS.map((cls) => [cls.id, cls]));
+const EXCLUDED_PLUGIN_IDS = new Set(["powerButtons"]);
+const REPORT_EDITOR_PLUGINS_MAP = Object.fromEntries(
+    MAIN_PLUGINS.filter((cls) => !EXCLUDED_PLUGIN_IDS.has(cls.id)).map((cls) => [cls.id, cls])
+);
 Object.assign(REPORT_EDITOR_PLUGINS_MAP, {
     [QWebPlugin.id]: QWebPlugin,
     [QWebTablePlugin.id]: QWebTablePlugin,
     [TablePlugin.id]: TablePlugin,
     [ToolbarPlugin.id]: ToolbarPlugin,
     [ReportEditorPlugin.id]: ReportEditorPlugin,
+    [ColorUIPlugin.id]: ColorUIPlugin,
 });
 
 export function getReportEditorPlugins() {

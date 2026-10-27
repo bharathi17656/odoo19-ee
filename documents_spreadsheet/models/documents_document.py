@@ -162,6 +162,7 @@ class DocumentsDocument(models.Model):
             'handler': sudo_self.handler,
             'access_url': sudo_self.access_url,
             'is_favorited': sudo_self.is_favorited,
+            'is_archived': sudo_self.active is False,
             'folder_id': sudo_self.folder_id.id,
             'copy_in_my_drive': self._cannot_create_sibling(),
         }
@@ -193,6 +194,9 @@ class DocumentsDocument(models.Model):
         spreadsheet_docs = self.filtered(lambda rec: rec.handler in ("spreadsheet", "frozen_spreadsheet"))
         spreadsheet_docs.file_extension = False
         super(DocumentsDocument, self - spreadsheet_docs)._compute_file_extension()
+
+    def _has_versioning(self):
+        return super()._has_versioning() and self.handler not in ("spreadsheet", "frozen_spreadsheet")
 
     @api.depends("attachment_id", "handler")
     def _compute_spreadsheet_data(self):
@@ -343,6 +347,14 @@ class DocumentsDocument(models.Model):
             for acc in self.access_ids.filtered("role")
         ]
 
+        # Keep the linked record: copy() does not include these computed fields.
+        linked_record_values = {}
+        if self.res_model and self.res_id:
+            linked_record_values = {
+                "res_model": self.res_model,
+                "res_id": self.res_id,
+            }
+
         doc = self.copy({
             "access_ids": access_ids,
             "attachment_id": False,
@@ -350,6 +362,7 @@ class DocumentsDocument(models.Model):
             "mimetype": "application/o-spreadsheet",
             "name": self.name.removesuffix(".xlsx"),
             "spreadsheet_data": json.dumps(unzipped),
+            **linked_record_values,
         })
 
         for attachment in attachments:
@@ -361,12 +374,21 @@ class DocumentsDocument(models.Model):
         csv_data = self._read_csv()
         spreadsheet_data = self._convert_csv_to_spreadsheet_data(csv_data)
 
+        # Keep the linked record: copy() does not include these computed fields.
+        linked_record_values = {}
+        if self.res_model and self.res_id:
+            linked_record_values = {
+                "res_model": self.res_model,
+                "res_id": self.res_id,
+            }
+
         doc = self.copy({
             'attachment_id': False,
             'handler': 'spreadsheet',
             'mimetype': 'application/o-spreadsheet',
             'name': self.name.removesuffix('.csv'),
             'spreadsheet_data': json.dumps(spreadsheet_data),
+            **linked_record_values,
         })
 
         return doc.id
@@ -584,3 +606,13 @@ class DocumentsDocument(models.Model):
             })
             attachments.append(attachment)
         return [a._get_media_info() for a in attachments]
+
+    def _get_spreadsheet_data_hash(self):
+        """The spreadsheet data is stored in the document's own attachment,
+        not in a `spreadsheet_binary_data` one. `checksum` is already related
+        to `attachment_id.checksum`, so no content is loaded.
+        """
+        self.ensure_one()
+        if self.handler != "spreadsheet":
+            return False
+        return self.sudo().checksum or False

@@ -130,6 +130,35 @@ function patchReportEditorModelForSilentSave() {
     };
 }
 
+registry
+    .category("web_tour.tours")
+    .add("web_studio.test_disable_fields_commands_when_unavailable", {
+        steps: () => [
+            {
+                trigger:
+                    ".o-web-studio-report-editor-wysiwyg :iframe .odoo-editor-editable p.some_p",
+                async run(helpers) {
+                    const el = this.anchor;
+                    openEditorPowerBox(el);
+                },
+            },
+            {
+                trigger: ".o-we-powerbox .o-we-command-name",
+                run: (target) => {
+                    const commands = Array.from(
+                        document.querySelectorAll(".o-we-command-name")
+                    ).map((e) => e.textContent);
+
+                    if (commands.includes("Field") || commands.includes("Dynamic Table")) {
+                        throw new Error(
+                            "`Field`|`Dynamic Table` shouldn't be present when we don't have a record"
+                        );
+                    }
+                },
+            },
+        ],
+    });
+
 let silentPatch;
 registry.category("web_tour.tours").add("web_studio.test_basic_report_edition", {
     steps: () => [
@@ -408,6 +437,33 @@ registry.category("web_tour.tours").add("web_studio.test_report_reset_archs", {
         {
             trigger:
                 ".o-web-studio-report-editor-wysiwyg :iframe .odoo-editor-editable p:eq(1):contains(from file)",
+        },
+    ],
+});
+
+registry.category("web_tour.tours").add("web_studio.test_report_reset_archs_in_preview", {
+    steps: () => [
+        {
+            trigger: ".o-web-studio-report-editor-wysiwyg input[name='preview_mode']",
+            run: "click",
+        },
+        {
+            // only rendered once the preview is loaded
+            trigger: ".o-web-studio-report-editor-wysiwyg button[name='report_print_preview']",
+        },
+        {
+            trigger: ".o_web_studio_sidebar button[name='report_reset_archs']",
+            run: "click",
+        },
+        {
+            trigger: ".modal-footer button.btn-danger:contains(Reset report)",
+            run: "click",
+        },
+        {
+            trigger: ".o-web-studio-report-editor-wysiwyg button[name='report_print_preview']",
+        },
+        {
+            trigger: ".o-web-studio-report-container :iframe body:contains(from file)",
         },
     ],
 });

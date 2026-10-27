@@ -18,4 +18,12 @@ patch(ProductConfiguratorDialog.prototype, {
         }
         return params;
     },
+
+    _getAdditionalDialogProps() {
+        const props = super._getAdditionalDialogProps();
+        if (this.props.plan_id) {
+            props.plan_id = this.props.plan_id;
+        }
+        return props;
+    },
 });

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:50+0000\n"
+"POT-Creation-Date: 2026-05-15 17:46+0000\n"
 "PO-Revision-Date: 2025-10-08 18:50+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -22,7 +22,8 @@ msgstr ""
 #: code:addons/website_sale_renting/models/sale_order.py:0
 msgid ""
 "\n"
-"                Your rental duration was too short. Unfortunately, we do not process\n"
+"                Your rental duration was too short. Unfortunately, we do not "
+"process\n"
 "                rentals that last less than %(duration)s %(unit)s.\n"
 "            "
 msgstr ""
@@ -32,7 +33,8 @@ msgstr ""
 #: code:addons/website_sale_renting/models/sale_order.py:0
 msgid ""
 "\n"
-"                Your rental product had invalid date of pickup (%(start_date)s).\n"
+"                Your rental product had invalid date of pickup (%"
+"(start_date)s).\n"
 "                Unfortunately, we do not process pickups on that weekday.\n"
 "            "
 msgstr ""
@@ -42,7 +44,8 @@ msgstr ""
 #: code:addons/website_sale_renting/models/sale_order.py:0
 msgid ""
 "\n"
-"                Your rental product had invalid date of return (%(end_date)s).\n"
+"                Your rental product had invalid date of return (%"
+"(end_date)s).\n"
 "                Unfortunately, we do not process returns on that weekday.\n"
 "            "
 msgstr ""
@@ -52,8 +55,10 @@ msgstr ""
 #: code:addons/website_sale_renting/models/sale_order.py:0
 msgid ""
 "\n"
-"                Your rental product had invalid dates of pickup (%(start_date)s) and\n"
-"                return (%(end_date)s). Unfortunately, we do not process pickups nor\n"
+"                Your rental product had invalid dates of pickup (%"
+"(start_date)s) and\n"
+"                return (%(end_date)s). Unfortunately, we do not process "
+"pickups nor\n"
 "                returns on those weekdays.\n"
 "            "
 msgstr ""
@@ -63,8 +68,10 @@ msgstr ""
 #: code:addons/website_sale_renting/models/sale_order.py:0
 msgid ""
 "\n"
-"            Some of your rental products (%(product)s) cannot be rented during the\n"
-"            selected period and your cart must be updated. We're sorry for the\n"
+"            Some of your rental products (%(product)s) cannot be rented "
+"during the\n"
+"            selected period and your cart must be updated. We're sorry for "
+"the\n"
 "            inconvenience.\n"
 "        "
 msgstr ""
@@ -91,6 +98,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
 msgid "(%s weeks)."
+msgstr ""
+
+#. module: website_sale_renting
+#. odoo-javascript
+#: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
+msgid "- From %(startPeriod)s to %(endPeriod)s.\n"
 msgstr ""
 
 #. module: website_sale_renting
@@ -220,6 +233,7 @@ msgstr ""
 
 #. module: website_sale_renting
 #: model:ir.model.fields,field_description:website_sale_renting.field_product_pricelist__display_name
+#: model:ir.model.fields,field_description:website_sale_renting.field_product_pricing__display_name
 #: model:ir.model.fields,field_description:website_sale_renting.field_product_product__display_name
 #: model:ir.model.fields,field_description:website_sale_renting.field_product_template__display_name
 #: model:ir.model.fields,field_description:website_sale_renting.field_res_company__display_name
@@ -267,6 +281,7 @@ msgstr ""
 
 #. module: website_sale_renting
 #: model:ir.model.fields,field_description:website_sale_renting.field_product_pricelist__id
+#: model:ir.model.fields,field_description:website_sale_renting.field_product_pricing__id
 #: model:ir.model.fields,field_description:website_sale_renting.field_product_product__id
 #: model:ir.model.fields,field_description:website_sale_renting.field_product_template__id
 #: model:ir.model.fields,field_description:website_sale_renting.field_res_company__id
@@ -312,6 +327,12 @@ msgstr ""
 
 #. module: website_sale_renting
 #. odoo-python
+#: code:addons/website_sale_renting/models/sale_order.py:0
+msgid "No dates were specified on your rental order."
+msgstr ""
+
+#. module: website_sale_renting
+#. odoo-python
 #: code:addons/website_sale_renting/models/product_template.py:0
 msgid "Please choose a return date that is after the pickup date."
 msgstr ""
@@ -325,6 +346,11 @@ msgstr ""
 #. module: website_sale_renting
 #: model:ir.model,name:website_sale_renting.model_product_pricelist
 msgid "Pricelist"
+msgstr ""
+
+#. module: website_sale_renting
+#: model:ir.model,name:website_sale_renting.model_product_pricing
+msgid "Pricing rule of rental products"
 msgstr ""
 
 #. module: website_sale_renting
@@ -394,8 +420,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/website_sale_renting/models/sale_order.py:0
 msgid ""
-"Some of your rental products cannot be rented during the selected period and"
-" your cart must be updated. We're sorry for the inconvenience."
+"Some of your rental products cannot be rented during the selected period and "
+"your cart must be updated. We're sorry for the inconvenience."
 msgstr ""
 
 #. module: website_sale_renting
@@ -437,6 +463,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
 msgid "The pickup date cannot be in the past."
+msgstr ""
+
+#. module: website_sale_renting
+#. odoo-javascript
+#: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
+msgid "The product is not available for the following time period(s):\n"
 msgstr ""
 
 #. module: website_sale_renting

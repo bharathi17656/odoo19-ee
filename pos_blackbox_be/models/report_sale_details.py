@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models, api
+from odoo.fields import Domain
 
 
 class ReportPoint_Of_SaleReport_Saledetails(models.AbstractModel):
@@ -32,11 +33,12 @@ class ReportPoint_Of_SaleReport_Saledetails(models.AbstractModel):
 
         if len(sessions) == 1:
             session = sessions[0]
-            if session.config_id.certified_blackbox_identifier:
-                data = self._set_default_belgian_taxes_if_empty(data, "taxes")
-                data = self._set_default_belgian_taxes_if_empty(data, "refund_taxes")
+            if session.config_id._uses_blackbox_v1():
+                report = self.with_company(session.company_id)
+                data = report._set_default_belgian_taxes_if_empty(data, "taxes")
+                data = report._set_default_belgian_taxes_if_empty(data, "refund_taxes")
                 report_update = {
-                    "isBelgium": bool(session.config_id.certified_blackbox_identifier),
+                    "isBelgium": session.config_id._uses_blackbox_v1(),
                     "cashier_name": session.user_id.name,
                     "insz_or_bis_number": session.user_id.insz_or_bis_number,
                     "NS_number": len(
@@ -91,7 +93,7 @@ class ReportPoint_Of_SaleReport_Saledetails(models.AbstractModel):
 
     def _get_total_and_qty_per_category(self, categories):
         res_cat, res_total = super()._get_total_and_qty_per_category(categories)
-        if self.env.context.get('config_id') and self.env['pos.config'].browse(self.env.context.get('config_id')).certified_blackbox_identifier:
+        if self.env.context.get('config_id') and self.env['pos.config'].browse(self.env.context.get('config_id'))._uses_blackbox_v1():
             for cat in res_cat:
                 total_cat = 0
                 for product in cat['products']:
@@ -102,8 +104,12 @@ class ReportPoint_Of_SaleReport_Saledetails(models.AbstractModel):
         return res_cat, res_total
 
     def _set_default_belgian_taxes_if_empty(self, data, taxes_name):
+        company_domain = self.env['account.tax']._check_company_domain(self.env.company)
         for tax in data[taxes_name]:
-            tax_used = self.env['account.tax'].search([('name', '=', tax['name'])])
+            tax_used = self.env['account.tax'].search(Domain.AND([
+                company_domain,
+                Domain('name', '=', tax['name']),
+            ]), limit=1)
             tax['identification_letter'] = tax_used.tax_group_id.pos_receipt_label or 'D'
 
         letter_set = ['A', 'B', 'C', 'D']

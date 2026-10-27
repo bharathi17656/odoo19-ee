@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 20:07+0000\n"
-"PO-Revision-Date: 2025-11-13 20:07+0000\n"
+"POT-Creation-Date: 2026-10-23 18:07+0000\n"
+"PO-Revision-Date: 2026-10-23 18:07+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,26 +18,6 @@ msgstr ""
 #. module: l10n_mx_hr_payroll_account_edi
 #: model:ir.actions.report,print_report_name:l10n_mx_hr_payroll_account_edi.action_report_payslip_mx_cfdi
 msgid "'Payslip - %s' % (object.employee_id.name)"
-msgstr ""
-
-#. module: l10n_mx_hr_payroll_account_edi
-#: model:ir.model.fields.selection,name:l10n_mx_hr_payroll_account_edi.selection__hr_work_entry_type__l10n_mx_sat_code__01
-msgid "01"
-msgstr ""
-
-#. module: l10n_mx_hr_payroll_account_edi
-#: model:ir.model.fields.selection,name:l10n_mx_hr_payroll_account_edi.selection__hr_work_entry_type__l10n_mx_sat_code__02
-msgid "02"
-msgstr ""
-
-#. module: l10n_mx_hr_payroll_account_edi
-#: model:ir.model.fields.selection,name:l10n_mx_hr_payroll_account_edi.selection__hr_work_entry_type__l10n_mx_sat_code__03
-msgid "03"
-msgstr ""
-
-#. module: l10n_mx_hr_payroll_account_edi
-#: model:ir.model.fields.selection,name:l10n_mx_hr_payroll_account_edi.selection__hr_work_entry_type__l10n_mx_sat_code__04
-msgid "04"
 msgstr ""
 
 #. module: l10n_mx_hr_payroll_account_edi
@@ -176,14 +156,6 @@ msgstr ""
 #. module: l10n_mx_hr_payroll_account_edi
 #: model_terms:ir.ui.view,arch_db:l10n_mx_hr_payroll_account_edi.report_payslip_mx_cfdi
 msgid "<strong>Tipo de Régimen</strong>"
-msgstr ""
-
-#. module: l10n_mx_hr_payroll_account_edi
-#. odoo-python
-#: code:addons/l10n_mx_hr_payroll_account_edi/models/hr_payslip.py:0
-msgid ""
-"An error occurred while signing the CFDI document with the "
-"government:%(error)s"
 msgstr ""
 
 #. module: l10n_mx_hr_payroll_account_edi
@@ -384,11 +356,6 @@ msgid "Contract Type required on the employee"
 msgstr ""
 
 #. module: l10n_mx_hr_payroll_account_edi
-#: model_terms:ir.ui.view,arch_db:l10n_mx_hr_payroll_account_edi.l10n_mx_hr_payslip_view_form
-msgid "Create Draft Entry"
-msgstr ""
-
-#. module: l10n_mx_hr_payroll_account_edi
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_l10n_mx_concept__create_uid
 msgid "Created by"
 msgstr ""
@@ -437,6 +404,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_employee__display_name
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_payroll_structure__display_name
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_payslip__display_name
+#: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_payslip_run__display_name
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_salary_rule__display_name
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_version__display_name
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_work_entry_type__display_name
@@ -536,6 +504,9 @@ msgid "Force CFDI"
 msgstr ""
 
 #. module: l10n_mx_hr_payroll_account_edi
+#. odoo-javascript
+#: code:addons/l10n_mx_hr_payroll_account_edi/static/src/components/payrun_card/payrun_card.xml:0
+#: model_terms:ir.ui.view,arch_db:l10n_mx_hr_payroll_account_edi.l10n_mx_hr_payslip_run_view_kanban
 #: model_terms:ir.ui.view,arch_db:l10n_mx_hr_payroll_account_edi.l10n_mx_hr_payslip_view_form
 msgid "Generate CFDI"
 msgstr ""
@@ -559,6 +530,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_employee__id
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_payroll_structure__id
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_payslip__id
+#: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_payslip_run__id
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_salary_rule__id
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_version__id
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_work_entry_type__id
@@ -604,6 +576,16 @@ msgstr ""
 #. module: l10n_mx_hr_payroll_account_edi
 #: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_res_config_settings__is_company
 msgid "Is a Company"
+msgstr ""
+
+#. module: l10n_mx_hr_payroll_account_edi
+#: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_payslip_run__l10n_mx_cfdi_primary
+msgid "L10N Mx Cfdi Primary"
+msgstr ""
+
+#. module: l10n_mx_hr_payroll_account_edi
+#: model:ir.model.fields,field_description:l10n_mx_hr_payroll_account_edi.field_hr_payslip_run__l10n_mx_cfdi_secondary
+msgid "L10N Mx Cfdi Secondary"
 msgstr ""
 
 #. module: l10n_mx_hr_payroll_account_edi
@@ -773,6 +755,11 @@ msgid "Pago"
 msgstr ""
 
 #. module: l10n_mx_hr_payroll_account_edi
+#: model:ir.model,name:l10n_mx_hr_payroll_account_edi.model_hr_payslip_run
+msgid "Pay Run"
+msgstr ""
+
+#. module: l10n_mx_hr_payroll_account_edi
 #: model:ir.model,name:l10n_mx_hr_payroll_account_edi.model_hr_payslip
 msgid "Pay Slip"
 msgstr ""
@@ -793,6 +780,12 @@ msgid "Payslip"
 msgstr ""
 
 #. module: l10n_mx_hr_payroll_account_edi
+#. odoo-python
+#: code:addons/l10n_mx_hr_payroll_account_edi/models/hr_payslip.py:0
+msgid "Payslip(s)"
+msgstr ""
+
+#. module: l10n_mx_hr_payroll_account_edi
 #: model:ir.model.fields.selection,name:l10n_mx_hr_payroll_account_edi.selection__hr_version__l10n_mx_regime_type__04
 msgid "Pensioners"
 msgstr ""
@@ -805,6 +798,36 @@ msgstr ""
 #. module: l10n_mx_hr_payroll_account_edi
 #: model:ir.model.fields.selection,name:l10n_mx_hr_payroll_account_edi.selection__l10n_mx_concept__cfdi_type__perception
 msgid "Perception"
+msgstr ""
+
+#. module: l10n_mx_hr_payroll_account_edi
+#. odoo-python
+#: code:addons/l10n_mx_hr_payroll_account_edi/models/hr_payslip.py:0
+msgid ""
+"Perception '038' (Other Salary Income) cannot have a Tax-Exempt amount "
+"(ImporteExento). It must be completely recorded under Taxable Income "
+"(ImporteGravado)."
+msgstr ""
+
+#. module: l10n_mx_hr_payroll_account_edi
+#. odoo-python
+#: code:addons/l10n_mx_hr_payroll_account_edi/models/hr_payslip.py:0
+msgid ""
+"Perception '038' (Other Salary Income) must have a positive Taxable amount "
+"(ImporteGravado)."
+msgstr ""
+
+#. module: l10n_mx_hr_payroll_account_edi
+#. odoo-python
+#: code:addons/l10n_mx_hr_payroll_account_edi/models/hr_payslip.py:0
+msgid ""
+"Perception cannot have both Taxable (ImporteGravado) and Exempt "
+"(ImporteExento) amounts set to 0 simultaneously."
+msgstr ""
+
+#. module: l10n_mx_hr_payroll_account_edi
+#: model_terms:ir.ui.view,arch_db:l10n_mx_hr_payroll_account_edi.report_payslip_mx_cfdi
+msgid "Periodo"
 msgstr ""
 
 #. module: l10n_mx_hr_payroll_account_edi
@@ -1004,6 +1027,14 @@ msgstr ""
 
 #. module: l10n_mx_hr_payroll_account_edi
 #. odoo-python
+#: code:addons/l10n_mx_hr_payroll_account_edi/models/hr_payslip_run.py:0
+msgid ""
+"The CFDI document could not be signed for some payslips:\n"
+"%s"
+msgstr ""
+
+#. module: l10n_mx_hr_payroll_account_edi
+#. odoo-python
 #: code:addons/l10n_mx_hr_payroll_account_edi/models/hr_payslip.py:0
 msgid ""
 "The CFDI document was successfully created and signed by the government."
@@ -1013,6 +1044,13 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_mx_hr_payroll_account_edi/models/hr_employee.py:0
 msgid "The CURP must contain 18 characters."
+msgstr ""
+
+#. module: l10n_mx_hr_payroll_account_edi
+#. odoo-python
+#: code:addons/l10n_mx_hr_payroll_account_edi/models/hr_payslip.py:0
+msgid ""
+"The Employment Subsidy (SubsidioCausado) exceeds the maximum allowed limit"
 msgstr ""
 
 #. module: l10n_mx_hr_payroll_account_edi
@@ -1027,6 +1065,14 @@ msgstr ""
 msgid ""
 "The SAT does not provide information for the currency %s.\n"
 "You must get manually a key from the PAC to confirm the currency rate is accurate enough."
+msgstr ""
+
+#. module: l10n_mx_hr_payroll_account_edi
+#. odoo-python
+#: code:addons/l10n_mx_hr_payroll_account_edi/models/hr_payslip.py:0
+msgid ""
+"This employee exceeds the \"Salary Limit for Employment Subsidy\" - Validate"
+" Subsidy and ISR Adjustments"
 msgstr ""
 
 #. module: l10n_mx_hr_payroll_account_edi
@@ -1060,6 +1106,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_mx_hr_payroll_account_edi/models/hr_payslip.py:0
 msgid "VAT missing on the company"
+msgstr ""
+
+#. module: l10n_mx_hr_payroll_account_edi
+#: model_terms:ir.ui.view,arch_db:l10n_mx_hr_payroll_account_edi.l10n_mx_hr_payslip_view_form
+msgid "Validate"
 msgstr ""
 
 #. module: l10n_mx_hr_payroll_account_edi

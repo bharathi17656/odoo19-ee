@@ -14,6 +14,12 @@ class StockQuant(models.Model):
     def _inverse_dummy_id(self):
         pass
 
+    @api.depends_context('barcode_view')
+    def _compute_display_name(self):
+        if not self.env.context.get('barcode_view'):
+            return super()._compute_display_name()
+        self.display_name = "Inventory Count"
+
     @api.model
     def barcode_write(self, vals):
         """ Specially made to handle barcode app saving. Avoids overriding write method because pickings in barcode
@@ -31,7 +37,6 @@ class StockQuant(models.Model):
                 val[2]['lot_id'] = self.env['stock.lot'].create({
                     'name': val[2].pop('lot_name'),
                     'product_id': val[2].get('product_id', quant_db and quant_db.product_id.id or False),
-                    'company_id': self.env['stock.location'].browse(val[2].get('location_id') or quant_db.location_id.id).company_id.id
                 }).id
 
         quant_ids = []
@@ -103,18 +108,21 @@ class StockQuant(models.Model):
         return data
 
     def get_stock_barcode_data_records(self):
+        locations = self.location_id
         products = self.product_id
         companies = self.company_id or self.env.company
         lots = self.lot_id
         owners = self.owner_id
         packages = self.package_id
+        packages |= packages.parent_package_id
         uoms = products.uom_id | products.uom_ids
         # If UoM setting is active, fetch all UoM's data.
         if self.env.user.has_group('uom.group_uom'):
-            uoms = self.env['uom.uom'].search([])
+            uoms = self.env['uom.uom'].with_context(active_test=False).search([])
 
         data = {
             "records": {
+                "stock.location": locations.read(locations._get_fields_stock_barcode(), load=False),
                 "stock.quant": self.read(self._get_fields_stock_barcode(), load=False),
                 "product.product": products.read(products._get_fields_stock_barcode(), load=False),
                 "stock.package": packages.read(packages._get_fields_stock_barcode(), load=False),
@@ -137,6 +145,7 @@ class StockQuant(models.Model):
             'inventory_quantity',
             'inventory_quantity_set',
             'quantity',
+            'available_quantity',
             'product_uom_id',
             'lot_id',
             'package_id',

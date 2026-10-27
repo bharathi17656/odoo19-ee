@@ -9,7 +9,9 @@ import * as ProductScreenResto from "@pos_restaurant/../tests/tours/utils/produc
 import * as Utils from "@point_of_sale/../tests/generic_helpers/utils";
 import * as PaymentScreen from "@point_of_sale/../tests/pos/tours/utils/payment_screen_util";
 import * as ReceiptScreen from "@point_of_sale/../tests/pos/tours/utils/receipt_screen_util";
+import * as TextInputPopup from "@point_of_sale/../tests/generic_helpers/text_input_popup_util";
 const ProductScreen = { ...ProductScreenPos, ...ProductScreenResto };
+import * as TicketScreen from "@point_of_sale/../tests/pos/tours/utils/ticket_screen_util";
 import { registry } from "@web/core/registry";
 import { inLeftSide } from "@point_of_sale/../tests/pos/tours/utils/common";
 
@@ -97,6 +99,13 @@ registry.category("web_tour.tours").add("FloorScreenTour", {
 
             //test delete multiple tables
             FloorScreen.clickEditButton("Delete"),
+            Dialog.confirm(),
+
+            // add new floor
+            FloorScreen.clickAddFloor(),
+            Dialog.is(),
+            Dialog.footerBtnIsDisabled("Apply"),
+            TextInputPopup.inputText("Test Floor"),
             Dialog.confirm(),
 
             FloorScreen.clickFloor("Main Floor"),
@@ -216,11 +225,8 @@ registry.category("web_tour.tours").add("TableMergeUnmergeTour", {
             // Check original orders for table 4
             FloorScreen.clickTable("4"),
             inLeftSide(ProductScreen.orderLineHas("Coca-Cola", "1")),
+            Chrome.fakePrintChange(),
             ProductScreen.clickOrderButton(),
-            {
-                ...Dialog.confirm(),
-                content: "Acknowledge printing error (test does not use a printer).",
-            },
             ProductScreen.orderlinesHaveNoChange(),
             Chrome.clickPlanButton(),
             FloorScreen.isShown(),
@@ -229,10 +235,6 @@ registry.category("web_tour.tours").add("TableMergeUnmergeTour", {
             FloorScreen.clickTable("5"),
             inLeftSide(ProductScreen.orderLineHas("Minute Maid", "1")),
             ProductScreen.clickOrderButton(),
-            {
-                ...Dialog.confirm(),
-                content: "Acknowledge printing error (test does not use a printer).",
-            },
             ProductScreen.orderlinesHaveNoChange(),
             Chrome.clickPlanButton(),
             FloorScreen.isShown(),
@@ -247,10 +249,6 @@ registry.category("web_tour.tours").add("TableMergeUnmergeTour", {
             ProductScreen.clickDisplayedProduct("Minute Maid"),
             ProductScreen.orderlineIsToOrder("Minute Maid"),
             ProductScreen.clickOrderButton(),
-            {
-                ...Dialog.confirm(),
-                content: "Acknowledge printing error (test does not use a printer).",
-            },
             ProductScreen.orderlinesHaveNoChange(),
 
             // Unlink tables again and verify restoration
@@ -297,5 +295,59 @@ registry.category("web_tour.tours").add("test_tax_in_merge_table_order_line_tour
             FloorScreen.isShown(),
             FloorScreen.linkTables("5", "4"),
             FloorScreen.isChildTable("5"),
+        ].flat(),
+});
+
+registry.category("web_tour.tours").add("no_ghost_floor", {
+    steps: () =>
+        [
+            Chrome.startPoS(),
+            Dialog.confirm("Open Register"),
+
+            // 1. Create new floor along with a table
+            Chrome.clickMenuOption("Edit Plan"),
+            FloorScreen.addFloor("Ghost Floor"),
+            {
+                trigger: `.edit-buttons i[aria-label="Add Table"]`,
+                run: "click",
+            },
+            FloorScreen.selectedTableIs("1"),
+            FloorScreen.clickEditButton("Rename"),
+
+            NumberPopup.enterValue("999"),
+            NumberPopup.isShown("999"),
+            Dialog.confirm(),
+            FloorScreen.selectedTableIs("999"),
+            FloorScreen.clickSaveEditButton(),
+
+            // 2. Create and pay an order on that table
+            FloorScreen.clickFloor("Ghost Floor"),
+            FloorScreen.clickTable("999"),
+            ProductScreen.clickDisplayedProduct("Coca-Cola"),
+            ProductScreen.clickPayButton(false),
+            PaymentScreen.clickPaymentMethod("Cash"),
+            PaymentScreen.clickValidate(),
+            ReceiptScreen.clickNextOrder(),
+
+            // 3. Delete the floor
+            Chrome.clickMenuOption("Edit Plan"),
+            FloorScreen.clickFloor("Ghost Floor"),
+            FloorScreen.clickEditButton("Delete"),
+            Dialog.confirm(),
+            FloorScreen.clickSaveEditButton(),
+
+            // 4. Refund one orderline of the paid order
+            Chrome.clickOrders(),
+            TicketScreen.selectFilter("Active"),
+            TicketScreen.selectFilter("Paid"),
+            TicketScreen.selectOrder("0001"),
+            TicketScreen.confirmRefund(),
+            PaymentScreen.isShown(),
+            PaymentScreen.clickPaymentMethod("Cash"),
+            PaymentScreen.clickValidate(),
+            ReceiptScreen.clickNextOrder(),
+
+            // 5. Floor Plan ===> The floor deleted was reappearing
+            FloorScreen.hasNotFloor("Ghost Floor"),
         ].flat(),
 });

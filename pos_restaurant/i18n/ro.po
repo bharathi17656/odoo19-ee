@@ -3,19 +3,20 @@
 # * pos_restaurant
 #
 # Translators:
-# Dorin Hongu <dhongu@gmail.com>, 2022, 2025.
+# Dorin Hongu <dhongu@gmail.com>, 2022, 2025, 2026.
 # Hongu Cosmin <cosmin513@gmail.com>, 2022
 # Cozmin Candea <office@terrabit.ro>, 2022
 # Foldi Robert <foldirobert@nexterp.ro>, 2022
 # Martin Trigaux, 2022
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
-# Adrian Cocos <adrian.cocos@capps.ai>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Adrian Cocos <adrian.cocos@capps.ai>, 2025, 2026.
+# Alin Ilie <alin.ilie@logit-solutions.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:35+0000\n"
-"PO-Revision-Date: 2025-11-27 09:02+0000\n"
+"POT-Creation-Date: 2026-07-03 17:35+0000\n"
+"PO-Revision-Date: 2026-08-05 02:21+0000\n"
 "Last-Translator: Adrian Cocos <adrian.cocos@capps.ai>\n"
 "Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/"
 "pos_restaurant/ro/>\n"
@@ -23,21 +24,35 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : "
-"(n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.14.3\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: pos_restaurant
 #. odoo-javascript
-#: code:addons/pos_restaurant/static/src/app/services/pos_store.js:0
-msgid " and $1"
+#: code:addons/pos_restaurant/static/src/app/screens/split_bill_screen/split_bill_screen.xml:0
+msgid "% discount"
+msgstr "% reducere"
+
+#. module: pos_restaurant
+#. odoo-javascript
+#: code:addons/pos_restaurant/static/src/app/screens/tip_screen/tip_screen.js:0
+msgid ""
+"%(amount)s is more than 25% of the order's total amount. Are you sure of "
+"this tip amount?"
+msgstr ""
+
+#. module: pos_restaurant
+#. odoo-javascript
+#: code:addons/pos_restaurant/static/src/app/screens/tip_screen/tip_screen.js:0
+msgid "%(original)s + %(tip)s tip = %(overall)s"
 msgstr ""
 
 #. module: pos_restaurant
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/services/pos_store.js:0
 msgid "%s, sent to the kitchen"
-msgstr ""
+msgstr "%s, trimis în bucătărie"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -186,6 +201,7 @@ msgstr "Arhivat"
 #. module: pos_restaurant
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/screens/floor_screen/floor_screen.js:0
+#: code:addons/pos_restaurant/static/src/app/screens/tip_screen/tip_screen.js:0
 msgid "Are you sure?"
 msgstr "Sunteți sigur?"
 
@@ -360,17 +376,17 @@ msgstr "Curs"
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/services/pos_store.js:0
 msgid "Course %s fired"
-msgstr ""
+msgstr "Cursul %s a fost concediat"
 
 #. module: pos_restaurant
 #: model:ir.model.fields,field_description:pos_restaurant.field_pos_order_line__course_id
 msgid "Course Ref"
-msgstr ""
+msgstr "Referință curs"
 
 #. module: pos_restaurant
 #: model:ir.model.fields,field_description:pos_restaurant.field_restaurant_order_course__index
 msgid "Course index"
-msgstr ""
+msgstr "Index curs"
 
 #. module: pos_restaurant
 #: model:ir.model.fields,field_description:pos_restaurant.field_pos_order__course_ids
@@ -400,7 +416,7 @@ msgstr "Creat în"
 #: model:ir.model.fields,field_description:pos_restaurant.field_pos_config__default_screen
 #: model:ir.model.fields,field_description:pos_restaurant.field_res_config_settings__pos_default_screen
 msgid "Default Screen"
-msgstr ""
+msgstr "Ecran implicit"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -433,7 +449,7 @@ msgstr "Consumă la fața locului"
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/models/pos_order.js:0
 msgid "Direct Sale"
-msgstr ""
+msgstr "Vânzare directă"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -468,7 +484,7 @@ msgstr "Tipărirea rapidă a bonurilor fiscale"
 #. module: pos_restaurant
 #: model:ir.model,name:pos_restaurant.model_pos_preset
 msgid "Easily load a set of configuration options"
-msgstr ""
+msgstr "Încărcați cu ușurință un set de opțiuni de configurare"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -532,7 +548,7 @@ msgstr "Fișier"
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/screens/product_screen/actionpad_widget/actionpad_widget.js:0
 msgid "Fire %s"
-msgstr ""
+msgstr "Fire %s"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -544,7 +560,7 @@ msgstr "Concediat"
 #. module: pos_restaurant
 #: model:ir.model.fields,field_description:pos_restaurant.field_restaurant_order_course__fired_date
 msgid "Fired Date"
-msgstr ""
+msgstr "Data declanșării"
 
 #. module: pos_restaurant
 #: model:ir.model.fields,field_description:pos_restaurant.field_restaurant_table__floor_id
@@ -616,6 +632,8 @@ msgstr "Pentru comoditate, oferim următoarele calcule de gratuitate:"
 #: model:ir.model.fields,help:pos_restaurant.field_pos_preset__use_guest
 msgid "Force guest selection when clicking on order button in PoS restaurant"
 msgstr ""
+"Forțează selectarea oaspetelui atunci când se face clic pe butonul de "
+"comandă în restaurantul PoS"
 
 #. module: pos_restaurant
 #: model:product.template,name:pos_restaurant.pos_food_funghi_product_template
@@ -694,6 +712,7 @@ msgid ""
 "It seems that the order has not been sent. Would you like to send it to "
 "preparation?"
 msgstr ""
+"Se pare că comanda nu a fost trimisă. Doriți să o trimiteți spre pregătire?"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -720,6 +739,18 @@ msgstr "Ultima actualizare făcută de"
 #: model:ir.model.fields,field_description:pos_restaurant.field_restaurant_table__write_date
 msgid "Last Updated on"
 msgstr "Ultima actualizare pe"
+
+#. module: pos_restaurant
+#. odoo-javascript
+#: code:addons/pos_restaurant/static/src/app/screens/floor_screen/floor_screen.js:0
+msgid "Link Table"
+msgstr ""
+
+#. module: pos_restaurant
+#. odoo-javascript
+#: code:addons/pos_restaurant/static/src/app/screens/floor_screen/floor_screen.js:0
+msgid "Link Table %(sourceTable)s with %(destinationTable)s"
+msgstr ""
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -903,7 +934,7 @@ msgstr "Ref comandă"
 #. module: pos_restaurant
 #: model:ir.model,name:pos_restaurant.model_restaurant_order_course
 msgid "POS Restaurant Order Course"
-msgstr ""
+msgstr "Curs de comandă în restaurantul POS"
 
 #. module: pos_restaurant
 #: model:ir.model.fields,field_description:pos_restaurant.field_restaurant_table__parent_id
@@ -1035,7 +1066,7 @@ msgstr "Cartofi cu cimbru"
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/screens/receipt_screen/order_receipt/order_receipt.xml:0
 msgid "Pro forma receipt"
-msgstr ""
+msgstr "Chitanță pro forma"
 
 #. module: pos_restaurant
 #: model:product.template,description_sale:pos_restaurant.product_aperol_spritz_product_template
@@ -1070,6 +1101,12 @@ msgstr "Îndepărtarea unui etaj nu poate fi anulată. Mai doriți să eliminaț
 #: code:addons/pos_restaurant/static/src/app/screens/floor_screen/floor_screen.js:0
 msgid "Removing a table cannot be undone"
 msgstr "Eliminarea unei mese nu poate fi anulată"
+
+#. module: pos_restaurant
+#. odoo-javascript
+#: code:addons/pos_restaurant/static/src/app/screens/floor_screen/floor_screen.js:0
+msgid "Removing floor %s"
+msgstr ""
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -1169,7 +1206,7 @@ msgstr "Selectați masa pentru a transfera comanda"
 #. module: pos_restaurant
 #: model_terms:ir.ui.view,arch_db:pos_restaurant.res_config_settings_view_form
 msgid "Select the table first or after registering the order"
-msgstr ""
+msgstr "Selectați mai întâi masa sau după înregistrarea comenzii"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -1187,13 +1224,13 @@ msgstr "Secvență"
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/screens/product_screen/actionpad_widget/actionpad_widget.xml:0
 msgid "Set Tab"
-msgstr ""
+msgstr "Setare filă"
 
 #. module: pos_restaurant
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/screens/product_screen/actionpad_widget/actionpad_widget.xml:0
 msgid "Set Table"
-msgstr ""
+msgstr "Setați masa"
 
 #. module: pos_restaurant
 #: model:ir.model.fields,field_description:pos_restaurant.field_pos_config__set_tip_after_payment
@@ -1275,7 +1312,7 @@ msgstr "Subtotal"
 #. module: pos_restaurant
 #: model:product.template,name:pos_restaurant.sushi_drink_combo_product_template
 msgid "Sushi Lunch Combo"
-msgstr ""
+msgstr "Combo prânz cu sushi"
 
 #. module: pos_restaurant
 #: model:product.attribute.value,name:pos_restaurant.pav_sides_sweet_potato
@@ -1325,7 +1362,7 @@ msgstr "Tabele"
 #. module: pos_restaurant
 #: model:pos.preset,name:pos_restaurant.pos_takeout_preset
 msgid "Takeout"
-msgstr ""
+msgstr "Mâncare la pachet"
 
 #. module: pos_restaurant
 #: model:product.template,description_sale:pos_restaurant.product_margarita_product_template
@@ -1372,8 +1409,8 @@ msgstr "Masa la care a fost servită această comandă"
 #: model:ir.model.fields,help:pos_restaurant.field_restaurant_table__color
 msgid "The table's color, expressed as a valid 'background' CSS property value"
 msgstr ""
-"Culoarea tabelului, exprimată ca valoare validă a proprietății CSS „de "
-"fundal”"
+"Culoarea tabelului, exprimată ca valoare validă a proprietății CSS „de fundal"
+"”"
 
 #. module: pos_restaurant
 #: model:ir.model.fields,help:pos_restaurant.field_restaurant_table__height
@@ -1455,7 +1492,7 @@ msgstr "Transfer"
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/services/pos_store.js:0
 msgid "Transfer \"%s\" to:"
-msgstr ""
+msgstr "Transferă „%s” către:"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -1467,13 +1504,13 @@ msgstr "Transferă / Combină"
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/services/pos_store.js:0
 msgid "Transfer all products of \"%s\" into:"
-msgstr ""
+msgstr "Transferă toate produsele „%s” în:"
 
 #. module: pos_restaurant
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/screens/product_screen/control_buttons/control_buttons.xml:0
 msgid "Transfer course"
-msgstr ""
+msgstr "Transfer curs"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -1512,7 +1549,7 @@ msgstr "Vodka 42 Below, lime, zahăr, bere de ghimbir"
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/services/pos_store.js:0
 msgid "Warning !"
-msgstr ""
+msgstr "Atenție!"
 
 #. module: pos_restaurant
 #: model:product.template,name:pos_restaurant.water_product_template
@@ -1546,9 +1583,15 @@ msgstr "Lățime"
 
 #. module: pos_restaurant
 #. odoo-javascript
+#: code:addons/pos_restaurant/static/src/app/screens/split_bill_screen/split_bill_screen.xml:0
+msgid "With"
+msgstr "Cu"
+
+#. module: pos_restaurant
+#. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/services/pos_store.js:0
 msgid "You are currently transferring the order %s"
-msgstr ""
+msgstr "În prezent transferați comanda %s"
 
 #. module: pos_restaurant
 #. odoo-python
@@ -1586,7 +1629,7 @@ msgstr "Nu puteți șterge o masă cu comenzi încă în stare de ciornă."
 #. odoo-python
 #: code:addons/pos_restaurant/models/pos_preset.py:0
 msgid "You cannot delete the master preset(s)."
-msgstr ""
+msgstr "Nu puteți șterge presetările principale."
 
 #. module: pos_restaurant
 #. odoo-python
@@ -1612,25 +1655,13 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/services/pos_store.js:0
 msgid "You cannot transfer an order to itself"
-msgstr ""
-
-#. module: pos_restaurant
-#. odoo-javascript
-#: code:addons/pos_restaurant/static/src/app/components/tip_receipt/tip_receipt.xml:0
-msgid "________________________"
-msgstr "________________________"
-
-#. module: pos_restaurant
-#. odoo-javascript
-#: code:addons/pos_restaurant/static/src/app/components/tip_receipt/tip_receipt.xml:0
-msgid "______________________________________________"
-msgstr "______________________________________________"
+msgstr "Nu puteți transfera o comandă către ea însăși"
 
 #. module: pos_restaurant
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/services/pos_store.js:0
 msgid "e.g. John"
-msgstr ""
+msgstr "de exemplu, John"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -1642,7 +1673,16 @@ msgstr "articole"
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/screens/split_bill_screen/split_bill_screen.xml:0
 msgid "product(s) selected"
-msgstr ""
+msgstr "produs(e) selectat(e)"
+
+#~ msgid " and $1"
+#~ msgstr " și 1"
+
+#~ msgid "________________________"
+#~ msgstr "________________________"
+
+#~ msgid "______________________________________________"
+#~ msgstr "______________________________________________"
 
 #~ msgid "Add"
 #~ msgstr "Adaugă"

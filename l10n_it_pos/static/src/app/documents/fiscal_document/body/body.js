@@ -11,6 +11,7 @@ import {
     PrintRecRefund,
     PrintRecItemAdjustment,
     PrintRecSubtotalAdjustment,
+    PrintNormal,
 } from "@l10n_it_pos/app/fiscal_printer/commands";
 
 export class Body extends Component {
@@ -23,6 +24,7 @@ export class Body extends Component {
         PrintRecRefund,
         PrintRecItemAdjustment,
         PrintRecSubtotalAdjustment,
+        PrintNormal,
     };
 
     static props = {
@@ -30,6 +32,18 @@ export class Body extends Component {
             type: Object,
             optional: true, // To keep backward compatibility
         },
+        isBasicPrint: {
+            type: Boolean,
+            optional: true,
+        },
+        isEarlyPrint: {
+            type: Boolean,
+            optional: true,
+        },
+    };
+    static defaultProps = {
+        isBasicPrint: false,
+        isEarlyPrint: false,
     };
 
     setup() {
@@ -43,7 +57,8 @@ export class Body extends Component {
     }
 
     _itFormatCurrency(amount) {
-        const decPlaces = this.order.currency_id.decimal_places;
+        const currency = this.order.currency_id || this.pos.config.currency_id;
+        const decPlaces = currency.decimal_places;
         return formatFloat(amount, {
             thousandsSep: "",
             digits: [0, decPlaces],
@@ -60,7 +75,7 @@ export class Body extends Component {
         });
     }
     get isFullDiscounted() {
-        return this.order.lines.length > 0 && this.order.currency.isZero(this.priceIncl);
+        return this.order.lines.length > 0 && this.order.currency.isZero(this.order.priceIncl);
     }
     get lines() {
         const calculateDiscountAmount = (line) => {
@@ -75,13 +90,17 @@ export class Body extends Component {
             const department = line.tax_ids.map((tax) => tax.tax_group_id.pos_receipt_label)[0];
             const isRefund = line.qty < 0;
             const isReward = line.is_reward_line;
-            const unitPrice = isRefund
+            const quantity = Math.abs(line.qty);
+            const totalPrice = isRefund
                 ? data.tax_details.total_included
                 : data.tax_details.no_discount_total_included;
+            const unitPrice = quantity > 0 ? totalPrice / quantity : totalPrice;
             const isGlobalDiscount = this.order.currency.isNegative(unitPrice);
             const unitPriceFormatted = this._itFormatCurrency(
                 isGlobalDiscount ? -unitPrice : unitPrice
             );
+            const description = isRefund ? _t("%s (refund)", productName) : productName;
+            const totalPriceFormatted = this._itFormatCurrency(quantity * unitPrice);
 
             return {
                 isRefund,
@@ -89,7 +108,7 @@ export class Body extends Component {
                 isGlobalDiscount,
                 description: isRefund ? _t("%s (refund)", productName) : productName,
                 customer_note: line.getCustomerNote(),
-                quantity: this._itFormatQty(Math.abs(line.qty)),
+                quantity: this._itFormatQty(quantity),
                 // DISCOUNT: Use price before discount because the discounted amount is specified in the printRecItemAdjustment.
                 // REFUND: Use the price with tax because there is no adjustment for printRecRefund.
                 unitPrice: unitPriceFormatted,
@@ -105,6 +124,8 @@ export class Body extends Component {
                             : calculateDiscountAmount(line)
                     ),
                 },
+                message: this._itFormatQty(quantity) + " x " + description,
+                priceTotal: totalPriceFormatted,
             };
         });
     }
@@ -119,5 +140,9 @@ export class Body extends Component {
                 index: payment.payment_method_id.it_payment_index,
                 id: payment.id,
             }));
+    }
+
+    get subtotal() {
+        return _t("Subtotal: ") + this._itFormatCurrency(this.order.totalDue);
     }
 }

@@ -3,15 +3,16 @@
 # * databases
 #
 # Odoo Translation Bot <c3p@odoo.com>, 2025.
-# "Abe Manyo (abem)" <abem@odoo.com>, 2025.
+# "Abe Manyo (abem)" <abem@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Nurul Aini Akrima Sabila (nuaas)" <nuaas@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-10 20:15+0000\n"
-"PO-Revision-Date: 2025-11-17 07:03+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-03 17:41+0000\n"
+"PO-Revision-Date: 2026-09-15 04:32+0000\n"
+"Last-Translator: \"Nurul Aini Akrima Sabila (nuaas)\" <nuaas@odoo.com>\n"
 "Language-Team: Indonesian <https://translate.odoo.com/projects/odoo-19/"
 "databases/id/>\n"
 "Language: id\n"
@@ -19,7 +20,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
+
+#. module: databases
+#. odoo-python
+#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
+msgid "%(nb_failed_dbs)s databases could not be synchronized.\n"
+msgstr ""
 
 #. module: databases
 #. odoo-python
@@ -28,9 +35,27 @@ msgid "%(nb_new_dbs)s new databases, %(nb_updated_dbs)s updated."
 msgstr "%(nb_new_dbs)s database baru, %(nb_updated_dbs)s diupdate."
 
 #. module: databases
+#. odoo-python
+#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
+msgid "- … and %(nb_dbs)d more!\n"
+msgstr ""
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid ""
+"<span class=\"o_form_label\">\n"
+"                                Manage access:\n"
+"                            </span>\n"
+"                            <span class=\"text-muted\">\n"
+"                                useful to cut all access at once\n"
+"                            </span>"
+msgstr ""
+
+#. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
 #: model_terms:ir.ui.view,arch_db:databases.project_project_view_form_simplified_template
-msgid "<span class=\"o_wrap_label\"><span class=\"o_form_label\">Fetch</span></span>"
+msgid ""
+"<span class=\"o_wrap_label\"><span class=\"o_form_label\">Fetch</span></span>"
 msgstr ""
 "<span class=\"o_wrap_label\"><span class=\"o_form_label\">Ambil</span></span>"
 
@@ -75,18 +100,24 @@ msgstr ""
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_nb_users
 msgid "Amount of Users"
-msgstr ""
+msgstr "Jumlah User"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_nb_documents
 msgid "Amount of documents in Inbox"
-msgstr ""
+msgstr "Jumlah dokumen di Inbox"
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "An error occurred: %s"
 msgstr "Terjadi error: %s"
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
+msgid ""
+"Automatically connect to SaaS databases using Odoo.com as an OAuth provider."
+msgstr ""
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.databases_manage_users_wizard_view_form
@@ -116,7 +147,7 @@ msgstr "Lanjutkan"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_synchronization_wizard__created_database_ids
 msgid "Created Database"
-msgstr ""
+msgstr "Database yang Dibuat"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__create_uid
@@ -141,31 +172,37 @@ msgid "Database"
 msgstr "Database"
 
 #. module: databases
+#. odoo-python
+#: code:addons/databases/api.py:0
+msgid "Database \"%s\" not found"
+msgstr ""
+
+#. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_api_key
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_api_key
 msgid "Database API Key"
-msgstr ""
+msgstr "API Key Database"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_api_login
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_api_login
 msgid "Database API Login"
-msgstr ""
+msgstr "Login Database API"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_api_key_to_use
 msgid "Database Api Key To Use"
-msgstr ""
+msgstr "API Key Database Untuk Digunakan"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_can_access
 msgid "Database Can Access"
-msgstr ""
+msgstr "Database Dapat Mengakses"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_kpi_base_definition_id
 msgid "Database Kpi Base Definition"
-msgstr ""
+msgstr "Definisi Dasar KPI Database"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_name
@@ -176,7 +213,7 @@ msgstr "Nama Database"
 #. module: databases
 #: model:ir.model,name:databases.model_databases_synchronization_wizard
 msgid "Database Synchronization Wizard"
-msgstr ""
+msgstr "Wizard Sinkronisasi Database"
 
 #. module: databases
 #: model:project.project,name:databases.database_default_template
@@ -191,23 +228,24 @@ msgstr "URL database"
 
 #. module: databases
 #: model:ir.model,name:databases.model_databases_user
+#: model:ir.model.fields,field_description:databases.field_res_users__database_user_ids
 msgid "Database User"
-msgstr ""
+msgstr "User Database"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_user_ids
 msgid "Database Users"
-msgstr ""
+msgstr "User Database"
 
 #. module: databases
 #: model:ir.model,name:databases.model_databases_manage_users_wizard
 msgid "Database Users Invitation Wizard"
-msgstr ""
+msgstr "Wizard Undangan User Database"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_version
 msgid "Database Version"
-msgstr ""
+msgstr "Versi Database"
 
 #. module: databases
 #. odoo-python
@@ -225,18 +263,19 @@ msgstr ""
 #: model:ir.ui.menu,name:databases.menu_main_databases
 #: model:res.groups.privilege,name:databases.res_groups_privilege_databases
 #: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
 msgid "Databases"
-msgstr "Database-Database"
+msgstr "Database"
 
 #. module: databases
 #: model:ir.actions.server,name:databases.ir_cron_synchronize_databases_with_odoocom_ir_actions_server
 msgid "Databases: pull databases from Odoo.com and synchronize"
-msgstr ""
+msgstr "Database: pull database dari Odoo.com dan sinkronisasi"
 
 #. module: databases
 #: model:ir.actions.server,name:databases.ir_cron_synchronize_databases_ir_actions_server
 msgid "Databases: synchronize"
-msgstr ""
+msgstr "Database: sinkronisasi"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.databases_manage_users_wizard_view_form
@@ -250,6 +289,7 @@ msgstr "Buang"
 #: model:ir.model.fields,field_description:databases.field_project_project__display_name
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__display_name
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:databases.field_res_users__display_name
 msgid "Display Name"
 msgstr "Nama Tampilan"
 
@@ -281,11 +321,17 @@ msgstr "Pesan Kesalahan"
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 #: code:addons/databases/wizard/databases_synchronization_wizard.py:0
 msgid ""
-"Error while connecting to %(url)s: We are missing the database name, the api"
-" login or the api key\n"
+"Error while connecting to %(url)s: We are missing the database name, the api "
+"login or the api key\n"
 msgstr ""
 "Error selagi menghubungi %(url)s: Kami kurang nama database, api login atau "
 "api key\n"
+
+#. module: databases
+#. odoo-python
+#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
+msgid "Error while creating an API key on %(nb_dbs)d databases:\n"
+msgstr ""
 
 #. module: databases
 #. odoo-python
@@ -296,14 +342,9 @@ msgstr "Error selagi membuat user di %(dbname)s: %(message)s\n"
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_synchronization_wizard.py:0
-msgid "Error while getting KPIs from %(dbname)s: %(message)s\n"
-msgstr "Error selagi mengambil KPI dari %(dbname)s: %(message)s\n"
-
-#. module: databases
-#. odoo-python
-#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
-msgid "Error while getting users from %(dbname)s: %(message)s\n"
-msgstr "Error selagi mengambil user dari %(dbname)s: %(message)s\n"
+msgid ""
+"Error while fetching information from %(host_names)s on %(ip)s: %(message)s\n"
+msgstr ""
 
 #. module: databases
 #. odoo-python
@@ -320,30 +361,30 @@ msgstr "Error selagi menghapus user dari %(dbname)s: %(message)s\n"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__everywhere_user_ids
 msgid "Everywhere User"
-msgstr ""
+msgstr "User Dimanapun"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_fetch_documents
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_fetch_documents
 msgid "Fetch Documents"
-msgstr ""
+msgstr "Ambil Dokumen"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_fetch_draft_entries
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_fetch_draft_entries
 msgid "Fetch Draft Journal Entries"
-msgstr ""
+msgstr "Ambil Draft Entri Jurnal"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_fetch_tax_returns
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__database_fetch_tax_returns
 msgid "Fetch Tax Returns"
-msgstr ""
+msgstr "Ambil SPT"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_synchronization_wizard__fetched_values
 msgid "Fetched Values"
-msgstr ""
+msgstr "Vlaue yang Diambil"
 
 #. module: databases
 #: model_terms:ir.actions.act_window,help:databases.action_view_databases_all
@@ -355,7 +396,7 @@ msgstr ""
 #. module: databases
 #: model:ir.model.constraint,message:databases.constraint_project_project_database_url_unique
 msgid "Hey, this URL is already hooked up to a database!"
-msgstr ""
+msgstr "Hey, URL ini sudah terhubung ke database!"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_hosting
@@ -370,6 +411,7 @@ msgstr "Hosting"
 #: model:ir.model.fields,field_description:databases.field_project_project__id
 #: model:ir.model.fields,field_description:databases.field_project_template_create_wizard__id
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__id
+#: model:ir.model.fields,field_description:databases.field_res_users__id
 msgid "ID"
 msgstr "ID"
 
@@ -437,7 +479,7 @@ msgstr "Autentikasi Terakhir"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_user__local_user_id
 msgid "Local User"
-msgstr ""
+msgstr "User Lokal"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_user__login
@@ -447,12 +489,17 @@ msgstr "Log masuk"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_kpi_properties
 msgid "Metrics"
-msgstr ""
+msgstr "Metrik"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__mode
 msgid "Mode"
 msgstr "Mode"
+
+#. module: databases
+#: model:ir.model.fields,field_description:databases.field_res_config_settings__module_databases_auth
+msgid "Module Databases Auth"
+msgstr ""
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_user__name
@@ -467,7 +514,7 @@ msgstr "Baru"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_synchronization_wizard__new_properties
 msgid "New KPIs to add:"
-msgstr ""
+msgstr "KPI baru untuk ditambahkan:"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
@@ -493,12 +540,12 @@ msgstr "Odoo Online"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__databases_apikey
 msgid "Odoo.com API Key"
-msgstr ""
+msgstr "API Key Odoo.com"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__databases_apiuser
 msgid "Odoo.com API User"
-msgstr ""
+msgstr "User API Odoo.com"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
@@ -528,14 +575,15 @@ msgstr "On Premise"
 #: model_terms:ir.actions.act_window,help:databases.action_view_tasks_all
 msgid ""
 "Organize your tasks by dispatching them across the pipeline.<br>\n"
-"                Collaborate efficiently by chatting in real-time or via email."
+"                Collaborate efficiently by chatting in real-time or via "
+"email."
 msgstr ""
 
 #. module: databases
 #: model:ir.model.fields.selection,name:databases.selection__project_project__database_hosting__other
 #: model:ir.model.fields.selection,name:databases.selection__project_template_create_wizard__database_hosting__other
 msgid "Outside of Odoo"
-msgstr ""
+msgstr "Di luar Odoo"
 
 #. module: databases
 #. odoo-javascript
@@ -561,12 +609,12 @@ msgstr "Wizard buat Templat Project"
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_res_config_settings__databases_project_template_id
 msgid "Project template"
-msgstr ""
+msgstr "Templat project"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_synchronization_wizard__property_definition
 msgid "Property Definition"
-msgstr ""
+msgstr "Definisi Properti"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
@@ -576,7 +624,7 @@ msgstr ""
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__removable_user_ids
 msgid "Removable User"
-msgstr ""
+msgstr "User Dapat Dihapus"
 
 #. module: databases
 #: model:ir.model.fields.selection,name:databases.selection__databases_manage_users_wizard__mode__remove
@@ -590,6 +638,7 @@ msgstr "Hapus"
 
 #. module: databases
 #: model_terms:ir.ui.view,arch_db:databases.edit_project
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
 msgid "Remove User"
 msgstr ""
 
@@ -598,6 +647,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:databases.view_databases_list
 msgid "Remove Users"
 msgstr "Hapus User"
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid "Remove this user from all databases"
+msgstr ""
 
 #. module: databases
 #: model:ir.ui.menu,name:databases.menu_reporting
@@ -610,19 +664,34 @@ msgid "Responsible"
 msgstr "Penanggung Jawab"
 
 #. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid "Revoke all access"
+msgstr ""
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.res_config_settings_view_form
+msgid "SaaS SSO Auto-login"
+msgstr ""
+
+#. module: databases
+#: model:ir.model.fields,field_description:databases.field_res_config_settings__databases_saas_single_sign_on
+msgid "Saas SSO"
+msgstr ""
+
+#. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid ""
 "Select the users you want to invite to the %(nb_databases)s selected "
 "databases."
 msgstr ""
-"Pilih user-user yang Anda ingin undang ke database terpilih %(nb_databases)s."
+"Pilih user yang Anda ingin undang ke database terpilih %(nb_databases)s."
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "Select the users you want to invite to the database %(database_name)s."
-msgstr "Pilih user-user yang Anda ingin undang ke database %(database_name)s."
+msgstr "Pilih user yang Anda ingin undang ke database %(database_name)s."
 
 #. module: databases
 #. odoo-python
@@ -631,15 +700,14 @@ msgid ""
 "Select the users you want to remove from the %(nb_databases)s selected "
 "databases."
 msgstr ""
-"Pilih user-user yang Anda ingin hapus dari database terpilih "
-"%(nb_databases)s."
+"Pilih user yang Anda ingin hapus dari database terpilih %(nb_databases)s."
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid ""
 "Select the users you want to remove from the database %(database_name)s."
-msgstr "Pilih user-user yang Anda ingin hapus dari database %(database_name)s."
+msgstr "Pilih user yang Anda ingin hapus dari database %(database_name)s."
 
 #. module: databases
 #: model:ir.actions.act_window,name:databases.action_databases_configuration
@@ -656,18 +724,12 @@ msgstr "Keadaan"
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__summary_message
 #: model:ir.model.fields,field_description:databases.field_databases_synchronization_wizard__summary_message
 msgid "Summary Message"
-msgstr ""
+msgstr "Ringkasan Pesan"
 
 #. module: databases
 #: model:ir.model.fields,field_description:databases.field_project_project__database_nb_synchro_errors
 msgid "Synchronization Errors Count"
-msgstr ""
-
-#. module: databases
-#. odoo-python
-#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
-msgid "Synchronization done successfully!"
-msgstr "Sinkronisasi sukses dilakukan!"
+msgstr "Jumlah Error Sinkronisasi"
 
 #. module: databases
 #. odoo-python
@@ -686,7 +748,7 @@ msgstr "Sinkronisasikan"
 #. module: databases
 #: model:ir.actions.server,name:databases.action_synchronize_all_databases
 msgid "Synchronize all the Databases"
-msgstr ""
+msgstr "Sinkronisasi semua Database"
 
 #. module: databases
 #: model_terms:ir.actions.act_window,help:databases.action_view_databases_all
@@ -710,34 +772,35 @@ msgstr "SPP %(return_name)s"
 
 #. module: databases
 #. odoo-python
-#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
-msgid ""
-"The database %(url)s is registered as a saas database in odoo.com. As it "
-"seems to be configured we have left it as is.\n"
-msgstr ""
-"Database %(url)s didaftarkan sebagai database saas di odoo.com Karena "
-"sepertinya sudah dikonfigurasi kami membiarkannya.\n"
-
-#. module: databases
-#. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "These users were successfully invited to %(nb_databases)s databases."
-msgstr ""
-"User-user tersebut sukses diundang ke database-database %(nb_databases)s."
+msgstr "User tersebut sukses diundang ke database-database %(nb_databases)s."
 
 #. module: databases
 #. odoo-python
 #: code:addons/databases/wizard/databases_manage_users_wizard.py:0
 msgid "These users were successfully removed from %(nb_databases)s databases."
+msgstr "User tersebut sukses dihapus dari database-database %(nb_databases)s."
+
+#. module: databases
+#. odoo-python
+#: code:addons/databases/models/res_users.py:0
+msgid "This user has no access to remove."
 msgstr ""
-"User-user tersebut sukses dihapus dari database-database %(nb_databases)s."
 
 #. module: databases
 #: model:ir.model.constraint,message:databases.constraint_project_project_database_url_required
 msgid "Uh-oh! It seems we are missing a url for a database!"
+msgstr "Uh-oh! Sepertinya Anda kurang url untuk database!"
+
+#. module: databases
+#. odoo-python
+#: code:addons/databases/wizard/databases_synchronization_wizard.py:0
+msgid "Unreachable"
 msgstr ""
 
 #. module: databases
+#: model:ir.model,name:databases.model_res_users
 #: model:ir.model.fields,field_description:databases.field_databases_manage_users_wizard__user_ids
 #: model:res.groups,name:databases.group_databases_user
 msgid "User"
@@ -772,6 +835,34 @@ msgstr "Versi"
 #. module: databases
 #: model:ir.model.fields,help:databases.field_databases_synchronization_wizard__notify_user
 msgid ""
-"Whether the user should be notified once the cron has finished synchronizing"
-" the databases"
+"Whether the user should be notified once the cron has finished synchronizing "
+"the databases"
 msgstr ""
+"Apakah user harus dinotifikasi setelah cron selesai mensinkronisasi database"
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid ""
+"You can't revoke your own access. You wouldn't want to lock yourself out!"
+msgstr ""
+
+#. module: databases
+#: model_terms:ir.ui.view,arch_db:databases.view_users_form_databases_inherit
+msgid "remote user"
+msgstr ""
+
+#~ msgid ""
+#~ "The database %(url)s is registered as a saas database in odoo.com. As it "
+#~ "seems to be configured we have left it as is.\n"
+#~ msgstr ""
+#~ "Database %(url)s didaftarkan sebagai database saas di odoo.com Karena "
+#~ "sepertinya sudah dikonfigurasi kami membiarkannya.\n"
+
+#~ msgid "Error while getting KPIs from %(dbname)s: %(message)s\n"
+#~ msgstr "Error selagi mengambil KPI dari %(dbname)s: %(message)s\n"
+
+#~ msgid "Error while getting users from %(dbname)s: %(message)s\n"
+#~ msgstr "Error selagi mengambil user dari %(dbname)s: %(message)s\n"
+
+#~ msgid "Synchronization done successfully!"
+#~ msgstr "Sinkronisasi sukses dilakukan!"

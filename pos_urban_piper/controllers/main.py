@@ -140,6 +140,24 @@ class PosUrbanPiperController(http.Controller):
                 notes_array.append({"text": note_name, "colorIndex": default_note["color"] if default_note else 0})
         return json.dumps(notes_array)
 
+    def _prepare_price_unit_from_baseline(self, total_tax, price_unit, product, pos_config_sudo):
+        base_line = total_tax._prepare_base_line_for_taxes_computation(
+            request.env['pos.order.line'],
+            currency_id=pos_config_sudo.company_id.currency_id,
+            tax_ids=total_tax,
+            price_unit=price_unit,
+            quantity=1,
+            special_mode="total_included",
+            product_id=product
+        )
+        total_tax._add_tax_details_in_base_line(base_line, pos_config_sudo.company_id)
+        total_tax._round_base_lines_tax_details([base_line], pos_config_sudo.company_id)
+        tax_types = total_tax.flatten_taxes_hierarchy().mapped('price_include')
+        if len(set(tax_types)) > 1:
+            _logger.warning("UrbanPiper: Multiple tax types found for product %s. Using the first one.", product.name)
+        price_unit = base_line['tax_details']['total_included'] if tax_types and tax_types[0] else base_line['tax_details']['total_excluded']
+        return price_unit
+
     def _create_order(self, data):
         order = data['order']
         customer = data['customer']
@@ -209,32 +227,33 @@ class PosUrbanPiperController(http.Controller):
                     'Urbanpiper Charge Product Error'
                 )
                 continue
-            total_tax = request.env["account.tax"].browse(
-                [
-                    tax_record.id
-                    for tax_payload in charge.get("taxes", [])
-                    if tax_payload.get("value")
-                    and (
-                        tax_record := request.env["account.tax"]
-                        .sudo()
-                        .search(
-                            self._get_tax_domain(
-                                pos_config_sudo,
-                                int((100 * tax_payload["value"]) / charge.get("value")),
-                            ),
-                            limit=1,
-                        )
-                    )
-                ]
-            )
-            tax_ids_after_fiscal_position = pos_config_sudo.urbanpiper_fiscal_position_id.map_tax(total_tax)
-            taxes = tax_ids_after_fiscal_position.compute_all(charge.get('value'), pos_config_sudo.company_id.currency_id, 1, product=charge_product)
+            line_tax = request.env["account.tax"]
+            domain = request.env['account.tax']._check_company_domain(pos_config_sudo.company_id)
+            total_tax = charge_product.sudo().taxes_id.filtered_domain(domain)
+            price_unit = charge.get('value')
+            if charge.get("taxes", []):
+                tax_ids = []
+                charge_value = charge.get("value")
+                for tax_payload in charge.get("taxes", []):
+                    if not tax_payload.get("value"):
+                        continue
+                    tax_rate = int((100 * tax_payload["value"]) / charge_value)
+                    tax_domain = self._get_tax_domain(pos_config_sudo, tax_rate)
+                    tax_record = request.env["account.tax"].sudo().search(tax_domain, limit=1)
+                    if tax_record:
+                        tax_ids.append(tax_record.id)
+                line_tax = request.env["account.tax"].browse(tax_ids)
+            elif total_tax:
+                price_unit = self._prepare_price_unit_from_baseline(total_tax, price_unit, charge_product, pos_config_sudo)
+                line_tax = total_tax
+            tax_ids_after_fiscal_position = pos_config_sudo.urbanpiper_fiscal_position_id.map_tax(line_tax)
+            taxes = tax_ids_after_fiscal_position.compute_all(price_unit, pos_config_sudo.company_id.currency_id, 1, product=charge_product)
             lines.append(Command.create({
                 'product_id': charge_product.sudo().id,
                 'full_product_name': charge.get('title', charge_product.sudo().name),
                 'qty': 1,
-                'price_unit': charge.get('value'),
-                'tax_ids': [Command.set(total_tax.ids)],
+                'price_unit': price_unit,
+                'tax_ids': [Command.set(line_tax.ids)],
                 'price_subtotal': taxes['total_excluded'],
                 'price_subtotal_incl': taxes['total_included'],
                 'note': self.reframe_notes(charge.get('title')),
@@ -243,30 +262,9 @@ class PosUrbanPiperController(http.Controller):
         pos_reference, tracking_number = pos_config_sudo._get_next_order_refs()
         discounts = details.get('ext_platforms', [{}])[0].get('discounts', [])
         general_note = "\n".join([
-            f"{pos_delivery_provider.name} Discount: {pos_config_sudo.company_id.currency_id.symbol} {discount.get('value')}"
+            f"Aggregator Discount: {pos_config_sudo.company_id.currency_id.symbol} {discount.get('value')}"
             for discount in discounts if not discount.get('is_merchant_discount')
         ])
-        for discount in discounts:
-            if discount.get('is_merchant_discount'):
-                discount_product = pos_config_sudo.discount_product_id or request.env.ref('pos_discount.product_product_consumable', False)
-                if not discount_product:
-                    discount_product = request.env['product.product'].sudo().create({
-                        'name': 'Discount',
-                        'type': 'service',
-                        'list_price': 0,
-                        'available_in_pos': True,
-                        'taxes_id': [(5, 0, 0)],
-                        'default_code': 'DISC'
-                    })
-                lines.append(Command.create({
-                    'product_id': discount_product.sudo().id,
-                    'qty': 1,
-                    'price_unit': -discount.get('value'),
-                    'price_subtotal': -discount.get('value'),
-                    'price_subtotal_incl': -discount.get('value'),
-                    'note': self.reframe_notes('\n'.join([discount.get('code', ''), discount.get('title', '')])),
-                    'uuid': str(uuid.uuid4()),
-                }))
         delivery_order = PosOrder.create({
             'partner_id': customer_sudo.id,
             'pos_reference': pos_reference,
@@ -291,6 +289,62 @@ class PosUrbanPiperController(http.Controller):
             'user_id':  pos_config_sudo.current_session_id.user_id.id,
             'uuid': str(uuid.uuid4()),
         })
+        for discount in discounts:
+            if not discount.get('is_merchant_discount'):
+                continue
+            discount_product = pos_config_sudo.discount_product_id or request.env.ref('pos_discount.product_product_consumable', False) or request.env['product.product'].sudo().search([('default_code', '=', 'DISC')], limit=1)
+            if not discount_product:
+                discount_product = request.env['product.product'].sudo().create({
+                    'name': 'Discount',
+                    'type': 'consu',
+                    'list_price': 0,
+                    'taxes_id': [(5, 0, 0)],
+                    'default_code': 'DISC'
+                })
+            discountable_lines = delivery_order.lines.filtered(
+                lambda line: line.product_id not in pos_config_sudo.get_urbanpiper_special_products()
+            )
+            AccountTax = request.env['account.tax'].sudo()
+            base_lines = []
+            for line in discountable_lines:
+                base_line = AccountTax._prepare_base_line_for_taxes_computation(
+                    line,
+                    currency_id=pos_config_sudo.currency_id,
+                    tax_ids=pos_config_sudo.urbanpiper_fiscal_position_id.map_tax(line.tax_ids) if pos_config_sudo.urbanpiper_fiscal_position_id else line.tax_ids,
+                    price_unit=line.price_unit,
+                    quantity=line.qty,
+                    product_id=line.product_id,
+                    discount=line.discount,
+                )
+                base_lines.append(base_line)
+            AccountTax._add_tax_details_in_base_lines(base_lines, pos_config_sudo.company_id)
+            AccountTax._round_base_lines_tax_details(base_lines, pos_config_sudo.company_id)
+
+            def grouping_function(base_line):
+                return {
+                    'product_id': discount_product.sudo(),
+                }
+
+            discount_base_lines = AccountTax._prepare_global_discount_lines(
+                base_lines=base_lines,
+                company=pos_config_sudo.company_id,
+                amount_type='fixed',
+                amount=discount.get('value'),
+                computation_key=f'global_discount,{delivery_order.id}',
+                grouping_function=grouping_function,
+            )
+            for discount_base_line in discount_base_lines:
+                request.env['pos.order.line'].sudo().create({
+                    'order_id': delivery_order.id,
+                    'product_id': discount_product.sudo().id,
+                    'price_unit': discount_base_line['price_unit'],
+                    'price_subtotal': discount_base_line['tax_details']['total_excluded_currency'],
+                    'price_subtotal_incl': discount_base_line['tax_details']['total_included_currency'],
+                    'qty': discount_base_line['quantity'],
+                    'tax_ids': discount_base_line['tax_ids'],
+                    'extra_tax_data': AccountTax._export_base_line_extra_tax_data(discount_base_line),
+                    'note': self.reframe_notes('\n'.join([discount.get('code', discount.get('title', ''))])),
+                })
         delivery_order._compute_prices()
         self.after_delivery_order_create(delivery_order, details, pos_config_sudo)
         pos_config_sudo._send_delivery_order_count(delivery_order.id)
@@ -330,52 +384,63 @@ class PosUrbanPiperController(http.Controller):
         if value_ids_lst:
             for value in value_ids_lst:
                 value_id = request.env['product.attribute.value'].sudo().browse(value)
-                if value_id.attribute_id.create_variant == 'no_variant' or value_id.attribute_id.display_type == 'multi':
-                    product_option = request.env['product.template.attribute.value'].sudo().search([
-                        ('product_tmpl_id', '=', int(line_data['merchant_id'].split('-')[0])),
-                        ('product_attribute_value_id', '=', value)
-                    ])
-                    if product_option:
-                        attribute_value_ids.append(product_option.id)
+                product_option = request.env['product.template.attribute.value'].sudo().search([
+                    ('product_tmpl_id', '=', int(line_data['merchant_id'].split('-')[0])),
+                    ('product_attribute_value_id', '=', value),
+                    ('ptav_active', '=', True),
+                ], limit=1)
+                if product_option:
+                    attribute_value_ids.append(product_option.id)
+                if value_id.attribute_id.create_variant == 'no_variant':
                     values_to_remove.append(value)
         variant_value_lst = [value for value in value_ids_lst if value not in values_to_remove]
         line_taxes = request.env['account.tax']
         main_product = self._product_template_to_product_variant(int(line_data['merchant_id'].split('-')[0]), variant_value_lst)
         price_unit = float(line_data['price'] + price_extra)
         tax_ids = main_product.taxes_id.filtered_domain(request.env['account.tax']._check_company_domain(pos_config_sudo.company_id))
+        tax_types = tax_ids.flatten_taxes_hierarchy().mapped('price_include')
+        line_qty = int(line_data['quantity'])
+        if len(set(tax_types)) > 1:
+            _logger.warning("UrbanPiper: Multiple tax types found for product %s. Using the first one.", main_product.name)
         if line_data.get('taxes'):
-            line_taxes = self._get_tax_value(line_data.get('taxes'), pos_config_sudo)
+            if tax_types and len(set(tax_types)) >= 1 and tax_types[0]:
+                tax_value_sum = sum(tax.get('value', 0) for tax in line_data['taxes'])
+                price_unit = float((line_data['price'] + price_extra) + (tax_value_sum / line_qty))
+            line_taxes = tax_ids
         elif tax_ids:
-            base_line = line_taxes._prepare_base_line_for_taxes_computation(
-                request.env['pos.order.line'],
-                currency_id=pos_config_sudo.company_id.currency_id,
-                tax_ids=tax_ids,
-                price_unit=price_unit,
-                quantity=1,
-                special_mode="total_included",
-                product_id=main_product
-            )
-            line_taxes._add_tax_details_in_base_line(base_line, pos_config_sudo.company_id)
-            line_taxes._round_base_lines_tax_details([base_line], pos_config_sudo.company_id)
-            tax_types = tax_ids.flatten_taxes_hierarchy().mapped('price_include')
-            if len(set(tax_types)) > 1:
-                _logger.warning("UrbanPiper: Multiple tax types found for product %s. Using the first one.", main_product.name)
-            price_unit = base_line['tax_details']['total_included'] if tax_types[0] else base_line['tax_details']['total_excluded']
+            price_unit = self._prepare_price_unit_from_baseline(tax_ids, price_unit, main_product, pos_config_sudo)
             line_taxes = tax_ids
         tax_ids_after_fiscal_position = pos_config_sudo.urbanpiper_fiscal_position_id.map_tax(line_taxes)
-        taxes = tax_ids_after_fiscal_position.compute_all(price_unit, pos_config_sudo.company_id.currency_id, int(line_data['quantity']), product=main_product)
+        taxes = tax_ids_after_fiscal_position.compute_all(price_unit, pos_config_sudo.company_id.currency_id, line_qty, product=main_product)
+
+        line_discounts = line_data.get('discounts', [])
+        non_merchant_note = "\n".join([
+            f"Aggregator Discount: {pos_config_sudo.company_id.currency_id.symbol} {discount.get('value')}"
+            for discount in line_discounts if not discount.get('is_merchant_discount')
+        ])
+
+        merchant_discount_value = sum(d.get('value', 0) for d in line_discounts if d.get('is_merchant_discount'))
+
+        # in case if there is no total_included amount to avoid division by zero
+        discount_percentage = 0
+        if merchant_discount_value and taxes['total_included']:
+            discount_percentage = pos_config_sudo.company_id.currency_id.round(
+                (merchant_discount_value / taxes['total_included']) * 100
+            )
+
         lines = Command.create({
             'product_id': main_product.id,
             'full_product_name': line_data['title'],
-            'qty': int(line_data['quantity']),
+            'qty': line_qty,
             'attribute_value_ids': attribute_value_ids,
             'price_extra': price_extra,
             'price_unit': price_unit,
             'price_subtotal': taxes['total_excluded'],
             'price_subtotal_incl': taxes['total_included'],
+            'discount': discount_percentage,
             'tax_ids': [Command.set(line_taxes.ids)] if line_taxes else None,
             'note': self.reframe_notes("\n".join(
-                x for x in [line_data.get('instructions'), note] if x and x.strip()
+                x for x in [line_data.get('instructions'), note, non_merchant_note] if x and x.strip()
             )),
             'uuid': str(uuid.uuid4()),
         })
@@ -405,8 +470,11 @@ class PosUrbanPiperController(http.Controller):
             pos_config_sudo = request.env['pos.config'].sudo().search([
                 ('urbanpiper_store_identifier', '=', data['store_id'])
             ])
-            if current_order_id.delivery_status == 'food_ready':
-                pos_config_sudo._make_order_payment(current_order_id)
+            if current_order_id.state == 'draft':
+                if current_order_id.delivery_status in ('food_ready', 'dispatched', 'completed'):
+                    pos_config_sudo._make_order_payment(current_order_id)
+                elif current_order_id.delivery_status == 'cancelled':
+                    current_order_id.with_context(active_ids=current_order_id.ids).action_pos_order_cancel()
             pos_config_sudo._send_delivery_order_count(current_order_id.id)
 
     def _rider_status_update(self, data):

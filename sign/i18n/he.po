@@ -24,13 +24,14 @@
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # or balmas <or@laylinetech.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# MAHAMADASIF ANSARI <maan@odoo.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:40+0000\n"
-"PO-Revision-Date: 2025-11-08 19:49+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-08-21 17:43+0000\n"
+"PO-Revision-Date: 2025-12-30 12:59+0000\n"
+"Last-Translator: MAHAMADASIF ANSARI <maan@odoo.com>\n"
 "Language-Team: Hebrew <https://translate.odoo.com/projects/odoo-19/sign/he/"
 ">\n"
 "Language: he\n"
@@ -39,18 +40,13 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n == 1) ? 0 : ((n == 2) ? 1 : ((n > 10 && "
 "n % 10 == 0) ? 2 : 3));\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: sign
 #: model:ir.model.fields,field_description:sign.field_res_partner__signature_count
 #: model:ir.model.fields,field_description:sign.field_res_users__signature_count
 msgid "# Signatures"
 msgstr "מס' חתימות"
-
-#. module: sign
-#: model_terms:ir.ui.view,arch_db:sign.sign_request_logs_user
-msgid "#7898678"
-msgstr ""
 
 #. module: sign
 #. odoo-python
@@ -143,11 +139,6 @@ msgstr ""
 "        ביקש את חתימתך על המסמך"
 
 #. module: sign
-#: model_terms:ir.ui.view,arch_db:sign.sign_request_logs_user
-msgid "******1234"
-msgstr "******1234"
-
-#. module: sign
 #: model_terms:ir.ui.view,arch_db:sign.sign_portal_my_request
 msgid ""
 "-\n"
@@ -167,31 +158,6 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:sign.sign_template_action
 msgid "- or -"
 msgstr "- או -"
-
-#. module: sign
-#: model_terms:ir.ui.view,arch_db:sign.sign_request_logs_user
-msgid "1001"
-msgstr "1001"
-
-#. module: sign
-#: model_terms:ir.ui.view,arch_db:sign.sign_request_logs_user
-msgid "192.168.1.1"
-msgstr ""
-
-#. module: sign
-#: model_terms:ir.ui.view,arch_db:sign.sign_request_logs_user
-msgid "20-03-2000"
-msgstr ""
-
-#. module: sign
-#: model_terms:ir.ui.view,arch_db:sign.sign_request_logs_user
-msgid "2023-08-18"
-msgstr ""
-
-#. module: sign
-#: model_terms:ir.ui.view,arch_db:sign.sign_request_logs_user
-msgid "2023-08-18 - 12:30:45"
-msgstr ""
 
 #. module: sign
 #: model_terms:ir.ui.view,arch_db:sign.sign_request_logs_user
@@ -350,8 +316,7 @@ msgstr ""
 #. module: sign
 #: model_terms:ir.ui.view,arch_db:sign.sign_template_view_kanban
 msgid ""
-"<span class=\"badge rounded-pill text-bg-success\" title=\"Shared\" "
-"invisible=\"not is_sharing\">\n"
+"<span class=\"badge rounded-pill text-bg-success\" title=\"Shared\">\n"
 "                                    Shared\n"
 "                                </span>"
 msgstr ""
@@ -391,15 +356,6 @@ msgstr "<span class=\"text-muted\">לא זמין</span>"
 #. module: sign
 #: model_terms:ir.ui.view,arch_db:sign.sign_send_request_view_form
 msgid "<span class=\"text-nowrap\">Add certificate on each page</span>"
-msgstr ""
-
-#. module: sign
-#: model_terms:ir.ui.view,arch_db:sign.res_config_settings_view_form
-msgid ""
-"<span groups=\"base.group_system\">\n"
-"                                    Certify your documents using a "
-"provided .pfx or .p12 file.\n"
-"                                </span>"
 msgstr ""
 
 #. module: sign
@@ -486,7 +442,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/sign/wizard/sign_send_request.py:0
 msgid "A signature request has been linked to this document: %s"
-msgstr "בקשת חתימה קושרה למסמך זה:"
+msgstr "בקשת חתימה קושרה למסמך זה: %s"
 
 #. module: sign
 #. odoo-python
@@ -698,6 +654,11 @@ msgid "Antwrep"
 msgstr ""
 
 #. module: sign
+#: model_terms:ir.ui.view,arch_db:sign.sign_template_view_form
+msgid "Anyone"
+msgstr ""
+
+#. module: sign
 #: model_terms:ir.ui.view,arch_db:sign.sign_request_view_kanban
 #: model_terms:ir.ui.view,arch_db:sign.sign_template_view_kanban
 msgid "Archive"
@@ -788,6 +749,11 @@ msgstr "משתמשים מורשים"
 #: code:addons/sign/static/src/backend_components/sign_template/sign_template_access_rights.xml:0
 msgid "Authorized Users:"
 msgstr "משתמשים מורשים:"
+
+#. module: sign
+#: model_terms:ir.ui.view,arch_db:sign.sign_item_type_view_form
+msgid "Autocomplete this field"
+msgstr ""
 
 #. module: sign
 #: model_terms:ir.ui.view,arch_db:sign.sign_send_request_view_form
@@ -936,6 +902,11 @@ msgstr "תעודה על השתתפות <br/>"
 #. odoo-python
 #: code:addons/sign/models/sign_request.py:0
 msgid "Certificate of completion - %s.pdf"
+msgstr ""
+
+#. module: sign
+#: model_terms:ir.ui.view,arch_db:sign.res_config_settings_view_form
+msgid "Certify your documents using a provided .pfx or .p12 file."
 msgstr ""
 
 #. module: sign
@@ -1307,6 +1278,12 @@ msgid "Delete signer \"%s\""
 msgstr ""
 
 #. module: sign
+#. odoo-javascript
+#: code:addons/sign/static/src/dialogs/thank_you_dialog.js:0
+msgid "Deleted User"
+msgstr ""
+
+#. module: sign
 #: model_terms:ir.ui.view,arch_db:sign.res_config_settings_view_form
 msgid ""
 "Deliver one-time codes by SMS to identify signatories when signing a document"
@@ -1574,11 +1551,6 @@ msgid "Each item must contain 'name' and 'datas' keys."
 msgstr ""
 
 #. module: sign
-#: model:ir.actions.report,name:sign.sign_report_green_savings_action
-msgid "Ecological Savings by using Electronic Signatures"
-msgstr ""
-
-#. module: sign
 #. odoo-javascript
 #: code:addons/sign/static/src/backend_components/cog_menu/sign_template_custom_cog_menu.xml:0
 #: code:addons/sign/static/src/backend_components/sign_template/sign_template_sidebar_role_items.xml:0
@@ -1588,7 +1560,8 @@ msgstr "ערוך"
 
 #. module: sign
 #. odoo-javascript
-#: code:addons/sign/static/src/backend_components/sign_template/sign_template_action.js:0
+#. odoo-python
+#: code:addons/sign/models/sign_template.py:0
 #: code:addons/sign/static/src/backend_components/sign_template/sign_template_sidebar.xml:0
 msgid "Edit Template"
 msgstr "ערוך תבנית"
@@ -1803,6 +1776,7 @@ msgid "Geolocation"
 msgstr "מיקום גיאוגרפי"
 
 #. module: sign
+#: model:ir.actions.report,name:sign.sign_report_green_savings_action
 #: model:ir.ui.menu,name:sign.sign_report_green_savings
 msgid "Green Savings"
 msgstr "חיסכון ירוק"
@@ -2454,12 +2428,6 @@ msgstr "בקשת חתימה חדשה"
 
 #. module: sign
 #. odoo-python
-#: code:addons/sign/models/sign_document.py:0
-msgid "New Template"
-msgstr ""
-
-#. module: sign
-#. odoo-python
 #: code:addons/sign/controllers/portal.py:0
 msgid "Newest"
 msgstr "החדש ביותר"
@@ -2505,10 +2473,22 @@ msgid "No document yet"
 msgstr "אין מסמך עדיין"
 
 #. module: sign
+#. odoo-javascript
+#: code:addons/sign/static/src/views/helper/sign_action_helper.xml:0
+msgid "No documents here"
+msgstr ""
+
+#. module: sign
 #. odoo-python
 #: code:addons/sign/models/sign_request_item.py:0
 msgid "No specified reason"
 msgstr "אין סיבה ספציפית"
+
+#. module: sign
+#. odoo-javascript
+#: code:addons/sign/static/src/views/helper/sign_action_helper.xml:0
+msgid "No template here"
+msgstr ""
 
 #. module: sign
 #: model_terms:ir.actions.act_window,help:sign.sign_template_action
@@ -2827,6 +2807,11 @@ msgid "Redirect Link"
 msgstr "קישור להפניה מחדש"
 
 #. module: sign
+#: model_terms:ir.ui.view,arch_db:sign.sign_template_view_form
+msgid "Redirect signers to a page after signing"
+msgstr ""
+
+#. module: sign
 #: model:ir.model.fields.selection,name:sign.selection__sign_log__action__refuse
 msgid "Refuse"
 msgstr "דחה"
@@ -2885,6 +2870,18 @@ msgstr "הסרה מהמועדפים"
 #: model:sign.template.tag,name:sign.sign_template_tag_4
 msgid "Rental"
 msgstr "השכרה"
+
+#. module: sign
+#. odoo-javascript
+#: code:addons/sign/static/src/backend_components/sign_template/sign_template_action.js:0
+msgid "Replace Document"
+msgstr ""
+
+#. module: sign
+#. odoo-javascript
+#: code:addons/sign/static/src/backend_components/sign_template/sign_template_sidebar.xml:0
+msgid "Replace document"
+msgstr ""
 
 #. module: sign
 #: model:ir.ui.menu,name:sign.sign_reports
@@ -3311,7 +3308,7 @@ msgstr ""
 #. module: sign
 #. odoo-python
 #: code:addons/sign/wizard/sign_send_request.py:0
-msgid "Sign Request - %s"
+msgid "Sign Request - %(template_name)s - %(res_name)s"
 msgstr ""
 
 #. module: sign
@@ -3661,8 +3658,18 @@ msgstr "חותם"
 #. module: sign
 #. odoo-javascript
 #: code:addons/sign/static/src/backend_components/sign_template/sign_template_action.js:0
+msgid "Signer "
+msgstr ""
+
+#. module: sign
+#. odoo-javascript
 #: code:addons/sign/static/src/backend_components/sign_template/sign_template_sidebar.js:0
 msgid "Signer %s"
+msgstr ""
+
+#. module: sign
+#: model:sign.item.role,name:sign.sign_item_role_default
+msgid "Signer 1"
 msgstr ""
 
 #. module: sign
@@ -3792,11 +3799,6 @@ msgid "Stamp it"
 msgstr ""
 
 #. module: sign
-#: model:sign.item.role,name:sign.sign_item_role_default
-msgid "Standard"
-msgstr "סטנדרט"
-
-#. module: sign
 #: model:ir.model.fields,field_description:sign.field_sign_request__state
 #: model:ir.model.fields,field_description:sign.field_sign_request_item__state
 #: model_terms:ir.ui.view,arch_db:sign.sign_request_logs_user
@@ -3917,7 +3919,6 @@ msgstr "תבנית"
 #. module: sign
 #. odoo-javascript
 #: code:addons/sign/static/src/backend_components/sign_request/sign_request_control_panel.js:0
-#: code:addons/sign/static/src/backend_components/sign_template/sign_template_body.js:0
 #: code:addons/sign/static/src/backend_components/sign_template/sign_template_control_panel.js:0
 msgid "Template %s"
 msgstr "תבנית %s"
@@ -4044,7 +4045,7 @@ msgstr "המסמך"
 #. module: sign
 #. odoo-python
 #: code:addons/sign/models/sign_request.py:0
-msgid "The document %(template_name)s has been rejected by %(partner_name)s"
+msgid "The document %(template_name)s has been rejected by %(refuser_name)s"
 msgstr ""
 
 #. module: sign
@@ -4052,6 +4053,14 @@ msgstr ""
 #: code:addons/sign/models/sign_request.py:0
 msgid "The document %s has been fully signed."
 msgstr "המסמך%sנחתם במלואו."
+
+#. module: sign
+#. odoo-python
+#: code:addons/sign/models/sign_template.py:0
+msgid ""
+"The document you're trying to update doesn't exist or doesn't belong to this "
+"template."
+msgstr ""
 
 #. module: sign
 #: model_terms:ir.ui.view,arch_db:sign.sign_request_logs_user
@@ -4413,6 +4422,15 @@ msgstr "עדכן תנאים והגבלות"
 
 #. module: sign
 #. odoo-javascript
+#: code:addons/sign/static/src/backend_components/sign_template/sign_template_action.js:0
+msgid ""
+"Updating a document generates a new template with the same sign items. The "
+"copied items will land in the same coordinates as their originals if the "
+"number of pages match with the previous PDF. Do you want to proceed?"
+msgstr ""
+
+#. module: sign
+#. odoo-javascript
 #: code:addons/sign/static/src/views/helper/sign_action_helper.xml:0
 msgid "Upload"
 msgstr "העלה"
@@ -4689,6 +4707,12 @@ msgstr ""
 #. module: sign
 #. odoo-python
 #: code:addons/sign/models/sign_request_item.py:0
+msgid "You cannot change the email of a signatory"
+msgstr ""
+
+#. module: sign
+#. odoo-python
+#: code:addons/sign/models/sign_request_item.py:0
 msgid "You cannot reassign this signatory"
 msgstr "אינך יכול להקצות מחדש את החותם הזה"
 
@@ -4711,6 +4735,12 @@ msgid ""
 msgstr "אין לך גישה למסמכים הללו, אנא פנה למנהל החתימות."
 
 #. module: sign
+#. odoo-python
+#: code:addons/sign/models/sign_request.py:0
+msgid "You don't have access to the linked document."
+msgstr ""
+
+#. module: sign
 #: model_terms:ir.ui.view,arch_db:sign.sign_template_mail_refused
 msgid "You have refused the document"
 msgstr "אתה סירבת למסמך"
@@ -4725,6 +4755,12 @@ msgstr "יש לך עד"
 #: code:addons/sign/models/sign_request.py:0
 msgid "You must specify one signer for each role of your sign template"
 msgstr "עליך לציין חותם אחד עבור כל תפקיד בתבנית החתימה שלך"
+
+#. module: sign
+#. odoo-python
+#: code:addons/sign/models/sign_template.py:0
+msgid "You need at least one field type in order to sign a document!"
+msgstr ""
 
 #. module: sign
 #. odoo-python
@@ -5113,6 +5149,15 @@ msgstr "את/ה"
 #: model_terms:ir.ui.view,arch_db:sign.green_report_el_pdf
 msgid "{{0}} Summary"
 msgstr ""
+
+#~ msgid "******1234"
+#~ msgstr "******1234"
+
+#~ msgid "1001"
+#~ msgstr "1001"
+
+#~ msgid "Standard"
+#~ msgstr "סטנדרט"
 
 #~ msgid "<b>Drag & drop “Signature”</b> into the bottom of the document."
 #~ msgstr "<b>משוך ושחרר \"חתימה\"</b> לתחתית הדף של המסמך."

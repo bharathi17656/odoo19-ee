@@ -2,63 +2,25 @@
 # This file contains the translation of the following modules:
 # * l10n_eu_oss_reports
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
-# Betty Keresztesi <betty@soft4biz.ro>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Betty Keresztesi <betty@soft4biz.ro>, 2025, 2026.
+# Iulian Tanasa <iulian.tanasa@qbsretail.ro>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 20:00+0000\n"
-"PO-Revision-Date: 2025-11-26 08:23+0000\n"
-"Last-Translator: Betty Keresztesi <betty@soft4biz.ro>\n"
+"POT-Creation-Date: 2026-09-18 18:16+0000\n"
+"PO-Revision-Date: 2026-09-19 13:35+0000\n"
+"Last-Translator: Iulian Tanasa <iulian.tanasa@qbsretail.ro>\n"
 "Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19-l10n/"
 "l10n_eu_oss_reports/ro/>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : "
-"(n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.14.3\n"
-
-#. module: l10n_eu_oss_reports
-#. odoo-python
-#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
-msgid ""
-"\n"
-"                    Exclude any domestic or extra-EU sales from the OSS "
-"report.\n"
-"                "
-msgstr ""
-"\n"
-"                    Excludeți orice vânzări interne sau extra-UE din "
-"raportul OSS.\n"
-"                "
-
-#. module: l10n_eu_oss_reports
-#. odoo-python
-#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
-msgid ""
-"\n"
-"                    OSS reports must be submitted in euros.\n"
-"                "
-msgstr ""
-"\n"
-"                    Rapoartele OSS trebuie depuse în euro.\n"
-"                "
-
-#. module: l10n_eu_oss_reports
-#. odoo-python
-#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
-msgid ""
-"\n"
-"                    Only B2C transactions should be included in the OSS "
-"report.\n"
-"                "
-msgstr ""
-"\n"
-"                    Numai tranzacțiile B2C trebuie incluse în raportul OSS.\n"
-"                "
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
@@ -84,6 +46,12 @@ msgstr "Tip returnare contabilă"
 #: model:ir.model.fields,field_description:l10n_eu_oss_reports.field_account_report__availability_condition
 msgid "Availability"
 msgstr "Disponibilitate"
+
+#. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "Business customers"
+msgstr "Clienți persoane juridice"
 
 #. module: l10n_eu_oss_reports
 #. odoo-python
@@ -133,6 +101,12 @@ msgstr "Descarcă XML"
 #: code:addons/l10n_eu_oss_reports/models/account_return.py:0
 msgid "EUR Currency"
 msgstr "Moneda EUR"
+
+#. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "Exclude any domestic or extra-EU sales from the OSS report."
+msgstr "Exclude din raportul OSS orice vânzări interne sau din afara UE."
 
 #. module: l10n_eu_oss_reports
 #: model:ir.model.fields,field_description:l10n_eu_oss_reports.field_account_report__id
@@ -233,8 +207,20 @@ msgstr "Handler personalizat pentru raportul de taxe OSS (Vânzări)"
 #. module: l10n_eu_oss_reports
 #. odoo-python
 #: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "OSS reports must be submitted in euros."
+msgstr "Raportările OSS trebuie transmise în euro."
+
+#. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
 msgid "Only B2C transactions"
 msgstr "Doar tranzacții B2C"
+
+#. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "Only B2C transactions should be included in the OSS report."
+msgstr "Doar tranzacțiile B2C trebuie incluse în raportul OSS."
 
 #. module: l10n_eu_oss_reports
 #. odoo-python
@@ -255,7 +241,7 @@ msgstr "Retur"
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "Select Intervat &gt; Dashboard"
-msgstr "Selectați Intervat &gt; Dashboard"
+msgstr "Selectați Interval &gt; Dashboard"
 
 #. module: l10n_eu_oss_reports
 #. odoo-python
@@ -325,6 +311,43 @@ msgid "XML"
 msgstr "XML"
 
 #. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "id"
+msgstr "id"
+
+#. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "using Itsme or your card reader"
 msgstr "folosind Itsme sau cititorul dvs. de carduri"
+
+#~ msgid ""
+#~ "\n"
+#~ "                    Exclude any domestic or extra-EU sales from the OSS "
+#~ "report.\n"
+#~ "                "
+#~ msgstr ""
+#~ "\n"
+#~ "                    Excludeți orice vânzări interne sau extra-UE din "
+#~ "raportul OSS.\n"
+#~ "                "
+
+#~ msgid ""
+#~ "\n"
+#~ "                    OSS reports must be submitted in euros.\n"
+#~ "                "
+#~ msgstr ""
+#~ "\n"
+#~ "                    Rapoartele OSS trebuie depuse în euro.\n"
+#~ "                "
+
+#~ msgid ""
+#~ "\n"
+#~ "                    Only B2C transactions should be included in the OSS "
+#~ "report.\n"
+#~ "                "
+#~ msgstr ""
+#~ "\n"
+#~ "                    Numai tranzacțiile B2C trebuie incluse în raportul "
+#~ "OSS.\n"
+#~ "                "

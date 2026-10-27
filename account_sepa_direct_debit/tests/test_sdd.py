@@ -3,8 +3,9 @@
 import datetime
 
 from odoo import Command, fields
-from odoo.exceptions import RedirectWarning, UserError, ValidationError
+from odoo.exceptions import AccessError, RedirectWarning, UserError, ValidationError
 from odoo.tests import freeze_time, tagged
+from odoo.tests.common import new_test_user
 
 from odoo.addons.account_sepa_direct_debit.tests.common import SDDTestCommon
 
@@ -94,6 +95,34 @@ class SDDTest(SDDTestCommon):
         with freeze_time('2025-01-31'):  # Passed the end_date, mandate must be closed
             mandates_per_validity = mandate._update_and_partition_state_by_validity()
             self.assertTrue(mandates_per_validity['invalid'], 'The mandate is expired')
+            self.assertEqual(mandate.state, 'closed')
+
+    @freeze_time('2019-01-01')
+    def test_expiry_unreconciled_in_process_payment(self):
+        self.mandate_agrolait.action_revoke_mandate()
+        mandate = self.create_mandate(self.partner_agrolait, self.partner_bank_agrolait, False, self.sdd_company, 'CORE')
+        mandate.start_date = '2020-01-01'
+        mandate.action_validate_mandate()
+        mandate.cron_update_mandates_states()
+        self.assertEqual(mandate.state, 'active')
+
+        with freeze_time('2022-12-02'):
+            new_invoice = self.create_invoice(self.partner_agrolait)
+            payment = self.pay_with_mandate(new_invoice)
+            payment.state = 'in_process'
+
+            mandates_per_validity = mandate._update_and_partition_state_by_validity()
+            self.assertIn(mandate, mandates_per_validity['valid'], 'The unreconciled collection should still reset the 36-month period')
+
+        # Less than 36 months after the in_process collection and not yet in the 30-day warning window it should be  still valid
+        with freeze_time('2025-10-01'):
+            mandates_per_validity = mandate._update_and_partition_state_by_validity()
+            self.assertIn(mandate, mandates_per_validity['valid'])
+
+        # More than 36 months after the in_process collection: it should be expired
+        with freeze_time('2026-01-02'):
+            mandates_per_validity = mandate._update_and_partition_state_by_validity()
+            self.assertIn(mandate, mandates_per_validity['invalid'])
             self.assertEqual(mandate.state, 'closed')
 
     def test_required_data(self):
@@ -346,3 +375,12 @@ class SDDTest(SDDTestCommon):
         res = wizard.action_create_payments()
         payments = self.env['account.payment'].search(res.get('domain', []))
         self.assertTrue(payments, 'A payment should have been generated')
+
+    def test_user_without_bank_account_validation_role_cannot_validate_mandates(self):
+        """User should have `group_validate_bank_account` group to validate SDD mandates."""
+        invoicing_banks_user = new_test_user(
+            self.env, 'invoicing_banks_user', groups='account.group_account_basic'
+        )
+
+        with self.assertRaisesRegex(AccessError, "validate SDD"):
+            self.mandate_agrolait.with_user(invoicing_banks_user).action_validate_mandate()

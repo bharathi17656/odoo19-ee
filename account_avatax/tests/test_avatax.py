@@ -254,6 +254,37 @@ class TestAccountAvalaraInternal(TestAccountAvalaraInternalCommon):
         with self._capture_request(return_value={'lines': [], 'summary': []}):
             invoice.button_external_tax_calculation()
 
+    def test_invoice_branch_company_tax_shared(self):
+        """Test that taxes created from a branch are shared with the company holding the AvaTax credentials."""
+        branch = self.env['res.company'].create({
+            'name': "Branch A",
+            'parent_id': self.env.company.id,
+        })
+        self.cr.precommit.run()  # load the CoA
+
+        def mocked_response(invoice):
+            return {
+                'lines': [{
+                    'details': [{'rate': 0.04, 'taxName': 'CA STATE TAX', 'tax': 4.0}],
+                    'lineAmount': 100.0,
+                    'lineNumber': f'account.move.line,{invoice.invoice_line_ids.id}',
+                    'tax': 4.0,
+                }],
+                'summary': [],
+            }
+
+        branch_invoice = self._create_invoice(post=False, company_id=branch.id)
+        with self._capture_request(return_value=mocked_response(branch_invoice)):
+            branch_invoice.button_external_tax_calculation()
+
+        invoice = self._create_invoice(post=False)
+        with self._capture_request(return_value=mocked_response(invoice)):
+            invoice.button_external_tax_calculation()
+
+        tax = branch_invoice.invoice_line_ids.tax_ids
+        self.assertRecordValues(tax, [{'name': 'CA STATE 4%', 'company_id': self.env.company.id}])
+        self.assertEqual(invoice.invoice_line_ids.tax_ids, tax)
+
     def test_posted_invoice(self):
         invoice, _ = self._create_invoice_01_and_expected_response()
 
@@ -264,6 +295,16 @@ class TestAccountAvalaraInternal(TestAccountAvalaraInternalCommon):
             invoice.button_external_tax_calculation()
 
         self.assertIsNone(capture.val, "Should not update taxes of posted invoices.")
+
+    def test_check_address_no_credentials(self):
+        """Address validation shouldn't crash when no company has Avatax credentials."""
+        with self._capture_request(return_value={'lines': [], 'summary': []}):
+            invoice = self._create_invoice(post=True)
+        self.env.company.write({
+            'avalara_api_id': False,
+            'avalara_api_key': False,
+        })
+        invoice._check_address()
 
     def test_check_address_constraint(self):
         invoice, _ = self._create_invoice_01_and_expected_response()
@@ -552,6 +593,24 @@ class TestAccountAvalaraInternal(TestAccountAvalaraInternalCommon):
                 {'name': 'Odoo User Initial Discount', 'balance': 295.00},  # Income account
             ]
         )
+
+    def test_other_move_type(self):
+        """ Test the system works as expected with receipts
+        """
+        move = self.env['account.move'].create({
+            'move_type': 'in_receipt',
+            'partner_id': self.partner_a.id,
+            'fiscal_position_id': self.fp_avatax.id,
+            'invoice_date': '2024-01-24',
+            'invoice_line_ids': [
+                Command.create({
+                    'product_id': self.product_user.id,
+                    'tax_ids': None,
+                    'price_unit': self.product_user.list_price,
+                }),
+            ]
+        })
+        move.action_post()
 
 
 @tagged("external_l10n", "external", "-at_install", "post_install", "-standard")

@@ -2,6 +2,7 @@
 import re
 from unittest.mock import patch
 
+from odoo.tools import SQL
 from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
 from odoo.addons.l10n_br_avatax.tests.test_br_avatax import TestBRMockedRequests
 from odoo.addons.l10n_br_edi.tests.test_l10n_br_edi import TestL10nBREDICommon
@@ -43,6 +44,11 @@ class TestL10nBREDIPOSCommon(TestL10nBREDICommon, TestBRMockedRequests):
 
 @tagged("post_install_l10n", "post_install", "-at_install")
 class TestL10nBREDIPOS(TestL10nBREDIPOSCommon, CommonPosBrEdiTest):
+
+    def setUp(self):
+        super().setUp()
+        self.pos_config_usd.order_seq_id.write({'number_next_actual': 1})
+
     def test_01_access_key_check_digit(self):
         self.assertEqual(
             self.env["pos.order"]._l10n_br_calculate_access_key_check_digit("4323070738511100010255503000765973124086659"),
@@ -329,7 +335,9 @@ class TestL10nBREDIPOS(TestL10nBREDIPOSCommon, CommonPosBrEdiTest):
             }],
         })
 
-        payload = order._prepare_l10n_br_avatax_document_service_call(order._get_l10n_br_avatax_service_params())
+        with freeze_time('2025-03-15'):
+            payload = order._prepare_l10n_br_avatax_document_service_call(order._get_l10n_br_avatax_service_params())
+        self.assertEqual(payload['header']['invoiceAccessKey'][2:6], '2503')  # Year and month
         expected_dict = {
             'paymentInfo': {
                 'paymentMode': [
@@ -342,6 +350,72 @@ class TestL10nBREDIPOS(TestL10nBREDIPOSCommon, CommonPosBrEdiTest):
             },
         }
         self.assertDictEqual(payload['header']['payment'], expected_dict, 'paymentMode should still be set for free orders!')
+
+    def test_09_order_name(self):
+        # Test that the order name uses the NFCE sequence number as expected
+        self.pos_config_usd.order_seq_id.write({'number_next_actual': 5})
+
+        self.pos_config_usd.open_ui()
+        order = self.env['pos.order'].create({
+            "name": "/",
+            "pos_reference": "Order 12345-123-1234",
+            'company_id': self.env.company.id,
+            'session_id': self.pos_config_usd.current_session_id.id,
+            'partner_id': self.partner_a.id,
+            'access_token': '1234567890',
+            'lines': [],
+            'amount_tax': 0,
+            'amount_total': 0,
+            'amount_paid': 0,
+            'amount_return': 0,
+        })
+        order.write({'state': 'paid'})
+        self.assertEqual(order.name, 'PoS Config USD - 5')
+
+        order_2 = self.env['pos.order'].create({
+            "name": "/",
+            "pos_reference": "Order 12345-123-1235",
+            'company_id': self.env.company.id,
+            'session_id': self.pos_config_usd.current_session_id.id,
+            'partner_id': self.partner_a.id,
+            'access_token': '1234567891',
+            'lines': [],
+            'amount_tax': 0,
+            'amount_total': 0,
+            'amount_paid': 0,
+            'amount_return': 0,
+        })
+        order_2.write({'state': 'paid'})
+        self.assertEqual(order_2.name, 'PoS Config USD - 6')
+
+    @freeze_time(TEST_DATETIME)
+    def test_10_refund_with_reference(self):
+        """
+        Tests that the refund has an invoice_refs, which is required to make a refund
+        """
+        refund_move = self.env['account.move'].create({
+            'move_type': 'out_refund',
+            'company_id': self.env.company.id,
+        })
+        res = refund_move._get_l10n_br_avatax_service_params()
+        self.assertTrue(res['invoice_refs'])
+
+    def test_find_tax_for_avatax_code_is_a_sale_tax(self):
+        purchase_tax = self.env["account.tax"].with_context(active_test=False).search([
+            ("l10n_br_avatax_code", "=", "icms"),
+            ("price_include_override", "=", "tax_included"),
+            ("company_id", "=", self.company.id),
+            ("type_tax_use", "=", "purchase"),
+        ], limit=1)
+        # The error was undeterministic since it depended on the order of creation of the taxes.
+        # Hack below reproduce the breaking case.
+        self.env.cr.execute(SQL(
+            "UPDATE account_tax SET create_date = create_date + interval '1 second' WHERE id = %s",
+            purchase_tax.id,
+        ))
+        order = self.env["pos.order"].new({"company_id": self.company.id})
+        tax = order._l10n_br_find_tax_for_l10n_br_avatax_code("icms")
+        self.assertEqual(tax.type_tax_use, "sale")
 
 
 @freeze_time(TEST_DATETIME)

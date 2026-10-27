@@ -332,14 +332,17 @@ class MrpEco(models.Model):
     def _get_difference_bom_lines(self, old_bom, new_bom):
         # Return difference lines from two bill of material.
         new_bom_commands = [Command.clear()]
-        old_bom_lines = {line._get_sync_values(): line for line in old_bom.bom_line_ids}
+        old_bom_lines = defaultdict(list)
+        for line in old_bom.bom_line_ids:
+            old_bom_lines[line._get_sync_values()].append(line)
         if new_bom:
             for new_line in new_bom.bom_line_ids:
-                old_line = old_bom_lines.get(new_line._get_sync_values())
-                if old_line:
-                    old_bom_lines.pop(old_line._get_sync_values())
+                old_lines_list = old_bom_lines.get(new_line._get_sync_values())
+                if old_lines_list:
+                    old_line_idx = next((idx for idx, old_line in enumerate(old_lines_list) if new_line.product_uom_id.compare(old_line.product_qty, new_line.product_qty) == 0), 0)
+                    old_line = old_lines_list.pop(old_line_idx)
                     if new_line.product_uom_id != old_line.product_uom_id or tools.float_compare(new_line.product_qty, old_line.product_qty, precision_rounding=new_line.product_uom_id.rounding):
-                        new_bom_commands += [(0, 0, {
+                        new_bom_commands += [Command.create({
                             'change_type': 'update',
                             'product_id': new_line.product_id.id,
                             'old_product_qty': old_line.product_qty,
@@ -351,7 +354,7 @@ class MrpEco(models.Model):
                             'bom_line_id': new_line.id
                         })]
                 else:
-                    new_bom_commands += [(0, 0, {
+                    new_bom_commands += [Command.create({
                         'change_type': 'add',
                         'product_id': new_line.product_id.id,
                         'new_product_qty': new_line.product_qty,
@@ -359,22 +362,26 @@ class MrpEco(models.Model):
                         'new_operation_id': new_line.operation_id.id,
                         'bom_line_id': new_line.id,
                     })]
-            for old_line in old_bom_lines.values():
-                new_bom_commands += [(0, 0, {
-                    'change_type': 'remove',
-                    'product_id': old_line.product_id.id,
-                    'old_product_qty': old_line.product_qty,
-                    'old_uom_id': old_line.product_uom_id.id,
-                    'old_operation_id': old_line.operation_id.id,
-                    'bom_line_id': old_line.id,
-                })]
+            for old_lines_list in old_bom_lines.values():
+                for old_line in old_lines_list:
+                    new_bom_commands += [Command.create({
+                        'change_type': 'remove',
+                        'product_id': old_line.product_id.id,
+                        'old_product_qty': old_line.product_qty,
+                        'old_uom_id': old_line.product_uom_id.id,
+                        'old_operation_id': old_line.operation_id.id,
+                        'bom_line_id': old_line.id,
+                    })]
 
-        old_byproducts = {byproduct._get_sync_values(): byproduct for byproduct in old_bom.byproduct_ids}
+        old_byproduct_lines = defaultdict(list)
+        for old_byproducts in old_bom.byproduct_ids:
+            old_byproduct_lines[old_byproducts._get_sync_values()].append(old_byproducts)
         if new_bom:
             for new_byproduct in new_bom.byproduct_ids:
-                old_byproduct = old_byproducts.get(new_byproduct._get_sync_values())
-                if old_byproduct:
-                    old_byproducts.pop(old_byproduct._get_sync_values())
+                old_byproducts_list = old_byproduct_lines.get(new_byproduct._get_sync_values())
+                if old_byproducts_list:
+                    old_byprod_idx = next((idx for idx, old_line in enumerate(old_byproducts_list) if new_byproduct.product_uom_id.compare(old_line.product_qty, new_byproduct.product_qty) == 0), 0)
+                    old_byproduct = old_byproducts_list.pop(old_byprod_idx)
                     if new_byproduct.product_uom_id != old_byproduct.product_uom_id or tools.float_compare(new_byproduct.product_qty, old_byproduct.product_qty, precision_rounding=new_byproduct.product_uom_id.rounding):
                         new_bom_commands += [Command.create({
                             'change_type': 'update',
@@ -396,15 +403,16 @@ class MrpEco(models.Model):
                         'new_operation_id': new_byproduct.operation_id.id,
                         'byproduct_id': new_byproduct.id,
                     })]
-            for old_byproduct in old_byproducts.values():
-                new_bom_commands += [Command.create({
-                    'change_type': 'remove',
-                    'product_id': old_byproduct.product_id.id,
-                    'old_product_qty': old_byproduct.product_qty,
-                    'old_uom_id': old_byproduct.product_uom_id.id,
-                    'old_operation_id': old_byproduct.operation_id.id,
-                    'byproduct_id': old_byproduct.id,
-                })]
+            for old_byproducts_list in old_byproduct_lines.values():
+                for old_byproduct in old_byproducts_list:
+                    new_bom_commands += [Command.create({
+                        'change_type': 'remove',
+                        'product_id': old_byproduct.product_id.id,
+                        'old_product_qty': old_byproduct.product_qty,
+                        'old_uom_id': old_byproduct.product_uom_id.id,
+                        'old_operation_id': old_byproduct.operation_id.id,
+                        'byproduct_id': old_byproduct.id,
+                    })]
 
         return new_bom_commands
 
@@ -794,7 +802,7 @@ class MrpEco(models.Model):
                         'res_model': 'product.template',
                         'res_id': eco.product_tmpl_id.id,
                     })
-                    attach.origin_attachment_id = new_doc.id
+                    attach.origin_attachment_id = new_doc.ir_attachment_id.id
 
                 vals = {'state': 'done'}
                 stage_id = eco.env['mrp.eco.stage'].search([

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.4+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
+"POT-Creation-Date: 2026-07-10 17:45+0000\n"
 "PO-Revision-Date: 2025-11-10 13:20+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Hindi <https://translate.odoo.com/projects/odoo-19/"
@@ -32,8 +32,8 @@ msgid ""
 "\t%s"
 msgstr ""
 "\n"
-"इसके अलावा, कुछ प्रॉडक्ट, सबसे ज़्यादा वज़न वाली उपलब्ध शिपिंग सेवा के लिए भी बहुत भारी हैं."
-"\n"
+"इसके अलावा, कुछ प्रॉडक्ट, सबसे ज़्यादा वज़न वाली उपलब्ध शिपिंग सेवा के लिए भी बहुत भारी "
+"हैं.\n"
 "                             \n"
 "अगर मुमकिन हो, तो निम्नलिखित प्रॉडक्ट (प्रॉडक्ट्स) की मात्रा को अपने पैकेजों में बांट दें या "
 "कोई दूसरा कैरियर चुनें:\n"
@@ -48,8 +48,16 @@ msgid ""
 "than %(max_weight)s %(unit)s or choose another carrier."
 msgstr ""
 "\n"
-"अपने प्रॉडक्ट को अपने पैकेजों में बांटने करने की कोशिश करें, ताकि उनका वज़न %(max_weight)s "
-"%(unit)s से कम हो या कोई दूसरा कैरियर चुनें।"
+"अपने प्रॉडक्ट को अपने पैकेजों में बांटने करने की कोशिश करें, ताकि उनका वज़न %(max_weight)s %"
+"(unit)s से कम हो या कोई दूसरा कैरियर चुनें।"
+
+#. module: delivery_sendcloud
+#. odoo-python
+#: code:addons/delivery_sendcloud/models/sendcloud_service.py:0
+msgid ""
+" Please make sure there is an address with the same name under \"Address "
+"Name (optional)\" in your Sendcloud Address configuration."
+msgstr ""
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -221,8 +229,8 @@ msgid ""
 "Each address line can only contain a maximum of 75 characters. You can split "
 "the address into multiple lines to try to avoid this limitation."
 msgstr ""
-"पते की हर लाइन में ज़्यादा से ज़्यादा 75 अक्षर हो सकते हैं. इस सीमा से बचने के लिए, आप पते को"
-" कई लाइनों में बांट सकते हैं।"
+"पते की हर लाइन में ज़्यादा से ज़्यादा 75 अक्षर हो सकते हैं. इस सीमा से बचने के लिए, आप पते "
+"को कई लाइनों में बांट सकते हैं।"
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -231,8 +239,8 @@ msgid ""
 "Ensure picking has shipping weight, if using packages, each package should "
 "have a shipping weight"
 msgstr ""
-"पक्का करें कि पिकिंग में शिपिंग वज़न है, अगर पैकेज इस्तेमाल कर रहे हैं, तो हर पैकेज का एक शिपिं"
-"ग वज़न होना चाहिए"
+"पक्का करें कि पिकिंग में शिपिंग वज़न है, अगर पैकेज इस्तेमाल कर रहे हैं, तो हर पैकेज का एक "
+"शिपिंग वज़न होना चाहिए"
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -367,6 +375,14 @@ msgstr ""
 #: code:addons/delivery_sendcloud/models/delivery_carrier.py:0
 msgid ""
 "Note that this price is for %s packages since the order weight is more than "
+"the maximum packaging weight."
+msgstr ""
+
+#. module: delivery_sendcloud
+#. odoo-python
+#: code:addons/delivery_sendcloud/models/delivery_carrier.py:0
+msgid ""
+"Note that this price is for %s packages since the order weight is more than "
 "the maximum weight allowed by the shipping method."
 msgstr ""
 "ध्यान दें कि यह कीमत %s पैकेजों के लिए है, क्योंकि ऑर्डर का वज़न शिपिंग तरीके से तय किए गए "
@@ -397,8 +413,8 @@ msgid ""
 "product. For some products, you can be charged for return labels printed but "
 "not used."
 msgstr ""
-"रिटर्न प्रॉडक्ट चुनने से पहले कृपया SendCloud रिटर्न प्रॉडक्ट दस्तावेज़ देखें. कुछ प्रॉडक्ट के लि"
-"ए, आपको बनाए गए लेकिन इस्तेमाल न किए गए रिटर्न लेबल के लिए शुल्क लिया जा सकता है।"
+"रिटर्न प्रॉडक्ट चुनने से पहले कृपया SendCloud रिटर्न प्रॉडक्ट दस्तावेज़ देखें. कुछ प्रॉडक्ट के "
+"लिए, आपको बनाए गए लेकिन इस्तेमाल न किए गए रिटर्न लेबल के लिए शुल्क लिया जा सकता है।"
 
 #. module: delivery_sendcloud
 #: model:ir.model.fields,field_description:delivery_sendcloud.field_delivery_carrier__delivery_type
@@ -551,8 +567,7 @@ msgstr ""
 msgid ""
 "Some packages in your transfer are too heavy for the heaviest available "
 "shipping method."
-msgstr ""
-"आपके ट्रांसफर में कुछ पैकेज, सबसे भारी उपलब्ध शिपिंग तरीके के लिए भी बहुत भारी हैं।"
+msgstr "आपके ट्रांसफर में कुछ पैकेज, सबसे भारी उपलब्ध शिपिंग तरीके के लिए भी बहुत भारी हैं।"
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -622,8 +637,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/delivery_sendcloud/models/delivery_carrier.py:0
 msgid "The shipping product actually configured can't handle this delivery"
-msgstr ""
-"सही तरीके से कॉन्फ़िगर किया गया शिपिंग प्रॉडक्ट इस डिलीवरी को नहीं संभाल सकता"
+msgstr "सही तरीके से कॉन्फ़िगर किया गया शिपिंग प्रॉडक्ट इस डिलीवरी को नहीं संभाल सकता"
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -679,8 +693,8 @@ msgid ""
 msgstr ""
 "पैकेजों के लिए, वज़न सीमा से मेल खाने वाला कोई तरीका नहीं है :\n"
 "%s\n"
-"आप या तो कोई दूसरा कैरियर चुन सकते हैं, अपने फ़िल्टर बदल सकते हैं या अपने पैकेज की सामग्री को"
-" फिर से तय कर सकते हैं।"
+"आप या तो कोई दूसरा कैरियर चुन सकते हैं, अपने फ़िल्टर बदल सकते हैं या अपने पैकेज की सामग्री "
+"को फिर से तय कर सकते हैं।"
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -704,8 +718,8 @@ msgstr "स्थानांतरण"
 
 #. module: delivery_sendcloud
 #: model:ir.model.fields,field_description:delivery_sendcloud.field_delivery_carrier__sendcloud_use_batch_shipping
-msgid "Use Batch Shipping"
-msgstr "बैच शिपिंग का इस्तेमाल करें"
+msgid "Use Multicollo"
+msgstr ""
 
 #. module: delivery_sendcloud
 #: model:ir.model.fields,field_description:delivery_sendcloud.field_delivery_carrier__sendcloud_shipping_rules
@@ -731,8 +745,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/delivery_sendcloud/models/delivery_carrier.py:0
 msgid "You must add your public and secret key for sendcloud delivery type!"
-msgstr ""
-"SendCloud डिलीवरी के लिए, अपनी सार्वजनिक और गोपनीय कुंजी डालना ज़रूरी है!"
+msgstr "SendCloud डिलीवरी के लिए, अपनी सार्वजनिक और गोपनीय कुंजी डालना ज़रूरी है!"
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -740,8 +753,7 @@ msgstr ""
 msgid ""
 "You must assign the required 'Shipping From' field in order to search for "
 "available products"
-msgstr ""
-"उपलब्ध प्रॉडक्ट खोजने के लिए, आपको ज़रूरी 'शिपिंग कहां से' फ़ील्ड असाइन करना होगा"
+msgstr "उपलब्ध प्रॉडक्ट खोजने के लिए, आपको ज़रूरी 'शिपिंग कहां से' फ़ील्ड असाइन करना होगा"
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -763,3 +775,12 @@ msgid ""
 msgstr ""
 "Sendcloud में बनाया गया. <br/>\n"
 "            <b>ट्रैकिंग नंबर:</b>"
+
+#. module: delivery_sendcloud
+#. odoo-javascript
+#: code:addons/delivery_sendcloud/static/src/views/sendcloud_product_selection_widget.xml:0
+msgid "g"
+msgstr ""
+
+#~ msgid "Use Batch Shipping"
+#~ msgstr "बैच शिपिंग का इस्तेमाल करें"

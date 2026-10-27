@@ -7,22 +7,23 @@
 # Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2022
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
+# "Noemi Pla Garcia (nopl)" <nopl@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-10-23 13:59+0000\n"
-"Last-Translator: \"Dylan Kiss (dyki)\" <dyki@odoo.com>\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2026-10-22 17:33+0000\n"
+"Last-Translator: \"Noemi Pla Garcia (nopl)\" <nopl@odoo.com>\n"
 "Language-Team: Spanish <https://translate.odoo.com/projects/odoo-19/"
 "marketing_automation/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == 0)"
-" ? 1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == "
+"0) ? 1 : 2);\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_summary_template
@@ -126,7 +127,7 @@ msgstr "<i class=\"fa fa-envelope-open-o\"/> No abierto en"
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
 msgid "<i class=\"fa fa-envelope-open-o\"/> Opened after"
-msgstr "<i class=\"fa fa-envelope-open-o\"/> No abierto despuès de"
+msgstr "<i class=\"fa fa-envelope-open-o\"/> Abierto después de"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
@@ -161,7 +162,7 @@ msgstr "<i class=\"fa fa-reply\"/> No respondido en"
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
 msgid "<i class=\"fa fa-reply\"/> Replied after"
-msgstr "<i class=\"fa fa-reply\"/> Respondigo después de"
+msgstr "<i class=\"fa fa-reply\"/> Respondido después de"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
@@ -739,6 +740,12 @@ msgstr "¡Error! No puede crear una jerarquía recursiva de actividad."
 #. module: marketing_automation
 #. odoo-python
 #: code:addons/marketing_automation/models/marketing_activity.py:0
+msgid "Error! You can't modify the hierarchy of an active Activity."
+msgstr "¡Error! No puedes modificar la jerarquía de una actividad en curso."
+
+#. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/marketing_activity.py:0
 msgid "Exception in mass mailing: %s"
 msgstr "Excepción en los correos masivos: %s"
 
@@ -1237,6 +1244,16 @@ msgid "Offer free catalog"
 msgstr "Ofrecer el catálogo gratis"
 
 #. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/mailing_mailing.py:0
+msgid ""
+"Oops! You can't retry sending emails from inside a Marketing Automation "
+"campaign."
+msgstr ""
+"¡Vaya! No puedes volver a intentar enviar correos electrónicos desde una "
+"campaña de Automatización de marketing."
+
+#. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
 msgid "Opened"
 msgstr "Abierto"
@@ -1380,6 +1397,12 @@ msgstr "Modelo de registro"
 
 #. module: marketing_automation
 #. odoo-python
+#: code:addons/marketing_automation/models/marketing_campaign.py:0
+msgid "Record no longer matches campaign filter"
+msgstr "El registro ya no coincide con el filtro de la campaña"
+
+#. module: marketing_automation
+#. odoo-python
 #: code:addons/marketing_automation/models/marketing_activity.py:0
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_activity__rejected
 #: model:ir.model.fields.selection,name:marketing_automation.selection__marketing_trace__state__rejected
@@ -1447,6 +1470,11 @@ msgstr "Responsable"
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_form
 msgid "Run"
 msgstr "Ejecutar"
+
+#. module: marketing_automation
+#: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
+msgid "Run Activities"
+msgstr "Ejecutar actividades"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
@@ -1718,6 +1746,12 @@ msgstr "Pruebas"
 #. module: marketing_automation
 #. odoo-python
 #: code:addons/marketing_automation/models/marketing_campaign.py:0
+msgid "The filter domain is using unauthorized fields."
+msgstr ""
+
+#. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/marketing_campaign.py:0
 msgid ""
 "The saved filter targets different model and is incompatible with this "
 "campaign."
@@ -1880,7 +1914,7 @@ msgstr "Flujo de bienvenida"
 #. odoo-python
 #: code:addons/marketing_automation/models/marketing_campaign.py:0
 msgid "Welcome!"
-msgstr "¡Bienvenido/a!"
+msgstr "¡Te damos la bienvenida!"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__ab_testing_winner_selection
@@ -1907,10 +1941,10 @@ msgid ""
 "(trigger_type)s\"\n"
 "Please modify one of those activities before saving."
 msgstr ""
-"Está intentando configurar la actividad \"%(parent_activity)s\" como "
-"\"%(parent_type)s\" mientras que su actividad hija es \"%(activity)s\" tiene "
-"el tipo de activación \"%(trigger_type)s\"\n"
-"Por favor modifique una de esas actividades antes de guardarla."
+"Estás intentando configurar la actividad «%(parent_activity)s» como «%"
+"(parent_type)s», mientras que su actividad secundaria «%(activity)s» tiene "
+"el tipo de activador «%(trigger_type)s».\n"
+"Modifica una de esas actividades antes de guardar."
 
 #. module: marketing_automation
 #. odoo-python

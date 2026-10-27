@@ -282,6 +282,29 @@ class TestHeadcount(TransactionCase):
             self.versions_us[0] | self.versions_us[2] | self.versions_us[10]
         )
 
+    def test_headcount_population_without_employee(self):
+        """Test that versions without an employee are not included in the headcount."""
+        company = self.env['res.company'].create({
+            'name': 'Test Company',
+        })
+
+        self.env['hr.version'].create({
+            'name': False,
+            'employee_id': False,
+            'company_id': company.id,
+            'contract_date_start': date(2026, 3, 1),
+        })
+
+        headcount = self.env['hr.payroll.headcount'].create({
+            'company_id': company.id,
+            'date_from': date(2026, 3, 1),
+            'date_to': date(2026, 3, 31),
+        })
+
+        headcount.action_populate()
+        self.assertFalse(headcount.line_ids)
+        self.assertEqual(headcount.employee_count, 0)
+
     def test_headcount_repopulate(self):
         """Test that the headcount can be repopulated.
         And that the values are actually updated.

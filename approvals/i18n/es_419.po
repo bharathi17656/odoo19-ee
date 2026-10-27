@@ -3,15 +3,16 @@
 # * approvals
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Fernanda Alvarez (mfar)" <mfar@odoo.com>, 2025.
+# "Fernanda Alvarez (mfar)" <mfar@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Patricia Gutiérrez (pagc)" <pagc@odoo.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:40+0000\n"
-"PO-Revision-Date: 2025-11-08 20:04+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2026-10-12 16:15+0000\n"
+"Last-Translator: \"Fernanda Alvarez (mfar)\" <mfar@odoo.com>\n"
 "Language-Team: Spanish (Latin America) <https://translate.odoo.com/projects/"
 "odoo-19/approvals/es_419/>\n"
 "Language: es_419\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: approvals
 #. odoo-python
@@ -33,21 +34,6 @@ msgid "'Approval - %s' % object.name"
 msgstr "'Aprobación - %s' % object.name"
 
 #. module: approvals
-#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
-msgid "07/07/2023 10:00:00"
-msgstr "07/07/2023 10:00:00"
-
-#. module: approvals
-#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
-msgid "07/08/2023 10:00:00"
-msgstr "07/08/2023 10:00:00"
-
-#. module: approvals
-#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
-msgid "1200"
-msgstr "1200"
-
-#. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_kanban
 msgid "<i class=\"fa fa-check text-success me-1\"/>Approve"
 msgstr "<i class=\"fa fa-check text-success me-1\"/>Aprobar"
@@ -56,11 +42,6 @@ msgstr "<i class=\"fa fa-check text-success me-1\"/>Aprobar"
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_kanban
 msgid "<i class=\"fa fa-times text-danger me-1\"/>Refuse"
 msgstr "<i class=\"fa fa-times text-danger me-1\"/>Rechazar"
-
-#. module: approvals
-#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
-msgid "<span class=\"col-2 fw-bold\">Description:</span>"
-msgstr "<span class=\"col-2 fw-bold\">Descripción:</span>"
 
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_category_view_form
@@ -531,6 +512,11 @@ msgid "Description"
 msgstr "Descripción"
 
 #. module: approvals
+#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
+msgid "Description:"
+msgstr "Descripción:"
+
+#. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_approver__display_name
 #: model:ir.model.fields,field_description:approvals.field_approval_category__display_name
 #: model:ir.model.fields,field_description:approvals.field_approval_category_approver__display_name
@@ -617,7 +603,7 @@ msgstr "Desde:"
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_search_view_search
 msgid "Future Activities"
-msgstr ""
+msgstr "Actividades futuras"
 
 #. module: approvals
 #: model:approval.category,name:approvals.approval_category_data_general_approval
@@ -819,7 +805,7 @@ msgstr "Última actualización el"
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_search_view_search
 msgid "Late Activities"
-msgstr ""
+msgstr "Actividades atrasadas"
 
 #. module: approvals
 #: model_terms:ir.actions.act_window,help:approvals.approval_request_action
@@ -1182,7 +1168,7 @@ msgstr "Solicitud de:"
 #: model:ir.model.fields,field_description:approvals.field_approval_request__request_owner_id
 #: model_terms:ir.ui.view,arch_db:approvals.approval_search_view_search
 msgid "Request Owner"
-msgstr "Solicitar al propietario"
+msgstr "Propietario de la solicitud"
 
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_tree
@@ -1400,7 +1386,7 @@ msgstr "Por enviar"
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_search_view_search
 msgid "Today Activities"
-msgstr ""
+msgstr "Actividades de hoy"
 
 #. module: approvals
 #: model:ir.model.fields,help:approvals.field_approval_request__activity_exception_decoration
@@ -1480,6 +1466,12 @@ msgstr "No puede aprobarla antes del aprobador anterior."
 
 #. module: approvals
 #. odoo-python
+#: code:addons/approvals/models/approval_approver.py:0
+msgid "You cannot change approval request."
+msgstr "No puedes modificar la solicitud de aprobación."
+
+#. module: approvals
+#. odoo-python
 #: code:addons/approvals/models/ir_attachment.py:0
 msgid ""
 "You cannot unlink an attachment which is linked to a validated, refused or "
@@ -1554,6 +1546,18 @@ msgstr "nueva solicitud"
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_form
 msgid "to:"
 msgstr "a:"
+
+#~ msgid "<span class=\"col-2 fw-bold\">Description:</span>"
+#~ msgstr "<span class=\"col-2 fw-bold\">Descripción:</span>"
+
+#~ msgid "07/07/2023 10:00:00"
+#~ msgstr "07/07/2023 10:00:00"
+
+#~ msgid "07/08/2023 10:00:00"
+#~ msgstr "07/08/2023 10:00:00"
+
+#~ msgid "1200"
+#~ msgstr "1200"
 
 #~ msgid "<span class=\"fw-bold\">Description:</span>"
 #~ msgstr "<span class=\"fw-bold\">Descripción:</span>"

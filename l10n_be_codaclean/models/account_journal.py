@@ -1,5 +1,6 @@
 import logging
 
+from collections import defaultdict
 from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models, modules
@@ -99,6 +100,14 @@ class AccountJournal(models.Model):
                 ['id:recordset'],
             )
         }
+
+        journal_stats = defaultdict(lambda: {
+            "count": 0,
+            "dates": [],
+            "currency": None,
+        })
+        imported_files = 0
+
         for coda_b64, pdf_b64 in codas:
             try:
                 coda_attachment = self.env["ir.attachment"].create({
@@ -107,12 +116,25 @@ class AccountJournal(models.Model):
                     'datas': coda_b64,
                 })
                 statement_ids = []
-                for currency, account_number, stmt_vals in self._parse_bank_statement_file(coda_attachment.raw):
-                    journal = next((
-                        journal
-                        for journal in acc_journal_map.get(sanitize_account_number(account_number), [])
-                        if journal.currency_id.name or journal.company_id.currency_id.name == currency
-                    ), False)
+
+                for currency, account_number, *data in self._parse_bank_statement_file(coda_attachment.raw):
+                    if self._fields.get('extension_number'):  # Only on stable because hard to extend code in new module.
+                        extension_number, stmt_vals = data
+                    else:
+                        extension_number = None
+                        stmt_vals = data[-1]
+                    journals = [
+                        journal for
+                        journal in acc_journal_map.get(sanitize_account_number(account_number), [])
+                        if (
+                            (journal.currency_id and journal.currency_id.name == currency)
+                            or not journal.currency_id
+                        )
+                    ]
+                    if len(journals) > 1 and extension_number:
+                        journal = next((j for j in journals if j.extension_number == extension_number), False)
+                    else:
+                        journal = journals[0] if journals else None
                     if journal:
                         journal.bank_statements_source = "l10n_be_codaclean"
                     else:
@@ -121,6 +143,13 @@ class AccountJournal(models.Model):
                     stmt_vals = journal._complete_bank_statement_vals(stmt_vals, journal, account_number, coda_attachment)
                     statement_ids.extend(journal.with_context(skip_pdf_attachment_generation=True)._create_bank_statements(stmt_vals, raise_no_imported_file=False)[0])
                 if statement_ids:
+                    # Logging part
+                    imported_files += 1
+                    stats = journal_stats[journal]
+                    stats['count'] += 1
+                    stats['currency'] = currency
+                    stats['dates'].append(stmt_vals[0].get('date'))
+
                     statement_ids_all.extend(statement_ids)
                     # We can not add an attachment to multiple bank statements at once.
                     # (See function `write` of model 'account.bank.statement' in module 'account'.)
@@ -139,6 +168,11 @@ class AccountJournal(models.Model):
                 _logger.error("Error while importing Codaclean file: %s", e)
                 # We need to rollback here otherwise the next iteration will still have the error when trying to commit
                 self.env.cr.rollback()
+
+        _logger.info("L10nBeCodaClean: Coda import summary - Fetched: %s - Imported: %s - Journals: %s", len(codas), imported_files, len(journal_stats))
+        for journal, stats in journal_stats.items():
+            _logger.info("%s (%s): %s transactions (From: %s - To: %s) with currency %s", journal.code, journal.id, stats['count'], min(stats['dates']), max(stats['dates']), stats["currency"])
+
         if skipped_bank_accounts:
             _logger.info("No journals were found for the following bank accounts parsed from the Coda files: %s", ','.join(skipped_bank_accounts))
         return statement_ids_all

@@ -9,6 +9,11 @@
     'data': [
         'wizard/applicant_refuse_reason_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'hr_recruitment_ai/static/src/mail_composer_chatgpt.js',
+        ],
+    },
     'author': 'Odoo S.A.',
     'license': 'OEEL-1',
 }

@@ -1,13 +1,13 @@
 import base64
 import logging
+import traceback
 
-from odoo import SUPERUSER_ID, _, api
+from odoo import SUPERUSER_ID, api
 from odoo.exceptions import MissingError, ValidationError
 from odoo.http import Controller, request, route
 from odoo.tools.safe_eval import time
 
 from odoo.addons.hr_expense_stripe.utils import STRIPE_REQUEST_REFUSED_REASONS, StripeIssuingDatabaseError, format_amount_from_stripe
-
 
 _logger = logging.getLogger(__name__)
 
@@ -77,7 +77,7 @@ class StripeIssuingController(Controller):
                 'approved': False,
                 'message': str(e),
             }
-            _logger.error(e)
+            _logger.error(traceback.format_exc())
             # Because the request awaits a response, we decline the authorization request to prevent the webhook from being disabled by Stripe
             status = StripeIssuingDatabaseError.DB_ERROR if event['type'] != 'issuing_authorization.request' else 200
         return request.make_json_response(data=response, headers=response_headers, status=status)
@@ -97,9 +97,9 @@ class StripeIssuingController(Controller):
             raise MissingError(env._("A card that doesn't exist on the database was used"))
         if event['type'] == 'issuing_authorization.request':
             amount = format_amount_from_stripe(auth_object['pending_request']['amount'], card.currency_id)
-            mcc = env['product.mcc.stripe.tag'].search([
-                ('code', '=', auth_object['merchant_data']['category_code']),
-            ])
+            mcc = env['product.mcc.stripe.tag'].new({
+                'code': auth_object['merchant_data']['category_code'],
+            })
             country = env['res.country'].search([('code', 'ilike', auth_object['merchant_data']['country'])], limit=1)
 
             can_pay, refusal_reason = card._can_pay_amount(amount, mcc, country)
@@ -112,18 +112,35 @@ class StripeIssuingController(Controller):
                 return {'message': refusal_reason, 'approved': False}
 
         if event['type'] in {'issuing_authorization.created', 'issuing_authorization.updated'}:
-            default_request_history = [{'approved': False, 'reason': _("Unknown")}]
+            default_reason = env._("Unknown reason.")
+            default_request_history = [{'approved': False, 'reason': default_reason}]
             request_history = auth_object.setdefault('request_history', default_request_history)[0]
-            if auth_object['status'] == 'closed' and not request_history['approved']:
-                # There will be no capture, we need to create a refused expense to log the refusal reason
-                technical_reason = request_history['reason']
-                if technical_reason == 'webhook_declined':
-                    reason = auth_object['metadata'].get('message', STRIPE_REQUEST_REFUSED_REASONS[request_history['reason']])
-                else:
-                    reason = STRIPE_REQUEST_REFUSED_REASONS[request_history['reason']]
-                env['hr.expense']._create_from_stripe_authorization(auth_object, reason)
-                return {'message': 'Refused expense created'}
-            return {'message': 'Event ignored, not a refused expense'}
+            response_message = ''
+            match auth_object['status'], request_history['approved']:
+                case 'pending', True:
+                    env['hr.expense']._create_from_stripe_authorization(auth_object)
+                    response_message = 'Draft expense created'
+
+                case ('closed', False) | ('reversed' | 'expired', False | True):
+                    # There will be no capture, we need to create a refused expense to log the refusal reason
+                    technical_reason = request_history['reason']
+                    if technical_reason == 'webhook_declined':
+                        refusal_reason = auth_object['metadata'].get(
+                            'message',
+                            STRIPE_REQUEST_REFUSED_REASONS.get(technical_reason, default_reason),
+                        )
+                    elif technical_reason == 'webhook_approved':
+                        refusal_reason = env._(
+                            "The authorization was approved by the webhook, but was later reversed or closed without any capture."
+                        )
+                    else:
+                        refusal_reason = STRIPE_REQUEST_REFUSED_REASONS.get(technical_reason, default_reason)
+                    env['hr.expense']._create_from_stripe_authorization(auth_object, refusal_reason)
+                    response_message = 'Refused expense created'
+
+                case _:
+                    response_message = 'Event ignored, not a refused or draft expense'
+            return {'message': response_message}
         raise ValidationError(env._("Invalid event type '%(invalid_event)s'", invalid_event=event['type']))
 
     @api.model
@@ -162,7 +179,7 @@ class StripeIssuingController(Controller):
             card_object['shipping'] and card_object['shipping'].get('status') in {'canceled', 'failure', 'returned'}
             and event['data']["previous_attributes"].get("shipping", {}).get("status")
         ):
-            existing_card.with_context(skip_local_update=True)._create_or_update_card(state='canceled')
+            existing_card.with_context(skip_local_update=existing_card.state == 'canceled')._create_or_update_card(state='canceled')
         else:
             existing_card._update_from_stripe(card_object)
 
@@ -172,40 +189,46 @@ class StripeIssuingController(Controller):
     def _process_transaction_event(self, env, event):
         tr_object = event['data']['object']
         authorization_id = tr_object['authorization']
-        if authorization_id:
-            existing_expenses = env['hr.expense'].search([('stripe_authorization_id', '=', authorization_id)])
-        else:
-            existing_expenses = env['hr.expense'].search([('stripe_transaction_id', '=', tr_object['id'])])
+        transaction_id = tr_object['id']
 
-        expense_authorization_id = existing_expenses.stripe_authorization_id
-        expense_transaction_ids = {tr_id for tr_id in existing_expenses.mapped('stripe_transaction_id') if tr_id}
         split_id = False
-        if expense_authorization_id == authorization_id and expense_transaction_ids and tr_object['id'] not in expense_transaction_ids:
-            if len(existing_expenses) == 1:
-                split_id = (existing_expenses.split_expense_origin_id or existing_expenses).id
-            else:
-                split_id = next(
-                    s_id
-                    for s_id
-                    in (*existing_expenses.mapped('split_expense_origin_id'), min(existing_expenses.ids))
-                    if s_id
-                )
-            existing_expenses.split_expense_origin_id = split_id
-            existing_expenses = env['hr.expense']  # If double transaction is detected, create a new existing_expenses
+        if transaction_id and not authorization_id:
+            # In case of a force capture
+            existing_expenses = env['hr.expense'].search([('stripe_transaction_id', '=', transaction_id)])
+
+        elif authorization_id:
+            existing_expenses = env['hr.expense'].search([('stripe_authorization_id', '=', authorization_id)])
+            expense_transaction_ids = set(existing_expenses.mapped('stripe_transaction_id')) - {False}
+            if expense_transaction_ids and transaction_id not in expense_transaction_ids:
+                if len(existing_expenses) == 1:
+                    split_id = (existing_expenses.split_expense_origin_id or existing_expenses).id
+                else:
+                    split_id = next(
+                        s_id
+                        for s_id
+                        in (*existing_expenses.mapped('split_expense_origin_id').ids, min(existing_expenses.ids))
+                        if s_id
+                    )
+                existing_expenses.split_expense_origin_id = split_id
+                existing_expenses = env['hr.expense']  # If double transaction is detected, create a new existing_expenses
+            elif expense_transaction_ids:
+                existing_expenses = existing_expenses.filtered(lambda exp: exp.stripe_transaction_id == transaction_id)
 
         if tr_object['type'] == 'capture' and not existing_expenses:
             env['hr.expense']._create_from_stripe_transaction(tr_object, split_id=split_id)
+        elif tr_object['type'] == 'capture' and existing_expenses:
+            existing_expenses._update_from_stripe_transaction(tr_object)
         elif tr_object['type'] == 'refund' and existing_expenses:
             existing_expenses._stripe_cancel_expense_or_reverse_move(tr_object)
         if event['type'] == 'issuing_transaction.created':
-            existing_statement_line = env['account.bank.statement.line'].search([('stripe_id', '=', tr_object['id'])])
+            existing_statement_line = env['account.bank.statement.line'].search([('stripe_id', '=', transaction_id)])
             if existing_statement_line:
                 # if the event is sent twice
                 existing_statement_line._update_from_stripe_transaction(tr_object)
             else:
                 env['account.bank.statement.line']._create_from_stripe_transaction(tr_object)
         elif event['type'] == 'issuing_transaction.updated':
-            statement_line = env['account.bank.statement.line'].search([('stripe_id', '=', tr_object['id'])])
+            statement_line = env['account.bank.statement.line'].search([('stripe_id', '=', transaction_id)])
             statement_line._update_from_stripe_transaction(tr_object)
         return {'message': 'Expense & Bank Statement Line Created/Updated'}
 

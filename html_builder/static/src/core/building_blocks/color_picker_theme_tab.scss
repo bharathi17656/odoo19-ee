@@ -11,8 +11,19 @@
 }
 
 .o_cc_preview_wrapper {
+    .color-combination-button > div > {
+        h1, p  {
+            min-width: 15%;
+        }
+        span {
+            max-width: 25%;
+        }
+    }
+
     @for $index from 1 through 5 {
         .o_cc#{$index} {
+            --PreviewAlphaBg-background-size: 32px;
+            @extend %o-preview-alpha-background;
             background-color: var(--hb-cp-o-cc#{$index}-bg);
             background-image: var(--hb-cp-o-cc#{$index}-bg-gradient), url('/web/static/img/transparent.png');
             color: var(--hb-cp-o-cc#{$index}-text);

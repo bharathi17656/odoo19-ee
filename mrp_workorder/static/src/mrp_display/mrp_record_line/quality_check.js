@@ -117,8 +117,8 @@ export class QualityCheck extends MrpWorkorder {
         switch (this.type) {
             case "instructions":
                 if (this.isComplete) {
-                    this.props.record.data.quality_state = "none";
-                    return;
+                    await this.props.record.update({ quality_state: "none" });
+                    return this.props.record.save({ reload: false });
                 } else {
                     return this.doActionAndNext("action_next");
                 }
@@ -146,7 +146,11 @@ export class QualityCheck extends MrpWorkorder {
 
     async doActionAndNext(action, stateToSet = "pass") {
         const { model, resModel, resId, data, _parentRecord } = this.props.record;
-        const result = await model.orm.call(resModel, action, [resId]);
+        const result = await model.orm.call(resModel, action, [resId], {
+            context: {
+                from_shopfloor: true,
+            },
+        });
         if ("next_check_id" in result) {
             data.quality_state = stateToSet;
             _parentRecord.data.current_quality_check_id = { id: result.next_check_id };
@@ -159,7 +163,10 @@ export class QualityCheck extends MrpWorkorder {
             }
             await this.action.doAction(result, params);
         }
-        return this.props.startWorking();
+        // the check is already validated, a blocked work center cannot be started
+        if (_parentRecord.data.working_state !== "blocked") {
+            return this.props.startWorking();
+        }
     }
 
     async showWorksheet() {
@@ -179,8 +186,8 @@ export class QualityCheck extends MrpWorkorder {
             };
         }
         this.dialog.add(MrpWorksheetDialog, {
-            worksheetText: this.check.note,
             worksheetData,
+            record: this.props.record,
         });
     }
 }

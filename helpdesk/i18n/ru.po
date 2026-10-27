@@ -5,13 +5,14 @@
 # Translators:
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Anastasiia Koroleva (koan)" <koan@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:41+0000\n"
-"PO-Revision-Date: 2025-11-08 19:43+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-09-11 17:44+0000\n"
+"PO-Revision-Date: 2026-07-07 17:05+0000\n"
+"Last-Translator: \"Anastasiia Koroleva (koan)\" <koan@odoo.com>\n"
 "Language-Team: Russian <https://translate.odoo.com/projects/odoo-19/helpdesk/"
 "ru/>\n"
 "Language: ru\n"
@@ -19,9 +20,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || ("
-"n%100>=11 && n%100<=14)? 2 : 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || "
+"(n%100>=11 && n%100<=14)? 2 : 3);\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__answered_customer_message_count
@@ -110,6 +111,8 @@ msgstr "<b>Перетаскивайте</b> карту, чтобы измени�
 msgid ""
 "<b>Log internal notes</b> and use @<b>mentions</b> to notify your colleagues."
 msgstr ""
+"<b>Пишите внутренние заметки</b> и используйте @<b>упоминания</b>, чтобы "
+"уведомлять своих коллег."
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.solved_ticket_request_email_template
@@ -118,7 +121,7 @@ msgid ""
 "        Dear <t t-out=\"object.sudo().partner_id.name or 'Madam/Sir'\">Madam/"
 "Sir</t>,<br/><br/>\n"
 "        We would like to inform you that we have closed your ticket "
-"(reference <t t-out=\"object.id or ''\">15</t>). \n"
+"(reference <t t-out=\"object.ticket_ref or ''\">15</t>).\n"
 "        We trust that the services provided have met your expectations and "
 "that you have found a satisfactory resolution to your issue.<br/><br/>\n"
 "        However, if you have any further questions or comments, please do "
@@ -136,8 +139,8 @@ msgstr ""
 "<div>\n"
 "        Здравствуйте, <t t-out=\"object.sudo().partner_id.name or 'Madam/"
 "Sir'\"> уважаемый клиент</t>!<br/><br/>\n"
-"        Сообщаем, что мы закрыли ваш тикет (<t t-out=\"object.id or ''\">15</"
-"t>). \n"
+"        Сообщаем, что мы закрыли ваш тикет (<t t-out=\"object.ticket_ref or "
+"''\">15</t>). \n"
 "        Мы надеемся, что предоставленные услуги соответствовали вашим "
 "ожиданиям и ваш вопрос был решен.<br/><br/>\n"
 "        Если у вас остались дополнительные вопросы или комментарии, "
@@ -233,6 +236,84 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"    <t t-set=\"access_token\" t-value=\"object._rating_get_access_token()\"/"
+">\n"
+"    <t t-set=\"partner\" t-value=\"object._rating_get_partner()\"/>\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"style=\"width:100%; margin:0;\">\n"
+"    <tbody>\n"
+"        <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
+"            <t t-if=\"partner.name\">\n"
+"                Здравствуйте, <t t-out=\"partner.name or ''\">Брэндон "
+"Фримен</t>!<br/><br/>\n"
+"            </t>\n"
+"            <t t-else=\"\">\n"
+"                Здравствуйте!<br/>\n"
+"            </t>\n"
+"            Пожалуйста, уделите несколько минут, чтобы оценить нашу работу "
+"по тикету «<strong t-out=\"object.name or ''\">Неустойчивые ножки стола</"
+"strong>»\n"
+"            <t t-if=\"object._rating_get_operator().name\">\n"
+"                назначенного сотруднику – <strong t-"
+"out=\"object._rating_get_operator().name or ''\">Митчелл Админ</strong>.<br/"
+">\n"
+"            </t>\n"
+"            <t t-else=\"\">\n"
+"                .<br/><br/>\n"
+"            </t>\n"
+"        </td></tr>\n"
+"        <tr><td style=\"text-align: center;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"style=\"width:100%; margin: 32px 0px 32px 0px; display: inline-table;\">\n"
+"                <tr><td style=\"font-size: 14px; text-align:center;\">\n"
+"                    <strong>Нам важно знать ваше мнение о качестве нашего "
+"сервиса</strong><br/>\n"
+"                    <span style=\"text-color: #888888\">(нажмите на один из "
+"смайликов).</span>\n"
+"                </td></tr>\n"
+"                <tr><td style=\"font-size: 14px;\">\n"
+"                    <table style=\"width:100%;text-align:center;margin-"
+"top:2rem;\">\n"
+"                        <tr>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/"
+"5\" t-att-class=\"'pe-none' if object._rating_get_operator() else ''\">\n"
+"                                    <img alt=\"Happy\" src=\"/rating/static/"
+"src/img/rating_5.png\" title=\"Happy\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/"
+"3\" t-att-class=\"'pe-none' if object._rating_get_operator() else ''\">\n"
+"                                    <img alt=\"Neutral\" src=\"/rating/"
+"static/src/img/rating_3.png\" title=\"Neutral\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/"
+"1\" t-att-class=\"'pe-none' if object._rating_get_operator() else ''\">\n"
+"                                    <img alt=\"Unhappy\" src=\"/rating/"
+"static/src/img/rating_1.png\" title=\"Unhappy\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td></tr>\n"
+"        <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
+"            Мы ценим обратную связь. Ваши отзывы помогают нам постоянно "
+"совершенствоваться.\n"
+"            <br/><br/><span style=\"margin: 0px 0px 0px 0px; font-size: "
+"12px; opacity: 0.5; color: #454748;\">Этот опрос был отправлен, поскольку "
+"ваша заявка была переведена на этап <b t-out=\"object.stage_id.name or "
+"''\">В процессе</b>.</span>\n"
+"        </td></tr>\n"
+"    </tbody>\n"
+"    </table>\n"
+"</div>\n"
+"        "
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.new_ticket_request_email_template
@@ -268,47 +349,47 @@ msgid ""
 "    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
 "        <t t-if=\"hasattr(object.team_id, 'website_id') and "
 "object.team_id.use_website_helpdesk_form\">\n"
-"            <a t-attf-style=\"background-color: "
-"{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
-"8px 16px; text-decoration: none; color: "
-"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
-"font-size: 13px;\" t-att-href=\"'%s%s' % (object.team_id.website_id.domain "
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"'%s%s' % (object.team_id.website_id.domain "
 "or '', object.get_portal_url())\" target=\"_blank\">View Ticket</a>\n"
 "        </t>\n"
 "        <t t-else=\"\">\n"
-"            <a t-attf-style=\"background-color: "
-"{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
-"8px 16px; text-decoration: none; color: "
-"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
-"font-size:13px;\" t-att-href=\"object.get_portal_url()\" "
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"object.get_portal_url()\" "
 "target=\"_blank\">View Ticket</a>\n"
 "        </t>\n"
 "        <t t-if=\"hasattr(object.team_id, 'website_id') and "
 "object.team_id.allow_portal_ticket_closing\">\n"
-"            <a t-attf-style=\"background-color: "
-"{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
-"8px 16px; text-decoration: none; color: "
-"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
-"font-size:13px;\" t-att-href=\"'%s/my/ticket/close/%s/%s' % "
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"'%s/my/ticket/close/%s/%s' % "
 "(object.team_id.website_id.domain or '', object.id, object.access_token)\" "
 "target=\"_blank\">Close Ticket</a>\n"
 "        </t>\n"
 "        <t t-elif=\"object.team_id.allow_portal_ticket_closing\">\n"
-"            <a t-attf-style=\"background-color: "
-"{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
-"8px 16px; text-decoration: none; color: "
-"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
-"font-size:13px;\" t-att-href=\"'/my/ticket/close/%s/%s' % (object.id, "
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"'/my/ticket/close/%s/%s' % (object.id, "
 "object.access_token)\" target=\"_blank\">Close Ticket</a>\n"
 "        </t>\n"
 "        <t t-if=\"object.team_id.use_website_helpdesk_forum or "
 "object.team_id.use_website_helpdesk_knowledge or "
 "object.team_id.use_website_helpdesk_slides\">\n"
-"            <a t-attf-style=\"background-color: "
-"{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
-"8px 16px; text-decoration: none; color: "
-"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
-"font-size:13px;\" t-att-href=\"object.team_id.feature_form_url\" "
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"object.team_id.feature_form_url\" "
 "target=\"_blank\">Visit Help Center</a>\n"
 "        </t><br/><br/>\n"
 "    </div>\n"
@@ -318,6 +399,88 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"    Здравствуйте, <t t-out=\"object.sudo().partner_id.name or "
+"object.sudo().partner_name or 'Madam/Sir'\">уважаемый клиент</t>!<br/><br/>\n"
+"    Ваш запрос\n"
+"    <t t-if=\"hasattr(object.team_id, 'website_id') and "
+"object.get_portal_url()\">\n"
+"        <a t-attf-href=\"{{ object.team_id.website_id.domain }}/my/ticket/"
+"{{ object.id }}/{{ object.access_token }}\" t-out=\"object.name or "
+"''\">Неустойчивые ножки стола</a>\n"
+"    </t>\n"
+"    получен и находится на рассмотрении в нашей службе <t t-"
+"out=\"object.team_id.name or ''\">поддержки VIP</t>.<br/><br/>\n"
+"    Номер вашего обращения: <strong><t t-out=\"object.ticket_ref or ''\">15</"
+"t></strong>.<br/><br/>\n"
+"\n"
+"    Чтобы предоставить дополнительную информацию, просто ответьте на это "
+"письмо.<br/><br/>\n"
+"    <t t-if=\"object.team_id.show_knowledge_base\">\n"
+"        Вы также можете посетить наш <a t-attf-"
+"href=\"{{ object.team_id.get_knowledge_base_url() }}\">Справочный центр</a>. "
+"Возможно, там уже есть ответ на ваш вопрос.\n"
+"        <br/><br/>\n"
+"    </t>\n"
+"    <t t-if=\"object.team_id.allow_portal_ticket_closing\">\n"
+"        Вы можете самостоятельно закрыть обращение, если помощь больше не "
+"требуется. Благодарим за сотрудничество.<br/><br/>\n"
+"    </t>\n"
+"\n"
+"    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
+"        <t t-if=\"hasattr(object.team_id, 'website_id') and "
+"object.team_id.use_website_helpdesk_form\">\n"
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"'%s%s' % (object.team_id.website_id.domain "
+"or '', object.get_portal_url())\" target=\"_blank\">Посмотреть обращение</"
+"a>\n"
+"        </t>\n"
+"        <t t-else=\"\">\n"
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"object.get_portal_url()\" "
+"target=\"_blank\">Посмотреть обращение</a>\n"
+"        </t>\n"
+"        <t t-if=\"hasattr(object.team_id, 'website_id') and "
+"object.team_id.allow_portal_ticket_closing\">\n"
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"'%s/my/ticket/close/%s/%s' % "
+"(object.team_id.website_id.domain or '', object.id, object.access_token)\" "
+"target=\"_blank\">Закрыть обращение</a>\n"
+"        </t>\n"
+"        <t t-elif=\"object.team_id.allow_portal_ticket_closing\">\n"
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"'/my/ticket/close/%s/%s' % (object.id, "
+"object.access_token)\" target=\"_blank\">Закрыть обращение</a>\n"
+"        </t>\n"
+"        <t t-if=\"object.team_id.use_website_helpdesk_forum or "
+"object.team_id.use_website_helpdesk_knowledge or "
+"object.team_id.use_website_helpdesk_slides\">\n"
+"            <a class=\"btn btn-fill-primary\" t-attf-style=\"background-"
+"color: {{object.company_id.email_secondary_color or 'rgb(113, 75, 103)'}}; "
+"padding: 5px 10px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 4px; "
+"font-size: 14px;\" t-att-href=\"object.team_id.feature_form_url\" "
+"target=\"_blank\">Посетить справочный центр</a>\n"
+"        </t><br/><br/>\n"
+"    </div>\n"
+"\n"
+"    С уважением,<br/><br/>\n"
+"    команда <t t-out=\"object.team_id.name or 'Helpdesk'\">службы поддержки</"
+"t>\n"
+"</div>\n"
+"        "
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
@@ -340,6 +503,13 @@ msgid ""
 "                            <i class=\"fa fa-fw o_button_icon fa-frown-o "
 "text-danger\" invisible=\"rating_avg &gt;= 2.33\" title=\"Unhappy\"/>"
 msgstr ""
+"<i class=\"fa fa-fw o_button_icon fa-smile-o text-success\" "
+"invisible=\"rating_avg &lt; 3.66\" title=\"Хорошо\"/>\n"
+"                            <i class=\"fa fa-fw o_button_icon fa-meh-o text-"
+"warning\" invisible=\"rating_avg &lt; 2.33 or rating_avg &gt;= 3.66\" "
+"title=\"Средне\"/>\n"
+"                            <i class=\"fa fa-fw o_button_icon fa-frown-o "
+"text-danger\" invisible=\"rating_avg &gt;= 2.33\" title=\"Плохо\"/>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
@@ -579,7 +749,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.constraint,message:helpdesk.constraint_helpdesk_tag_assignment_tag_team_unique
 msgid "A tag can only be used once per team."
-msgstr ""
+msgstr "Тег можно использовать только один раз для одной команды."
 
 #. module: helpdesk
 #: model:ir.model.constraint,message:helpdesk.constraint_helpdesk_tag_name_uniq
@@ -680,7 +850,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.action_edit_followers_helpdesk_ticket
 msgid "Add/remove followers"
-msgstr ""
+msgstr "Добавить/удалить наблюдателей"
 
 #. module: helpdesk
 #: model:res.groups,name:helpdesk.group_helpdesk_manager
@@ -803,6 +973,8 @@ msgid ""
 "Assign tickets to the appropriate team members by defining who can work on "
 "tickets with certain tags."
 msgstr ""
+"Назначайте тикеты соответствующим участникам команды, определяя, кто может "
+"работать с тикетами с определенными тегами."
 
 #. module: helpdesk
 #. odoo-python
@@ -848,6 +1020,9 @@ msgid ""
 "cannot be accessed by the customer, as it belongs to a helpdesk team that is "
 "not publicly available, or there is no customer associated with the ticket."
 msgstr ""
+"В данный момент предпросмотр недоступен. Клиент не может просмотреть это "
+"обращение, так как оно относится к закрытой команде поддержки или к "
+"обращению не привязан клиент."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_attachment_count
@@ -857,8 +1032,8 @@ msgstr "Количество вложений"
 
 #. module: helpdesk
 #: model:res.groups,name:helpdesk.group_auto_assignment
-msgid "Auto Assigment"
-msgstr "Автоассигнация"
+msgid "Auto Assignment"
+msgstr ""
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -912,19 +1087,19 @@ msgstr "Средняя оценка за последние 7 дней"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
 msgid "Average Rating: Happy"
-msgstr ""
+msgstr "Средний рейтинг: Хорошо"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
 msgid "Average Rating: Neutral"
-msgstr ""
+msgstr "Средний рейтинг: Средне"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
 msgid "Average Rating: Unhappy"
-msgstr ""
+msgstr "Средний рейтинг: Плохо"
 
 #. module: helpdesk
 #. odoo-javascript
@@ -1137,12 +1312,12 @@ msgstr "Конфигурация"
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.action_helpdesk_tag_assignment
 msgid "Configure Tags Handled by Team Members"
-msgstr ""
+msgstr "Настроить теги, обрабатываемые участниками команды"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Configure tags handled by team members"
-msgstr ""
+msgstr "Настроить теги, обрабатываемые участниками команды"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_helpdesk_stage_delete_confirmation_wizard
@@ -1426,7 +1601,7 @@ msgstr "Отменить"
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__assign_method__tags
 msgid "Dispatch tickets based on tags"
-msgstr ""
+msgstr "Распределять обращения на основе тегов"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_digest_digest__display_name
@@ -1778,7 +1953,7 @@ msgstr "Мастер удаления стадий в службе поддер�
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_tag_assignment
 msgid "Helpdesk Tag Assignment"
-msgstr ""
+msgstr "Назначение тегов для службы поддержки"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_tag
@@ -1867,7 +2042,7 @@ msgstr "Имеет высокий приоритет"
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_stage__rotting_threshold_days
 msgid "Highlight tickets that haven't been updated for this many days."
-msgstr ""
+msgstr "Выделять тикеты, которые не обновлялись указанное количество дней."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -1923,7 +2098,7 @@ msgstr ""
 #. module: helpdesk
 #: model:helpdesk.team,name:helpdesk.helpdesk_team2
 msgid "IT Support (Auto Assignment by Tags)"
-msgstr ""
+msgstr "ИТ-поддержка (автоназначение по тегам)"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__activity_exception_icon
@@ -2411,7 +2586,7 @@ msgstr "Теги не найдены. Давайте создадим его!"
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.action_helpdesk_tag_assignment
 msgid "No tags or team members found. Let's create them!"
-msgstr ""
+msgstr "Теги или участники команды не найдены. Давайте их создадим!"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_team_dashboard_action_main
@@ -2872,7 +3047,7 @@ msgstr "Возвраты"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Reimburse customers with a voucher code for future purchases"
-msgstr ""
+msgstr "Возмещайте расходы клиентам с помощью промокодов на будущие покупки"
 
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_repair
@@ -2892,7 +3067,7 @@ msgstr "Ремонт"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_product_replacements
 msgid "Replacements"
-msgstr ""
+msgstr "Замены"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
@@ -3155,6 +3330,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Send customers a replacement for a lost, damaged, or returned item"
 msgstr ""
+"Отправляйте клиентам замену утерянного, поврежденного или возвращенного "
+"товара"
 
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_service
@@ -3365,7 +3542,7 @@ msgstr "Команда"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_helpdesk_tag_assignment_search
 msgid "Team Member"
-msgstr ""
+msgstr "Участник команды"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_tag_assignment__user_ids
@@ -3535,8 +3712,11 @@ msgstr "Тикет закрыт"
 
 #. module: helpdesk
 #: model:mail.template,subject:helpdesk.solved_ticket_request_email_template
-msgid "Ticket Closed - Reference {{ object.id if object.id else 15 }}"
-msgstr "Тикет закрыт - Ссылка {{ object.id if object.id else 15 }}"
+msgid ""
+"Ticket Closed - Reference {{ object.ticket_ref if object.ticket_ref else "
+"15 }}"
+msgstr ""
+"Тикет закрыт – Номер {{ object.ticket_ref if object.ticket_ref else 15 }}"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__ticket_count
@@ -3586,7 +3766,7 @@ msgstr "Статус SLA тикета"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_tag_assignment__tag_id
 msgid "Ticket Tag"
-msgstr ""
+msgstr "Тег тикета"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.quick_create_ticket_form
@@ -3787,13 +3967,13 @@ msgstr "Нераспределенные тикеты"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search_base
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_progress_data
 msgid "Unhappy"
-msgstr ""
+msgstr "Плохо"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
 msgid "Unhappy face"
-msgstr ""
+msgstr "Грустный смайл"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
@@ -3831,7 +4011,7 @@ msgstr "Используйте купоны"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_giftcards
 msgid "Use Gift Cards"
-msgstr ""
+msgstr "Использовать подарочные сертификаты"
 
 #. module: helpdesk
 #. odoo-javascript
@@ -3883,6 +4063,9 @@ msgid ""
 "Want to use the website form? Just adjust your team's visibility to "
 "\"Invited portal users and all internal users\" and watch the magic happen!"
 msgstr ""
+"Хотите использовать форму на сайте? Просто установите видимость вашей "
+"команды на «Приглашенные пользователи портала и все внутренние "
+"пользователи», и все заработает!"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -3987,6 +4170,11 @@ msgstr ""
 "Не хотите ли вы также разархивировать все билеты, содержащиеся в этих этапах?"
 
 #. module: helpdesk
+#: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_twitter
+msgid "X"
+msgstr "X"
+
+#. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_helpdesk_stage_delete_wizard
 msgid ""
 "You cannot delete stages containing tickets. You can either archive them or "
@@ -4046,7 +4234,7 @@ msgstr "псевдоним"
 #. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 msgid "close_date"
-msgstr ""
+msgstr "close_date"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
@@ -4098,7 +4286,7 @@ msgstr "поиск команды"
 #. odoo-python
 #: code:addons/helpdesk/models/helpdesk_team.py:0
 msgid "team_id"
-msgstr ""
+msgstr "team_id"
 
 #. module: helpdesk
 #. odoo-python
@@ -4110,7 +4298,7 @@ msgstr "билеты"
 #. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 msgid "user_id"
-msgstr ""
+msgstr "user_id"
 
 #. module: helpdesk
 #: model:mail.template,subject:helpdesk.rating_ticket_request_email_template
@@ -4131,6 +4319,222 @@ msgstr "{{ object.name }}"
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
 msgid "👤 Unassigned"
 msgstr "👤 Не назначено"
+
+#~ msgid "Auto Assigment"
+#~ msgstr "Автоассигнация"
+
+#~ msgid ""
+#~ "<div>\n"
+#~ "        Dear <t t-out=\"object.sudo().partner_id.name or 'Madam/"
+#~ "Sir'\">Madam/Sir</t>,<br/><br/>\n"
+#~ "        We would like to inform you that we have closed your ticket "
+#~ "(reference <t t-out=\"object.id or ''\">15</t>). \n"
+#~ "        We trust that the services provided have met your expectations "
+#~ "and that you have found a satisfactory resolution to your issue.<br/><br/"
+#~ ">\n"
+#~ "        However, if you have any further questions or comments, please do "
+#~ "not hesitate to reply to this email to re-open your ticket. \n"
+#~ "        Our team is always here to help you and we will be happy to "
+#~ "assist you with any further concerns you may have.<br/><br/>\n"
+#~ "        Thank you for choosing our services and for your cooperation "
+#~ "throughout this process. We truly value your business and appreciate the "
+#~ "opportunity to serve you.<br/><br/>\n"
+#~ "        Kind regards,<br/><br/>\n"
+#~ "        <t t-out=\"object.team_id.name or 'Helpdesk'\">Helpdesk</t> "
+#~ "Team.\n"
+#~ "    </div>\n"
+#~ "        "
+#~ msgstr ""
+#~ "<div>\n"
+#~ "        Здравствуйте, <t t-out=\"object.sudo().partner_id.name or 'Madam/"
+#~ "Sir'\"> уважаемый клиент</t>!<br/><br/>\n"
+#~ "        Сообщаем, что мы закрыли ваш тикет (<t t-out=\"object.id or "
+#~ "''\">15</t>). \n"
+#~ "        Мы надеемся, что предоставленные услуги соответствовали вашим "
+#~ "ожиданиям и ваш вопрос был решен.<br/><br/>\n"
+#~ "        Если у вас остались дополнительные вопросы или комментарии, "
+#~ "пожалуйста, просто ответьте на это письмо, чтобы снова открыть ваш "
+#~ "тикет. \n"
+#~ "        Наша команда всегда готова помочь и с радостью окажет поддержку "
+#~ "по любым вашим дальнейшим обращениям.<br/><br/>\n"
+#~ "        Благодарим вас за выбор наших услуг и за сотрудничество в ходе "
+#~ "обработки вашего тикета. Мы высоко ценим ваш бизнес и признательны за "
+#~ "возможность работать с вами.<br/><br/>\n"
+#~ "        С уважением,<br/><br/>\n"
+#~ "        команда <t t-out=\"object.team_id.name or 'Helpdesk'\">службы "
+#~ "поддержки</t>.\n"
+#~ "    </div>\n"
+#~ "        "
+
+#~ msgid "Ticket Closed - Reference {{ object.id if object.id else 15 }}"
+#~ msgstr "Тикет закрыт - Ссылка {{ object.id if object.id else 15 }}"
+
+#~ msgid ""
+#~ "<div>\n"
+#~ "    Dear <t t-out=\"object.sudo().partner_id.name or "
+#~ "object.sudo().partner_name or 'Madam/Sir'\">Madam/Sir</t>,<br/><br/>\n"
+#~ "    Your request\n"
+#~ "    <t t-if=\"hasattr(object.team_id, 'website_id') and "
+#~ "object.get_portal_url()\">\n"
+#~ "        <a t-attf-href=\"{{ object.team_id.website_id.domain }}/my/ticket/"
+#~ "{{ object.id }}/{{ object.access_token }}\" t-out=\"object.name or "
+#~ "''\">Table legs are unbalanced</a>\n"
+#~ "    </t>\n"
+#~ "    has been received and is being reviewed by our <t t-"
+#~ "out=\"object.team_id.name or ''\">VIP Support</t> team.<br/><br/>\n"
+#~ "    The reference for your ticket is <strong><t t-out=\"object.ticket_ref "
+#~ "or ''\">15</t></strong>.<br/><br/>\n"
+#~ "\n"
+#~ "    To provide any additional information, simply reply to this email.<br/"
+#~ "><br/>\n"
+#~ "    <t t-if=\"object.team_id.show_knowledge_base\">\n"
+#~ "        Don't hesitate to visit our <a t-attf-"
+#~ "href=\"{{ object.team_id.get_knowledge_base_url() }}\">Help Center</a>. "
+#~ "You might find the answer to your question.\n"
+#~ "        <br/><br/>\n"
+#~ "    </t>\n"
+#~ "    <t t-if=\"object.team_id.allow_portal_ticket_closing\">\n"
+#~ "        Feel free to close your ticket if our help is no longer needed. "
+#~ "Thank you for your collaboration.<br/><br/>\n"
+#~ "    </t>\n"
+#~ "\n"
+#~ "    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
+#~ "        <t t-if=\"hasattr(object.team_id, 'website_id') and "
+#~ "object.team_id.use_website_helpdesk_form\">\n"
+#~ "            <a t-attf-style=\"background-color: "
+#~ "{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px "
+#~ "16px 8px 16px; text-decoration: none; color: "
+#~ "{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: "
+#~ "5px; font-size: 13px;\" t-att-href=\"'%s%s' % "
+#~ "(object.team_id.website_id.domain or '', object.get_portal_url())\" "
+#~ "target=\"_blank\">View Ticket</a>\n"
+#~ "        </t>\n"
+#~ "        <t t-else=\"\">\n"
+#~ "            <a t-attf-style=\"background-color: "
+#~ "{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px "
+#~ "16px 8px 16px; text-decoration: none; color: "
+#~ "{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: "
+#~ "5px; font-size:13px;\" t-att-href=\"object.get_portal_url()\" "
+#~ "target=\"_blank\">View Ticket</a>\n"
+#~ "        </t>\n"
+#~ "        <t t-if=\"hasattr(object.team_id, 'website_id') and "
+#~ "object.team_id.allow_portal_ticket_closing\">\n"
+#~ "            <a t-attf-style=\"background-color: "
+#~ "{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px "
+#~ "16px 8px 16px; text-decoration: none; color: "
+#~ "{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: "
+#~ "5px; font-size:13px;\" t-att-href=\"'%s/my/ticket/close/%s/%s' % "
+#~ "(object.team_id.website_id.domain or '', object.id, object.access_token)"
+#~ "\" target=\"_blank\">Close Ticket</a>\n"
+#~ "        </t>\n"
+#~ "        <t t-elif=\"object.team_id.allow_portal_ticket_closing\">\n"
+#~ "            <a t-attf-style=\"background-color: "
+#~ "{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px "
+#~ "16px 8px 16px; text-decoration: none; color: "
+#~ "{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: "
+#~ "5px; font-size:13px;\" t-att-href=\"'/my/ticket/close/%s/%s' % "
+#~ "(object.id, object.access_token)\" target=\"_blank\">Close Ticket</a>\n"
+#~ "        </t>\n"
+#~ "        <t t-if=\"object.team_id.use_website_helpdesk_forum or "
+#~ "object.team_id.use_website_helpdesk_knowledge or "
+#~ "object.team_id.use_website_helpdesk_slides\">\n"
+#~ "            <a t-attf-style=\"background-color: "
+#~ "{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px "
+#~ "16px 8px 16px; text-decoration: none; color: "
+#~ "{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: "
+#~ "5px; font-size:13px;\" t-att-href=\"object.team_id.feature_form_url\" "
+#~ "target=\"_blank\">Visit Help Center</a>\n"
+#~ "        </t><br/><br/>\n"
+#~ "    </div>\n"
+#~ "\n"
+#~ "    Best regards,<br/><br/>\n"
+#~ "    <t t-out=\"object.team_id.name or 'Helpdesk'\">Helpdesk</t> Team\n"
+#~ "</div>\n"
+#~ "        "
+#~ msgstr ""
+#~ "<div>\n"
+#~ "    Здравствуйте, <t t-out=\"object.sudo().partner_id.name or "
+#~ "object.sudo().partner_name or 'Madam/Sir'\">уважаемый клиент</t>!<br/><br/"
+#~ ">\n"
+#~ "    Ваш запрос\n"
+#~ "    <t t-if=\"hasattr(object.team_id, 'website_id') and "
+#~ "object.get_portal_url()\">\n"
+#~ "        <a t-attf-href=\"{{ object.team_id.website_id.domain }}/my/ticket/"
+#~ "{{ object.id }}/{{ object.access_token }}\" t-out=\"object.name or "
+#~ "''\">Ножки стола неустойчивы</a>\n"
+#~ "    </t>\n"
+#~ "    получен и рассматривается нашей командой <t t-"
+#~ "out=\"object.team_id.name or ''\">VIP-поддержка</t>.<br/><br/>\n"
+#~ "    Номер вашего тикета: <strong><t t-out=\"object.ticket_ref or ''\">15</"
+#~ "t></strong>.<br/><br/>\n"
+#~ "\n"
+#~ "    Чтобы предоставить дополнительную информацию, просто ответьте на это "
+#~ "письмо.<br/><br/>\n"
+#~ "    <t t-if=\"object.team_id.show_knowledge_base\">\n"
+#~ "        Вы также можете посетить наш <a t-attf-"
+#~ "href=\"{{ object.team_id.get_knowledge_base_url() }}\">Справочный центр</"
+#~ "a> – возможно, там вы найдете ответ на свой вопрос.\n"
+#~ "        <br/><br/>\n"
+#~ "    </t>\n"
+#~ "    <t t-if=\"object.team_id.allow_portal_ticket_closing\">\n"
+#~ "        Если помощь больше не требуется, вы можете закрыть этот тикет. "
+#~ "Благодарим за сотрудничество.<br/><br/>\n"
+#~ "    </t>\n"
+#~ "\n"
+#~ "    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
+#~ "        <t t-if=\"hasattr(object.team_id, 'website_id') and "
+#~ "object.team_id.use_website_helpdesk_form\">\n"
+#~ "            <a t-attf-style=\"background-color: "
+#~ "{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px "
+#~ "16px 8px 16px; text-decoration: none; color: "
+#~ "{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: "
+#~ "5px; font-size: 13px;\" t-att-href=\"'%s%s' % "
+#~ "(object.team_id.website_id.domain or '', object.get_portal_url())\" "
+#~ "target=\"_blank\">Открыть тикет</a>\n"
+#~ "        </t>\n"
+#~ "        <t t-else=\"\">\n"
+#~ "            <a t-attf-style=\"background-color: "
+#~ "{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px "
+#~ "16px 8px 16px; text-decoration: none; color: "
+#~ "{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: "
+#~ "5px; font-size:13px;\" t-att-href=\"object.get_portal_url()\" "
+#~ "target=\"_blank\">Открыть тикет</a>\n"
+#~ "        </t>\n"
+#~ "        <t t-if=\"hasattr(object.team_id, 'website_id') and "
+#~ "object.team_id.allow_portal_ticket_closing\">\n"
+#~ "            <a t-attf-style=\"background-color: "
+#~ "{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px "
+#~ "16px 8px 16px; text-decoration: none; color: "
+#~ "{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: "
+#~ "5px; font-size:13px;\" t-att-href=\"'%s/my/ticket/close/%s/%s' % "
+#~ "(object.team_id.website_id.domain or '', object.id, object.access_token)"
+#~ "\" target=\"_blank\">Закрыть тикет</a>\n"
+#~ "        </t>\n"
+#~ "        <t t-elif=\"object.team_id.allow_portal_ticket_closing\">\n"
+#~ "            <a t-attf-style=\"background-color: "
+#~ "{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px "
+#~ "16px 8px 16px; text-decoration: none; color: "
+#~ "{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: "
+#~ "5px; font-size:13px;\" t-att-href=\"'/my/ticket/close/%s/%s' % "
+#~ "(object.id, object.access_token)\" target=\"_blank\">Закрыть тикет</a>\n"
+#~ "        </t>\n"
+#~ "        <t t-if=\"object.team_id.use_website_helpdesk_forum or "
+#~ "object.team_id.use_website_helpdesk_knowledge or "
+#~ "object.team_id.use_website_helpdesk_slides\">\n"
+#~ "            <a t-attf-style=\"background-color: "
+#~ "{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px "
+#~ "16px 8px 16px; text-decoration: none; color: "
+#~ "{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: "
+#~ "5px; font-size:13px;\" t-att-href=\"object.team_id.feature_form_url\" "
+#~ "target=\"_blank\">Справочный центр</a>\n"
+#~ "        </t><br/><br/>\n"
+#~ "    </div>\n"
+#~ "\n"
+#~ "    С уважением,<br/><br/>\n"
+#~ "    команда <t t-out=\"object.team_id.name or 'Helpdesk'\">службы "
+#~ "поддержки</t>\n"
+#~ "</div>\n"
+#~ "        "
 
 #~ msgid ""
 #~ "<b>Log notes</b> for internal communications (you will only notify the "

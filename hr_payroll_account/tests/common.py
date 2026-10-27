@@ -115,11 +115,12 @@ class TestPayslipValidationCommon(AccountTestInvoicingCommon):
 
     @classmethod
     def _generate_payslip(cls, date_from, date_to, struct_id=False, input_line_ids=False, version_id=False, employee_id=False):
-        work_entries = cls.contract.generate_work_entries(date_from, date_to)
+        version = cls.contract.browse(version_id) if version_id else cls.contract
+        work_entries = version.generate_work_entries(date_from, date_to)
         payslip = cls.env['hr.payslip'].create([{
             'name': "Test Payslip",
             'employee_id': employee_id or cls.employee.id,
-            'version_id': version_id or cls.contract.id,
+            'version_id': version.id,
             'company_id': cls.env.company.id,
             'struct_id': struct_id or cls.structure.id,
             'date_from': date_from,
@@ -177,6 +178,13 @@ class TestPayslipValidationCommon(AccountTestInvoicingCommon):
         self.assertEqual(len(error), 0, '\n\n' + '\n'.join(error))
 
     def _validate_worked_days(self, payslip, results, skip_lines=False):
+        """
+        Validate the worked days lines of a payslip.
+        :param payslip: The payslip
+        :param results: A dict of {work_entry_code: (number_of_days, number_of_hours, amount)}
+        :param skip_lines: If True, we don't check that all lines are present in the payslip
+        :return:
+        """
         error = []
         line_values = payslip._get_worked_days_line_values(set(results.keys()) | set(payslip.worked_days_line_ids.mapped('code')), ['number_of_days', 'number_of_hours', 'amount'])
         for code, (number_of_days, number_of_hours, amount) in results.items():

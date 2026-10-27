@@ -1,5 +1,6 @@
 import { describe, expect, test } from "@odoo/hoot";
 import {
+    animationFrame,
     click,
     keyDown,
     press,
@@ -9,7 +10,6 @@ import {
     waitFor,
     waitForNone,
 } from "@odoo/hoot-dom";
-import { animationFrame } from "@odoo/hoot-mock";
 import { inputFiles } from "@web/../tests/utils";
 import { WebClient } from "@web/webclient/webclient";
 import {
@@ -50,7 +50,28 @@ defineActions([
         res_model: "documents.document",
         views: [[false, "kanban"]],
     },
+    {
+        id: 2,
+        name: "Documents",
+        res_model: "documents.document",
+        views: [[false, "kanban"]],
+        context: {
+            searchpanel_default_user_folder_id: 2,
+        },
+    },
 ]);
+
+async function clickUploadButton() {
+    await contains("button.btn.btn-primary.o-dropdown:contains('New')").click();
+    await contains("button.btn.btn-link.o_documents_kanban_upload").click();
+    // This step seems necessary to succeed everytime vs. clicking on "Upload" above...
+    await contains("input.o_input_file.o_hidden", {
+        visible: false,
+    }).click();
+    await animationFrame();
+    await setInputFiles([new File(["fake_file"], "fake_file.tiff", { type: "text/plain" })]);
+    await animationFrame();
+}
 
 test("Open share with edit user_permission", async function () {
     onRpc("/documents/touch/accessTokenFolder1", () => ({}));
@@ -72,6 +93,7 @@ test("Open share with edit user_permission", async function () {
 });
 
 test("Colorless-tags are also visible on cards", async function () {
+    onRpc("/documents/touch/accessTokenFolder1", () => true);
     const serverData = getDocumentsTestServerModelsData([
         makeDocumentRecordData(2, "Testing tags", { folder_id: 1, tag_ids: [1, 2] }),
     ]);
@@ -112,15 +134,7 @@ test("Uploading from control panel", async () => {
     const serverData = getDocumentsTestServerModelsData();
     await makeDocumentsMockEnv({ serverData });
     await mountDocumentsKanbanView();
-    await contains("button.btn.btn-primary.o-dropdown:contains('New')").click();
-    await contains("button.btn.btn-link.o_documents_kanban_upload").click();
-    // This step seems necessary to succeed everytime vs. clicking on "Upload" above...
-    await contains("input.o_input_file.o_hidden", {
-        visible: false,
-    }).click();
-    await animationFrame();
-    await setInputFiles([new File(["fake_file"], "fake_file.tiff", { type: "text/plain" })]);
-    await animationFrame();
+    await clickUploadButton();
 
     expect.verifySteps(["doc uploaded"]);
 });
@@ -583,6 +597,44 @@ test("Document Request Upload", async function () {
     expect.verifySteps(["upload_done"]);
 });
 
+test("Document Request Upload no user_folder_id if access_token", async function () {
+    mockService("file_upload", {
+        upload: (route, files, params) => {
+            if (route === "/documents/upload/accessToken") {
+                expect.step("upload_done");
+                const data = new FormData();
+                params.buildFormData(data);
+                if (!data.get("user_folder_id")) {
+                    expect.step("no_user_folder_id");
+                }
+            }
+        },
+    });
+
+    const serverData = getDocumentsTestServerModelsData([
+        {
+            folder_id: 1,
+            id: 2,
+            name: "Test Request",
+            access_token: "accessToken",
+        },
+    ]);
+
+    const archWithRequest = basicDocumentsKanbanArch.replace(
+        '<field name="name"/>',
+        '<field name="name"/>\n' +
+            '<t t-set="isRequest" t-value="record.type.raw_value === \'binary\' and !record.attachment_id.raw_value"/>\n' +
+            '<input t-if="isRequest" type="file" class="o_hidden o_kanban_replace_document"/>\n'
+    );
+    await makeDocumentsMockEnv({ serverData });
+    await mountDocumentsKanbanView({ arch: archWithRequest });
+
+    const file = new File(["hello world"], "text.txt", { type: "text/plain" });
+    await inputFiles("input.o_kanban_replace_document", [file]);
+    await animationFrame();
+    expect.verifySteps(["upload_done", "no_user_folder_id"]);
+});
+
 test("focus when selecting all - ctrl + a", async function () {
     const serverData = getDocumentsTestServerModelsData([
         makeDocumentRecordData(2, "Test Document", { folder_id: 1 }),
@@ -763,7 +815,7 @@ test("Select a range with SHIFT key", async () => {
     });
     await keyDown("Shift");
     await contains(".o_kanban_record:contains(Request 2)").click();
-    expect(".o_kanban_record:contains(Request 1)").toHaveClass("o_record_selected");
+    expect(".o_kanban_record:contains(Request 3)").toHaveClass("o_record_selected");
     expect("div.o_record_selected").toHaveCount(3);
 });
 
@@ -827,11 +879,157 @@ test("Name in previewer is correct without attachment", async function () {
 
     expect(previewedAttachments).toHaveLength(2);
 
-    expect(previewedAttachments[0].id).toBe(10);
+    expect(previewedAttachments[0].id).toBe(-10);
     expect(previewedAttachments[0].name).toBe("Shin chan: The Spicy Kasukabe");
 
-    expect(previewedAttachments[1].id).toBe(11);
+    expect(previewedAttachments[1].id).toBe(-11);
     expect(previewedAttachments[1].name).toBe("Mom vs Dad |Shinchan");
 
     expect.verifySteps(["preview_Shin chan: The Spicy Kasukabe", "preview_Mom vs Dad |Shinchan"]);
+});
+
+test("Check actions with preview", async function () {
+    const serverData = getDocumentsTestServerModelsData([
+        {
+            attachment_id: 1,
+            id: 2,
+            name: "Test_file.txt",
+            mimetype: "image/webp",
+        },
+    ]);
+
+    serverData["ir.attachment"] = [{ id: 1, name: "Test_file.txt", mimetype: "image/webp" }];
+
+    const basicDocumentsKanbanArchWithLockUid = basicDocumentsKanbanArch.replace(
+        '<field name="name"/>',
+        '<field name="name"/>\n<field name="lock_uid"/>'
+    );
+    await makeDocumentsMockEnv({ serverData });
+    await mountDocumentsKanbanView({ arch: basicDocumentsKanbanArchWithLockUid });
+
+    // Document is not locked so there should be Lock option.
+    await contains(".o_kanban_record:contains('Test_file.txt') [name='document_preview']").click();
+    await contains(".o-FileViewer .o_cp_action_menus .o-dropdown").click();
+    await waitFor(".o-dropdown-item:contains('Lock')");
+    await contains(".o-dropdown-item:contains('Lock')").click();
+
+    // The preview should be closed when clicking the lock action.
+    expect(".o-FileViewer").toHaveCount(0);
+
+    // Document is locked so there should be Unlock option.
+    await contains(".o_kanban_record:contains('Test_file.txt') [name='document_preview']").click();
+    await contains(".o-FileViewer .o_cp_action_menus .o-dropdown").click();
+    await waitFor(".o-dropdown-item:contains('Unlock')");
+});
+
+test("Ensure previewer shows correct name after renaming a document", async function () {
+    const serverData = getDocumentsTestServerModelsData([
+        {
+            attachment_id: 1,
+            id: 2,
+            name: "text_file.txt",
+            mimetype: "image/webp",
+        },
+    ]);
+
+    DocumentsModels["DocumentsDocument"]._views = {
+        kanban: basicDocumentsKanbanArch,
+        search: getEnrichedSearchArch(),
+        form: "<form><field name='name'/></form>",
+    };
+
+    serverData["ir.attachment"] = [{ id: 1, name: "text_file.txt", mimetype: "image/webp" }];
+
+    onRpc("ir.model", "display_name_for", ({ args }) =>
+        args[0].map((model) => ({ model, display_name: model }))
+    );
+    await makeDocumentsMockEnv({ serverData });
+
+    await mountWithCleanup(WebClient);
+    await getService("action").doAction({
+        res_model: "documents.document",
+        type: "ir.actions.act_window",
+        views: [[false, "kanban"]],
+    });
+
+    await contains(".o_kanban_record:contains('text_file.txt')").click({ ctrlKey: true });
+    await contains(".o_control_panel_actions button:contains('Action')").click();
+    await contains(".o-dropdown-item:contains('Rename')").click();
+    await contains(".o_input").edit("test1.txt");
+    await contains(".o_form_button_save:contains('Save')").click();
+    expect(".o_kanban_record span:contains('test1.txt')").toHaveCount(1);
+    await contains(".o_kanban_record:contains('test1.txt') [name='document_preview']").click();
+    await waitFor(".o-FileViewer");
+    expect(".o-FileViewer-header span:contains('test1.txt')").toHaveCount(1);
+
+    // Document should open after renaming
+    await contains(".o_dropdown_title").click();
+    await waitFor(".fa-info-circle");
+    await contains(".fa-info-circle").click();
+    await waitFor(".o_documents_details_panel");
+    await contains(".o_documents_details_panel .o_documents_details_panel_name input").edit(
+        "Renamed_Test_file.txt"
+    );
+    await contains(".o_control_panel_navigation .fa-close").click();
+    await waitForNone(".o_documents_details_panel");
+    await contains(".o-FileViewer [aria-label='Close']").click();
+    await waitForNone(".o-FileViewer");
+    await contains(
+        ".o_kanban_record:contains('Renamed_Test_file.txt') [name='document_preview']"
+    ).click();
+    await waitFor(".o-FileViewer");
+    expect(".o-FileViewer-header").toHaveText("Renamed_Test_file.txt");
+});
+
+test("Uploading to 'All' from a bridge uploads to the bridge's default folder not 'My Drive'", async function () {
+    onRpc("/documents/touch/<access_token>", () => ({}));
+    const serverData = getDocumentsTestServerModelsData([
+        makeDocumentRecordData(2, "Test", { type: "folder", user_permission: "edit" }),
+    ]);
+
+    mockService("file_upload", {
+        upload: (route, ...args) => {
+            if (route.startsWith("/documents/upload/accessTokenTest")) {
+                expect.step("correct_folder");
+            }
+        },
+    });
+
+    DocumentsModels["DocumentsDocument"]._views = {
+        kanban: basicDocumentsKanbanArch,
+        search: getEnrichedSearchArch(),
+    };
+
+    await makeDocumentsMockEnv({ serverData });
+    await mountWithCleanup(WebClient);
+    await getService("action").doAction(2);
+
+    await contains("span.o_search_panel_label_title:contains('All')").click();
+    await clickUploadButton();
+    expect.verifySteps(["correct_folder"]);
+});
+
+test("orderBy is updated when navigating between 'Recent' and 'All'", async function () {
+    // Assert the `order` sent to web_search_read rather than the model config.
+    let lastOrder;
+    const setLastOrder = ({ kwargs }) => {
+        lastOrder = kwargs.order;
+    };
+    onRpc("web_read_group", setLastOrder);
+    onRpc("web_search_read", setLastOrder);
+
+    const serverData = getDocumentsTestServerModelsData([
+        { id: 2, folder_id: 1, name: "b.txt" },
+        { id: 3, folder_id: 1, name: "a.txt" },
+    ]);
+    await makeDocumentsMockEnv({ serverData });
+    await mountDocumentsKanbanView();
+
+    await contains("span.o_search_panel_label_title:contains('Recent')").click();
+    await animationFrame();
+    expect(lastOrder).toBe("is_folder ASC, last_access_date_group DESC, write_date DESC");
+
+    await contains("span.o_search_panel_label_title:contains('All')").click();
+    await animationFrame();
+    expect(lastOrder).toBe("create_date DESC, id DESC");
 });

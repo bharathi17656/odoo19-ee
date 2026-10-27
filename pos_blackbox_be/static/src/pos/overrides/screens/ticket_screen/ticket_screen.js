@@ -3,6 +3,7 @@ import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
 import { patch } from "@web/core/utils/patch";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import { EMPTY_SIGNATURE } from "@pos_blackbox_be/pos/app/services/pos_store";
 
 patch(TicketScreen.prototype, {
     setup() {
@@ -53,7 +54,11 @@ patch(TicketScreen.prototype, {
         await super._doneOrder(...arguments);
         if (this.pos.useBlackBoxBe()) {
             order = this.pos.models["pos.order"].get(order.id);
-            if (order?.state === "paid" && order.delivery_status === "food_ready") {
+            if (
+                order?.state === "paid" &&
+                order.delivery_status === "food_ready" &&
+                (!order.blackbox_signature || order.blackbox_signature === EMPTY_SIGNATURE)
+            ) {
                 await this.pos.pushOrderToBlackbox(order, true);
             }
         }

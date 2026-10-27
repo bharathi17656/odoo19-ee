@@ -137,3 +137,31 @@ class TestAIAgentSource(TransactionCase, CronMixinCase):
             self.assertEqual(source.attachment_id.index_content, updated_content)
             self.assertTrue(len(captured_triggers_embedding.records), "Embedding cron should trigger when content changes")
             self.assertFalse(self.env["ai.embedding"].browse(embedding.id).exists(), "Embeddings linked to outdated attachments must be removed")
+
+    def test_robots_txt_handling_with_multiple_domains(self):
+        """Test robots.txt handling with internal/external domains and punycode."""
+        mock_internal_domains = ["internal.example.com", "xn--mnchen-3ya.example.com"]
+
+        allowed = self._create_url_source("Allowed", "https://allowed.com/page", status="processing", is_active=False)
+        disallowed = self._create_url_source("Disallowed", "https://disallowed.com/page", status="processing", is_active=False)
+        internal = self._create_url_source("Internal", "https://internal.example.com/page", status="processing", is_active=False)
+        internal_punycode = self._create_url_source("Internal Punycode", "https://münchen.example.com/page", status="processing", is_active=False)
+
+        def mock_fetch(source):
+            url = source.url
+            if "disallowed.com" in url:
+                return {"content": None, "error": "The site's rules (robots.txt) prevent reading this page."}
+            return {"content": "<p>Content</p>", "title": "Title"}
+
+        with patch("odoo.addons.ai.models.ai_agent_source.AIAgentSource._get_internal_domains", return_value=mock_internal_domains), \
+                patch("odoo.addons.ai.models.ai_agent_source.AIAgentSource._fetch_content", side_effect=mock_fetch):
+            self.env["ai.agent.source"]._cron_process_sources()
+
+        for source in [allowed, internal, internal_punycode]:
+            source.invalidate_recordset()
+            self.assertTrue(source.attachment_id)
+            self.assertEqual(source.status, "processing")
+
+        disallowed.invalidate_recordset()
+        self.assertEqual(disallowed.status, "failed")
+        self.assertIn("robots.txt", disallowed.error_details)

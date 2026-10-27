@@ -13,6 +13,11 @@ class TestStudioModel_Action(models.Model):
     my_currency = fields.Many2one("res.currency")
     partner_id = fields.Many2one("res.partner")
 
+    custom_binary = fields.Binary()
+    custom_binary_filename = fields.Char()
+
+    admin_integer = fields.Integer(groups="base.group_system")
+
     def action_confirm(self):
         for rec in self:
             rec.confirmed = True
@@ -28,6 +33,13 @@ class TestStudioModel_Action2(models.Model):
     _description = "Test Model Studio 2"
 
 
+class TestStudioModel_Action3(models.Model):
+    _name = "test.studio.model_action3"
+    _description = "Test Model Studio 3"
+
+    model_action_1_id = fields.Many2one("test.studio.model_action")
+
+
 class TestStudio_ExportModel1(models.Model):
     _name = 'test.studio_export.model1'
     _description = "Test Model for Studio Exports 1"
@@ -41,6 +53,7 @@ class TestStudio_ExportModel1(models.Model):
     )
     binary_data = fields.Binary()
     model2_id = fields.Many2one("test.studio_export.model2")
+    properties_definition = fields.PropertiesDefinition()
 
 
 class TestStudio_ExportModel2(models.Model):
@@ -58,3 +71,4 @@ class TestStudio_ExportModel3(models.Model):
     _description = "Test Model for Studio Exports 3"
     name = fields.Char()
     model1_id = fields.Many2one("test.studio_export.model1")
+    properties = fields.Properties(definition='model1_id.properties_definition')

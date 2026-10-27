@@ -3,13 +3,14 @@
 # * appointment_account_payment
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:45+0000\n"
-"PO-Revision-Date: 2025-11-10 13:21+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-01-22 18:42+0000\n"
+"PO-Revision-Date: 2026-10-06 09:37+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "appointment_account_payment/lt/>\n"
 "Language: lt\n"
@@ -19,15 +20,15 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: appointment_account_payment
 #. odoo-python
 #: code:addons/appointment_account_payment/models/calendar_booking.py:0
 msgid ""
 "%(name)s\n"
-"%(date_start)s at %(time_start)s to\n"
-"%(date_end)s at %(time_end)s (%(timezone)s)"
+"%(date_start)s at %(time_start)s to %(date_end)s at %(time_end)s (%"
+"(timezone)s)"
 msgstr ""
 
 #. module: appointment_account_payment
@@ -35,8 +36,8 @@ msgstr ""
 #: code:addons/appointment_account_payment/models/calendar_booking.py:0
 msgid ""
 "%(name)s with %(staff_user)s\n"
-"%(date_start)s at %(time_start)s to\n"
-"%(date_end)s at %(time_end)s (%(timezone)s)"
+"%(date_start)s at %(time_start)s to %(date_end)s at %(time_end)s (%"
+"(timezone)s)"
 msgstr ""
 
 #. module: appointment_account_payment
@@ -56,6 +57,8 @@ msgid ""
 "<i class=\"fa fa-pencil-square-o text-warning me-3\"/>Appointment waiting "
 "for payment"
 msgstr ""
+"<i class=\"fa fa-pencil-square-o text-warning me-3\"/>Susitikimas, už kurį "
+"laukiama apmokėjimo"
 
 #. module: appointment_account_payment
 #: model_terms:ir.ui.view,arch_db:appointment_account_payment.calendar_booking_view
@@ -69,6 +72,8 @@ msgid ""
 "<i class=\"oi oi-fw o_button_icon oi-arrow-right\"/> Configure Payment "
 "Providers"
 msgstr ""
+"<i class=\"oi oi-fw o_button_icon oi-arrow-right\"/> Mokėjimo paslaugų "
+"teikėjų konfigūravimas"
 
 #. module: appointment_account_payment
 #: model_terms:ir.ui.view,arch_db:appointment_account_payment.appointment_type_view_form
@@ -90,6 +95,9 @@ msgid ""
 "            <span class=\"d-inline-block mx-sm-3 fa fa-angle-right text-"
 "muted fs-5\"/>"
 msgstr ""
+"<span>Apmokėjimas</span>\n"
+"            <span class=\"d-inline-block mx-sm-3 fa fa-angle-right text-"
+"muted fs-5\"/>"
 
 #. module: appointment_account_payment
 #: model_terms:ir.ui.view,arch_db:appointment_account_payment.appointment_payment
@@ -97,6 +105,8 @@ msgid ""
 "<strong>Warning</strong> Make sure you are logged in as the right partner "
 "before making this payment."
 msgstr ""
+"<strong>Įspėjimas „</strong> “: prieš atlikdami šį mokėjimą įsitikinkite, "
+"kad esate prisijungę kaip tinkamas partneris."
 
 #. module: appointment_account_payment
 #: model_terms:ir.ui.view,arch_db:appointment_account_payment.appointment_payment
@@ -116,7 +126,7 @@ msgstr "Prieigos raktas"
 #. module: appointment_account_payment
 #: model:ir.model.constraint,message:appointment_account_payment.constraint_appointment_type_check_product_and_payment_step
 msgid "Activating the payment step requires a product"
-msgstr ""
+msgstr "Norint aktyvuoti mokėjimo etapą, reikia produkto"
 
 #. module: appointment_account_payment
 #: model:ir.model.fields,field_description:appointment_account_payment.field_calendar_booking__allday
@@ -376,7 +386,7 @@ msgstr ""
 #. module: appointment_account_payment
 #: model_terms:ir.ui.view,arch_db:appointment_account_payment.appointment_payment
 msgid "Payment for \""
-msgstr ""
+msgstr "Apmokėjimas už „"
 
 #. module: appointment_account_payment
 #: model_terms:ir.ui.view,arch_db:appointment_account_payment.appointment_type_view_form
@@ -386,7 +396,7 @@ msgstr ""
 #. module: appointment_account_payment
 #: model_terms:ir.ui.view,arch_db:appointment_account_payment.appointment_form
 msgid "Proceed to Payment"
-msgstr ""
+msgstr "Pereiti prie mokėjimo"
 
 #. module: appointment_account_payment
 #: model:ir.model,name:appointment_account_payment.model_product_template
@@ -483,7 +493,7 @@ msgstr ""
 #. module: appointment_account_payment
 #: model_terms:ir.ui.view,arch_db:appointment_account_payment.appointment_payment
 msgid "This is a preview of the customer appointment payment form."
-msgstr ""
+msgstr "Tai yra kliento susitikimo apmokėjimo formos peržiūra."
 
 #. module: appointment_account_payment
 #: model_terms:ir.ui.view,arch_db:appointment_account_payment.appointment_validated
@@ -505,7 +515,7 @@ msgstr ""
 #. module: appointment_account_payment
 #: model:ir.model.fields,field_description:appointment_account_payment.field_appointment_type__has_payment_step
 msgid "Up-front Payment"
-msgstr ""
+msgstr "Išankstinis mokėjimas"
 
 #. module: appointment_account_payment
 #: model:ir.model.fields,field_description:appointment_account_payment.field_calendar_booking_line__appointment_user_id

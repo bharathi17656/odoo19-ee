@@ -10,3 +10,5 @@ export { DisplayText } from "./display_text/display_text";
 export { OpenDrawer } from "./open_drawer/open_drawer";
 export { RTStatus } from "./rt_status/rt_status";
 export { DirectIO } from "./direct_io/direct_io";
+export { PrintNormal } from "./print_normal/print_normal";
+export { GetSerialNumber } from "./get_serial_number/get_serial_number";

@@ -157,28 +157,9 @@ class ProjectTask(models.Model):
 
     @api.depends('sale_order_id.order_line.product_uom_qty', 'sale_order_id.order_line.price_total')
     def _compute_material_line_totals(self):
-
-        def if_fsm_material_line(sale_line_id, task, employee_mapping_product_ids=None):
-            is_not_timesheet_line = sale_line_id.product_id != task.sudo().timesheet_product_id
-            if employee_mapping_product_ids:  # Then we need to search the product in the employee mappings
-                is_not_timesheet_line = is_not_timesheet_line and sale_line_id.product_id.id not in employee_mapping_product_ids
-            is_not_empty = sale_line_id.product_uom_qty != 0
-            is_not_service_from_so = sale_line_id != task.sale_line_id
-            is_task_related = sale_line_id.task_id == (task or task._origin)
-            return all([is_not_timesheet_line, is_not_empty, is_not_service_from_so, is_task_related])
-
-        employee_mapping_read_group = self.env['project.sale.line.employee.map'].sudo()._read_group(
-            [('project_id', 'in', self.filtered('is_fsm').project_id.ids)],
-            ['project_id'],
-            ['timesheet_product_id:array_agg'],
-        )
-        employee_mapping_timesheet_product_ids = {project.id: timesheet_product_ids for project, timesheet_product_ids in employee_mapping_read_group}
-        sols = self.env['sale.order.line'].sudo().search([('order_id', 'in', self.sudo().sale_order_id.ids)])
-        sols_by_so = defaultdict(lambda: self.env['sale.order.line'])
-        for sol in sols:
-            sols_by_so[sol.order_id.id] |= sol
+        material_sale_lines_by_task = self._get_material_sale_lines_by_task()
         for task in self:
-            material_sale_lines = sols_by_so[task.sudo().sale_order_id.id].sudo().filtered(lambda sol: if_fsm_material_line(sol, task, employee_mapping_timesheet_product_ids.get(task.project_id.id)))
+            material_sale_lines = material_sale_lines_by_task.get(task, self.env['sale.order.line'])
             task.material_line_total_price = sum(material_sale_lines.mapped('price_total'))
             task.material_line_product_count = round(sum(material_sale_lines.mapped('product_uom_qty')))
 
@@ -307,6 +288,33 @@ class ProjectTask(models.Model):
         return self.allow_material and self.allow_billable and self.sale_order_id and self.is_fsm and \
             not self.under_warranty and not self._has_no_billable_products()
 
+    def _get_material_sale_lines_by_task(self):
+        def if_fsm_material_line(sale_line_id, task, employee_mapping_product_ids=None):
+            is_not_timesheet_line = sale_line_id.product_id != task.sudo().timesheet_product_id
+            if employee_mapping_product_ids:  # Then we need to search the product in the employee mappings
+                is_not_timesheet_line = is_not_timesheet_line and sale_line_id.product_id.id not in employee_mapping_product_ids
+            is_not_empty = sale_line_id.product_uom_qty != 0
+            is_not_service_from_so = sale_line_id != task.sale_line_id
+            is_task_related = sale_line_id.task_id == (task or task._origin)
+            return all([is_not_timesheet_line, is_not_empty, is_not_service_from_so, is_task_related])
+
+        employee_mapping_read_group = self.env['project.sale.line.employee.map'].sudo()._read_group(
+            [('project_id', 'in', self.filtered('is_fsm').project_id.ids)],
+            ['project_id'],
+            ['timesheet_product_id:array_agg'],
+        )
+        employee_mapping_timesheet_product_ids = {project.id: timesheet_product_ids for project, timesheet_product_ids in employee_mapping_read_group}
+        sols = self.env['sale.order.line'].sudo().search([('order_id', 'in', self.sudo().sale_order_id.ids)])
+        sols_by_so = sols.grouped('order_id')
+        material_sale_lines_by_task = {
+            task: (
+                sols_by_so.get(task.sudo().sale_order_id, self.env['sale.order.line']).sudo().filtered(
+                    lambda sol: if_fsm_material_line(sol, task, employee_mapping_timesheet_product_ids.get(task.project_id.id))
+                )
+            ) for task in self
+        }
+        return material_sale_lines_by_task
+
     def action_view_invoices(self):
         invoices = self.mapped('sale_order_id.invoice_ids')
         # prevent view with onboarding banner
@@ -323,6 +331,7 @@ class ProjectTask(models.Model):
                 'res_id': invoices.id,
                 'context': {
                     'create': False,
+                    'default_move_type': 'out_invoice',
                 }
             }
         return {
@@ -334,6 +343,7 @@ class ProjectTask(models.Model):
             'domain': [('id', 'in', invoices.ids)],
             'context': {
                 'create': False,
+                'default_move_type': 'out_invoice',
             }
         }
 
@@ -598,7 +608,7 @@ class ProjectTask(models.Model):
             existing_service_sols = self.sudo().sale_order_id.order_line.filtered('is_service')
             sols_by_product_and_price_dict = defaultdict(lambda: self.env['sale.order.line'])  # key: (product_id, price_unit), value: sales order items
             for sol in existing_service_sols:  # classify the SOLs to easily find the ones that we want.
-                sols_by_product_and_price_dict[sol.product_id.id, sol.price_unit] |= sol
+                sols_by_product_and_price_dict.setdefault((sol.product_id.id, sol.price_unit), sol)
 
             task_values = defaultdict()  # values to update the current task
             update_timesheet_commands = []  # used to update the so_line field of each timesheet in the current task.
@@ -653,12 +663,13 @@ class ProjectTask(models.Model):
             sale_order_line = self.sale_order_id and self.sudo().sale_order_id.order_line.filtered(lambda sol: sol.product_id == self.project_id.timesheet_product_id)[:1]
             if not sale_order_line:
                 quantity = sum(timesheet_id.unit_amount for timesheet_id in not_billed_timesheets)
+                price_unit = self.timesheet_product_id.lst_price
                 if self.under_warranty:
                     price_unit = 0.0
                 elif price_list := self.sale_order_id.pricelist_id:
-                    price_unit = price_list._get_product_price(self.timesheet_product_id, quantity)
-                else:
-                    price_unit = self.timesheet_product_id.lst_price
+                    product_rule = self.env['product.pricelist.item'].browse(price_list._get_product_rule(self.timesheet_product_id, quantity))
+                    if not (product_rule and product_rule._show_discount()):
+                        price_unit = price_list._get_product_price(self.timesheet_product_id, quantity)
 
                 sol_vals = {
                     **self._get_sale_order_line_vals(),

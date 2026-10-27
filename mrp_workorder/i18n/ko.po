@@ -7,15 +7,15 @@
 # Sarah Park, 2023
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Kwanghee Park (kwpa)" <kwpa@odoo.com>, 2025.
+# "Kwanghee Park (kwpa)" <kwpa@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-16 17:54+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-09 17:45+0000\n"
+"PO-Revision-Date: 2026-02-14 10:02+0000\n"
+"Last-Translator: \"Kwanghee Park (kwpa)\" <kwpa@odoo.com>\n"
 "Language-Team: Korean <https://translate.odoo.com/projects/odoo-19/"
 "mrp_workorder/ko/>\n"
 "Language: ko\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: mrp_workorder
 #. odoo-python
@@ -45,12 +45,12 @@ msgstr "<i class=\"fa fa-print\"/> 바코드 명령 인쇄"
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_bom_form_view_inherited
 msgid "<span class=\"o_stat_text order-2\">Instructions</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text order-2\">지침</span>"
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_bom_form_view_inherited
 msgid "<span class=\"o_stat_text order-2\">Operations</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text order-2\">작업</span>"
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_workorder_view_form_tablet
@@ -166,8 +166,9 @@ msgstr "추가 작업지시서"
 msgid ""
 "Additional instructions that can be created and visualised from both here "
 "and the shop floor interface."
-msgstr "이 인터페이스와 작업 현장 인터페이스 모두에서 생성하고 볼 수 있는 추가 "
-"지침입니다."
+msgstr ""
+"이 인터페이스와 작업 현장 인터페이스 모두에서 생성하고 볼 수 있는 추가 지침입"
+"니다."
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_workorder__all_employees_allowed
@@ -190,8 +191,9 @@ msgstr "등록 허용"
 msgid ""
 "Allow users to close MO in last work order operation or from the overview "
 "tab."
-msgstr "사용자가 마지막 작업지시서 작업 또는 전체보기 탭에서 MO를 종료할 수 있도록 "
-"허용합니다."
+msgstr ""
+"사용자가 마지막 작업지시서 작업 또는 전체보기 탭에서 MO를 종료할 수 있도록 허"
+"용합니다."
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_workcenter_form_view_inherit
@@ -232,6 +234,12 @@ msgstr "적용 여부"
 #: code:addons/mrp_workorder/static/src/mrp_display/mrp_display.xml:0
 msgid "Back"
 msgstr "뒤로"
+
+#. module: mrp_workorder
+#. odoo-javascript
+#: code:addons/mrp_workorder/static/src/components/product_catalog/kanban_controller.js:0
+msgid "Back to ShopFloor"
+msgstr ""
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_check__component_barcode
@@ -290,6 +298,12 @@ msgstr "자재명세서 품목"
 #: code:addons/mrp_workorder/static/src/mrp_display/mrp_record_line/stock_move.js:0
 msgid "By-product: %(productName)s"
 msgstr "부산물: %(productName)s"
+
+#. module: mrp_workorder
+#. odoo-javascript
+#: code:addons/mrp_workorder/static/src/components/pin_popup.xml:0
+msgid "C"
+msgstr ""
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_workorder_view_form_tablet
@@ -482,7 +496,7 @@ msgstr "시작일"
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_routing_workcenter__default_picking_type_ids
 msgid "Default Picking Type"
-msgstr ""
+msgstr "기본 피킹 유형"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,help:mrp_workorder.field_quality_point__test_type_id
@@ -528,6 +542,7 @@ msgstr "취소"
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_move__display_name
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_move_line__display_name
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_picking_type__display_name
+#: model:ir.model.fields,field_description:mrp_workorder.field_stock_rule__display_name
 msgid "Display Name"
 msgstr "표시명"
 
@@ -555,6 +570,9 @@ msgid "Edit Operators"
 msgstr "작업자 편집"
 
 #. module: mrp_workorder
+#. odoo-python
+#: code:addons/mrp_workorder/report/mrp_report_mo_overview.py:0
+#: code:addons/mrp_workorder/tests/test_report_mo_overview.py:0
 #: model:ir.model,name:mrp_workorder.model_hr_employee
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_production_additional_workorder__employee_assigned_ids
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_workcenter_productivity__employee_id
@@ -645,6 +663,11 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr "멋진 아이콘 폰트 예: fa-tasks"
 
 #. module: mrp_workorder
+#: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_bom_filter_inherit_mrp_workorder
+msgid "Future Activities"
+msgstr ""
+
+#. module: mrp_workorder
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/mrp_display/dialog/mrp_register_production_dialog.xml:0
 msgid "Generate Lot"
@@ -677,6 +700,7 @@ msgstr "일련번호 생성"
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_move__id
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_move_line__id
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_picking_type__id
+#: model:ir.model.fields,field_description:mrp_workorder.field_stock_rule__id
 msgid "ID"
 msgstr "ID"
 
@@ -815,10 +839,15 @@ msgid "Last seen"
 msgstr "최근 본 내용"
 
 #. module: mrp_workorder
+#: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_bom_filter_inherit_mrp_workorder
+msgid "Late Activities"
+msgstr ""
+
+#. module: mrp_workorder
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/mrp_display/mrp_display.xml:0
 msgid "Load All Manufacturing Orders"
-msgstr ""
+msgstr "모든 제조지시서 불러오기"
 
 #. module: mrp_workorder
 #. odoo-javascript
@@ -950,6 +979,11 @@ msgid "Moves to Track"
 msgstr "트랙으로 이동"
 
 #. module: mrp_workorder
+#: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_bom_filter_inherit_mrp_workorder
+msgid "My Activities"
+msgstr ""
+
+#. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_bom__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr "내 활동 마감일"
@@ -1043,7 +1077,7 @@ msgstr "작업지시가 없습니다!"
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.quality_point_view_form_inherit_mrp
 msgid "No worksheet yet !"
-msgstr ""
+msgstr "아직 워크시트가 없습니다!"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_move__note
@@ -1442,6 +1476,7 @@ msgstr "새 이미지 설정"
 #. module: mrp_workorder
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/mrp_display/dialog/mrp_workcenter_dialog.js:0
+#: code:addons/mrp_workorder/static/src/mrp_display/mrp_display.js:0
 #: model:ir.actions.client,name:mrp_workorder.action_mrp_display
 #: model:ir.model.fields,field_description:mrp_workorder.field_res_config_settings__group_mrp_wo_shop_floor
 #: model:ir.ui.menu,name:mrp_workorder.menu_mrp_workorder_root
@@ -1462,6 +1497,11 @@ msgstr "작업 현장 제어판"
 #: code:addons/mrp_workorder/static/src/mrp_display/mrp_display.xml:0
 msgid "Shop Floor Onboarding Image"
 msgstr "작업 현장 온보딩 이미지"
+
+#. module: mrp_workorder
+#: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_bom_filter_inherit_mrp_workorder
+msgid "Show all records whose next activity date is past"
+msgstr ""
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.res_config_settings_view_form
@@ -1520,6 +1560,11 @@ msgid "Stock Move"
 msgstr "재고 이동"
 
 #. module: mrp_workorder
+#: model:ir.model,name:mrp_workorder.model_stock_rule
+msgid "Stock Rule"
+msgstr "재고 규칙"
+
+#. module: mrp_workorder
 #: model:product.template,name:mrp_workorder.product_template_stool
 msgid "Stool"
 msgstr "의자"
@@ -1575,6 +1620,18 @@ msgstr ""
 "                그에 따라서 보기를 변경할 수 있습니다.\n"
 "                작업 유형에서 예를 들어 고객에게 포장이 필요한 경우,\n"
 "                포장이 기본적으로 필요한지 여부를 지정하십시오."
+
+#. module: mrp_workorder
+#. odoo-javascript
+#: code:addons/mrp_workorder/static/src/mrp_display/dialog/mrp_menu_dialog.js:0
+msgid "The quality alert has been successfully created."
+msgstr ""
+
+#. module: mrp_workorder
+#. odoo-javascript
+#: code:addons/mrp_workorder/static/src/mrp_display/dialog/mrp_menu_dialog.js:0
+msgid "The scrap order has been successfully registered."
+msgstr ""
 
 #. module: mrp_workorder
 #. odoo-python
@@ -1638,6 +1695,11 @@ msgstr "할 일"
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.stock_picking_type_view_kanban
 msgid "To Process"
 msgstr "진행 대기"
+
+#. module: mrp_workorder
+#: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_bom_filter_inherit_mrp_workorder
+msgid "Today Activities"
+msgstr ""
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_production_tree_view_planning
@@ -1768,9 +1830,9 @@ msgid ""
 "shop floor. When disabled, lots will always need to be selected manually "
 "when processing components in the shop floor."
 msgstr ""
-"이 기능을 활성화하면, 부품 이동을 위해 예약된 로트가 작업 현장에 자동으로 "
-"표시됩니다. 비활성화할 경우, 작업 현장에서 부품을 처리할 때 수동으로 로트를 "
-"선택해야 합니다."
+"이 기능을 활성화하면, 부품 이동을 위해 예약된 로트가 작업 현장에 자동으로 표"
+"시됩니다. 비활성화할 경우, 작업 현장에서 부품을 처리할 때 수동으로 로트를 선"
+"택해야 합니다."
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_production_additional_workorder_wizard
@@ -1931,7 +1993,8 @@ msgstr "작업지시 중 일부는 로그인 후 처리할 수 있습니다."
 msgid ""
 "You need to complete Quality Checks using the Shop Floor before marking Work "
 "Order as Done."
-msgstr "작업지시서를 완료로 표시하기 전에 작업 현장에서 품질 검사를 완료해야 합니다."
+msgstr ""
+"작업지시서를 완료로 표시하기 전에 작업 현장에서 품질 검사를 완료해야 합니다."
 
 #. module: mrp_workorder
 #. odoo-python
@@ -1941,8 +2004,8 @@ msgid ""
 "'Productive'. Create one from the Manufacturing app, menu: Configuration / "
 "Productivity Losses."
 msgstr ""
-"'생산성' 카테고리에 대해 적어도 하나 이상의 생산성 손실을 정의해야 합니다. "
-"제조 관리 앱 메뉴, 환경 설정 / 생산성 손실에서 설정할 수 있습니다."
+"'생산성' 카테고리에 대해 적어도 하나 이상의 생산성 손실을 정의해야 합니다. 제"
+"조 관리 앱 메뉴, 환경 설정 / 생산성 손실에서 설정할 수 있습니다."
 
 #. module: mrp_workorder
 #. odoo-python

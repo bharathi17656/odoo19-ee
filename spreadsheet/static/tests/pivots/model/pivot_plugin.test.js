@@ -42,6 +42,7 @@ import * as spreadsheet from "@odoo/o-spreadsheet";
 import { waitForDataLoaded } from "@spreadsheet/helpers/model";
 import { Partner, Product } from "../../helpers/data";
 const { toZone } = spreadsheet.helpers;
+const { pivotRegistry, pivotNormalizationValueRegistry } = spreadsheet.registries;
 
 describe.current.tags("headless");
 defineSpreadsheetModels();
@@ -534,6 +535,28 @@ test("An error is displayed if the pivot has invalid field", async function () {
     await animationFrame();
     expect(getCellValue(model, "A1")).toBe("#ERROR");
     expect(getEvaluatedCell(model, "A1").message).toBe(`Field unknown does not exist`);
+});
+
+test("Datasources are in error when their RPC fails", async function () {
+    const { model, pivotId } = await createSpreadsheetWithPivot({
+        mockRPC: async function (route, { model, method, kwargs }) {
+            if (model === "unknown" && method === "fields_get") {
+                throw makeServerError({ code: 404 });
+            }
+        },
+    });
+    const pivot = model.getters.getPivotCoreDefinition(pivotId);
+    model.dispatch("UPDATE_PIVOT", {
+        pivotId,
+        pivot: {
+            ...pivot,
+            model: "unknown",
+        },
+    });
+    setCellContent(model, "A1", `=PIVOT.VALUE("1", "probability:avg")`);
+    await animationFrame();
+    expect(getCellValue(model, "A1")).toBe("#ERROR");
+    expect(getEvaluatedCell(model, "A1").message).toBe(`The model "unknown" does not exist.`);
 });
 
 test("evaluates only once when two pivots are loading", async function () {
@@ -2119,11 +2142,11 @@ test("changing order of group by", async () => {
                 </pivot>`,
         mockRPC: async function (route, args) {
             if (args.method === "formatted_read_grouping_sets") {
-                expect.step(args.kwargs.order || "NO_ORDER");
+                expect.step(args.kwargs.order);
             }
         },
     });
-    expect.verifySteps(["NO_ORDER"]);
+    expect.verifySteps(["foo"]);
     model.dispatch("UPDATE_PIVOT", {
         pivotId,
         pivot: {
@@ -2144,7 +2167,7 @@ test("changing order of group by", async () => {
         },
     });
     await animationFrame();
-    expect.verifySteps(["NO_ORDER"]);
+    expect.verifySteps(["foo"]);
 });
 
 test("change date order", async () => {
@@ -2172,6 +2195,33 @@ test("change date order", async () => {
     });
     await animationFrame();
     expect.verifySteps(["date:year asc,date:month desc"]);
+});
+
+test("Order are set for all dimensions", async () => {
+    const { model, pivotId } = await createSpreadsheetWithPivot({
+        arch: /* xml */ `
+                <pivot>
+                    <field name="probability" type="measure"/>
+                </pivot>`,
+        mockRPC: async function (route, args) {
+            if (args.method === "formatted_read_grouping_sets") {
+                expect.step(args.kwargs.order);
+            }
+        },
+    });
+    expect.verifySteps([""]);
+    model.dispatch("UPDATE_PIVOT", {
+        pivotId,
+        pivot: {
+            ...model.getters.getPivotCoreDefinition(pivotId),
+            columns: [
+                { fieldName: "date", granularity: "year", order: "asc" },
+                { fieldName: "foo" },
+            ],
+        },
+    });
+    await animationFrame();
+    expect.verifySteps(["date:year asc,foo"]);
 });
 
 test("duplicated dimension on col and row with different granularity", async () => {
@@ -2527,4 +2577,61 @@ test("`getPivotCellFromPosition` should not throw on missing company default cur
     expect(() => {
         model.getters.getPivotCellFromPosition({ sheetId, col: 0, row: 0 });
     }).not.toThrow();
+});
+
+test("Pivot normalization of many2one is a string in case of account.root", () => {
+    const normalizer = pivotNormalizationValueRegistry.get("many2one");
+    expect(normalizer({ value: 1 }, { relation: "account.root" })).toBe("1");
+    expect(normalizer({ value: "01" }, { relation: "account.root" })).toBe("01");
+    expect(normalizer({ value: "coucou" }, { relation: "account.root" })).toBe("coucou");
+});
+
+test("Groupable fields in pivot", async function () {
+    const groupableFieldTypes = [
+        "boolean",
+        "integer",
+        "float",
+        "monetary",
+        "char",
+        "text",
+        "date",
+        "datetime",
+        "selection",
+        "reference",
+        "many2one",
+        "many2many",
+        "many2one_reference",
+    ];
+    const { model, pivotId } = await createSpreadsheetWithPivot({});
+    expect(pivotId).toBe(model.getters.getPivotId("1"));
+    const pivot = model.getters.getPivot(pivotId);
+    let mockField = Object.values(pivot.getFields())[0];
+
+    for (const fieldType of groupableFieldTypes) {
+        mockField = { ...mockField, type: fieldType, groupable: true };
+        expect(pivotRegistry.get(pivot.type).isGroupable(mockField)).toBe(true, {
+            message: `Field ${fieldType} should be groupable`,
+        });
+        expect(pivotNormalizationValueRegistry.contains(fieldType)).toBe(true, {
+            message: `Field ${fieldType} should be normalizable`,
+        });
+    }
+
+    const nonGroupableFieldTypes = [
+        "html",
+        "binary",
+        "json",
+        "properties",
+        "properties_definition",
+        "one2many",
+    ];
+    for (const fieldType of nonGroupableFieldTypes) {
+        mockField = { ...mockField, type: fieldType, groupable: true };
+        expect(pivotRegistry.get(pivot.type).isGroupable(mockField)).toBe(false, {
+            message: `Field ${fieldType} should not be groupable`,
+        });
+        expect(pivotNormalizationValueRegistry.contains(fieldType)).toBe(false, {
+            message: `Field ${fieldType} should not be normalizable`,
+        });
+    }
 });

@@ -11,7 +11,7 @@ class L10nBeDimonaPeriod(models.Model):
 
     name = fields.Char('Period ID', required=True, readonly=True, index=True)
     company_id = fields.Many2one('res.company', required=True, readonly=True, index=True)
-    relation_id = fields.Many2one('l10n.be.dimona.relation', 'relation_id', compute='_compute_period_info', store=True, readonly=True)
+    relation_id = fields.Many2one('l10n.be.dimona.relation', 'relation_id', compute='_compute_period_info', store=True, readonly=True, index='btree_not_null')
     declaration_ids = fields.One2many('l10n.be.dimona.declaration', 'period_id')
     employee_id = fields.Many2one('hr.employee', compute='_compute_period_info', store=True, readonly=True)
     date_start = fields.Date(compute='_compute_period_info', store=True, readonly=True)
@@ -27,21 +27,22 @@ class L10nBeDimonaPeriod(models.Model):
     @api.depends('content')
     def _compute_period_info(self):
         for period in self:
-            if 'startDate' in period.content:
-                (year, month, day) = period.content['startDate'].split('-')
-                period.date_start = date(int(year), int(month), int(day))
+            if period.content:
+                if 'startDate' in period.content:
+                    (year, month, day) = period.content['startDate'].split('-')
+                    period.date_start = date(int(year), int(month), int(day))
 
-            if 'endDate' in period.content:
-                (year, month, day) = period.content['endDate'].split('-')
-                period.date_end = date(int(year), int(month), int(day))
+                if 'endDate' in period.content:
+                    (year, month, day) = period.content['endDate'].split('-')
+                    period.date_end = date(int(year), int(month), int(day))
 
-            period.employee_id = self.env['hr.employee'].with_context(active_test=False).search([
-                ('niss', '=', period.content['worker']['ssin'])
-            ], order="active DESC", limit=1)
+                period.employee_id = self.env['hr.employee'].with_context(active_test=False).search([
+                    ('niss', '=', period.content['worker']['ssin'])
+                ], order="active DESC", limit=1)
 
-            period.relation_id = self.env['l10n.be.dimona.relation'].search([
-                ('name', '=', period.content['worker']['ssin'])
-            ])
+                period.relation_id = self.env['l10n.be.dimona.relation'].search([
+                    ('name', '=', period.content['worker']['ssin'])
+                ])
 
     @api.depends('declaration_ids')
     def _compute_declaration_count(self):

@@ -1,4 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+import json
 import re
 from contextlib import contextmanager
 from copy import deepcopy
@@ -240,6 +241,52 @@ class TestL10nBREDI(TestL10nBREDICommon):
 
         self.assertEqual(header["goods"]["class"], "TEST CLASS VALUE", "Test class value should be included in header.")
 
+    def _prepare_return(self, lines):
+        self.invoice.l10n_br_access_key = "12345678901234567890123456789012345678901234"
+        refund = self.invoice._reverse_moves()
+        refund.l10n_br_edi_avatax_data = json.dumps(
+            {"header": invoice_1_request["header"], "lines": lines, "summary": invoice_1_request["summary"]}
+        )
+        return refund
+
+    def test_prepare_tax_data_return_access_key(self):
+        referenced_item = {"documentCode": "account.move_1", "lineCode": 2}
+        refund = self._prepare_return([{"lineCode": 1, "referencedItem": referenced_item}, {"lineCode": 3}])
+
+        lines = refund._l10n_br_edi_get_tax_data()[0]["lines"]
+
+        self.assertEqual(
+            lines[0]["referencedItem"],
+            {"invoiceAccessKey": self.invoice.l10n_br_access_key, "lineCode": 2},
+            "Returns should reference the original NF-e by access key alone on each referenced line.",
+        )
+        self.assertNotIn("referencedItem", lines[1], "Lines without a reference should be left alone.")
+
+    def test_submit_payload_has_no_header_ref_for_return(self):
+        """The header reference built from the service params must not reach the submitted payload."""
+        refund = self._prepare_return([{"lineCode": 1}])
+        refund.l10n_br_edi_payment_method = "01"
+        refund.is_tax_computed_externally = False  # same hack as setUpClass: posting would call Avatax
+        refund.action_post()
+        refund.is_tax_computed_externally = True
+
+        payload = refund._l10n_br_prepare_invoice_payload()
+
+        self.assertNotIn("invoicesRefs", payload["header"], "Returns should carry no reference in the header.")
+
+    def test_invoice_refs_kept_when_not_a_return(self):
+        referenced_item = {"documentCode": "account.move_1", "lineCode": 2}
+        refund = self._prepare_return([{"lineCode": 1, "referencedItem": referenced_item}])
+        refund.move_type = "out_invoice"
+
+        refs = refund._get_l10n_br_avatax_service_params()["invoice_refs_edi"]
+        lines = refund._l10n_br_edi_get_tax_data()[0]["lines"]
+
+        self.assertEqual(lines[0]["referencedItem"], referenced_item, "Only returns should be rewritten.")
+        self.assertEqual(
+            refs["invoicesRefs"][0]["refNFe"], self.invoice.l10n_br_access_key, "Others keep the header ref."
+        )
+
     def test_update_cancel(self):
         self.invoice.button_draft()  # FIXME this test only works with a draft invoice, is it intended ?
         wizard = self.env["l10n_br_edi.invoice.update"].create(
@@ -344,6 +391,43 @@ class TestL10nBREDI(TestL10nBREDICommon):
         self.assertEqual(payload["lines"][0]["cfop"], 6107, "Should be the standard CFOP set on the invoice.")
         self.assertEqual(payload["lines"][1]["cfop"], 6108, "Should be the overridden CFOP set on the operation type on the line.")
 
+    def test_batch_post_stores_own_avatax_value(self):
+        """ Test that avatax taxes response is saved only on record it belongs to when confirming
+        batch of invoices. """
+        moves = self.env["account.move"].create([
+            {
+                "move_type": "out_invoice",
+                "partner_id": self.partner_customer.id,
+                "invoice_date": "2023-10-05",
+                "currency_id": self.env.ref("base.BRL").id,
+                "fiscal_position_id": self.avatax_fp.id,
+                "invoice_line_ids": [
+                    (0, 0, {"product_id": self.product_screens.product_variant_id.id, "quantity": quantity}),
+                    (0, 0, {"product_id": self.product_cabinet.product_variant_id.id, "quantity": quantity}),
+                ],
+            }
+            for quantity in (1, 2)
+        ])
+
+        def mocked_request(records, route, company, json=None):
+            response = deepcopy(invoice_1_request)
+            for line, sent_line in zip(response["lines"], json["lines"]):
+                line["lineCode"] = sent_line["lineCode"]
+            return response
+
+        with patch(
+            "odoo.addons.l10n_br_avatax.models.account_external_tax_mixin.AccountExternalTaxMixin._l10n_br_iap_request",
+            autospec=True,
+            side_effect=mocked_request,
+        ):
+            moves.action_post()
+
+        for move in moves:
+            self.assertEqual(
+                [line["lineCode"] for line in move._l10n_br_prepare_invoice_payload()["lines"]],
+                move.invoice_line_ids.ids,
+            )
+
 
 @tagged("post_install_l10n", "post_install", "-at_install")
 class TestL10nBREDIServices(TestL10nBREDICommon):
@@ -386,3 +470,26 @@ subtotalTaxable: 435, tax: 0, taxType: ipi"""
         self.assertEqual(self.invoice.l10n_br_last_edi_status, "accepted", "Invoice should be accepted.")
         self.assertTrue(self.invoice.invoice_pdf_report_id, "PDF should have been saved.")
         self.assertTrue(self.invoice.l10n_br_edi_xml_attachment_id, "XML should have been saved.")
+
+    def test_update_cancel_accepted_invoice(self):
+        """
+        Test that cancelling an accepted posted invoice correctly sets EDI status to 'cancelled'.
+        """
+        # Simulate the real-world flow: invoice is posted and accepted
+        self.invoice.l10n_br_last_edi_status = "accepted"
+        self.invoice.l10n_br_access_key = "12345678901234567890123456789012345678901234"
+        self.assertEqual(self.invoice.state, "posted", "Invoice should be posted.")
+        self.assertEqual(self.invoice.l10n_br_last_edi_status, "accepted", "Invoice should be accepted.")
+
+        # Create cancellation wizard
+        wizard = self.env["l10n_br_edi.invoice.update"].create(
+            {"move_id": self.invoice.id, "mode": "cancel", "reason": "test reason with at least 15 characters"}
+        )
+
+        # Submit cancellation
+        with self.with_patched_account_move("_l10n_br_iap_cancel_invoice_goods", invoice_1_cancel_success_response):
+            wizard.action_submit()
+
+        # Verify the invoice is cancelled and EDI status is correctly set
+        self.assertEqual(self.invoice.state, "cancel", "Invoice should be cancelled.")
+        self.assertEqual(self.invoice.l10n_br_last_edi_status, "cancelled", "Invoice EDI status should be 'cancelled'")

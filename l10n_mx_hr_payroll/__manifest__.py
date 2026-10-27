@@ -21,6 +21,7 @@ Mexican Payroll Rules.
     """,
     'data': [
         'security/ir.model.access.csv',
+        'data/resource_calendar_data.xml',
         'data/hr_salary_rule_category_data.xml',
         'data/hr_payroll_structure_type_data.xml',
         'views/hr_payroll_report.xml',

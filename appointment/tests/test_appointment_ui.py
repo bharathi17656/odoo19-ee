@@ -7,9 +7,11 @@ import pytz
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 from lxml import html
+from unittest.mock import patch
 
 from odoo import Command, http
 from odoo.addons.appointment.tests.common import AppointmentCommon
+from odoo.addons.base.models.ir_qweb import IrQweb
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.tests import common, tagged, users
 from odoo.tools import float_compare
@@ -186,13 +188,13 @@ class AppointmentUITest(AppointmentUICommon):
             'schedule_based_on': 'resources',
             'resource_ids': [Command.create({'name': 'Test Resource', 'capacity': 1})]
         }])
-        # create an event to test smart scale
-        self.env['calendar.event'].create({
-            'name': 'Next Month Appointment',
+        # create events out of chronological order to check the smart scale and the initial date
+        self.env['calendar.event'].create([{
+            'name': f'Appointment {start:%Y-%m-%d}',
             'appointment_type_id': appointment_types[1].id,
-            'start': datetime(2022, 3, 1),
-            'stop': datetime(2022, 3, 1, 1),
-        })
+            'start': start,
+            'stop': start + timedelta(hours=1),
+        } for start in [datetime(2023, 3, 1), datetime(2022, 1, 1), datetime(2022, 2, 20), datetime(2022, 3, 1)]])
         self.maxDiff = None
         expected_xml_ids = ['appointment.calendar_event_action_view_bookings_users',
                             'appointment.calendar_event_action_view_bookings_resources']
@@ -217,7 +219,7 @@ class AppointmentUITest(AppointmentUICommon):
             'default_mode': 'month',
             'default_partner_ids': [],
             'default_start_date': now,
-            'initial_date': datetime(2022, 3, 1),
+            'initial_date': datetime(2022, 2, 20),
         }]
         for (appointment_type, expected_views_order,
              expected_context, xml_id) in zip(appointment_types, expected_views_orders, expected_contexts, expected_xml_ids):
@@ -447,6 +449,70 @@ class AppointmentUITest(AppointmentUICommon):
                 res = self.url_open(f"/appointment/{self.apt_type_bxls_2days.id}/submit", {**event_values, **event_answers_copy})
                 self.assertEqual(res.status_code, 422)
 
+    @freeze_time('2022-03-25 08:00:00')
+    def test_appointment_calendar_navigation_far_min_schedule_hours(self):
+        """ Check that later months still show their slots when a large minimum
+        booking delay moves the first free slot into a later month. """
+        # Monday only. On Fri 2022-03-25 the 96h delay lands on Tue 03-29, past
+        # March's last Monday (03-28), so the first free slot is Mon 04-04.
+        apt_type = self.env['appointment.type'].create({
+            'appointment_tz': 'UTC',
+            'appointment_duration': 1,
+            'category': 'recurring',
+            'is_auto_assign': True,
+            'max_schedule_days': 90,
+            'min_schedule_hours': 96,
+            'name': 'Monday Appt Type',
+            'schedule_based_on': 'users',
+            'slot_ids': [Command.create({'weekday': '1', 'start_hour': 8, 'end_hour': 9})],
+            'staff_user_ids': [Command.link(self.staff_user_bxls.id)],
+        })
+        invite = self.env['appointment.invite'].create({
+            'appointment_type_ids': [Command.set(apt_type.ids)],
+        })
+
+        captured_slots = []
+        render_origin = IrQweb._render
+
+        def _capture_render(self, template, values=None, **options):
+            """ Capture the month list the controller feeds to the calendar template. """
+            if template == 'appointment.appointment_calendar':
+                captured_slots.append(values['slots'])
+            return render_origin(self, template, values, **options)
+
+        def _navigate_to_month(month_id, month_before_update=None):
+            """ Make the same call the browser makes and return the rendered months. """
+            with patch.object(IrQweb, '_render', _capture_render):
+                response = self.url_open(
+                    '/appointment/%s/update_available_slots' % apt_type.id,
+                    data=json.dumps({'params': {
+                        'invite_token': invite.access_token,
+                        'filter_appointment_type_ids': json.dumps(apt_type.ids),
+                        'filter_staff_user_ids': '[]',
+                        'filter_resource_ids': '[]',
+                        'timezone': 'UTC',
+                        'month_id': month_id,
+                        'month_before_update': month_before_update,
+                    }}),
+                    headers={'Content-Type': 'application/json'},
+                )
+            self.assertEqual(response.status_code, 200)
+            return captured_slots[-1]
+
+        # The calendar opens on April, since March has no Monday left after the delay.
+        slots = _navigate_to_month(month_id=0)
+        self.assertEqual(slots[0]['month'], 'April 2022')
+        self.assertTrue(
+            slots[0]['has_availabilities'],
+            "The first displayed month (April) should list bookable slots")
+
+        # Click 'next': the browser asks for the following month by its index.
+        slots = _navigate_to_month(month_id=1, month_before_update='May 2022')
+        self.assertEqual(slots[1]['month'], 'May 2022')
+        self.assertTrue(
+            slots[1]['has_availabilities'],
+            "Navigating to May must display its Monday slots instead of an empty month")
+
     @freeze_time('2022-02-14')
     @users('apt_manager')
     def test_appointment_resource_manual_confirmation(self):
@@ -591,6 +657,68 @@ class AppointmentUITest(AppointmentUICommon):
         self.assertEqual(len(second_meeting), 1)
         self.assertEqual(second_meeting.appointment_status, "request")
         self.assertTrue(all(attendee.state == 'accepted' for attendee in second_meeting.attendee_ids))
+
+    @users('apt_manager')
+    def test_resources_shareable_linked_no_overbooking_with_capacity(self):
+        """ Ensure linked shareable resources are correctly handled when managed in gantt view """
+        self.authenticate(self.env.user.login, self.env.user.login)
+        resource_1, resource_2 = self.env['appointment.resource'].create([{
+            'appointment_type_ids': self.apt_type_resource.ids,
+            'capacity': 3,
+            'name': 'Resource 1',
+            'shareable': True,
+        }, {
+            'appointment_type_ids': self.apt_type_resource.ids,
+            'capacity': 4,
+            'name': 'Resource 2',
+            'shareable': True,
+        }])
+        resource_1.linked_resource_ids = resource_2
+        start = datetime(2022, 2, 14, 15, 0, 0)
+        end = start + timedelta(hours=1)
+
+        # Create two bookings to overbook resource 1
+        bookings = self.env['calendar.event'].create({
+            'appointment_type_id': self.apt_type_resource.id,
+            'booking_line_ids': [
+                (0, 0, {'appointment_resource_id': resource_1.id, 'capacity_reserved': 2}),
+                (0, 0, {'appointment_resource_id': resource_1.id, 'capacity_reserved': 2}),
+            ],
+            'name': 'Booking',
+            'start': start,
+            'stop': end,
+        })
+
+        # Check that resource 1 was overbooked
+        self.assertEqual(len(bookings.resource_ids), 1)
+        self.assertEqual(bookings.appointment_resource_ids, resource_1)
+        self.assertEqual(bookings.total_capacity_reserved, 4)
+
+        # Resource 1 is fully used, so only resource 2 should be available for another booking
+        with freeze_time(self.reference_now):
+            slots = self.apt_type_resource._get_appointment_slots('UTC', asked_capacity=1)
+            resource_slots_c5 = self._filter_appointment_slots(slots)
+            slots = self.apt_type_resource._get_appointment_slots('UTC', asked_capacity=5)
+            resource_slots_c9 = self._filter_appointment_slots(slots)
+        available_resources_c5 = [resource['id'] for resource in resource_slots_c5[0]['available_resources']]
+        self.assertListEqual(available_resources_c5, resource_2.ids, "Should not allow new booking for the first resource")
+        self.assertFalse(resource_slots_c9, "Should not allow overbooking")
+
+        # Appointment created from the website should not fail _check_capacity_reserved
+        appointment_data = {
+            "asked_capacity": 1,
+            "available_resource_ids": resource_1.id,
+            "csrf_token": http.Request.csrf_token(self),
+            "datetime_str": str(start),
+            "duration_str": "1.0",
+            "email": "test@test.example.com",
+            "name": "Online Meeting",
+            "phone": "2025550999",
+        }
+        url = f"/appointment/{self.apt_type_resource.id}/submit"
+        res = self.url_open(url, data=appointment_data)
+        self.assertEqual(res.status_code, 200, "Response should = OK")
+
 
 @tagged('appointment_ui', '-at_install', 'post_install')
 class CalendarTest(AppointmentUICommon):

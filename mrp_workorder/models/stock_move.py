@@ -86,7 +86,7 @@ class StockMove(models.Model):
                 'product_id': self.product_id.id,
                 'location_id': self.warehouse_id.lot_stock_id.id
             }]).id
-        return self.env['stock.quant'].search([('lot_id', '=', lot_id.id)], limit=1).id
+        return self.env['stock.quant'].search([('lot_id', '=', lot_id.id), ('location_id', 'child_of', self.location_id.id)], limit=1).id
 
     def _visible_quantity(self):
         self.ensure_one()
@@ -105,20 +105,23 @@ class StockMove(models.Model):
                 move_line.picked = True
                 return
         remaining_qty = self.product_qty - sum(sml.quantity_product_uom for sml in self.move_line_ids if not hide_unpicked or sml.picked)
-        qty_to_take = 1 if self.product_id.tracking == 'serial' else max(min(remaining_qty, quant.available_quantity), 1)
+        if min(remaining_qty, quant.available_quantity) > 0 and self.product_id.tracking != 'serial':
+            qty_to_take = min(remaining_qty, quant.available_quantity)
+        else:
+            qty_to_take = 1
         move_line = next((sml for sml in self.move_line_ids if sml._takes_from_quant(quant)), False)
         if move_line:  # Quant already has visible sml -> increase existing sml's quantity
             move_line.quantity += self.product_id.uom_id._compute_quantity(qty_to_take, self.product_uom)
         else:  # No sml exists for quant -> make new sml
             move_line_vals = self._prepare_move_line_vals(
-                quantity=self.product_id.uom_id._compute_quantity(qty_to_take, self.product_uom),
+                quantity=qty_to_take,
                 reserved_quant=quant)
             self.env['stock.move.line'].create([{**move_line_vals, 'picked': True}])
 
     def action_add_from_quant(self, quant_id):
         self._add_from_quant(self.env['stock.quant'].browse(quant_id))
 
-        if self.product_id.tracking != 'none' and not self.picking_type_prefill_shop_floor_lots:
+        if self.product_id.tracking != 'none' and (not self.picking_type_prefill_shop_floor_lots or self in self.production_id.move_byproduct_ids):
             self.move_line_ids.filtered(lambda ml: not ml.picked).unlink()
 
         if self.check_id:

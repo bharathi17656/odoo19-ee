@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:50+0000\n"
+"POT-Creation-Date: 2025-12-30 18:48+0000\n"
 "PO-Revision-Date: 2025-10-08 18:50+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -24,7 +24,9 @@ msgstr ""
 
 #. module: stock_barcode_picking_batch
 #: model_terms:ir.ui.view,arch_db:stock_barcode_picking_batch.stock_picking_view_kanban
-msgid "<span class=\"fa fa-external-link-square ms-1\" title=\"Open Batch Picking\"/>"
+msgid ""
+"<span class=\"fa fa-external-link-square ms-1\" title=\"Open Batch Picking\"/"
+">"
 msgstr ""
 
 #. module: stock_barcode_picking_batch
@@ -191,14 +193,37 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:stock_barcode_picking_batch.stock_barcode_batch_picking_action_kanban
 msgid ""
 "The goal of the batch transfer is to group operations that may\n"
-"            (needs to) be done together in order to increase their efficiency.\n"
-"            It may also be useful to assign jobs (one person = one batch) or\n"
-"            help the timing management of operations (tasks to be done at 1pm)."
+"            (needs to) be done together in order to increase their "
+"efficiency.\n"
+"            It may also be useful to assign jobs (one person = one batch) "
+"or\n"
+"            help the timing management of operations (tasks to be done at "
+"1pm)."
 msgstr ""
 
 #. module: stock_barcode_picking_batch
 #: model:ir.model.fields,help:stock_barcode_picking_batch.field_stock_move_line__picking_id
 msgid "The stock operation where the packing has been made"
+msgstr ""
+
+#. module: stock_barcode_picking_batch
+#. odoo-javascript
+#: code:addons/stock_barcode_picking_batch/static/src/models/barcode_picking_batch_model.js:0
+msgid "This batch is already cancelled"
+msgstr ""
+
+#. module: stock_barcode_picking_batch
+#. odoo-javascript
+#: code:addons/stock_barcode_picking_batch/static/src/models/barcode_picking_batch_model.js:0
+msgid "This batch is already done"
+msgstr ""
+
+#. module: stock_barcode_picking_batch
+#. odoo-javascript
+#: code:addons/stock_barcode_picking_batch/static/src/models/barcode_picking_batch_model.js:0
+msgid ""
+"This batch transfer is still in draft, scans are disabled until the batch is "
+"confirmed"
 msgstr ""
 
 #. module: stock_barcode_picking_batch
@@ -229,6 +254,6 @@ msgstr ""
 #: code:addons/stock_barcode_picking_batch/models/stock_picking.py:0
 msgid ""
 "You cannot validate a transfer if no quantities are reserved nor done. You "
-"can use the info button on the top right corner of your screen to remove the"
-" transfer in question from the batch."
+"can use the info button on the top right corner of your screen to remove the "
+"transfer in question from the batch."
 msgstr ""

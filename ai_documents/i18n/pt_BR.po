@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:41+0000\n"
-"PO-Revision-Date: 2025-11-27 16:39+0000\n"
+"POT-Creation-Date: 2026-01-30 18:45+0000\n"
+"PO-Revision-Date: 2025-12-06 10:00+0000\n"
 "Last-Translator: \"Maitê Dietze (madi)\" <madi@odoo.com>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.odoo.com/projects/"
 "odoo-19/ai_documents/pt_BR/>\n"
@@ -164,6 +164,7 @@ msgstr "Cancelar"
 #: model:ir.model.fields,field_description:ai_documents.field_base_automation__display_name
 #: model:ir.model.fields,field_description:ai_documents.field_documents_document__display_name
 #: model:ir.model.fields,field_description:ai_documents.field_ir_actions_server__display_name
+#: model:ir.model.fields,field_description:ai_documents.field_ir_http__display_name
 msgid "Display Name"
 msgstr "Exibir nome"
 
@@ -189,6 +190,11 @@ msgid "Folder"
 msgstr "Pasta"
 
 #. module: ai_documents
+#: model:ir.model,name:ai_documents.model_ir_http
+msgid "HTTP Routing"
+msgstr ""
+
+#. module: ai_documents
 #. odoo-python
 #: code:addons/ai_documents/models/documents_document.py:0
 msgid ""
@@ -204,6 +210,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ai_documents.field_base_automation__id
 #: model:ir.model.fields,field_description:ai_documents.field_documents_document__id
 #: model:ir.model.fields,field_description:ai_documents.field_ir_actions_server__id
+#: model:ir.model.fields,field_description:ai_documents.field_ir_http__id
 msgid "ID"
 msgstr "ID"
 
@@ -265,7 +272,7 @@ msgstr "Nenhum documento adequado para classificação por IA."
 #. module: ai_documents
 #: model:ir.model.constraint,message:ai_documents.constraint_documents_document_check_ai_sort_prompt
 msgid "Only folders can be auto-sorted."
-msgstr ""
+msgstr "Apenas pastas podem ser classificadas automaticamente."
 
 #. module: ai_documents
 #: model:ir.model.constraint,message:ai_documents.constraint_base_automation_unique_ai_autosort_folder_id
@@ -305,50 +312,51 @@ msgstr "Ação de servidor"
 #. odoo-javascript
 #: code:addons/ai_documents/static/src/views/documents_controller_mixin.js:0
 msgid "Sort With AI"
-msgstr ""
+msgstr "Classificar com IA"
 
 #. module: ai_documents
 #: model:ir.model.fields,field_description:ai_documents.field_base_automation__ai_autosort_folder_id
 #: model:ir.model.fields,field_description:ai_documents.field_ir_actions_server__ai_autosort_folder_id
 #: model:ir.model.fields,field_description:ai_documents.field_ir_cron__ai_autosort_folder_id
 msgid "Sorted Folder"
-msgstr ""
+msgstr "Pasta classificada"
 
 #. module: ai_documents
 #. odoo-python
 #: code:addons/ai_documents/models/documents_document.py:0
 msgid "Tag(s) %s added"
-msgstr ""
+msgstr "Marcadores adicionados %s"
 
 #. module: ai_documents
 #. odoo-python
 #: code:addons/ai_documents/models/documents_document.py:0
 msgid "Tags > Name"
-msgstr ""
+msgstr "Marcadores > Nome"
 
 #. module: ai_documents
 #. odoo-python
 #: code:addons/ai_documents/models/documents_document.py:0
 msgid "Tags not found: %s"
-msgstr ""
+msgstr "Marcadores não encontrados: %s"
 
 #. module: ai_documents
 #. odoo-python
 #: code:addons/ai_documents/models/documents_document.py:0
 msgid "This document cannot be auto-sorted."
-msgstr ""
+msgstr "Este documento não pode ser classificado automaticamente."
 
 #. module: ai_documents
 #. odoo-python
 #: code:addons/ai_documents/models/documents_document.py:0
 msgid "This folder isn't specified in the prompt and cannot be used as target."
 msgstr ""
+"Esta pasta não está especificada no prompt e não pode ser usada como destino."
 
 #. module: ai_documents
 #. odoo-python
 #: code:addons/ai_documents/models/ir_actions_server.py:0
 msgid "You can move the document in one of those folders:"
-msgstr ""
+msgstr "Você pode mover o documento para uma dessas pastas:"
 
 #. module: ai_documents
 #: model_terms:ir.ui.view,arch_db:ai_documents.ai_documents_sort_view_form
@@ -358,9 +366,12 @@ msgid ""
 "to Photos,                                     otherwise, create an activity "
 "'Document to sort' for Admin"
 msgstr ""
+"ex.: Se o documento for uma fatura, mova-o para Finanças; se for uma imagem, "
+"mova-o para Fotos; ou, ainda, crie uma atividade “Documento a classificar” "
+"para o Admin"
 
 #. module: ai_documents
 #. odoo-javascript
 #: code:addons/ai_documents/static/src/ai_sort_documents_prompt.js:0
 msgid "⚠️ Tell the AI where to sort your documents with /record."
-msgstr ""
+msgstr "⚠️ Indique à IA onde classificar seus documentos com /record."

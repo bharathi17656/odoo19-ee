@@ -1,10 +1,17 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import base64
+import io
+from datetime import timedelta
 
+from odoo import Command, fields
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import file_open, mute_logger
-from odoo.tests import tagged
+from odoo.tools.pdf import (
+    ArrayObject, DecodedStreamObject, DictionaryObject, NameObject, NumberObject, PdfFileReader, PdfFileWriter,
+    createStringObject, generic,
+)
+from odoo.tests import tagged, freeze_time
 from odoo.tests.common import TransactionCase, new_test_user
 
 
@@ -288,7 +295,7 @@ class TestSignTemplate(TransactionCase):
         with self.assertRaises(UserError):
             sign_template.model_id = type_cron.id
 
-    @mute_logger('odoo.addons.sign.utils.pdf_handling')
+    @mute_logger('odoo.addons.sign.utils.pdf_handling', 'pypdf._reader')
     def test_invalid_pdf_upload(self):
         """ Make sure that uploading invalid/encrypted PDF upload should raise the error. """
         for fname, data in [('test_AES.pdf', self.AES_pdf_data), ('test_unicode.pdf', self.unicode_pdf_data)]:
@@ -298,7 +305,7 @@ class TestSignTemplate(TransactionCase):
                         attachment_data_list=[{'name': fname, 'datas': data}]
                     )
 
-    @mute_logger('odoo.addons.sign.utils.pdf_handling')
+    @mute_logger('odoo.addons.sign.utils.pdf_handling', 'pypdf._reader')
     def test_invalid_pdf_add_in_document(self):
         """ Make sure that adding invalid/encrypted PDF in Document should raise the error. """
         # create a valid template first
@@ -308,10 +315,339 @@ class TestSignTemplate(TransactionCase):
         template_id = self.env['sign.template'].with_user(self.test_user).browse(res.get('id', 0))
         self.assertEqual(len(template_id.document_ids), 1)
 
-        for fname, data, exc in [
-            ('test_AES.pdf', self.AES_pdf_data, ValidationError),
-            ('test_unicode.pdf', self.unicode_pdf_data, UserError),
-        ]:
+        for fname, data in [('test_AES.pdf', self.AES_pdf_data), ('test_unicode.pdf', self.unicode_pdf_data)]:
             with self.subTest(fname=fname):
-                with self.assertRaises(exc):
+                with self.assertRaises(ValidationError):
                     template_id.update_from_attachment_data(attachment_data_list=[{'name': fname, 'datas': data}])
+
+    def test_upload_pdf_with_malformed_annotation_data(self):
+        """ Make sure that malformed annotation data doesn't block the upload, and form fields are still locked. """
+        writer = PdfFileWriter()
+        image = DecodedStreamObject()
+        image.setData(b'\x00' * 12)
+        image.update({NameObject('/Type'): NameObject('/XObject'), NameObject('/Subtype'): NameObject('/Image')})
+        # /Annots pointing to an image instead of an array
+        writer.addBlankPage(595, 842)[NameObject('/Annots')] = writer._addObject(image)
+        # /Annots that is not even iterable
+        writer.addBlankPage(595, 842)[NameObject('/Annots')] = NumberObject(1)
+        writer.addBlankPage(595, 842)[NameObject('/Annots')] = ArrayObject([
+            # annotation that is not a dictionary
+            NameObject('/Invalid'),
+            # widget whose /Parent is not a dictionary
+            writer._addObject(DictionaryObject({
+                NameObject('/Subtype'): NameObject('/Widget'),
+                NameObject('/Parent'): NameObject('/Invalid'),
+            })),
+            # field whose /Ff flags are not an integer
+            writer._addObject(DictionaryObject({
+                NameObject('/Subtype'): NameObject('/Widget'),
+                NameObject('/FT'): NameObject('/Tx'),
+                NameObject('/T'): createStringObject('field'),
+                NameObject('/Ff'): generic.FloatObject('1.5'),
+            })),
+        ])
+        with io.BytesIO() as buffer:
+            writer.write(buffer)
+            pdf_data = base64.b64encode(buffer.getvalue())
+
+        res = self.env['sign.template'].with_user(self.test_user).create_from_attachment_data(
+            attachment_data_list=[{'name': 'malformed.pdf', 'datas': pdf_data}]
+        )
+        document = self.env['sign.template'].browse(res['id']).document_ids
+        pdf_reader = PdfFileReader(io.BytesIO(base64.b64decode(document.datas)), strict=False)
+        self.assertEqual(pdf_reader.getPage(2)['/Annots'][2].getObject()['/Ff'], 1, "The field should be read-only")
+
+    def test_update_document_preserves_sign_items(self):
+        """ Ensure that updating a document in a sign template creates a new template and preserves sign items. """
+        # Create a template with one document and one sign item
+        res = self.env['sign.template'].with_user(self.test_user).create_from_attachment_data(
+            attachment_data_list=[{'name': 'sample_contract.pdf', 'datas': self.pdf_data}]
+        )
+        template_id = res.get('id', 0)
+        template = self.env['sign.template'].with_user(self.test_user).browse(template_id)
+        document = template.document_ids[0]
+        self.env['sign.item'].create({
+            'template_id': template.id,
+            'document_id': document.id,
+            'type_id': self.env.ref('sign.sign_item_type_text').id,
+            'name': 'employee_id.name',
+            'required': True,
+            'responsible_id': self.env.ref('sign.sign_item_role_default').id,
+            'transaction_id': -1, 'page': 1,
+            'posX': 0.273, 'posY': 0.158, 'width': 0.150, 'height': 0.015,
+        })
+        self.assertEqual(len(template.sign_item_ids), 1, 'Template should have 1 sign item before replacement')
+
+        # Prepare new document data, call update_document, get the new template and perform the checks.
+        new_attachment_data = {'name': 'new_contract.pdf', 'datas': self.pdf_data}
+        action = template.update_document(document.id, new_attachment_data)
+        new_template_id = action['params']['id']
+        new_template = self.env['sign.template'].browse(new_template_id)
+        self.assertTrue(any(doc.name == 'new_contract.pdf' for doc in new_template.document_ids), 'New template should have the new document')
+        self.assertEqual(len(new_template.sign_item_ids), 1, 'Sign items should be preserved in the new template')
+
+    def _get_signer_and_item_gc_context(self, sign_template):
+        template_item_ids = self.env['sign.item'].search([('template_id', '=', sign_template.id)])
+        all_signer_ids = template_item_ids.mapped('responsible_id.id')
+        active_signer_ids = template_item_ids.filtered(lambda item: item.page > -1).mapped('responsible_id.id')
+        template_active_signer_ids = sign_template.sign_item_ids.mapped('responsible_id.id')
+        signers_without_item_ids = self.env['sign.item.role'].search([
+            ('id', 'in', all_signer_ids),
+            ('id', 'not in', active_signer_ids)
+        ]).ids
+        non_active_item_ids = template_item_ids.filtered(lambda item: item.page < 0).ids
+
+        return all_signer_ids, template_active_signer_ids, signers_without_item_ids, non_active_item_ids
+
+    def test_gc_removes_orphan_roles_and_dummy_items(self):
+        sign_template_id = self.env['sign.template'].with_user(self.test_user).create_from_attachment_data(
+            attachment_data_list=[{'name': 'sample_contract.pdf', 'datas': self.pdf_data}])['id']
+        sign_template = self.env['sign.template'].with_user(self.test_user).browse(sign_template_id)
+        document_id = sign_template.document_ids[0].id
+
+        signers_with_items = []
+        signers_without_item = []
+        signers_with_items.append(sign_template.create_item_and_role(document_id, 'Signer1'))
+        signer1_item_id = sign_template.update_from_pdfviewer(sign_items={'-1': {
+            'type_id': self.env.ref('sign.sign_item_type_text').id,
+            'name': 'Signer1',
+            'required': True,
+            'responsible_id': signers_with_items[-1],
+            'page': 1,
+            'posX': 0.273,
+            'posY': 0.058,
+            'width': 0.150,
+            'height': 0.015,
+            'transaction_id': -1,
+            'document_id': document_id,
+        }})['-1']
+
+        signers_with_items.append(sign_template.create_item_and_role(document_id, 'Signer2'))
+        signer2_item_id = sign_template.update_from_pdfviewer(sign_items={'-2': {
+            'type_id': self.env.ref('sign.sign_item_type_text').id,
+            'name': 'Signer2',
+            'required': True,
+            'responsible_id': signers_with_items[-1],
+            'page': 1,
+            'posX': 0.273,
+            'posY': 0.058,
+            'width': 0.150,
+            'height': 0.015,
+            'transaction_id': -1,
+            'document_id': document_id,
+        }})['-2']
+
+        signers_without_item.append(sign_template.create_item_and_role(document_id, 'Signer3'))
+        signers_without_item.append(sign_template.create_item_and_role(document_id, 'Signer4'))
+
+        all_signer_ids, template_active_signer_ids, signers_without_item_ids, non_active_item_ids \
+            = self._get_signer_and_item_gc_context(sign_template)
+
+        self.assertTrue(set(signers_with_items + signers_without_item).issubset(set(all_signer_ids)),
+                        "The signers created is not in the database.")
+        self.assertEqual(set(signers_with_items), set(template_active_signer_ids),
+                         "The loaded signers in template should only be the signers with active sign item.")
+        self.assertEqual(set(signers_without_item), set(signers_without_item_ids),
+                         "The signers without active item in the database is not equal to the one created.")
+        self.assertEqual({signer1_item_id, signer2_item_id}, set(sign_template.sign_item_ids.ids),
+                         "The loaded sign items in the template should only be the active items.")
+        self.assertEqual(len(non_active_item_ids), 4,
+                         "The number of non-active sign items should equal to 4.")
+
+        garbage_collecting_time = fields.Datetime.now() + timedelta(days=1, minutes=1)
+        with freeze_time(garbage_collecting_time):
+            sign_template._gc_sign_items()
+            self.env.flush_all()
+            self.cr.flush()
+
+            all_signer_ids, template_active_signer_ids, signers_without_item_ids, non_active_item_ids \
+                = self._get_signer_and_item_gc_context(sign_template)
+
+            self.assertTrue(set(signers_with_items).issubset(set(all_signer_ids)),
+                            "Signers with active item should be a subset of all signers in the database after autovacuum.")
+            self.assertFalse(set(signers_without_item).issubset(set(all_signer_ids)),
+                            "Signers without active item should not be a subset of all signers in the database after autovacuum.")
+            self.assertEqual(set(signers_with_items), set(template_active_signer_ids),
+                             "The loaded signers in template should still be the same after autovacuum.")
+            self.assertEqual(len(signers_without_item_ids), 0,
+                             "Signers without active item should be deleted after autovacuum.")
+            self.assertEqual({signer1_item_id, signer2_item_id}, set(sign_template.sign_item_ids.ids),
+                             "The loaded sign items in the template should only be the active items.")
+            self.assertEqual(len(non_active_item_ids), 0,
+                             "The number of non-active sign items should equal to 0 after autovacuum.")
+
+    def test_template_sign_tour(self):
+        """
+            Check that users who do not have the Sign admin group can access
+            the template returned by `trigger_template_tour`, as access errors
+            related to sign items happened during the copy of the original template.
+        """
+        original_template = self.env.ref('sign.template_sign_tour')
+        original_template.sign_request_ids.unlink()
+        original_template.document_ids.sign_item_ids.unlink()
+
+        # check user with limited Sign rights can access the sample template
+        self.env['sign.template'].with_user(self.test_user).trigger_template_tour()
+
+        role = self.env['sign.item.role'].create({'name': 'test'})
+
+        document_id = original_template.document_ids[0].id
+        original_template.update_from_pdfviewer(sign_items={'-1': {
+            'type_id': self.env.ref('sign.sign_item_type_text').id,
+            'name': 'employee_id.name',
+            'required': True,
+            'responsible_id': role.id,
+            'page': 1,
+            'posX': 0.273,
+            'posY': 0.158,
+            'document_id': document_id,
+            'width': 0.150,
+            'height': 0.015,
+            'transaction_id': -1,
+        }})
+        self.assertTrue(original_template.sign_item_ids)
+
+        self.env['sign.request'].create({
+            'template_id': original_template.id,
+            'reference': 'Test Sign Request',
+            'request_item_ids': [Command.create({
+                'partner_id': self.env.user.partner_id.id,
+                'role_id': role.id,
+            })],
+        })
+
+        self.assertTrue(original_template.has_sign_requests)
+
+        # check user with limited Sign rights can access the sample template after items
+        # have been added to it and a sign request has been created.
+        res = self.env['sign.template'].with_user(self.test_user).trigger_template_tour()
+        template_id = res['params']['id']
+        template = self.env['sign.template'].browse(template_id)
+        # check existing sign items have not been copied to avoid access errors
+        self.assertFalse(template.sign_item_ids)
+
+    def test_copy_template_gives_own_roles(self):
+        """
+        When duplicating a template, its sign items should get their own copy of any non-default role,
+        so that editing a role on one template doesn't leak to the other.
+        """
+
+        sign_template_id = self.env['sign.template'].with_user(self.test_user).create_from_attachment_data(
+            attachment_data_list=[{'name': 'sample_contract.pdf', 'datas': self.pdf_data}])['id']
+        sign_template = self.env['sign.template'].with_user(self.test_user).browse(sign_template_id)
+        sign_template.with_user(self.test_user).update_from_attachment_data(
+            attachment_data_list=[{'name': 'sample_contract.pdf', 'datas': self.pdf_data}])
+        document_id = sign_template.document_ids[0].id
+        document_id_2 = sign_template.document_ids[1].id
+        custom_role_id = sign_template.create_item_and_role(document_id, 'Signer')
+        custom_role_id_2 = sign_template.create_item_and_role(document_id, 'Signer 2')
+        default_role = self.env.ref('sign.sign_item_role_default')
+        sign_template.update_from_pdfviewer(sign_items={'-1': {
+            'type_id': self.env.ref('sign.sign_item_type_text').id,
+            'name': 'employee_id.name',
+            'required': True,
+            'responsible_id': custom_role_id,
+            'page': 1,
+            'posX': 0.273,
+            'posY': 0.158,
+            'document_id': document_id,
+            'width': 0.150,
+            'height': 0.015,
+            'transaction_id': -1,
+        },
+        '-2': {
+            'type_id': self.env.ref('sign.sign_item_type_text').id,
+            'name': 'employee_id.name',
+            'required': True,
+            'responsible_id': default_role.id,
+            'page': 1,
+            'posX': 0.273,
+            'posY': 0.258,
+            'document_id': document_id,
+            'width': 0.150,
+            'height': 0.015,
+            'transaction_id': -2,
+        },
+        '-3': {
+            'type_id': self.env.ref('sign.sign_item_type_text').id,
+            'name': 'employee_id.name',
+            'required': True,
+            'responsible_id': custom_role_id_2,
+            'page': 1,
+            'posX': 0.273,
+            'posY': 0.158,
+            'document_id': document_id_2,
+            'width': 0.150,
+            'height': 0.015,
+            'transaction_id': -1,
+        },
+        '-4': {
+            'type_id': self.env.ref('sign.sign_item_type_text').id,
+            'name': 'employee_id.name',
+            'required': True,
+            'responsible_id': custom_role_id,
+            'page': 1,
+            'posX': 0.273,
+            'posY': 0.158,
+            'document_id': document_id_2,
+            'width': 0.150,
+            'height': 0.015,
+            'transaction_id': -1,
+        },
+        '-5': {
+            'type_id': self.env.ref('sign.sign_item_type_text').id,
+            'name': 'employee_id.name',
+            'required': True,
+            'responsible_id': custom_role_id_2,
+            'page': 1,
+            'posX': 0.273,
+            'posY': 0.158,
+            'document_id': document_id,
+            'width': 0.150,
+            'height': 0.015,
+            'transaction_id': -1,
+        }})
+
+        sign_template_copy = sign_template.copy()
+        copy_custom_item = sign_template_copy.sign_item_ids.filtered(lambda i: not i.responsible_id.default)
+        copy_default_item = sign_template_copy.sign_item_ids.filtered(lambda i: i.responsible_id.default)
+
+        self.assertNotEqual(copy_custom_item.responsible_id, self.env['sign.item.role'].browse(custom_role_id),
+                            'The duplicated template should own a new copy of the non-default role')
+        copied_roles = copy_custom_item.responsible_id
+        self.assertNotIn(custom_role_id, copied_roles.ids,
+                 'The duplicated template should own a new copy of the non-default role')
+        self.assertNotIn(custom_role_id_2, copied_roles.ids,
+                 'The duplicated template should own a new copy of the non-default role')
+        self.assertEqual(copy_default_item.responsible_id, default_role, 'The default role should be shared, not copied')
+
+        # editing the role on the copy must not leak to the original template
+        partner = self.env['res.partner'].create({'name': 'Test Partner'})
+        copied_roles.assign_to = partner
+        roles_original = sign_template.sign_item_ids.filtered(lambda i: not i.responsible_id.default).responsible_id
+        self.assertFalse(roles_original.assign_to,
+                        "Editing the copied role should not affect the original template's role")
+        self.assertEqual(len(copied_roles), len(roles_original),
+                         'A role shared across documents should be copied once, not once per document')
+
+    def test_get_selection_ids_from_value_order(self):
+        """
+        Test that get_selection_ids_from_value returns IDs in the correct order and creates missing ones.
+        """
+        SignItemOption = self.env["sign.item.option"]
+        options = ["Beta", "Alpha", "Gamma"]
+        ids = SignItemOption.get_selection_ids_from_value(options)
+        recs = SignItemOption.browse(ids)
+
+        self.assertEqual(len(recs), 3)
+        self.assertEqual(recs[0].value, "Beta")
+        self.assertEqual(recs[1].value, "Alpha")
+        self.assertEqual(recs[2].value, "Gamma")
+
+        more_options = ["Delta", "Alpha", "Beta"]
+        ids2 = SignItemOption.get_selection_ids_from_value(more_options)
+        recs2 = SignItemOption.browse(ids2)
+        self.assertEqual(len(recs2), 3)
+        self.assertEqual(recs2[0].value, "Delta")
+        self.assertEqual(recs2[1].value, "Alpha")
+        self.assertEqual(recs2[2].value, "Beta")

@@ -3,6 +3,8 @@ import ast
 from markupsafe import Markup
 
 from odoo import api, fields, models, _
+from odoo.fields import Domain
+from odoo.tools.float_utils import float_compare, float_round
 
 
 class HrVersion(models.Model):
@@ -50,8 +52,9 @@ class HrVersion(models.Model):
         mobility_budget_max = self.env['hr.rule.parameter']._get_parameter_from_code("mobility_budget_max", fields.Date.today(), raise_if_not_found=False) or 16875
         mobility_budget_min = self.env['hr.rule.parameter']._get_parameter_from_code("mobility_budget_min", fields.Date.today(), raise_if_not_found=False) or 3164
 
-        minimum_wage = self.env['hr.rule.parameter']._get_parameter_from_code('cp200_min_gross_wage', fields.Date.today(), raise_if_not_found=False)
+        minimum_wage = self.env['hr.rule.parameter']._get_parameter_from_code('cp200_min_gross_wage', fields.Date.today(), raise_if_not_found=False) or 0
         for version in self:
+            minimum_wage = float_round(minimum_wage * version.work_time_rate, precision_digits=2)
             if version.l10n_be_mobility_budget:
                 base = self.env.context.get(
                     'salary_simulation_full_time_wage_on_holidays',
@@ -59,17 +62,22 @@ class HrVersion(models.Model):
                 )
                 raw_mb = min(mobility_budget_max, base * 13.0 / 5.0)
 
-                # Iteratively find the right budget to not get under the minimum wage
+                # find the right budget to not get under the minimum wage
                 current_yearly_cost = self.env.context.get(
                     'salary_simulation_full_time_yearly_cost',
                     version._get_yearly_cost_from_wage_with_holidays() if version._is_salary_sacrifice() else version.final_yearly_costs
                 )
-                wage_with_mobility_budget = version._get_gross_from_employer_costs(current_yearly_cost - raw_mb)
-                while wage_with_mobility_budget < minimum_wage and minimum_wage:
-                    raw_mb -= 10
-                    wage_with_mobility_budget = version._get_gross_from_employer_costs(current_yearly_cost - raw_mb)
+                version_mobility_budget_min = mobility_budget_min
+                version_mobility_budget_max = raw_mb
+                while float_compare(version_mobility_budget_min, version_mobility_budget_max, precision_digits=2) == -1:
+                    version_mobility_budget = (version_mobility_budget_max + version_mobility_budget_min) / 2
+                    wage_with_mobility_budget = version._get_gross_from_employer_costs(current_yearly_cost - version_mobility_budget)
+                    if wage_with_mobility_budget < minimum_wage and minimum_wage:
+                        version_mobility_budget_max = version_mobility_budget
+                    else:
+                        version_mobility_budget_min = version_mobility_budget
 
-                raw_mb = max(raw_mb, mobility_budget_min)
+                raw_mb = version_mobility_budget_min
                 version.l10n_be_mobility_budget_amount = raw_mb
             else:
                 version.l10n_be_mobility_budget_amount = 0.0
@@ -170,8 +178,12 @@ class HrVersion(models.Model):
         }
 
     def _get_benefit_values_wishlist_car_total_depreciated_cost(self, version_vals, benefits):
-        if benefits.get('fold_wishlist_car_total_depreciated_cost', False):
-            model_id = benefits['select_wishlist_car_total_depreciated_cost'].split('-')[1]
+        selected_car = (
+            benefits.get('fold_wishlist_car_total_depreciated_cost')
+            and benefits.get('select_wishlist_car_total_depreciated_cost')
+        )
+        if selected_car:
+            model_id = selected_car.split('-')[1]
             return {
                 'new_car': True,
                 'new_car_model_id': int(model_id)
@@ -296,3 +308,11 @@ class HrVersion(models.Model):
             'ip': benefits['ip_value'] and ast.literal_eval(benefits['ip_value']),
             'ip_wage_rate': version_vals.get('ip_wage_rate')
         }
+
+    def _get_available_cars_domain(self):
+        return Domain.AND(
+            [
+                super()._get_available_cars_domain(),
+                Domain('state_id.hide_in_offer', '=', False),
+            ],
+        )

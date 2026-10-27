@@ -4,6 +4,13 @@ from odoo import models, _
 class AccountReturn(models.Model):
     _inherit = 'account.return'
 
+    def _l10n_es_get_report_modelo_number(self):
+        self.ensure_one()
+        xmlid_to_modelo = {
+            "l10n_es_reports.es_mod303_tax_return_type": 303,
+        }
+        return xmlid_to_modelo.get(self.type_external_id, None)
+
     def _get_vat_closing_entry_additional_domain(self):
         # EXTENDS account_reports
         domain = super()._get_vat_closing_entry_additional_domain()

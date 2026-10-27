@@ -4,13 +4,14 @@
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Manon Rondou (ronm)" <ronm@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:46+0000\n"
-"PO-Revision-Date: 2025-11-08 20:16+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-03 17:47+0000\n"
+"PO-Revision-Date: 2026-02-28 10:00+0000\n"
+"Last-Translator: \"Manon Rondou (ronm)\" <ronm@odoo.com>\n"
 "Language-Team: French <https://translate.odoo.com/projects/odoo-19/"
 "spreadsheet_edition/fr/>\n"
 "Language: fr\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: spreadsheet_edition
 #. odoo-javascript
@@ -141,7 +142,7 @@ msgstr "Ascendant"
 
 #. module: spreadsheet_edition
 #. odoo-javascript
-#: code:addons/spreadsheet_edition/static/src/bundle/global_filters/components/filter_editor/relation_filter_editor_side_panel.js:0
+#: code:addons/spreadsheet_edition/static/src/bundle/global_filters/components/filter_editor/filter_editor_side_panel.js:0
 msgid ""
 "At least one data source has an invalid model. Please delete it before "
 "editing this global filter."
@@ -307,6 +308,18 @@ msgstr "Différer les mises à jour"
 
 #. module: spreadsheet_edition
 #. odoo-javascript
+#: code:addons/spreadsheet_edition/static/src/bundle/chart/side_panels/common/config_panel.xml:0
+msgid "Delete Chart"
+msgstr "Supprimer le graphique"
+
+#. module: spreadsheet_edition
+#. odoo-javascript
+#: code:addons/spreadsheet_edition/static/src/bundle/list/side_panels/list_details_side_panel.xml:0
+msgid "Delete List"
+msgstr "Supprimer la liste"
+
+#. module: spreadsheet_edition
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_details_side_panel.xml:0
 msgid "Delete Pivot"
 msgstr "Supprimer le tableau croisé dynamique"
@@ -458,13 +471,13 @@ msgstr "Filtres globaux"
 #. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/components/collaborative_status/collaborative_status.js:0
 msgid "Go to %(userName)s"
-msgstr ""
+msgstr "Aller à %(userName)s"
 
 #. module: spreadsheet_edition
 #. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.js:0
 msgid "Graph name"
-msgstr ""
+msgstr "Nom du graphique"
 
 #. module: spreadsheet_edition
 #: model:ir.model.fields,field_description:spreadsheet_edition.field_spreadsheet_cell_thread__has_message
@@ -607,6 +620,8 @@ msgid ""
 "Link each filter to a corresponding field in the data source to enable "
 "filtering."
 msgstr ""
+"Liez chaque filtre à un champ correspondant dans la source de données pour "
+"activer le filtrage."
 
 #. module: spreadsheet_edition
 #. odoo-javascript
@@ -618,7 +633,7 @@ msgstr "Lien vers le menu dans feuille de calcul"
 #. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.js:0
 msgid "Link name"
-msgstr ""
+msgstr "Nom du lien"
 
 #. module: spreadsheet_edition
 #. odoo-javascript
@@ -630,7 +645,7 @@ msgstr "Lier au menu Odoo"
 #. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/components/related_filters/related_filters.xml:0
 msgid "Link to the filter"
-msgstr ""
+msgstr "Lier au filtre"
 
 #. module: spreadsheet_edition
 #. odoo-javascript
@@ -664,13 +679,19 @@ msgstr "Échec de la duplication de la liste"
 #. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.js:0
 msgid "List name"
-msgstr ""
+msgstr "Nom de la liste"
 
 #. module: spreadsheet_edition
 #. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/version_history/side_panel/version_history_side_panel.xml:0
 msgid "Load More"
 msgstr "Charger plus"
+
+#. module: spreadsheet_edition
+#. odoo-javascript
+#: code:addons/spreadsheet_edition/static/src/bundle/list/plugins/list_autofill_plugin.js:0
+msgid "Loading..."
+msgstr ""
 
 #. module: spreadsheet_edition
 #. odoo-javascript
@@ -695,7 +716,7 @@ msgstr "Faites correspondre ce filtre à un champ pour chaque source de données
 #. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/components/related_filters_section/related_fitlers_section.js:0
 msgid "Matching %(matching)s / %(total)s filters"
-msgstr ""
+msgstr "Correspondance de %(matching)s / %(total)s filtres"
 
 #. module: spreadsheet_edition
 #. odoo-javascript
@@ -820,13 +841,13 @@ msgstr "Nombre de messages avec des erreurs d'envoi"
 #. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.xml:0
 msgid "Number of records to insert into the spreadsheet"
-msgstr ""
+msgstr "Nombre d’enregistrements à insérer dans la feuille de calcul"
 
 #. module: spreadsheet_edition
 #. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 msgid "Numeric"
-msgstr ""
+msgstr "Numérique"
 
 #. module: spreadsheet_edition
 #. odoo-javascript
@@ -1054,7 +1075,7 @@ msgstr "Restreindre les valeurs avec un domaine"
 #. module: spreadsheet_edition
 #: model:ir.model.fields,field_description:spreadsheet_edition.field_spreadsheet_revision__revision_date
 msgid "Revision Date"
-msgstr ""
+msgstr "Date de révision"
 
 #. module: spreadsheet_edition
 #: model:ir.model.fields,field_description:spreadsheet_edition.field_spreadsheet_revision__revision_uuid
@@ -1148,7 +1169,7 @@ msgstr "Sélection"
 #. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/components/filter_editor/selection_filter_editor_side_panel.xml:0
 msgid "Selection field"
-msgstr ""
+msgstr "Champ de sélection"
 
 #. module: spreadsheet_edition
 #. odoo-javascript
@@ -1317,9 +1338,15 @@ msgstr "Total"
 
 #. module: spreadsheet_edition
 #. odoo-javascript
+#: code:addons/spreadsheet_edition/static/src/bundle/pivot/plugins/pivot_autofill_plugin.js:0
+msgid "Unknown"
+msgstr "Inconnu"
+
+#. module: spreadsheet_edition
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/components/related_filters/related_filters.xml:0
 msgid "Unlink from the filter"
-msgstr ""
+msgstr "Dissocier du filtre"
 
 #. module: spreadsheet_edition
 #. odoo-javascript

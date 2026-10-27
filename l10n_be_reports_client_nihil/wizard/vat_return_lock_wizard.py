@@ -34,7 +34,7 @@ class L10n_BeVatReturnLockWizard(models.TransientModel):
                     limit=1,
                 ))
             else:
-                wizard.client_nihil = True
+                wizard.client_nihil = False
 
     def _get_submission_options_to_inject(self):
         result = super()._get_submission_options_to_inject()

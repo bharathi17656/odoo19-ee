@@ -6,7 +6,8 @@
         <field name="inherit_id" ref="hr_payroll.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//block[@id='hr_payroll_accountant']" position="after">
-                <block title="Indian Localization">
+                <field name="company_country_code" invisible="1"/>
+                <block title="Indian Localization" id="l10n_in_hr_payroll_localization" invisible="company_country_code != 'IN'">
                     <setting name="l10n_in_provident_fund" string="Employee Provident Fund (EPF)"
                         help="Enable this to automatically calculate and deduct provident fund contributions from both
                             employer and employee.">
@@ -14,7 +15,7 @@
                         <div class="content-group">
                             <div class="row ms-2" invisible="not l10n_in_provident_fund">
                                 <label for="l10n_in_epf_employer_id" class="col-md-6 p-0 m-0"/>
-                                <field name="l10n_in_epf_employer_id" placeholder="E.g. GJ/BAN/0000006/000/0000123"
+                                <field name="l10n_in_epf_employer_id" placeholder="E.g. GJ/BAN/1234567/000"
                                     class="col-lg-6 p-0"/>
                             </div>
                         </div>

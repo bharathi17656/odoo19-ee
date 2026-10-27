@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-21 18:40+0000\n"
+"POT-Creation-Date: 2026-02-27 18:44+0000\n"
 "PO-Revision-Date: 2025-11-21 14:30+0000\n"
 "Last-Translator: Odoo Turkish Import <dyki+tr@odoo.com>\n"
 "Language-Team: Turkish <https://translate.odoo.com/projects/odoo-19/iot/tr/"
@@ -164,12 +164,6 @@ msgid "Camera"
 msgstr "Kamera"
 
 #. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/backend/iot_device_form.js:0
-msgid "Check if the device is still connected"
-msgstr "Cihazın hala bağlı olup olmadığını kontrol edin"
-
-#. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_no_iot_box_found
 msgid "Check the lights"
 msgstr "Işıkları kontrol edin"
@@ -225,12 +219,6 @@ msgstr "Bağlı Durum"
 #: model_terms:ir.ui.view,arch_db:iot.iot_device_search
 msgid "Connection"
 msgstr "Bağlantı"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/backend/iot_device_form.js:0
-msgid "Connection to device failed"
-msgstr "Cihaza bağlantı başarısız"
 
 #. module: iot
 #: model:ir.model.fields,field_description:iot.field_add_iot_box__create_uid
@@ -390,6 +378,24 @@ msgstr "%s şifresi sıfırlanamadı."
 #: code:addons/iot/static/src/view_widgets/iot_restart_odoo.js:0
 msgid "Failed to send the restart command to the IoT Box ('%s')"
 msgstr "IoT Box'a yeniden başlatma komutu gönderilemedi ('%s')"
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "Failed to toggle remote debug."
+msgstr ""
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/backend/iot_device_form.js:0
+msgid "Failed to update keyboard layout on the device."
+msgstr ""
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/backend/iot_device_form.js:0
+msgid "Failed to update scanner mode on the device."
+msgstr ""
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_pair_offline
@@ -772,12 +778,6 @@ msgstr "İsteğe bağlı: Bir ekran takın"
 #. module: iot
 #. odoo-javascript
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
-msgid "Out of paper"
-msgstr "Kağıt bitti"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "PIN accepted."
 msgstr "PIN kabul edildi."
 
@@ -798,12 +798,6 @@ msgstr "Eşleme Kodu"
 #: model_terms:ir.ui.view,arch_db:iot.view_no_iot_box_found
 msgid "Pairing code received from a printer or screen"
 msgstr "Bir yazıcıdan veya ekrandan eşleştirme kodu alındı"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/network_utils/iot_http_service.js:0
-msgid "Paper is low"
-msgstr "Kağıt miktarı düşük"
 
 #. module: iot
 #: model:ir.model.fields.selection,name:iot.selection__iot_device__type__payment
@@ -844,12 +838,6 @@ msgstr "Yazıcı"
 #. module: iot
 #. odoo-javascript
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
-msgid "Printer is not ready"
-msgstr "Yazıcı hazır değil"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "Printer is unreachable"
 msgstr "Yazıcıya ulaşılamıyor"
 
@@ -879,6 +867,12 @@ msgstr "Makbuz Yazıcısı"
 #: code:addons/iot/static/src/view_widgets/iot_remote_debug.xml:0
 msgid "Remote Debug"
 msgstr "Uzaktan Hata Ayıklama"
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "Remote debug is %s."
+msgstr ""
 
 #. module: iot
 #. odoo-javascript
@@ -1258,6 +1252,12 @@ msgid "device-icon"
 msgstr "cihaz-ikonu"
 
 #. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "disabled"
+msgstr ""
+
+#. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_enter_pairing_code
 msgid "documentation"
 msgstr "dokümantasyon"
@@ -1266,6 +1266,12 @@ msgstr "dokümantasyon"
 #: model_terms:ir.ui.view,arch_db:iot.view_enter_pairing_code
 msgid "e.g. ABDE0123"
 msgstr "örn. ABDE0123"
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "enabled"
+msgstr ""
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_enter_pairing_code
@@ -1302,6 +1308,21 @@ msgstr "reset.linked.printers"
 #: model_terms:ir.actions.act_window,help:iot.iot_box_action
 msgid "to add an IoT Box."
 msgstr "IoT kutusu eklemek için."
+
+#~ msgid "Out of paper"
+#~ msgstr "Kağıt bitti"
+
+#~ msgid "Paper is low"
+#~ msgstr "Kağıt miktarı düşük"
+
+#~ msgid "Printer is not ready"
+#~ msgstr "Yazıcı hazır değil"
+
+#~ msgid "Check if the device is still connected"
+#~ msgstr "Cihazın hala bağlı olup olmadığını kontrol edin"
+
+#~ msgid "Connection to device failed"
+#~ msgstr "Cihaza bağlantı başarısız"
 
 #~ msgid "Are you sure you want to restart Odoo on the IoT box?"
 #~ msgstr ""

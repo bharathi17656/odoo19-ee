@@ -3,13 +3,13 @@
 # * ai_documents
 #
 # "Patricia Gutiérrez (pagc)" <pagc@odoo.com>, 2025.
-# "Fernanda Alvarez (mfar)" <mfar@odoo.com>, 2025.
+# "Fernanda Alvarez (mfar)" <mfar@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:41+0000\n"
-"PO-Revision-Date: 2025-10-08 02:40+0000\n"
+"POT-Creation-Date: 2026-01-30 18:45+0000\n"
+"PO-Revision-Date: 2026-10-16 23:33+0000\n"
 "Last-Translator: \"Fernanda Alvarez (mfar)\" <mfar@odoo.com>\n"
 "Language-Team: Spanish (Latin America) <https://translate.odoo.com/projects/"
 "odoo-19/ai_documents/es_419/>\n"
@@ -18,12 +18,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: ai_documents
 #: model_terms:ir.ui.view,arch_db:ai_documents.ai_documents_sort_view_form
 msgid "<strong class=\"mt-3\">What actions can the AI take?</strong>"
-msgstr "<strong class=\"mt-3\">¿Qué puede hacer la IA?</strong>"
+msgstr "<strong class=\"mt-3\">¿Qué acciones puede realizar la IA?</strong>"
 
 #. module: ai_documents
 #: model_terms:ir.ui.view,arch_db:ai_documents.ai_documents_sort_view_form
@@ -33,7 +33,7 @@ msgid ""
 "                        </strong>"
 msgstr ""
 "<strong>\n"
-"                            ¿Qué quieres que la IA haga?\n"
+"                            ¿Qué quieres que haga la IA?\n"
 "                        </strong>"
 
 #. module: ai_documents
@@ -164,6 +164,7 @@ msgstr "Descartar"
 #: model:ir.model.fields,field_description:ai_documents.field_base_automation__display_name
 #: model:ir.model.fields,field_description:ai_documents.field_documents_document__display_name
 #: model:ir.model.fields,field_description:ai_documents.field_ir_actions_server__display_name
+#: model:ir.model.fields,field_description:ai_documents.field_ir_http__display_name
 msgid "Display Name"
 msgstr "Mostrar nombre"
 
@@ -189,6 +190,11 @@ msgid "Folder"
 msgstr "Carpeta"
 
 #. module: ai_documents
+#: model:ir.model,name:ai_documents.model_ir_http
+msgid "HTTP Routing"
+msgstr "Enrutamiento HTTP"
+
+#. module: ai_documents
 #. odoo-python
 #: code:addons/ai_documents/models/documents_document.py:0
 msgid ""
@@ -203,6 +209,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ai_documents.field_base_automation__id
 #: model:ir.model.fields,field_description:ai_documents.field_documents_document__id
 #: model:ir.model.fields,field_description:ai_documents.field_ir_actions_server__id
+#: model:ir.model.fields,field_description:ai_documents.field_ir_http__id
 msgid "ID"
 msgstr "ID"
 
@@ -264,7 +271,7 @@ msgstr "No hay ningún documento adecuado para ordenar con IA."
 #. module: ai_documents
 #: model:ir.model.constraint,message:ai_documents.constraint_documents_document_check_ai_sort_prompt
 msgid "Only folders can be auto-sorted."
-msgstr ""
+msgstr "Solo es posible ordenar las carpetas de forma automática."
 
 #. module: ai_documents
 #: model:ir.model.constraint,message:ai_documents.constraint_base_automation_unique_ai_autosort_folder_id
@@ -298,13 +305,13 @@ msgstr "Guardar"
 #. module: ai_documents
 #: model:ir.model,name:ai_documents.model_ir_actions_server
 msgid "Server Action"
-msgstr "Acción de servidor"
+msgstr "Acción del servidor"
 
 #. module: ai_documents
 #. odoo-javascript
 #: code:addons/ai_documents/static/src/views/documents_controller_mixin.js:0
 msgid "Sort With AI"
-msgstr "Organizar con IA"
+msgstr "Ordenar con IA"
 
 #. module: ai_documents
 #: model:ir.model.fields,field_description:ai_documents.field_base_automation__ai_autosort_folder_id

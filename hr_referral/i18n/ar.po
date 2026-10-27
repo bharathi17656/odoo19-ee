@@ -9,13 +9,14 @@
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-16 17:49+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-04-10 18:45+0000\n"
+"PO-Revision-Date: 2026-08-19 06:11+0000\n"
+"Last-Translator: \"Malaz Siddig Elsayed Abuidris (msea)\" <msea@odoo.com>\n"
 "Language-Team: Arabic <https://translate.odoo.com/projects/odoo-19/"
 "hr_referral/ar/>\n"
 "Language: ar\n"
@@ -24,7 +25,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: hr_referral
 #. odoo-python
@@ -40,11 +41,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_recruitment_report__referral_hired
 msgid "# Hired by Referral"
 msgstr "# تم التوظيف عن طريق الإحالة"
-
-#. module: hr_referral
-#: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_send_sms_view_form
-msgid "+1 123 456 789"
-msgstr "+1 123 456 789"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.referral_campaign_email_body_template
@@ -97,11 +93,11 @@ msgid ""
 "                                        <span title=\"Send by Mail\">Send "
 "Email</span>"
 msgstr ""
-"<i class=\"fa fa-2x fa-envelope-o\" role=\"img\" aria-label=\"Send by Mail\""
-"/>\n"
+"<i class=\"fa fa-2x fa-envelope-o\" role=\"img\" aria-label=\"Send by Mail\"/"
+">\n"
 "                                        <br/>\n"
-"                                        <span title="
-"\"إرسال عبر البريد الإلكتروني\">إرسال بريد إلكتروني</span>"
+"                                        <span title=\"إرسال عبر البريد "
+"الإلكتروني\">إرسال بريد إلكتروني</span>"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
@@ -113,8 +109,8 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-2x fa-globe\" role=\"img\" aria-label=\"Job Page\"/>\n"
 "                                        <br/>\n"
-"                                        <span title=\"المزيد من المعلومات\""
-">صفحة الوظائف</span>"
+"                                        <span title=\"المزيد من "
+"المعلومات\">صفحة الوظائف</span>"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
@@ -126,8 +122,8 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-2x fa-mobile\" role=\"img\" aria-label=\"Send by SMS\"/>\n"
 "                                        <br/>\n"
-"                                        <span title="
-"\"الإرسال عبر الرسائل النصية القصيرة \">إرسال رسالة نصية قصيرة</span>"
+"                                        <span title=\"الإرسال عبر الرسائل "
+"النصية القصيرة \">إرسال رسالة نصية قصيرة</span>"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_applicant_employee_referral_kanban
@@ -838,8 +834,8 @@ msgid ""
 "Hello! There is an amazing job offer for %(job_name)s in my company! It will "
 "be a fit for you %(referral_url)s"
 msgstr ""
-"مرحباً، يوجد عرض عمل رائع لـ %(job_name)s في شركتي! سوف يكون مناسباً لك "
-"%(referral_url)s"
+"مرحباً، يوجد عرض عمل رائع لـ %(job_name)s في شركتي! سوف يكون مناسباً لك %"
+"(referral_url)s"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.referral_email_body_template
@@ -1942,6 +1938,11 @@ msgid "Welcome Onboarding in Referral App"
 msgstr "الجلسة الترحيبية في تطبيق الإحالات"
 
 #. module: hr_referral
+#: model:ir.model.fields.selection,name:hr_referral.selection__hr_referral_link_to_share__channel__twitter
+msgid "X"
+msgstr "X"
+
+#. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_job__twitter_clicks
 msgid "X Clicks"
 msgstr "X نقرات"
@@ -2088,6 +2089,13 @@ msgid ""
 "(new_line_code)s%(hashtag_code)sHiring %(hashtag_code)sJobOpening %"
 "(hashtag_code)sCareerOpportunity"
 msgstr ""
+"🚀 توجد فرصة مميزة لشغل وظيفة مطور برمجيات ( %(job_name)s ) في شركتي. إذا "
+"كنت تبحث عن تحدٍ جديد، فاطلع على هذه الوظيفة!👇%(new_line_code)s🔗%"
+"(short_url)s%(new_line_code)s%(hashtag_code)s يبحث عن %"
+"(hashtag_code)sJobOpening %(hashtag_code)sCareerOpportunity"
+
+#~ msgid "+1 123 456 789"
+#~ msgstr "+1 123 456 789"
 
 #~ msgid ""
 #~ " You've gained %(gained)s points with this progress.<br/>It makes you a "

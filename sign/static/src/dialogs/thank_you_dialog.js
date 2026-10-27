@@ -60,6 +60,7 @@ export class ThankYouDialog extends Component {
         this.message = this.props.message || defaultMessage;
         onWillStart(this.willStart);
         this.isMobileOS = isMobileOS();
+        this.env.dialogData.dismiss = () => this.onClickClose();
     }
 
     get suggestSignUp() {
@@ -85,14 +86,14 @@ export class ThankYouDialog extends Component {
             ]);
             this.closeAction = result.action;
             this.closeLabel = result.label;
-            const closeContext = result.custom_action ? {} : { clearBreadcrumbs: true };
+            const closeContext = result.custom_action ? { stackPosition: "replacePreviousAction" } : { clearBreadcrumbs: true };
             this.closeContext = closeContext;
         }
         if (!this.props.isRefused) {
             const result = await rpc("/sign/sign_request_items", {
                 request_id: this.signInfo.get("documentId"),
                 sign_item_id: this.signInfo.get("signRequestItemId"),
-                token: this.signInfo.get("signRequestToken"),
+                token: this.signInfo.get("signRequestItemToken"),
             });
             if (result && result.length) {
                 this.state.nextDocuments = result.map((doc) => {
@@ -100,7 +101,7 @@ export class ThankYouDialog extends Component {
                         id: doc.id,
                         name: doc.name,
                         date: doc.date,
-                        user: doc.user,
+                        user: doc.user || _t("Deleted User"),
                         accessToken: doc.token,
                         requestId: doc.requestId,
                         canceled: false,

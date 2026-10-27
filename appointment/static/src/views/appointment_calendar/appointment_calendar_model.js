@@ -14,14 +14,17 @@ patch(AttendeeCalendarModel.prototype, {
 
     /**
      * @override
-     * Properly take into account the duration from the context.
-     * Only when the user makes a click on the calendar (when there's no end) or when the end is invalid.
+     * This method uses the value of "default_duration" in the context to set the end if it is not yet
+     * defined, as it is the case when users click on the calendar. At the opposite, when the end is
+     * already set, as it is the case when users drew slots in the calendar, "default_duration" is removed
+     * from the context to avoid computing again the value of the end using the appointment type duration.
      */
     buildRawRecord(partialRecord, options) {
-        if ('default_duration' in this.meta.context) {
-            const defaultDuration = this.meta.context.default_duration;
-            if (partialRecord.start && (!partialRecord.end || !partialRecord.end.isValid) && !partialRecord.isAllDay) {
-                partialRecord.end = partialRecord.start.plus({ hours: defaultDuration });
+        if ("default_duration" in this.meta.context && "default_appointment_type_id" in this.meta.context) {
+            if (partialRecord.end && partialRecord.end.isValid) {
+                delete this.meta.context["default_duration"];
+            } else if (partialRecord.start && !partialRecord.isAllDay) {
+                partialRecord.end = partialRecord.start.plus({ hours: this.meta.context.default_duration });
             }
         }
         return super.buildRawRecord(...arguments);

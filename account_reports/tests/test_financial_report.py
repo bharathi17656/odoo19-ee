@@ -259,16 +259,13 @@ class TestFinancialReport(TestAccountReportsCommon):
                 ('Plus Non-current Liabilities',                  0.0),
                 ('Total LIABILITIES',                             0.0),
 
-                ('EQUITY',                                      110.0),
-                ('Unallocated Earnings',                        110.0),
+                ('EQUITY (& EARNINGS)',                         110.0),
+                ('Equity',                                        0.0),
+                ('Earnings',                                    110.0),
                 ('Current Year Unallocated Earnings',           110.0),
-                ('Previous Years Unallocated Earnings',           0.0),
-                ('Total Unallocated Earnings',                  110.0),
-                ('Retained Earnings',                             0.0),
-                ('Current Year Retained Earnings',                0.0),
-                ('Previous Years Retained Earnings',              0.0),
-                ('Total Retained Earnings',                       0.0),
-                ('Total EQUITY',                                110.0),
+                ('Previous Years Earnings',                       0.0),
+                ('Total Earnings',                              110.0),
+                ('Total EQUITY (& EARNINGS)',                   110.0),
 
                 ('LIABILITIES + EQUITY',                        110.0),
             ],
@@ -314,16 +311,13 @@ class TestFinancialReport(TestAccountReportsCommon):
                 ('Plus Non-current Liabilities',                   0.0),
                 ('Total LIABILITIES',                              0.0),
 
-                ('EQUITY',                                      6000.0),
-                ('Unallocated Earnings',                        6000.0),
+                ('EQUITY (& EARNINGS)',                         6000.0),
+                ('Equity',                                         0.0),
+                ('Earnings',                                    6000.0),
                 ('Current Year Unallocated Earnings',           4000.0),
-                ('Previous Years Unallocated Earnings',         2000.0),
-                ('Total Unallocated Earnings',                  6000.0),
-                ('Retained Earnings',                              0.0),
-                ('Current Year Retained Earnings',                 0.0),
-                ('Previous Years Retained Earnings',               0.0),
-                ('Total Retained Earnings',                        0.0),
-                ('Total EQUITY',                                6000.0),
+                ('Previous Years Earnings',                     2000.0),
+                ('Total Earnings',                              6000.0),
+                ('Total EQUITY (& EARNINGS)',                   6000.0),
                 ('LIABILITIES + EQUITY',                        6000.0),
 
             ]
@@ -384,16 +378,13 @@ class TestFinancialReport(TestAccountReportsCommon):
                 ('Plus Non-current Liabilities',                   0.0),
                 ('Total LIABILITIES',                           -200.0),
 
-                ('EQUITY',                                       250.0),
-                ('Unallocated Earnings',                        -550.0),
+                ('EQUITY (& EARNINGS)',                          250.0),
+                ('Equity',                                       800.0),
+                ('Earnings',                                    -550.0),
                 ('Current Year Unallocated Earnings',           -800.0),
-                ('Previous Years Unallocated Earnings',          250.0),
-                ('Total Unallocated Earnings',                  -550.0),
-                ('Retained Earnings',                            800.0),
-                ('Current Year Retained Earnings',               800.0),
-                ('Previous Years Retained Earnings',               0.0),
-                ('Total Retained Earnings',                      800.0),
-                ('Total EQUITY',                                 250.0),
+                ('Previous Years Earnings',                      250.0),
+                ('Total Earnings',                              -550.0),
+                ('Total EQUITY (& EARNINGS)',                    250.0),
 
                 ('LIABILITIES + EQUITY',                          50.0),
             ],
@@ -446,16 +437,13 @@ class TestFinancialReport(TestAccountReportsCommon):
                 ('Plus Non-current Liabilities',                   0.0),
                 ('Total LIABILITIES',                           -200.0),
 
-                ('EQUITY',                                       250.0),
-                ('Unallocated Earnings',                        -550.0),
+                ('EQUITY (& EARNINGS)',                          250.0),
+                ('Equity',                                       800.0),
+                ('Earnings',                                    -550.0),
                 ('Current Year Unallocated Earnings',           -800.0),
-                ('Previous Years Unallocated Earnings',          250.0),
-                ('Total Unallocated Earnings',                  -550.0),
-                ('Retained Earnings',                            800.0),
-                ('Current Year Retained Earnings',               800.0),
-                ('Previous Years Retained Earnings',               0.0),
-                ('Total Retained Earnings',                      800.0),
-                ('Total EQUITY',                                 250.0),
+                ('Previous Years Earnings',                      250.0),
+                ('Total Earnings',                              -550.0),
+                ('Total EQUITY (& EARNINGS)',                    250.0),
 
                 ('LIABILITIES + EQUITY',                          50.0),
             ],
@@ -479,51 +467,49 @@ class TestFinancialReport(TestAccountReportsCommon):
     def test_financial_report_comparison(self):
         line_id = self._get_basic_line_dict_id_from_report_line_ref('account_reports.account_financial_report_bank_view0')
         options = self._generate_options(self.report, fields.Date.from_string('2019-01-01'), fields.Date.from_string('2019-12-31'))
-        options = self._update_comparison_filter(options, self.report, 'custom', 1, date_to=fields.Date.from_string('2018-12-31'))
-        options['unfolded_lines'] = [line_id]
 
-        lines = self.report._get_lines(options)
+        for period_order in ('descending', 'ascending'):
+            options = self._update_comparison_filter(options, self.report, 'custom', 1, date_to=fields.Date.from_string('2018-12-31'), period_order=period_order)
+            options['unfolded_lines'] = [line_id]
 
-        self.assertColumnPercentComparisonValues(
-            lines,
-            [
-                ('ASSETS',                                      '-80.0%',       'red'),
-                ('Current Assets',                              '27.7%',        'red'),
-                ('Bank and Cash Accounts',                      '10.0%',        'red'),
-                ('code102 account102',                          '0.0%',       'muted'),
-                ('code2 account2',                              '30.0%',        'red'),
-                ('Total Bank and Cash Accounts',                '10.0%',        'red'),
-                ('Receivables',                                 '4.4%',       'green'),
-                ('Current Assets',                              'n/a',        'muted'),
-                ('Prepayments',                                 '44.0%',        'red'),
-                ('Total Current Assets',                        '27.7%',        'red'),
-                ('Plus Fixed Assets',                           'n/a',        'muted'),
-                ('Plus Non-current Assets',                     '20.0%',      'green'),
-                ('Total ASSETS',                                '-80.0%',       'red'),
+            lines = self.report._get_lines(options)
 
-                ('LIABILITIES',                                 'n/a',        'muted'),
-                ('Current Liabilities',                         'n/a',        'muted'),
-                ('Current Liabilities',                         'n/a',        'muted'),
-                ('Payables',                                    'n/a',        'muted'),
-                ('Total Current Liabilities',                   'n/a',        'muted'),
-                ('Plus Non-current Liabilities',                'n/a',        'muted'),
-                ('Total LIABILITIES',                           'n/a',        'muted'),
+            self.assertColumnPercentComparisonValues(
+                lines,
+                [
+                    ('ASSETS',                                      '-80.0%',       'red'),
+                    ('Current Assets',                              '27.7%',        'red'),
+                    ('Bank and Cash Accounts',                      '10.0%',        'red'),
+                    ('code102 account102',                          '0.0%',       'muted'),
+                    ('code2 account2',                              '30.0%',        'red'),
+                    ('Total Bank and Cash Accounts',                '10.0%',        'red'),
+                    ('Receivables',                                 '4.4%',       'green'),
+                    ('Current Assets',                              'n/a',        'muted'),
+                    ('Prepayments',                                 '44.0%',        'red'),
+                    ('Total Current Assets',                        '27.7%',        'red'),
+                    ('Plus Fixed Assets',                           'n/a',        'muted'),
+                    ('Plus Non-current Assets',                     '20.0%',      'green'),
+                    ('Total ASSETS',                                '-80.0%',       'red'),
 
-                ('EQUITY',                                      '0.0%',       'muted'),
-                ('Unallocated Earnings',                        '-320.0%',      'red'),
-                ('Current Year Unallocated Earnings',           '-420.0%',      'red'),
-                ('Previous Years Unallocated Earnings',         'n/a',        'muted'),
-                ('Total Unallocated Earnings',                  '-320.0%',      'red'),
-                ('Retained Earnings',                           'n/a',        'muted'),
-                ('Current Year Retained Earnings',              'n/a',        'muted'),
-                ('Previous Years Retained Earnings',            'n/a',        'muted'),
-                ('Total Retained Earnings',                     'n/a',        'muted'),
-                ('Total EQUITY',                                '0.0%',       'muted'),
+                    ('LIABILITIES',                                 'n/a',        'muted'),
+                    ('Current Liabilities',                         'n/a',        'muted'),
+                    ('Current Liabilities',                         'n/a',        'muted'),
+                    ('Payables',                                    'n/a',        'muted'),
+                    ('Total Current Liabilities',                   'n/a',        'muted'),
+                    ('Plus Non-current Liabilities',                'n/a',        'muted'),
+                    ('Total LIABILITIES',                           'n/a',        'muted'),
 
+                    ('EQUITY (& EARNINGS)',                         '0.0%',       'muted'),
+                    ('Equity',                                       'n/a',       'muted'),
+                    ('Earnings',                                    '-320.0%',      'red'),
+                    ('Current Year Unallocated Earnings',           '-420.0%',      'red'),
+                    ('Previous Years Earnings',                     'n/a',        'muted'),
+                    ('Total Earnings',                              '-320.0%',      'red'),
+                    ('Total EQUITY (& EARNINGS)',                   '0.0%',       'muted'),
 
-                ('LIABILITIES + EQUITY',                        '-80.0%',     'green'),
-            ]
-        )
+                    ('LIABILITIES + EQUITY',                        '-80.0%',     'green'),
+                ]
+            )
 
     def test_financial_report_horizontal_group(self):
         line_id = self._get_basic_line_dict_id_from_report_line_ref('account_reports.account_financial_report_receivable0')
@@ -574,16 +560,13 @@ class TestFinancialReport(TestAccountReportsCommon):
                 ('Plus Non-current Liabilities',           0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
                 ('Total LIABILITIES',                      0.0,                 0.0,                0.0,                -200.0,             0.0,                0.0,                0.0,                0.0),
 
-                ('EQUITY',                                 0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
-                ('Unallocated Earnings',                   0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
+                ('EQUITY (& EARNINGS)',                    0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
+                ('Equity',                                 0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
+                ('Earnings',                               0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
                 ('Current Year Unallocated Earnings',      0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
-                ('Previous Years Unallocated Earnings',    0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
-                ('Total Unallocated Earnings',             0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
-                ('Retained Earnings',                      0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
-                ('Current Year Retained Earnings',         0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
-                ('Previous Years Retained Earnings',       0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
-                ('Total Retained Earnings',                0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
-                ('Total EQUITY',                           0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
+                ('Previous Years Earnings',                0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
+                ('Total Earnings',                         0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
+                ('Total EQUITY (& EARNINGS)',              0.0,                 0.0,                0.0,                0.0,                0.0,                0.0,                0.0,                0.0),
 
                 ('LIABILITIES + EQUITY',                   0.0,                 0.0,                0.0,                -200.0,             0.0,                0.0,                0.0,                0.0),
             ],
@@ -633,13 +616,11 @@ class TestFinancialReport(TestAccountReportsCommon):
                 ('Current Liabilities',                            0.0,              0.0,           0.0),
                 ('Payables',                                       0.0,           -200.0,        -200.0),
                 ('Plus Non-current Liabilities',                   0.0,              0.0,           0.0),
-                ('EQUITY',                                       250.0,            800.0,        1050.0),
-                ('Unallocated Earnings',                         250.0,              0.0,         250.0),
+                ('EQUITY (& EARNINGS)',                          250.0,            800.0,        1050.0),
+                ('Equity',                                         0.0,            800.0,         800.0),
+                ('Earnings',                                     250.0,              0.0,         250.0),
                 ('Current Year Unallocated Earnings',              0.0,              0.0,           0.0),
-                ('Previous Years Unallocated Earnings',          250.0,              0.0,         250.0),
-                ('Retained Earnings',                              0.0,            800.0,         800.0),
-                ('Current Year Retained Earnings',                 0.0,            800.0,         800.0),
-                ('Previous Years Retained Earnings',               0.0,              0.0,           0.0),
+                ('Previous Years Earnings',                      250.0,              0.0,         250.0),
                 ('LIABILITIES + EQUITY',                         250.0,            600.0,         850.0),
             ],
         )
@@ -672,13 +653,11 @@ class TestFinancialReport(TestAccountReportsCommon):
                 ('Current Liabilities',                            0.0,                 0.0,        0.0,         0.0),
                 ('Payables',                                       0.0,              -200.0,        0.0,         0.0),
                 ('Plus Non-current Liabilities',                   0.0,                 0.0,        0.0,         0.0),
-                ('EQUITY',                                       250.0,               800.0,      250.0,         0.0),
-                ('Unallocated Earnings',                         250.0,                 0.0,      250.0,         0.0),
+                ('EQUITY (& EARNINGS)',                          250.0,               800.0,      250.0,         0.0),
+                ('Equity',                                         0.0,               800.0,        0.0,         0.0),
+                ('Earnings',                                     250.0,                 0.0,      250.0,         0.0),
                 ('Current Year Unallocated Earnings',              0.0,                 0.0,      250.0,         0.0),
-                ('Previous Years Unallocated Earnings',          250.0,                 0.0,        0.0,         0.0),
-                ('Retained Earnings',                              0.0,               800.0,        0.0,         0.0),
-                ('Current Year Retained Earnings',                 0.0,               800.0,        0.0,         0.0),
-                ('Previous Years Retained Earnings',               0.0,                 0.0,        0.0,         0.0),
+                ('Previous Years Earnings',                      250.0,                 0.0,        0.0,         0.0),
                 ('LIABILITIES + EQUITY',                         250.0,               600.0,      250.0,         0.0),
             ],
         )
@@ -903,6 +882,8 @@ class TestFinancialReport(TestAccountReportsCommon):
                 {'name': 'Plus Other Income', 'level': 1},
                 {'name': 'Less Other Expenses', 'level': 1},
                 {'name': 'Net Profit', 'level': 0},
+                {'name': 'Less Allocations and Plus Withdrawals', 'level': 1},
+                {'name': 'Net Profit Left After Allocations and Withdrawals', 'level': 0},
             ]
         )
 
@@ -914,3 +895,99 @@ class TestFinancialReport(TestAccountReportsCommon):
 
         self.assertEqual(line_id_1, [('markup1', 'account.account', 5), ('markup2', 'res.partner', 8), ('markup3', None, None)])
         self.assertEqual(line_id_2, [('', 'account.report', 14), ({"groupby_prefix_group": "~"}, 'account.report', 21)])
+
+    def test_multi_ledger_horizontal_group(self):
+        def _create_journal_group(name, excluded_journal_ids, company):
+            return self.env['account.journal.group'].create({
+                'name': name,
+                'excluded_journal_ids': [Command.set(excluded_journal_ids)],
+                'company_id': company.id if company else False,
+            })
+        c1 = self.company_data['company']
+        c2 = self.company_data_2['company']
+        context = dict(self.env.context, allowed_company_ids=[c1.id, c2.id])
+        self.env = self.env(context=context)
+
+        c1_sale = self.company_data['default_journal_sale']
+        c2_sale = self.company_data_2['default_journal_sale']
+        c1_no_sale_ledger = _create_journal_group('C1, no Sale', c1_sale.ids, c1)
+        c2_no_sale_ledger = _create_journal_group('C2, no Sale', c2_sale.ids, c2)
+        c1_c2_journals_no_sale = self.env['account.journal'].search([
+            ('company_id', 'in', [c1.id, c2.id]),
+            ('id', 'not in', [c1_sale.id, c2_sale.id])
+        ])
+        c1_c2_sale_ledger = _create_journal_group('Sale of C1, C2', c1_c2_journals_no_sale.ids, False)
+        report = self.env.ref('account_reports.profit_and_loss')
+        horizontal_group = self.env['account.report.horizontal.group'].create({
+            'name': 'Multi-Ledger',
+            'report_ids': [Command.set(report.ids)],
+            'rule_ids': [
+                Command.create({
+                    'field_name': 'journal_group_id',
+                    'domain':  str([('id', 'in', (c1_no_sale_ledger + c2_no_sale_ledger + c1_c2_sale_ledger).ids)]),
+                }),
+            ],
+        })
+        report.horizontal_group_ids |= horizontal_group
+
+        c1_move_data = [
+            {
+                'move_type': 'out_invoice',
+                'partner_id': self.partner_a.id,
+                'invoice_date': fields.Date.from_string('2020-01-03'),
+                'journal_id': c1_sale.id,
+                'invoice_line_ids': [Command.create({'price_unit': 100.0, 'account_id': self.company_data['default_account_revenue'].id})],
+            },
+            {
+                'move_type': 'in_invoice',
+                'partner_id': self.partner_a.id,
+                'invoice_date': fields.Date.from_string('2020-01-03'),
+                'journal_id': self.company_data['default_journal_purchase'].id,
+                'invoice_line_ids': [Command.create({'price_unit': 100.0, 'account_id': self.company_data['default_account_expense'].id})],
+            },
+        ]
+
+        c1_moves = self.env['account.move'].with_company(c1).create(c1_move_data)
+        c1_moves.action_post()
+
+        # 1 USD = 2 CAD
+        c2_move_data = [
+            {
+                'move_type': 'out_invoice',
+                'partner_id': self.partner_a.id,
+                'invoice_date': fields.Date.from_string('2020-01-03'),
+                'journal_id': c2_sale.id,
+                'invoice_line_ids': [Command.create({'price_unit': 100.0, 'account_id': self.company_data_2['default_account_revenue'].id})],
+            },
+            {
+                'move_type': 'in_invoice',
+                'partner_id': self.partner_a.id,
+                'invoice_date': fields.Date.from_string('2020-01-03'),
+                'journal_id': self.company_data_2['default_journal_purchase'].id,
+                'invoice_line_ids': [Command.create({'price_unit': 100.0, 'account_id': self.company_data_2['default_account_expense'].id})],
+            },
+        ]
+        c2_moves = self.env['account.move'].with_company(c2).create(c2_move_data)
+        c2_moves.action_post()
+
+        options = self._generate_options(report, '2020-01-01', '2020-12-31', default_options={'selected_horizontal_group_id': horizontal_group.id})
+        lines = report._get_lines(options)
+        # When company specified on ledger, journals for other companies are excluded
+        self.assertLinesValues(
+            lines,
+            #   Name                                                     C1, no sales         C2, no sales       Sale of C1, C2
+            [   0,                                                           1,                   2,                   3],
+            [
+                ('Revenue',                                                0.0,                 0.0,                150.0),
+                ('Less Costs of Revenue',                                  0.0,                 0.0,                  0.0),
+                ('Gross Profit',                                           0.0,                 0.0,                150.0),
+                ('Less Operating Expenses',                              100.0,                50.0,                  0.0),
+                ('Operating Income (or Loss)',                          -100.0,               -50.0,                150.0),
+                ('Plus Other Income',                                      0.0,                 0.0,                  0.0),
+                ('Less Other Expenses',                                    0.0,                 0.0,                  0.0),
+                ('Net Profit',                                          -100.0,               -50.0,                150.0),
+                ('Less Allocations and Plus Withdrawals',                  0.0,                 0.0,                  0.0),
+                ('Net Profit Left After Allocations and Withdrawals',   -100.0,               -50.0,                150.0),
+            ],
+            options,
+        )

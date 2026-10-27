@@ -50,7 +50,7 @@ export function dateAddFixedOffset(date, plusParams) {
 }
 
 export function diffColumn(col1, col2, unit) {
-    return col2.diff(col1, unit).values[`${unit}s`];
+    return Math.round(col2.diff(col1, unit).values[`${unit}s`]);
 }
 
 export function localStartOf(date, unit) {
@@ -817,8 +817,10 @@ export const useGanttSelectable = makeDraggableHook({
         addClass(cell, "pe-auto");
         return getResult(current);
     },
-    onDragStart({ ctx }) {
+    onDragStart({ ctx, removeClass }) {
         const { current } = ctx;
+        // Useless on cells, annoying on pills
+        removeClass(current.element, "o_dragged");
         return getResult(current);
     },
     onDrag({ ctx }) {
@@ -837,6 +839,10 @@ export const useGanttSelectable = makeDraggableHook({
     onDrop({ ctx }) {
         const { current } = ctx;
         return getResult(current);
+    },
+    onDragEnd() {
+        // Needed in order to be used in hook caller
+        return {};
     },
 });
 

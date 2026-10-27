@@ -44,7 +44,9 @@ class DocumentsAccessTracking(models.Model):
 
     def _create_message_track(self):
         self.ensure_one()
-        document_ids = self.env['documents.document'].browse(self.documents)
+        document_ids = self.env['documents.document'].browse(self.documents).exists()
+        if not document_ids:
+            return
         if initial_values := self._get_initial_values():
             if 'members' in self.changes:
                 self._add_pre_commit_members_data()
@@ -95,4 +97,16 @@ class DocumentsAccessTracking(models.Model):
         partner_ids = self.env['res.partner'].browse(members_dict['removed'])
         partner_map.update(dict(zip(members_dict['removed'], partner_ids)))
 
-        return partner_map
+        # partners deleted since the change are mapped to a "new" recordset
+        existing = self.env['res.partner'].union(*partner_map.values()).exists()
+        return {
+            key: partner
+            if partner in existing else self.env['res.partner'].new({
+                'name': self.env._(
+                    'Deleted %(model_name)s (#%(record_id)s)',
+                    model_name=self.env['res.partner']._description,
+                    record_id=key
+                )
+            })
+            for key, partner in partner_map.items()
+        }

@@ -44,7 +44,7 @@ $o-discuss-talkingColor: lighten($success, 10%);
     }
 
     & .o-innerBadge {
-        min-width: 2.7ch; // same as .badge, without using .badge to keep semantics of a single .badge
+        min-width: $o-badge-min-width; // same as .badge, without using .badge to keep semantics of a single .badge
     }
 }
 
@@ -97,7 +97,7 @@ $o-discuss-talkingColor: lighten($success, 10%);
 }
 
 .o-discuss-text-body {
-    color: $gray-700;
+    color: $gray-700 !important;
 }
 
 .o-discuss-badge, .o-discuss-badgeShape {
@@ -290,6 +290,10 @@ $o-mail-utilities: map-merge(
     font-size: 0.5rem;
 }
 
+.o-xxxs {
+    font-size: 0.35rem;
+}
+
 .o-yellow {
     color: $yellow;
 }
@@ -352,9 +356,10 @@ $o-mail-utilities: map-merge(
 a.o_mail_redirect, a.o_channel_redirect, a.o-discuss-mention, a.o_message_redirect_transformed {
     user-select: none;
     border-radius: $btn-border-radius-sm;
-    padding: 0rem 0.1rem;
-    margin: 0rem 0.0875rem;
+    padding: 0rem 0.15rem;
+    margin: 0rem 0.025rem;
     outline: 1px solid;
+    outline-offset: -1px;
     font-weight: $font-weight-bold;
     display: inline-block;
 }
@@ -410,11 +415,6 @@ a.o-discuss-mention {
     .o-opacity-hoverable {
         opacity: 100 !important;
     }
-}
-
-.o-mail-Discuss-threadActionPopover {
-    width: Min(95vw, 400px);
-    max-height: Min(50vh, 530px);
 }
 
 .o-mail-starred {

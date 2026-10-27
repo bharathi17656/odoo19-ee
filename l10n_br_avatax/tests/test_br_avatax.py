@@ -12,6 +12,7 @@ from odoo.tests.common import TransactionCase, freeze_time, tagged
 from odoo.tools import file_open
 
 from .mocked_invoice_response import generate_response
+from .mocked_credit_note_response import generate_response as credit_note_generate_response
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.l10n_br_avatax.models.account_external_tax_mixin import (
     AccountExternalTaxMixin,
@@ -170,6 +171,17 @@ class TestAvalaraBrCommon(AccountTestInvoicingCommon, TestBRMockedRequests):
             'l10n_br_tax_regime': 'individual',
         })
 
+        cls.partner_shipping_id = cls.env['res.partner'].create({
+            'type': 'delivery',
+            'street_name': 'Avenida Europa',
+            'street_number': '2048',
+            'street2': 'Jardim São Domingos',
+            'state_id': cls.env.ref('base.state_br_sp').id,
+            'city_id': cls.env.ref('l10n_br.city_br_124').id,
+            'country_id': cls.env.ref('base.br').id,
+            'city': 'Americana',
+        })
+
     @classmethod
     def _setup_products(cls):
         common = {
@@ -231,8 +243,12 @@ class TestAvalaraBrCommon(AccountTestInvoicingCommon, TestBRMockedRequests):
 
     @classmethod
     @contextmanager
-    def _capture_request_br(cls, return_value=None):
-        with patch(f'{AccountExternalTaxMixin.__module__}.AccountExternalTaxMixin._l10n_br_iap_request', return_value=return_value) as mocked:
+    def _capture_request_br(cls, return_value=None, side_effect=None):
+        with patch(
+            f'{AccountExternalTaxMixin.__module__}.AccountExternalTaxMixin._l10n_br_iap_request',
+            return_value=return_value,
+            side_effect=side_effect,
+        ) as mocked:
             yield mocked
 
     @classmethod
@@ -290,6 +306,25 @@ class TestAvalaraBrCommon(AccountTestInvoicingCommon, TestBRMockedRequests):
             ],
         })
 
+        return invoice
+
+    @classmethod
+    def _create_invoice_with_diff_partner_shipping(cls):
+        invoice = cls._create_invoice_02(operation_types=(False, ) * 4)
+        # Create a delivery address for partner
+        partner_shipping_id = cls.partner_shipping_id
+        invoice.partner_id.write({
+            'child_ids': (4, partner_shipping_id.id),
+            'l10n_br_tax_regime': 'realProfit',
+            'city_id': cls.env.ref("l10n_br.city_br_002"),
+        })
+        # Default document type is NF-e
+        invoice.write({
+            'invoice_date': TEST_DATETIME,
+            'l10n_latam_document_type_id': cls.env.ref('l10n_br.dt_55').id,
+            'l10n_br_cnae_code_id': cls.env.ref("l10n_br_avatax.cnae_6209100").id,
+            'partner_shipping_id': partner_shipping_id.id
+        })
         return invoice
 
 
@@ -564,7 +599,7 @@ class TestAvalaraBrInvoice(TestAvalaraBrInvoiceCommon):
         }])
 
     def test_12_service_invoice_with_installments(self):
-        """Test that service invoices with installments clear tax_ids when using Avalara. It's necessary because Avalara
+        """Test that service invoices with installments clear tax info when using Avalara. It's necessary because Avalara
         expects installments to be sent without taxes for service invoices."""
         invoice, response = self._create_invoice_01_and_expected_response()
         rio_city = self.env.ref("l10n_br.city_br_002")
@@ -588,24 +623,14 @@ class TestAvalaraBrInvoice(TestAvalaraBrInvoiceCommon):
         self.assertGreater(invoice.amount_tax, 0, "There should be a tax amount on this invoice.")
 
         with self._capture_request_br(return_value=response) as captured:
-            invoice._get_external_taxes()
+            invoice.button_external_tax_calculation()
 
-        expected_untaxed_terms = invoice.invoice_payment_term_id._compute_terms(
-            invoice.date,
-            invoice.currency_id,
-            invoice.company_id,
-            tax_amount=0,
-            tax_amount_currency=0,
-            sign=1,
-            untaxed_amount=invoice.amount_untaxed,
-            untaxed_amount_currency=invoice.amount_untaxed,
-        )
+        payload = captured.call_args.args[2]
 
-        self.assertEqual(
-            [installment['grossValue'] for installment in captured.call_args[0][2]['header']['payment']['installment']],
-            [term['company_amount'] for term in expected_untaxed_terms['line_ids']],
-            "Installments should be sent without taxes."
-        )
+        with self._capture_request_br(return_value=response) as captured:
+            invoice.button_external_tax_calculation()
+
+        self.assertEqual(payload, captured.call_args.args[2], "The payload of the second call should be the same")
 
     def test_11_service_invoice_with_discount(self):
         invoice, response = self._create_invoice_01_and_expected_response()
@@ -626,7 +651,8 @@ class TestAvalaraBrInvoice(TestAvalaraBrInvoiceCommon):
         rio_city = self.env.ref("l10n_br.city_br_002")
         ncm_code_id = self.env.ref('l10n_br_avatax.service_1_07')
         # Make a service invoice
-        invoice = self._create_invoice_02(operation_types=(False, ) * 4)
+        invoice = self._create_invoice_with_diff_partner_shipping()
+        invoice.l10n_latam_document_type_id = self.env.ref('l10n_br.dt_SE').id
         # Configure the product to be a service type for rendered address
         invoice.invoice_line_ids.mapped('product_id').write(
             {
@@ -637,33 +663,122 @@ class TestAvalaraBrInvoice(TestAvalaraBrInvoiceCommon):
                 "l10n_br_ncm_code_id": ncm_code_id,
             },
         )
-        # Create a delivery address for partner
-        partner_shipping_id = self.env['res.partner'].create({
-            'type': 'delivery',
-            'street_name': 'Avenida Europa',
-            'street_number': '2048',
-            'street2': 'Jardim São Domingos',
-            'state_id': self.env.ref('base.state_br_sp').id,
-            'city_id': self.env.ref('l10n_br.city_br_124').id,
-            'country_id': self.env.ref('base.br').id,
-            'city': 'Americana',
-        })
-        invoice.partner_id.write({
-            'child_ids': (4, partner_shipping_id.id),
-            'l10n_br_tax_regime': 'realProfit',
-            'city_id': rio_city,
-        })
-        invoice.write({
-            'invoice_date': TEST_DATETIME,
-            'l10n_latam_document_type_id': self.env.ref('l10n_br.dt_SE').id,
-            'l10n_br_cnae_code_id': self.env.ref("l10n_br_avatax.cnae_6209100").id,
-            'partner_shipping_id': partner_shipping_id.id
-        })
 
         with self._with_mocked_l10n_br_iap_request([
             ("calculate_tax", "nfse_rendered_address_request", "nfse_rendered_address_response"),
         ]):
             invoice.action_post()
+
+    def test_14_goods_invoice_with_delivery_address(self):
+        invoice = self._create_invoice_with_diff_partner_shipping()
+        payload = invoice._prepare_l10n_br_avatax_document_service_call(invoice._get_l10n_br_avatax_service_params())
+        delivery = payload['header']['locations'].get('delivery')
+        self.assertTrue(delivery, "Delivery address should be sent in request when partner_shipping_id is not the same as partner_id")
+
+    def test_15_credit_note_with_included_tax(self):
+        product = self.env['product.product'].create({
+            'name': 'Test Product',
+            'default_code': 'PROD2',
+            'list_price': 800.00,
+            'standard_price': 800.00,
+            'l10n_br_ncm_code_id': self.env.ref('l10n_br_avatax.02062990').id,
+            'l10n_br_source_origin': '0',
+            'l10n_br_sped_type': 'FOR PRODUCT',
+            'l10n_br_use_type': 'production',
+            'supplier_taxes_id': None,
+        })
+
+        credit_note = self.env['account.move'].create({
+            'move_type': 'out_refund',
+            'partner_id': self.partner.id,
+            'fiscal_position_id': self.fp_avatax.id,
+            'invoice_date': '2021-01-01',
+            'invoice_line_ids': [
+                Command.create({
+                    'product_id': product.id,
+                    'tax_ids': None,
+                    'price_unit': product.list_price,
+                }),
+            ],
+        })
+
+        response = credit_note_generate_response(credit_note.invoice_line_ids)
+        with self._capture_request_br(return_value=response):
+            credit_note.action_post()
+
+        expected_amounts = {
+            'amount_total': 800.0,
+            'amount_untaxed': 704.0,
+            'amount_tax': 96.0,
+        }
+        self.assertRecordValues(credit_note, [expected_amounts])
+        self.assertEqual(credit_note.tax_totals['total_amount_currency'], expected_amounts['amount_total'])
+        self.assertEqual(credit_note.tax_totals['base_amount_currency'], expected_amounts['amount_untaxed'])
+
+    def test_13_stale_manual_total_excluded_currency(self):
+        """Test that manual_total_excluded_currency is updated on recomputation even if it already has a value."""
+        invoice, response = self._create_invoice_01_and_expected_response()
+
+        # First call to populate extra_tax_data with correct values.
+        with self._capture_request_br(return_value=response):
+            invoice.button_external_tax_calculation()
+
+        # Corrupt the manual_total_excluded_currency in extra_tax_data.
+        for line in invoice.invoice_line_ids:
+            extra_tax_data = line.extra_tax_data
+            extra_tax_data['manual_total_excluded_currency'] = 123
+            line.write({'extra_tax_data': extra_tax_data})
+
+        # Second call, should correct the stale manual_total_excluded_currency.
+        with self._capture_request_br(return_value=response):
+            invoice.button_external_tax_calculation()
+
+        # Verify that manual_total_excluded_currency was updated from the fresh Avatax response.
+        pre_tax_base = invoice.invoice_line_ids[0].extra_tax_data.get('manual_total_excluded_currency')
+        self.assertNotEqual(pre_tax_base, 123)
+
+    def test_16_transport_cost_line_between_products(self):
+        """Transport cost lines aren't sent to Avatax, their position shouldn't shift the results of the other lines."""
+        freight = self.env['product.product'].create({
+            'name': 'freight',
+            'list_price': 10.00,
+            'l10n_br_transport_cost_type': 'freight',
+        })
+        products = (
+            self.product_user,
+            freight,
+            self.product_accounting,
+            self.product_expenses,
+            self.product_invoicing,
+        )
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner.id,
+            'fiscal_position_id': self.fp_avatax.id,
+            'invoice_date': '2021-01-01',
+            'invoice_line_ids': [
+                Command.create({
+                    'product_id': product.id,
+                    'tax_ids': None,
+                    'price_unit': product.list_price,
+                }) for product in products
+            ],
+        })
+        invoice.invoice_line_ids[0].discount = 10
+        freight_line = invoice.invoice_line_ids[1]
+        product_lines = invoice.invoice_line_ids - freight_line
+
+        response = generate_response(product_lines)
+        with self._capture_request_br(return_value=response):
+            invoice.action_post()
+
+        self.assertFalse(freight_line.tax_ids, "The freight line isn't sent to Avatax and shouldn't get any taxes.")
+        for line, line_results in zip(product_lines, response['lines']):
+            self.assertEqual(
+                line.price_subtotal,
+                line_results['lineNetFigure'] - line_results['lineTaxedDiscount'],
+                'Line got the results of another line.',
+            )
 
 
 @tagged('post_install_l10n', '-at_install', 'post_install')
@@ -733,6 +848,17 @@ class TestAvalaraBrSettings(TestAvalaraBrInvoiceCommon):
         arguments = mocked_request.call_args[0][2]
         self.assertEqual(self.settings.company_id.vat, '00623904000173', 'CNPJ should be compacted in internal storage')
         self.assertEqual(arguments['cnpj'], '00.623.904/0001-73', 'CNPJ must be formatted for account creation')
+
+    def test_06_extract_tax_values_multiple_moves(self):
+        """Ensure that the tax values are extracted correctly when multiple moves are passed to the function.
+        """
+        invoice_1, response_1 = self._create_invoice_01_and_expected_response()
+        invoice_2, response_2 = self._create_invoice_01_and_expected_response()
+        invoices = invoice_1 | invoice_2
+
+        with self._capture_request_br(side_effect=[response_1, response_2]):
+            invoices.action_post()
+        self.assertTrue(all(invoice.state == 'posted' for invoice in invoices))
 
 
 @tagged('external_l10n', 'external', '-at_install', 'post_install', '-standard')

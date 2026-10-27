@@ -87,11 +87,11 @@ class AccountEdiFormat(models.Model):
     @api.model
     def _l10n_pe_edi_get_general_error_messages(self):
         return {
-            'L10NPE08': _lt("There was an error in the connection or the response from the OSE server. Please try again later."),
-            'L10NPE17': _lt("There are problems with the connection to the IAP server. "
-                            "Please try again in a few minutes."),
-            'L10NPE18': _lt("The URL provided for the IAP server is wrong, please go to  Settings --> System "
-                            "Parameters and add the right URL to parameter l10n_pe_edi.endpoint."),
+            'L10NPE08': _("There was an error in the connection or the response from the OSE server. Please try again later."),
+            'L10NPE17': _("There are problems with the connection to the IAP server. "
+                          "Please try again in a few minutes."),
+            'L10NPE18': _("The URL provided for the IAP server is wrong, please go to  Settings --> System "
+                          "Parameters and add the right URL to parameter l10n_pe_edi.endpoint."),
         }
 
     @api.model
@@ -224,7 +224,7 @@ class AccountEdiFormat(models.Model):
         try:
             response_tree = etree.fromstring(soap_response)
         except etree.LxmlError:
-            return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE08']}
+            return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE08'], 'blocking_level': 'warning'}
         if response_tree.find('.//{*}Fault') is not None:
             if response_tree.find('.//{*}message') is not None:  # It comes from Estela (formerly Digiflow)
                 message_element, code = self._l10n_pe_edi_response_code_digiflow(response_tree)
@@ -269,8 +269,8 @@ class AccountEdiFormat(models.Model):
                     html_escape(code),
                     html_escape(message),
                 )
-                return {'error': error_message, 'code': code, 'message': message}
-        return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE08']}
+                return {'error': error_message, 'blocking_level': 'warning', 'code': code, 'message': message}
+        return {'error': self._l10n_pe_edi_get_general_error_messages()['L10NPE08'], 'blocking_level': 'warning'}
 
     _l10n_pe_edi_decode_cdr = _l10n_pe_edi_decode_soap_response
 
@@ -421,7 +421,7 @@ class AccountEdiFormat(models.Model):
         soap_response_decoded = self._l10n_pe_edi_decode_soap_response(soap_response) if soap_response else {}
 
         if soap_response_decoded.get('error'):
-            return {'error': soap_response_decoded['error'], 'blocking_level': 'error', 'code': soap_response_decoded.get('code')}
+            return {'error': soap_response_decoded['error'], 'blocking_level': soap_response_decoded.get('blocking_level', 'error'), 'code': soap_response_decoded.get('code')}
 
         code = soap_response_decoded.get('code')
         status = '%s|%s' % (html_escape(code), html_escape(soap_response_decoded.get('message')))
@@ -543,6 +543,10 @@ class AccountEdiFormat(models.Model):
                     provider, invoice.company_id, invoice._l10n_pe_edi_get_serie_folio(), invoice.l10n_latam_document_type_id.code)
                 if res_retrieve_cdr.get('error'):
                     res['error'] = f"{res['error']}<br/>{res_retrieve_cdr['error']}"
+                    # _l10n_pe_edi_retrieve_cdr tells us whether this is worth retrying automatically
+                    # or a definitive SUNAT rejection that will never change on retry
+                    # ex: SUNAT registered the document as invalid, the CDR isn't available yet
+                    res['blocking_level'] = res_retrieve_cdr.get('blocking_level', 'error')
                 else:
                     # Check that the partner and issue date match between the retrieved CDR and the invoice.
                     cdr = res_retrieve_cdr['cdr']
@@ -609,7 +613,7 @@ class AccountEdiFormat(models.Model):
         res = {'fault_ns': 'soap-env'}
         if company.l10n_pe_edi_test_env:
             res.update({
-                'wsdl': 'https://e-beta.sunat.gob.pe/ol-ti-itcpfegem-beta/billService?wsdl',
+                'wsdl': self._get_sunat_beta_wsdl(),
                 'token': UsernameToken('MODDATOS', 'MODDATOS'),
             })
         else:
@@ -758,7 +762,7 @@ class AccountEdiFormat(models.Model):
         soap_response_decoded = self._l10n_pe_edi_decode_soap_response(soap_response) if soap_response else {}
 
         if soap_response_decoded.get('error'):
-            return {'error': soap_response_decoded['error'], 'blocking_level': 'error', 'code': soap_response_decoded.get('code')}
+            return {'error': soap_response_decoded['error'], 'blocking_level': soap_response_decoded.get('blocking_level', 'error'), 'code': soap_response_decoded.get('code')}
 
         code = soap_response_decoded.get('code')
         status = '%s|%s' % (html_escape(code), html_escape(soap_response_decoded.get('message')))
@@ -860,10 +864,14 @@ class AccountEdiFormat(models.Model):
             company, serie_folio, latam_document_type)
         if res_status_cdr.get('error'):
             error_msg = '%s<br/>%s' % (_('Error when requesting CDR status:'), res_status_cdr['error'])
-            return {'error': error_msg}
+            # Propagate the service's own verdict: 'warning' means we don't have a definitive answer yet
+            # (connection issue, or the CDR simply isn't generated yet) and is worth retrying automatically;
+            # anything else (ex:: SOAP fault fromm SUNAT) defaults to blocking ('error').
+            return {'error': error_msg, 'blocking_level': res_status_cdr.get('blocking_level', 'error')}
         elif res_status_cdr.get('code') != '0004':
             error_msg = '%s<br/>%s' % (_('SOAP response status when retrieving CDR:'), res_status_cdr['status'])
-            return {'error': error_msg}
+            # Same as above: still no definitive answer, keep retrying.
+            return {'error': error_msg, 'blocking_level': 'warning'}
         else:
             # SOAP status code is 0004: CDR already exists.
             # Decode the CDR. If the CDR's ResponseCode is 0, then it is valid; otherwise SUNAT considers it invalid.
@@ -875,7 +883,9 @@ class AccountEdiFormat(models.Model):
                     cdr_status['description'],
                     _('This document number is now registered by SUNAT as invalid.')
                 )
-                return {'error': error_message}
+                # SUNAT has definitively rejected the document: retrying won't produce a different
+                # answer, so this must stay blocking instead of being retried by the EDI cron forever.
+                return {'error': error_message, 'blocking_level': 'error'}
             else:
                 return res_status_cdr
 
@@ -1175,6 +1185,164 @@ class AccountEdiFormat(models.Model):
                 </wsdl:port>
                 <wsdl:port name="BillServicePort.3" binding="ns0:BillServicePortBinding">
                 <soap11:address location="https://e-factura.sunat.gob.pe:443/ol-ti-itcpfegem/billService"/>
+                </wsdl:port>
+            </wsdl:service>
+            </wsdl:definitions>''')
+
+    def _get_sunat_beta_wsdl(self):
+        """Return the self-contained WSDL of the SUNAT beta billService, with the types and messages inlined instead of
+        imported, so that zeep does not need to fetch any additional resource from the beta server.
+        """
+        return io.BytesIO(b'''
+            <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap11="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://service.sunat.gob.pe" targetNamespace="http://service.sunat.gob.pe">
+            <wsdl:types>
+                <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xmime="http://www.w3.org/2005/05/xmlmime" version="1.0" targetNamespace="http://service.sunat.gob.pe">
+                    <xs:element name="getStatus" type="tns:getStatus"/>
+                    <xs:element name="getStatusResponse" type="tns:getStatusResponse"/>
+                    <xs:element name="sendBill" type="tns:sendBill"/>
+                    <xs:element name="sendBillResponse" type="tns:sendBillResponse"/>
+                    <xs:element name="sendPack" type="tns:sendPack"/>
+                    <xs:element name="sendPackResponse" type="tns:sendPackResponse"/>
+                    <xs:element name="sendSummary" type="tns:sendSummary"/>
+                    <xs:element name="sendSummaryResponse" type="tns:sendSummaryResponse"/>
+                    <xs:complexType name="getStatus">
+                        <xs:sequence>
+                            <xs:element name="ticket" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                    <xs:complexType name="getStatusResponse">
+                        <xs:sequence>
+                            <xs:element name="status" type="tns:statusResponse" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                    <xs:complexType name="statusResponse">
+                        <xs:sequence>
+                            <xs:element name="content" type="xs:base64Binary" minOccurs="0"/>
+                            <xs:element name="statusCode" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                    <xs:complexType name="sendBill">
+                        <xs:sequence>
+                            <xs:element name="fileName" type="xs:string" minOccurs="0"/>
+                            <xs:element name="contentFile" xmime:expectedContentTypes="application/octet-stream" type="xs:base64Binary" minOccurs="0"/>
+                            <xs:element name="partyType" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                    <xs:complexType name="sendBillResponse">
+                        <xs:sequence>
+                            <xs:element name="applicationResponse" type="xs:base64Binary" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                    <xs:complexType name="sendPack">
+                        <xs:sequence>
+                            <xs:element name="fileName" type="xs:string" minOccurs="0"/>
+                            <xs:element name="contentFile" xmime:expectedContentTypes="application/octet-stream" type="xs:base64Binary" minOccurs="0"/>
+                            <xs:element name="partyType" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                    <xs:complexType name="sendPackResponse">
+                        <xs:sequence>
+                            <xs:element name="ticket" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                    <xs:complexType name="sendSummary">
+                        <xs:sequence>
+                            <xs:element name="fileName" type="xs:string" minOccurs="0"/>
+                            <xs:element name="contentFile" xmime:expectedContentTypes="application/octet-stream" type="xs:base64Binary" minOccurs="0"/>
+                            <xs:element name="partyType" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                    <xs:complexType name="sendSummaryResponse">
+                        <xs:sequence>
+                            <xs:element name="ticket" type="xs:string" minOccurs="0"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:schema>
+            </wsdl:types>
+            <wsdl:message name="getStatus">
+                <wsdl:part name="parameters" element="tns:getStatus"/>
+            </wsdl:message>
+            <wsdl:message name="getStatusResponse">
+                <wsdl:part name="parameters" element="tns:getStatusResponse"/>
+            </wsdl:message>
+            <wsdl:message name="sendBill">
+                <wsdl:part name="parameters" element="tns:sendBill"/>
+            </wsdl:message>
+            <wsdl:message name="sendBillResponse">
+                <wsdl:part name="parameters" element="tns:sendBillResponse"/>
+            </wsdl:message>
+            <wsdl:message name="sendPack">
+                <wsdl:part name="parameters" element="tns:sendPack"/>
+            </wsdl:message>
+            <wsdl:message name="sendPackResponse">
+                <wsdl:part name="parameters" element="tns:sendPackResponse"/>
+            </wsdl:message>
+            <wsdl:message name="sendSummary">
+                <wsdl:part name="parameters" element="tns:sendSummary"/>
+            </wsdl:message>
+            <wsdl:message name="sendSummaryResponse">
+                <wsdl:part name="parameters" element="tns:sendSummaryResponse"/>
+            </wsdl:message>
+            <wsdl:portType name="billService">
+                <wsdl:operation name="getStatus">
+                    <wsdl:input name="getStatusRequest" message="tns:getStatus"/>
+                    <wsdl:output name="getStatusResponse" message="tns:getStatusResponse"/>
+                </wsdl:operation>
+                <wsdl:operation name="sendBill">
+                    <wsdl:input name="sendBillRequest" message="tns:sendBill"/>
+                    <wsdl:output name="sendBillResponse" message="tns:sendBillResponse"/>
+                </wsdl:operation>
+                <wsdl:operation name="sendPack">
+                    <wsdl:input name="sendPackRequest" message="tns:sendPack"/>
+                    <wsdl:output name="sendPackResponse" message="tns:sendPackResponse"/>
+                </wsdl:operation>
+                <wsdl:operation name="sendSummary">
+                    <wsdl:input name="sendSummaryRequest" message="tns:sendSummary"/>
+                    <wsdl:output name="sendSummaryResponse" message="tns:sendSummaryResponse"/>
+                </wsdl:operation>
+            </wsdl:portType>
+            <wsdl:binding name="BillServicePortBinding" type="tns:billService">
+                <soap11:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+                <wsdl:operation name="getStatus">
+                    <soap11:operation soapAction="urn:getStatus" style="document"/>
+                    <wsdl:input name="getStatusRequest">
+                        <soap11:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output name="getStatusResponse">
+                        <soap11:body use="literal"/>
+                    </wsdl:output>
+                </wsdl:operation>
+                <wsdl:operation name="sendBill">
+                    <soap11:operation soapAction="urn:sendBill" style="document"/>
+                    <wsdl:input name="sendBillRequest">
+                        <soap11:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output name="sendBillResponse">
+                        <soap11:body use="literal"/>
+                    </wsdl:output>
+                </wsdl:operation>
+                <wsdl:operation name="sendPack">
+                    <soap11:operation soapAction="urn:sendPack" style="document"/>
+                    <wsdl:input name="sendPackRequest">
+                        <soap11:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output name="sendPackResponse">
+                        <soap11:body use="literal"/>
+                    </wsdl:output>
+                </wsdl:operation>
+                <wsdl:operation name="sendSummary">
+                    <soap11:operation soapAction="urn:sendSummary" style="document"/>
+                    <wsdl:input name="sendSummaryRequest">
+                        <soap11:body use="literal"/>
+                    </wsdl:input>
+                    <wsdl:output name="sendSummaryResponse">
+                        <soap11:body use="literal"/>
+                    </wsdl:output>
+                </wsdl:operation>
+            </wsdl:binding>
+            <wsdl:service name="billService">
+                <wsdl:port name="BillServicePort" binding="tns:BillServicePortBinding">
+                    <soap11:address location="https://e-beta.sunat.gob.pe:443/ol-ti-itcpfegem-beta/billService"/>
                 </wsdl:port>
             </wsdl:service>
             </wsdl:definitions>''')

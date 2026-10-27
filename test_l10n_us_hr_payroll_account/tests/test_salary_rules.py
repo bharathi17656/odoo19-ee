@@ -175,6 +175,31 @@ class TestPayslipValidation(TestPayslipValidationCommon):
         payslip_results = {'BASIC': 3373.01, 'GROSS': 3373.01, 'MEDICAL': -98.65, 'DENTAL': -6.97, 'VISION': -0.97, 'TAXABLE': 3266.42, 'FIT': -235.14, 'SST': -202.52, 'MEDICARE': -47.36, 'MEDICAREADD': 0, 'CAINCOMETAX': -71.45, 'CASDITAX': -29.4, 'COMPANYSOCIAL': 202.52, 'COMPANYMEDICARE': 47.36, 'COMPANYFUTA': 195.99, 'COMPANYSUI': 55.53, 'COMPANYCAETT': 3.27, 'NET': 2680.55}
         self._validate_payslip(payslip, payslip_results)
 
+        # ================================================
+        # Verify Retirement Matching for Hourly Employees
+        # ================================================
+        self.contract.write({
+            'wage': 0.0,
+            'l10n_us_pre_retirement_amount': 3.0,
+            'l10n_us_pre_retirement_type': 'percent',
+            'l10n_us_pre_retirement_matching_amount': 100.0,
+            'l10n_us_pre_retirement_matching_type': 'percent',
+            'l10n_us_pre_retirement_matching_yearly_cap': 3.0,
+        })
+
+        payslip_retirement = self._generate_payslip(datetime.date(2023, 1, 1), datetime.date(2023, 1, 15))
+
+        line_401k = payslip_retirement.line_ids.filtered(lambda l: l.code == '401K')
+        line_matching = payslip_retirement.line_ids.filtered(lambda l: l.code == '401KMATCHING')
+
+        # 3% of GROSS ($3373.01) = $101.19
+        self.assertTrue(line_401k, "401K deduction line should be generated")
+        self.assertAlmostEqual(line_401k.total, -101.19, places=2, msg="401K deduction should be 3% of GROSS")
+
+        # Employer Match = Min(Contribution ($101.19), Cap (3% of $3373.01 GROSS = $101.19)) = $101.19
+        self.assertTrue(line_matching, "401K Matching line should be generated")
+        self.assertAlmostEqual(line_matching.total, 101.19, places=2, msg="401K Matching should scale dynamically with GROSS")
+
     def test_004_tax_status_married_jointly_old_w4(self):
         self.contract.write({
             'wage': 4791.69,
@@ -959,4 +984,166 @@ class TestPayslipValidation(TestPayslipValidationCommon):
             'COMPANYCOSUPPORT': 8.42,
             'NET': 3507.23,
         }
+        self._validate_payslip(payslip, payslip_results)
+
+    def test_069_al_state_tax_0_income(self):
+        self.work_address.state_id = self.env.ref('base.state_us_1')
+        self.contract.write({
+            'wage': 0,
+            'schedule_pay': 'weekly',
+        })
+        self.employee.write({
+            'l10n_us_w4_allowances_count': 3,
+            'l10n_us_state_filing_status': 'al_status_4',
+            'l10n_us_filing_status': 'jointly',
+            'children': 2,
+        })
+
+        payslip = self._generate_payslip(datetime.date(2025, 4, 1), datetime.date(2025, 4, 7))
+        payslip.compute_sheet()
+
+        payslip_results = {
+            'BASIC': 0,
+            'GROSS': 0,
+            'TAXABLE': 0,
+            'FIT': 0,
+            'MEDICARE': 0,
+            'MEDICAREADD': 0,
+            'SST': 0,
+            'ALINCOMETAX': 0,
+            'COMPANYFUTA': 0,
+            'COMPANYMEDICARE': 0,
+            'COMPANYSOCIAL': 0,
+            'COMPANYSUI': 0,
+            'COMPANYALESA': 0,
+            'NET': 0,
+        }
+        self._validate_payslip(payslip, payslip_results)
+
+    def test_070_filing_status_not_in_parameter(self):
+        self.env['hr.work.entry'].create(self.env['hr.version']._generate_work_entries_postprocess([{
+            'name': 'Overtime Hours (Paid at 150%)',
+            'employee_id': self.employee.id,
+            'version_id': self.contract.id,
+            'work_entry_type_id': self.env.ref('hr_work_entry.l10n_us_work_entry_type_overtime').id,
+            'date_start': datetime.datetime(2025, 4, 2, 9),
+            'date_stop': datetime.datetime(2025, 4, 2, 9) + relativedelta(hours=10, minutes=43, seconds=48),
+            'company_id': self.env.company.id,
+            'state': 'draft',
+        }]))
+        self.contract.write({
+            'wage': 3500,
+            'schedule_pay': 'monthly',
+        })
+        self.employee.write({
+            'l10n_us_filing_status': 'survivor',
+        })
+
+        payslip = self._generate_payslip(datetime.date(2025, 4, 1), datetime.date(2025, 4, 30))
+        payslip.compute_sheet()
+
+        payslip_results = {
+            'BASIC': 3600.56,
+            'GROSS': 3600.56,
+            'TAXABLE': 3600.56,
+            'FIT': -145.89,
+            'MEDICARE': -52.21,
+            'MEDICAREADD': 0.0,
+            'SST': -223.23,
+            'CAINCOMETAX': -81.52,
+            'CASDITAX': -43.21,
+            'COMPANYFUTA': 216.03,
+            'COMPANYMEDICARE': 52.21,
+            'COMPANYSOCIAL': 223.23,
+            'COMPANYSUI': 61.21,
+            'COMPANYCAETT': 3.6,
+            'NET': 3054.5
+        }
+        self._validate_payslip(payslip, payslip_results)
+
+    def test_071_co_state_0_income(self):
+        self.work_address.state_id = self.env.ref('base.state_us_6')
+        self.contract.wage = 0
+        self.employee.l10n_us_state_withholding_allowance = 1000
+
+        payslip = self._generate_payslip(datetime.date(2026, 3, 1), datetime.date(2026, 3, 31))
+        payslip.compute_sheet()
+        payslip_results = {
+            'BASIC': 0,
+            'COFAMLI': 0,
+            'COINCOMETAX': 0,  # Should not be positive
+            'COMPANYCOFAMLI': 0,
+            'COMPANYCOSOLVENCY': 0,
+            'COMPANYCOSUPPORT': 0,
+            'COMPANYFUTA': 0,
+            'COMPANYMEDICARE': 0,
+            'COMPANYSOCIAL': 0,
+            'COMPANYSUI': 0,
+            'FIT': 0,
+            'GROSS': 0,
+            'MEDICARE': 0,
+            'MEDICAREADD': 0,
+            'NET': 0,
+            'SST': 0,
+            'TAXABLE': 0,
+        }
+        self._validate_payslip(payslip, payslip_results)
+
+    def test_072_va_state_low_income(self):
+        # Annual wage below the exemptions: the base must not be negative, or no tax bracket is found
+        self.work_address.state_id = self.env.ref('base.state_us_47')
+        self.contract.wage = 168
+        self.employee.l10n_us_state_filing_status = 'va_status_1'
+
+        payslip = self._generate_payslip(datetime.date(2026, 3, 1), datetime.date(2026, 3, 31))
+        payslip_results = {'BASIC': 168.0, 'GROSS': 168.0, 'TAXABLE': 168.0, 'FIT': 0.0, 'SST': -10.42, 'MEDICARE': -2.44, 'MEDICAREADD': 0.0, 'VAINCOMETAX': 0.0, 'COMPANYSOCIAL': 10.42, 'COMPANYMEDICARE': 2.44, 'COMPANYFUTA': 10.08, 'COMPANYSUI': 4.2, 'NET': 155.15}
+        self._validate_payslip(payslip, payslip_results)
+
+    def test_073_vt_state_low_income(self):
+        # Wage below the withholding allowances: the base must not be negative, or no tax bracket is found
+        self.work_address.state_id = self.env.ref('base.state_us_46')
+        self.contract.write({
+            'wage': 50,
+            'schedule_pay': 'weekly',
+        })
+        self.employee.write({
+            'l10n_us_state_filing_status': 'vt_status_1',
+            'l10n_us_w4_allowances_count': 2,
+        })
+
+        payslip = self._generate_payslip(datetime.date(2026, 3, 2), datetime.date(2026, 3, 8))
+        payslip_results = {'BASIC': 50.0, 'GROSS': 50.0, 'TAXABLE': 50.0, 'FIT': 0.0, 'SST': -3.1, 'MEDICARE': -0.73, 'MEDICAREADD': 0.0, 'VTINCOMETAX': 0.0, 'VTCHILDCARE': -0.06, 'COMPANYSOCIAL': 3.1, 'COMPANYMEDICARE': 0.73, 'COMPANYFUTA': 3.0, 'COMPANYSUI': 0.5, 'COMPANYVTCHILDCARE': 0.22, 'NET': 46.12}
+        self._validate_payslip(payslip, payslip_results)
+
+    def test_074_dc_state_negative_taxable(self):
+        # Pre-tax deductions higher than the gross: TAXABLE must not be negative, or no tax bracket is found
+        self.work_address.state_id = self.env.ref('base.state_us_9')
+        self.contract.write({
+            'wage': 168,
+            'l10n_us_health_benefits_medical': 200,
+        })
+        self.employee.l10n_us_state_filing_status = 'dc_status_1'
+
+        payslip = self._generate_payslip(datetime.date(2026, 3, 1), datetime.date(2026, 3, 31))
+        payslip_results = {'BASIC': 168.0, 'GROSS': 168.0, 'MEDICAL': -200.0, 'TAXABLE': 0.0, 'FIT': 0.0, 'SST': 0.0, 'MEDICARE': 0.0, 'MEDICAREADD': 0.0, 'DCINCOMETAX': 0.0, 'COMPANYSOCIAL': 0.0, 'COMPANYMEDICARE': 0.0, 'COMPANYFUTA': 0.0, 'COMPANYSUI': 4.54, 'COMPANYDCPFL': 0.0, 'COMPANYDCADMIN': 0.0, 'NET': -32.0}
+        self._validate_payslip(payslip, payslip_results)
+
+    def test_075_or_state_low_income(self):
+        # Annual wage below the standard deduction: the base must not be negative, or no tax bracket is found
+        self.work_address.state_id = self.env.ref('base.state_us_32')
+        self.contract.wage = 168
+        self.employee.l10n_us_state_filing_status = 'or_status_1'
+
+        payslip = self._generate_payslip(datetime.date(2026, 3, 1), datetime.date(2026, 3, 31))
+        payslip_results = {'BASIC': 168.0, 'GROSS': 168.0, 'TAXABLE': 168.0, 'FIT': 0.0, 'ORINCOMETAX': -21.33}
+        self._validate_payslip(payslip, payslip_results, skip_lines=True)
+
+    def test_076_nc_state_low_income(self):
+        # Annual wage below the standard deduction: the tax must not be positive
+        self.work_address.state_id = self.env.ref('base.state_us_28')
+        self.contract.wage = 168
+        self.employee.l10n_us_state_filing_status = 'nc_status_1'
+
+        payslip = self._generate_payslip(datetime.date(2026, 3, 1), datetime.date(2026, 3, 31))
+        payslip_results = {'BASIC': 168.0, 'GROSS': 168.0, 'TAXABLE': 168.0, 'FIT': 0.0, 'SST': -10.42, 'MEDICARE': -2.44, 'MEDICAREADD': 0.0, 'NCINCOMETAX': 0.0, 'COMPANYSOCIAL': 10.42, 'COMPANYMEDICARE': 2.44, 'COMPANYFUTA': 10.08, 'COMPANYSUI': 1.68, 'NET': 155.15}
         self._validate_payslip(payslip, payslip_results)

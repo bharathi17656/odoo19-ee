@@ -6,13 +6,14 @@ import { Model } from "@odoo/o-spreadsheet";
 import { x2ManyCommands } from "@web/core/orm_service";
 
 import {
+    addColumns,
+    addRows,
     autofill,
     undo,
     redo,
     copy,
     cut,
     paste,
-    addColumns,
     deleteColumns,
     setCellContent,
 } from "@spreadsheet/../tests/helpers/commands";
@@ -97,6 +98,24 @@ test("field sync is moved when column is added before", async () => {
     expect(getFieldSync(model, "B1")).toEqual({
         listId: model.getters.getMainSaleOrderLineList().id,
         indexInList: 0,
+        fieldName: "product_uom_qty",
+    });
+});
+
+test("field sync is moved when row is added before", async () => {
+    const { model } = await createSaleOrderSpreadsheetModel();
+    addFieldSync(model, "A1", "product_uom_qty", 0);
+    addFieldSync(model, "A2", "product_uom_qty", 1);
+    addRows(model, "before", 0, 1);
+    expect(getFieldSync(model, "A1")).toBe(undefined);
+    expect(getFieldSync(model, "A2")).toEqual({
+        listId: model.getters.getMainSaleOrderLineList().id,
+        indexInList: 0,
+        fieldName: "product_uom_qty",
+    });
+    expect(getFieldSync(model, "A3")).toEqual({
+        listId: model.getters.getMainSaleOrderLineList().id,
+        indexInList: 1,
         fieldName: "product_uom_qty",
     });
 });

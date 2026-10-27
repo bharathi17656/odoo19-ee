@@ -11,6 +11,27 @@ from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
+STATE_INCOME_TAX_CODES = [
+    'CAINCOMETAX', 'NYINCOMETAX', 'COINCOMETAX', 'ALINCOMETAX', 'VTINCOMETAX',
+    'ILINCOMETAX', 'AZINCOMETAX', 'NCINCOMETAX', 'VAINCOMETAX', 'DCINCOMETAX',
+    'ORINCOMETAX', 'IDINCOMETAX',
+]
+OTHER_TAX_CODES = {
+    'CA': {'CA SDI Tax': 'CASDITAX'},
+    'NY': {'NY SDI Tax': 'NYSDITAX'},
+    'VT': {'VT Childcare Tax': 'VTCHILDCARE'},
+    'OR': {'OR Transit Tax': 'ORTRANSITTAX', 'OR FMLI': 'ORFMLI'},
+}
+LOCAL_INCOME_TAX_CODES = {
+    'CO': {
+        'Aurora': 'COOPTAURORA',
+        'Denver': 'COOPTDENVER',
+        'Glendale': 'COOPTGLENDALE',
+        'Greenwood Village': 'COOPTGREENWOODVILLAGE',
+        'Sheridan': 'COOPTSHERIDAN',
+    },
+}
+
 
 class L10nUsW2(models.Model):
     _name = 'l10n.us.w2'
@@ -74,9 +95,14 @@ class L10nUsW2(models.Model):
                 allowed_payslips = self.env['hr.payslip'].search(w2._get_allowed_payslips_domain())
                 w2.allowed_payslip_ids = allowed_payslips
 
+    def _get_box14_other_taxes(self, state, line_values):
+        box14 = []
+        for label, code in OTHER_TAX_CODES.get(state, {}).items():
+            box14 += [label, abs(line_values[code]['sum']['total'])]
+        return (box14 + [""] * 6)[:6]
+
     def _get_box17_state_income_tax(self, line_values):
-        state_income_tax_codes = ['CAINCOMETAX', 'NYINCOMETAX', 'COINCOMETAX', 'ALINCOMETAX']
-        return abs(sum(line_values[code]['sum']['total'] for code in state_income_tax_codes))
+        return abs(sum(line_values[code]['sum']['total'] for code in STATE_INCOME_TAX_CODES))
 
     def _get_box18_local_wage(self, state, line_values):
         if state == 'CO':
@@ -84,13 +110,13 @@ class L10nUsW2(models.Model):
         return ""
 
     def _get_box19_local_income_tax(self, state, line_values):
-        if state == 'CO':
-            colorado_local_income_tax_codes = ['COOPTAURORA', 'COOPTDENVER', 'COOPTGLENDALE', 'COOPTGREENWOODVILLAGE', 'COOPTSHERIDAN']
-            return abs(sum(line_values[code]['sum']['total'] for code in colorado_local_income_tax_codes))
+        local_income_tax_codes = LOCAL_INCOME_TAX_CODES.get(state)
+        if local_income_tax_codes:
+            return abs(sum(line_values[code]['sum']['total'] for code in local_income_tax_codes.values()))
         return ""
 
     def _get_box20_locality_name(self, version):
-        if (version.address_id.state_id.code == 'CO' and version.address_id.city in ('Aurora', 'Denver', 'Glendale', 'Greenwood Village', 'Sheridan')):
+        if version.address_id.city in LOCAL_INCOME_TAX_CODES.get(version.address_id.state_id.code, {}):
             return version.address_id.city
         return ""
 
@@ -173,9 +199,9 @@ class L10nUsW2(models.Model):
             line_values = payslips._get_line_values([
                 'TAXABLE', 'FIT', '401K', 'TIPS', 'SST', 'MEDICARE', 'MEDICAREADD', 'ALLOCATEDTIPS',
                 'MEDICALFSADC', 'MEDICALHSA', 'ROTH401K',
-                'CAINCOMETAX', 'NYINCOMETAX', 'COINCOMETAX', 'ALINCOMETAX',
-                'CASDITAX', 'NYSDITAX',
-                'COOPTAURORA', 'COOPTDENVER', 'COOPTGLENDALE', 'COOPTGREENWOODVILLAGE', 'COOPTSHERIDAN',
+                *STATE_INCOME_TAX_CODES,
+                *(code for taxes in OTHER_TAX_CODES.values() for code in taxes.values()),
+                *(code for localities in LOCAL_INCOME_TAX_CODES.values() for code in localities.values()),
             ], compute_sum=True)
 
             version = employee._get_version(self.date_start)
@@ -225,12 +251,7 @@ class L10nUsW2(models.Model):
                 "TRUE" if version.l10n_us_statutory_employee else "FALSE",
                 "TRUE" if version.l10n_us_retirement_plan else "FALSE",
                 "TRUE" if version.l10n_us_third_party_sick_pay else "FALSE",
-                _("%s SDI Tax", version.address_id.state_id.code) if version.address_id.state_id.code in ['NY', 'CA'] else "",
-                abs(line_values['CASDITAX']['sum']['total'] + line_values['NYSDITAX']['sum']['total']),
-                "",
-                "",
-                "",
-                "",
+                *self._get_box14_other_taxes(version.address_id.state_id.code, line_values),
                 "",
                 version.address_id.state_id.code or "",
                 self.company_id.company_registry or "",
@@ -246,4 +267,4 @@ class L10nUsW2(models.Model):
             ])
 
         self.csv_file = base64.b64encode(output.getvalue().encode())
-        self.csv_filename = f"form_w2_{self.date_end.year}.csv"
+        self.csv_filename = f"form_w2_{(self.date_end or date.today()).year}.csv"

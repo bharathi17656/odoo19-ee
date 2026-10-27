@@ -30,7 +30,8 @@ export class LineBreakPlugin extends Plugin {
             (node) =>
                 !node.nextSibling &&
                 !isBlock(closestElement(node)) &&
-                nextLeaf(node, closestBlock(node)),
+                nextLeaf(node, closestBlock(node)) &&
+                node.previousSibling,
         ],
     };
 
@@ -41,6 +42,8 @@ export class LineBreakPlugin extends Plugin {
             // @todo @phoenix collapseIfZWS is not tested
             // this.shared.collapseIfZWS();
             this.dependencies.delete.deleteSelection();
+            selection = this.dependencies.selection.getEditableSelection();
+        } else if (!closestElement(selection.anchorNode).isContentEditable) {
             selection = this.dependencies.selection.getEditableSelection();
         }
 

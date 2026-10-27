@@ -173,6 +173,18 @@ class TestCaseDocumentsBridgeProduct(TransactionCase):
         document = self.env['documents.document'].search([('attachment_id', '=', attachment.id)])
         self.assertTrue(document, "It should have created a document from default values")
 
+    def test_create_attachment_create_document_with_inherited_rights(self):
+        """Test that documents created when creating a product attachment inherits rights from the product folder."""
+        self.company_test.write({'documents_product_settings': True})
+        product_folder = self.company_test.product_folder_id
+        attachment = self.env['ir.attachment'].create(
+            {'name': 'test', 'datas': b'test', 'res_model': self.product_test._name, 'res_id': self.product_test.id})
+        document = self.env['documents.document'].search([('attachment_id', '=', attachment.id)])
+        self.assertEqual(product_folder.access_via_link, 'none')
+        self.assertEqual(document.access_internal, product_folder.access_internal)
+        self.assertEqual(document.access_via_link, product_folder.access_via_link)
+        self.assertEqual(document.is_access_via_link_hidden, product_folder.is_access_via_link_hidden)
+
     def test_create_product_from_workflow(self):
         document_gif = self.env['documents.document'].create({
             'datas': GIF,
@@ -187,3 +199,54 @@ class TestCaseDocumentsBridgeProduct(TransactionCase):
         self.assertEqual(document_gif.res_model, 'product.template')
         self.assertEqual(document_gif.res_id, new_product.id)
         self.assertEqual(new_product.image_1920, document_gif.datas)
+
+    def test_sync_product_document_with_document(self):
+        """
+        When a document sharing a common attachment with a product/template gets a new
+        version, the related product.document should sync its attachment; when that
+        version is deleted, it should fall back to the previous one.
+        """
+        self.company_test.documents_product_settings = True
+        base_vals = {"name": "specs_v1.gif", "datas": GIF}
+        product_docs = self.env["product.document"].create([
+            base_vals | {
+                "res_model": "product.product",
+                "res_id": self.product_test.id,
+            },
+            base_vals | {
+                "res_model": "product.template",
+                "res_id": self.product_test.product_tmpl_id.id,
+            },
+        ])
+        doc_documents = self.env["documents.document"].search([
+            ("attachment_id", "in", product_docs.ir_attachment_id.ids)
+        ])
+        self.assertEqual(
+            len(doc_documents),
+            2,
+            "Two documents.document should have been created by the bridge.",
+        )
+        for product_doc in product_docs:
+            doc_document = doc_documents.filtered(
+                lambda d: d.attachment_id == product_doc.ir_attachment_id
+            )
+            old_attachment = product_doc.ir_attachment_id
+            new_attachment = self.env["ir.attachment"].create({
+                "name": "specs_v2.gif",
+                "datas": GIF,
+                "mimetype": "image/gif",
+            })
+            doc_document.attachment_id = new_attachment
+
+            self.assertEqual(
+                product_doc.ir_attachment_id,
+                new_attachment,
+                "product.document should sync to the new attachment.",
+            )
+            # Remove current attachment
+            doc_document.action_delete_from_history(new_attachment.id)
+            self.assertEqual(
+                product_doc.ir_attachment_id,
+                old_attachment,
+                "product.document should sync back to previous attachment.",
+            )

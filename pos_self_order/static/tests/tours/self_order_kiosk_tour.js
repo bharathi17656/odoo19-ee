@@ -1,3 +1,5 @@
+/* global posmodel */
+
 import { registry } from "@web/core/registry";
 import * as Utils from "@pos_self_order/../tests/tours/utils/common";
 import * as CartPage from "@pos_self_order/../tests/tours/utils/cart_page_util";
@@ -43,6 +45,24 @@ registry.category("web_tour.tours").add("self_kiosk_each_table_takeaway_out", {
         Utils.clickBtn("Order Now"),
         ProductPage.clickCategory("Miscellaneous"),
         Utils.checkIsDisabledBtn("Checkout"),
+        {
+            content: "Check for base url",
+            trigger: "body",
+            run: () => {
+                const order = posmodel.currentOrder;
+                const selfInvoicingURL = `${order.config._base_url}/pos/ticket`; // With this way self invocing URL generated in OrderReceipt Component
+                if (!selfInvoicingURL || selfInvoicingURL.includes("undefined")) {
+                    throw new Error(
+                        `Invalid self invoicing URL (contains undefined): ${selfInvoicingURL}`
+                    );
+                }
+                try {
+                    new URL(selfInvoicingURL);
+                } catch {
+                    throw new Error(`Invalid self invoicing URL: ${selfInvoicingURL}`);
+                }
+            },
+        },
     ],
 });
 
@@ -190,6 +210,44 @@ registry.category("web_tour.tours").add("test_self_order_kiosk_combo_qty_max_fre
     ],
 });
 
+registry.category("web_tour.tours").add("test_self_order_kiosk_combo_fixed_choice", {
+    steps: () => [
+        Utils.clickBtn("Order Now"),
+        LandingPage.selectLocation("Test-In"),
+        ProductPage.clickCategory("Uncategorised"),
+        ProductPage.clickProduct("Test Fixed Combo"),
+        ...ProductPage.setupCombo(
+            [
+                {
+                    product: "Variable Side 1",
+                    attributes: [],
+                },
+            ],
+            false
+        ),
+        {
+            content: "Check the combo price includes the fixed choice extra price",
+            trigger: ".o_self_combo_page .o-so-tabular-nums:contains('12.00')",
+        },
+        Utils.clickBtn("Add to cart"),
+        Utils.clickBtn("Checkout"),
+        ...CartPage.checkCombo("Test Fixed Combo", [
+            {
+                product: "Variable Side 1",
+                attributes: [],
+            },
+            {
+                product: "Fixed Side",
+                attributes: [],
+            },
+        ]),
+        Utils.clickBtn("Order"),
+        Numpad.click("3"),
+        Utils.clickBtn("Order"),
+        Utils.clickBtn("Close"),
+    ],
+});
+
 registry.category("web_tour.tours").add("test_self_order_pricelist", {
     steps: () => [
         Utils.checkIsNoBtn("My Order"),
@@ -206,6 +264,17 @@ registry.category("web_tour.tours").add("test_self_order_pricelist", {
         Utils.clickBtn("Order"),
         Utils.clickBtn("Close"),
         Utils.checkIsNoBtn("My Order"),
+    ],
+});
+
+registry.category("web_tour.tours").add("test_self_order_kiosk_unpaid", {
+    steps: () => [
+        Utils.clickBtn("Order now"),
+        ProductPage.clickCategory("Miscellaneous"),
+        ProductPage.clickProduct("Coca-Cola"),
+        Utils.clickBtn("Checkout"),
+        Utils.clickBtn("Order"),
+        ConfirmationPage.orderNumberShown(),
     ],
 });
 

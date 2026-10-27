@@ -65,6 +65,26 @@ class TestLinkExpirationDate(HttpCase):
         with Form(offer.browse().with_context(active_id=offer.id, default_contract_template_id=contract_template.id, default_applicant_id=applicant.id)) as offer_form:
             self.assertTrue(offer_form.access_token)
 
+    def test_generate_offer_by_hr_user(self):
+        """Test that HR & Recruitment user can generate salary offer for applicant"""
+        hr_user = mail_new_test_user(
+            self.env,
+            name='HR Officer User',
+            login='hr_officer_user',
+            groups='hr.group_hr_user,hr_recruitment.group_hr_recruitment_user'
+        )
+        self.env['hr.version'].create({
+            'name': "Contract Template",
+            'final_yearly_costs': 6500,
+            'job_id': self.job.id,
+        })
+        applicant = self.env['hr.applicant'].create({
+            'partner_name': 'Guillermo De La Cruz',
+            'email_from': 'Guillermo@example.com',
+        })
+        applicant.with_user(hr_user).action_generate_offer()
+        self.assertEqual(applicant.salary_offers_count, 1)
+
     def test_link_for_applicant(self):
         """
         Applicant should be able to access salary configurator before the link Expires.

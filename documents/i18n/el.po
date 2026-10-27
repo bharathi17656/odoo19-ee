@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~12.2+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:41+0000\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
 "PO-Revision-Date: 2025-11-16 13:31+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Greek <https://translate.odoo.com/projects/odoo-19/documents/"
@@ -92,17 +92,6 @@ msgid ""
 ". Scanned files will appear automatically in your folder. Then, process your "
 "documents in bulk with the split tool: launch user defined actions, request "
 "a signature, convert to vendor bills with AI, etc."
-msgstr ""
-
-#. module: documents
-#: model:documents.tag,name:documents.documents_tag_year_previous
-msgid "2024"
-msgstr ""
-
-#. module: documents
-#: model:documents.document,name:documents.document_finance_annual_closing_year_current_folder
-#: model:documents.tag,name:documents.documents_tag_year_current
-msgid "2025"
 msgstr ""
 
 #. module: documents
@@ -235,6 +224,10 @@ msgstr ""
 msgid ""
 "<t t-set=\"documents\" t-value=\"ctx.get('documents', "
 "object.env['documents.document'])\"/>\n"
+"                <t t-set=\"access_urls_by_partner\" t-"
+"value=\"ctx.get('access_urls_by_partner', {})\"/>\n"
+"                <t t-set=\"access_urls\" t-"
+"value=\"access_urls_by_partner.get(object) or {}\"/>\n"
 "                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
 "style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, "
 "Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;"
@@ -333,7 +326,7 @@ msgid ""
 "                                                <div style=\"margin: 16px "
 "0px 16px 0px;\">\n"
 "                                                    <a t-att-"
-"href=\"documents.access_url\" t-attf-style=\"background-color: "
+"href=\"access_urls.get(documents)\" t-attf-style=\"background-color: "
 "{{user.company_id.email_secondary_color or '#875A7B'}}; padding: 20px 30px "
 "20px 30px; text-decoration: none; color: "
 "{{user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
@@ -354,7 +347,7 @@ msgid ""
 "                                                    <li t-"
 "foreach=\"documents\" t-as=\"document\">\n"
 "                                                        <a t-att-"
-"href=\"document.access_url\" t-attf-style=\"color: "
+"href=\"access_urls.get(document)\" t-attf-style=\"color: "
 "{{user.company_id.email_secondary_color or '#875A7B'}}; font-size:13px;\">\n"
 "                                                            <b>Get <t t-"
 "out=\"document.name\"/></b>\n"
@@ -401,14 +394,14 @@ msgid ""
 "                                        <t t-out=\"user.company_id.phone or "
 "''\">+1 650-123-4567</t>\n"
 "                                        <t t-if=\"user.company_id.email\">\n"
-"                                            | <a t-attf-href=\"'mailto:%s' % "
+"                                            | <a t-attf-href=\"mailto:"
 "{{ user.company_id.email }}\" style=\"text-decoration:none; color: "
 "#454748;\" t-out=\"user.company_id.email\">info@yourcompany.com</a>\n"
 "                                        </t>\n"
 "                                        <t t-"
 "if=\"user.company_id.website\">\n"
-"                                            | <a t-attf-href=\"'%s' % "
-"{{ user.company_id.website }}\" style=\"text-decoration:none; color: "
+"                                            | <a t-att-"
+"href=\"user.company_id.website\" style=\"text-decoration:none; color: "
 "#454748;\" t-out=\"user.company_id.website\">http://www.example.com</a>\n"
 "                                        </t>\n"
 "                                    </td></tr>\n"
@@ -568,15 +561,15 @@ msgid ""
 "out=\"object.create_uid.company_id.phone or ''\">+1 650-123-4567</t>\n"
 "                                        <t t-"
 "if=\"object.create_uid.company_id.email\">\n"
-"                                            | <a t-attf-href=\"'mailto:%s' % "
+"                                            | <a t-attf-href=\"mailto:"
 "{{ object.create_uid.company_id.email }}\" style=\"text-decoration:none; "
 "color: #454748;\" t-out=\"object.create_uid.company_id.email or "
 "''\">info@yourcompany.com</a>\n"
 "                                        </t>\n"
 "                                        <t t-"
 "if=\"object.create_uid.company_id.website\">\n"
-"                                            | <a t-attf-href=\"'%s' % "
-"{{ object.create_uid.company_id.website }}\" style=\"text-decoration:none; "
+"                                            | <a t-att-"
+"href=\"object.create_uid.company_id.website\" style=\"text-decoration:none; "
 "color: #454748;\" t-out=\"object.create_uid.company_id.website or "
 "''\">http://www.example.com</a>\n"
 "                                        </t>\n"
@@ -736,7 +729,7 @@ msgid ""
 "out=\"object.create_uid.company_id.phone or ''\">+1 650-123-4567</t>\n"
 "                                        <t t-"
 "if=\"object.create_uid.company_id.email\">\n"
-"                                            | <a t-attf-href=\"'mailto:%s' % "
+"                                            | <a t-attf-href=\"mailto:"
 "{{ object.create_uid.company_id.email }}\" style=\"text-decoration:none; "
 "color: #454748;\" t-"
 "out=\"object.create_uid.company_id.email\">info@yourcompany.com</a>\n"
@@ -1130,11 +1123,6 @@ msgid "Allowed Access"
 msgstr ""
 
 #. module: documents
-#: model:res.groups,comment:documents.group_documents_user
-msgid "Allows you to manage his documents."
-msgstr ""
-
-#. module: documents
 #. odoo-python
 #: code:addons/documents/models/documents_document.py:0
 msgid "Already linked Documents: %s"
@@ -1303,6 +1291,19 @@ msgid "Can add, modify, and delete files within this folder."
 msgstr ""
 
 #. module: documents
+#: model:res.groups,comment:documents.group_documents_manager
+msgid ""
+"Can configure folders, manage access rights, and oversee all documents "
+"within their areas."
+msgstr ""
+
+#. module: documents
+#: model:res.groups,comment:documents.group_documents_user
+msgid ""
+"Can embed actions on folders, insert in Spreadsheet, and import in Sign."
+msgstr ""
+
+#. module: documents
 #. odoo-python
 #: code:addons/documents/wizard/documents_sharing.py:0
 msgid "Can modify, delete, and rename."
@@ -1333,6 +1334,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:documents.documents_link_to_record_form_view
 msgid "Cancel"
 msgstr "Ακύρωση"
+
+#. module: documents
+#. odoo-python
+#: code:addons/documents/models/documents_access.py:0
+msgid "Cannot invite this member."
+msgstr ""
 
 #. module: documents
 #. odoo-javascript
@@ -1646,6 +1653,12 @@ msgid "Delete permanently"
 msgstr ""
 
 #. module: documents
+#. odoo-python
+#: code:addons/documents/models/documents_access_tracking.py:0
+msgid "Deleted %(model_name)s (#%(record_id)s)"
+msgstr ""
+
+#. module: documents
 #: model:ir.model.fields,field_description:documents.field_res_config_settings__deletion_delay
 msgid "Deletion Delay"
 msgstr ""
@@ -1715,6 +1728,10 @@ msgstr "Απόρριψη"
 #. module: documents
 #. odoo-javascript
 #: code:addons/documents/static/src/owl/components/access_update_confirmation_dialog/access_update_confirmation_dialog.xml:0
+msgid "Discoverability is specific to each document and will not be changed"
+msgstr ""
+
+#. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_sharing__access_via_link_mode
 msgid "Discoverable"
 msgstr ""
@@ -1831,6 +1848,14 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/documents/static/src/views/widget/documents_operation_confirmation.js:0
 msgid "Document moved to %(folder_name)s!"
+msgstr ""
+
+#. module: documents
+#. odoo-javascript
+#. odoo-python
+#: code:addons/documents/models/documents_document.py:0
+#: code:addons/documents/static/src/views/documents_model_mixin.js:0
+msgid "Document not found or inaccessible."
 msgstr ""
 
 #. module: documents
@@ -1983,6 +2008,8 @@ msgid "Documents: Access Tracking"
 msgstr ""
 
 #. module: documents
+#. odoo-javascript
+#: code:addons/documents/static/src/views/widget/documents_operation_confirmation.js:0
 #: model_terms:ir.ui.view,arch_db:documents.documents_sharing_view_form
 msgid "Done"
 msgstr "Ολοκληρωμένη"
@@ -2319,6 +2346,11 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Γραμματοσειρά awesome π.χ. fa-tasks"
 
 #. module: documents
+#: model_terms:ir.ui.view,arch_db:documents.document_view_search
+msgid "Future Activities"
+msgstr "Μελλοντικές Δραστηριότητες"
+
+#. module: documents
 #. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_exit_dialog/pdf_exit_dialog.xml:0
 msgid "Gather in one document"
@@ -2373,6 +2405,13 @@ msgstr ""
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_sharing__has_warning_partners_without_access
 msgid "Has Warning Partners Without Access"
+msgstr ""
+
+#. module: documents
+#: model:res.groups,comment:documents.group_documents_system
+msgid ""
+"Has full control over all document settings, folders, and user rights across "
+"the application."
 msgstr ""
 
 #. module: documents
@@ -2726,6 +2765,11 @@ msgid "Last Updated on"
 msgstr "Τελευταία Ενημέρωση στις"
 
 #. module: documents
+#: model_terms:ir.ui.view,arch_db:documents.document_view_search
+msgid "Late Activities"
+msgstr "Καθυστερημένες Δραστηριότητες"
+
+#. module: documents
 #: model:documents.document,name:documents.document_legal_folder
 #: model:documents.tag,name:documents.documents_tag_legal
 msgid "Legal"
@@ -3027,8 +3071,6 @@ msgid "Moving to: %s"
 msgstr ""
 
 #. module: documents
-#. odoo-javascript
-#: code:addons/documents/static/src/owl/components/access_update_confirmation_dialog/access_update_confirmation_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:documents.document_view_kanban
 msgid "Must have the link to access"
 msgstr ""
@@ -3237,6 +3279,12 @@ msgstr "Κανένα"
 
 #. module: documents
 #. odoo-javascript
+#: code:addons/documents/static/src/views/search/documents_search_model.js:0
+msgid "Not allowed, select a folder"
+msgstr ""
+
+#. module: documents
+#. odoo-javascript
 #: code:addons/documents/static/src/components/documents_details_panel/documents_details_panel.xml:0
 msgid "Not set"
 msgstr ""
@@ -3313,6 +3361,31 @@ msgstr ""
 #. odoo-python
 #: code:addons/documents/models/documents_document.py:0
 msgid "Only Documents managers can set an alias."
+msgstr ""
+
+#. module: documents
+#. odoo-javascript
+#: code:addons/documents/static/src/views/documents_renderer_mixin.js:0
+msgid "Only current page items can be dragged."
+msgstr ""
+
+#. module: documents
+#. odoo-python
+#: code:addons/documents/models/documents_document.py:0
+msgid ""
+"Only one string or number value can be searched for documents `child_of`."
+msgstr ""
+
+#. module: documents
+#. odoo-python
+#: code:addons/documents/models/documents_document.py:0
+msgid "Only one value can be searched for child of `folder_id`."
+msgstr ""
+
+#. module: documents
+#. odoo-python
+#: code:addons/documents/models/documents_document.py:0
+msgid "Only one value can be searched for children of `user_folder_id`"
 msgstr ""
 
 #. module: documents
@@ -3661,9 +3734,7 @@ msgstr "Αναζήτηση..."
 
 #. module: documents
 #. odoo-javascript
-#: code:addons/documents/static/src/core/common/composer_actions_patch.js:0
-#: code:addons/documents/static/src/editor/plugins/add_documents_attachment_plugin.js:0
-#: code:addons/documents/static/src/web/mail_composer_document_selector/mail_composer_document_selector.js:0
+#: code:addons/documents/static/src/views/view_dialogs/select_add_document_create_dialog.js:0
 msgid "Search: Documents"
 msgstr ""
 
@@ -3870,6 +3941,11 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/documents/static/src/views/widget/documents_operation_confirmation.js:0
 msgid "Shortcuts created in %(folder_name)s!"
+msgstr ""
+
+#. module: documents
+#: model_terms:ir.ui.view,arch_db:documents.document_view_search
+msgid "Show all records whose next activity date is past"
 msgstr ""
 
 #. module: documents
@@ -4262,6 +4338,11 @@ msgid "Today"
 msgstr "Σήμερα"
 
 #. module: documents
+#: model_terms:ir.ui.view,arch_db:documents.document_view_search
+msgid "Today Activities"
+msgstr "Σημερινές Δραστηριότητες"
+
+#. module: documents
 #. odoo-javascript
 #: code:addons/documents/static/src/views/kanban/documents_kanban_renderer.js:0
 msgid "Toggle favorite"
@@ -4499,12 +4580,6 @@ msgstr ""
 #. module: documents
 #. odoo-python
 #: code:addons/documents/models/documents_document.py:0
-msgid "You are not allowed to delete all these items."
-msgstr ""
-
-#. module: documents
-#. odoo-python
-#: code:addons/documents/models/documents_document.py:0
 msgid "You are not allowed to execute embedded actions."
 msgstr ""
 
@@ -4593,6 +4668,13 @@ msgstr ""
 #. odoo-python
 #: code:addons/documents/models/documents_document.py:0
 msgid "You cannot change the owner of documents you do not own."
+msgstr ""
+
+#. module: documents
+#. odoo-python
+#: code:addons/documents/models/documents_document.py:0
+msgid ""
+"You cannot copy a folder into itself or into one of its own descendants."
 msgstr ""
 
 #. module: documents
@@ -4962,9 +5044,6 @@ msgstr ""
 #~ msgid "Expense"
 #~ msgstr "Έξοδα"
 
-#~ msgid "Future Activities"
-#~ msgstr "Μελλοντικές Δραστηριότητες"
-
 #~ msgid "Group By"
 #~ msgstr "Ομαδοποίηση κατά"
 
@@ -4977,9 +5056,6 @@ msgstr ""
 
 #~ msgid "Images"
 #~ msgstr "Εικόνες"
-
-#~ msgid "Late Activities"
-#~ msgstr "Καθυστερημένες Δραστηριότητες"
 
 #~ msgid "Log a note..."
 #~ msgstr "Καταγραφή ενός Σημειώματος..."
@@ -5083,9 +5159,6 @@ msgstr ""
 #~ "βάση τον αποστολέα (Από) τη διεύθυνση.\n"
 #~ "Διαφορετικά, θα χρησιμοποιήσει το λογαριασμό διαχειριστή, αν ο χρήστης "
 #~ "δεν έχει βρεθεί στο σύστημα για τη συγκεκριμένη διεύθυνση."
-
-#~ msgid "Today Activities"
-#~ msgstr "Σημερινές Δραστηριότητες"
 
 #~ msgid "VAT"
 #~ msgstr "ΦΠΑ"

@@ -12,9 +12,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:40+0000\n"
-"PO-Revision-Date: 2025-11-16 17:53+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-03 17:42+0000\n"
+"PO-Revision-Date: 2025-12-06 09:54+0000\n"
+"Last-Translator: \"Kwanghee Park (kwpa)\" <kwpa@odoo.com>\n"
 "Language-Team: Korean <https://translate.odoo.com/projects/odoo-19/pos_iot/"
 "ko/>\n"
 "Language: ko\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.res_config_view_form_inherit_pos_iot
@@ -66,6 +66,12 @@ msgstr "바코드 스캐너/카드 리더기"
 #: model:ir.model.fields,help:pos_iot.field_pos_config__iface_print_via_proxy
 msgid "Bypass browser printing and prints via the hardware proxy."
 msgstr "브라우저 인쇄를 무시하고 하드웨어 프록시를 통해 인쇄합니다."
+
+#. module: pos_iot
+#. odoo-javascript
+#: code:addons/pos_iot/static/src/app/screens/scale_screen/scale_service.js:0
+msgid "Cannot weigh product – %(msg)s"
+msgstr ""
 
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.pos_iot_config_view_form
@@ -278,7 +284,7 @@ msgstr "IoT Box 홈페이지"
 #. odoo-javascript
 #: code:addons/pos_iot/static/src/overrides/network_utils/iot_http_service.js:0
 msgid "IoT Box Warning"
-msgstr ""
+msgstr "IoT 박스 경고"
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_printer__device_id
@@ -357,12 +363,6 @@ msgstr "IoT Box가 여전히 연결되어 있는지 확인하십시오."
 
 #. module: pos_iot
 #. odoo-javascript
-#: code:addons/pos_iot/static/src/app/utils/payment/payment_interface_iot.js:0
-msgid "Please check if the terminal is still connected."
-msgstr "단말기가 여전히 연결되어 있는지 확인하십시오."
-
-#. module: pos_iot
-#. odoo-javascript
 #: code:addons/pos_iot/static/src/app/services/pos_store.js:0
 msgid "Please process or cancel the current transaction."
 msgstr "현재 업무를 처리하거나 취소하시기 바랍니다."
@@ -397,12 +397,6 @@ msgstr "프록시를 통해 인쇄"
 #: code:addons/pos_iot/static/src/app/utils/printer/iot_printer.js:0
 msgid "Printing failed"
 msgstr "인쇄 실패"
-
-#. module: pos_iot
-#. odoo-javascript
-#: code:addons/pos_iot/static/src/app/utils/printer/iot_printer.js:0
-msgid "Printing warning"
-msgstr "경고 인쇄"
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_printer__proxy_ip
@@ -448,6 +442,14 @@ msgstr "프린터의 하드웨어 프록시 호스트 이름 또는 IP 주소"
 
 #. module: pos_iot
 #. odoo-javascript
+#: code:addons/pos_iot/static/src/app/utils/payment/payment_interface_iot.js:0
+msgid ""
+"The IoT Box cannot detect the payment terminal. Please check if the terminal "
+"is still connected."
+msgstr ""
+
+#. module: pos_iot
+#. odoo-javascript
 #: code:addons/pos_iot/static/src/app/utils/printer/iot_printer.js:0
 msgid ""
 "The IoT Box is connected, but the receipt printer isn't. In order to "
@@ -457,6 +459,11 @@ msgid ""
 "printer\n"
 "2/ for network printers, ensure the printer is connected to the internet."
 msgstr ""
+"IoT 박스가 연결되었으나 영수증 프린터가 연결되어 있지 않습니다. 계속 진행하려"
+"면 프린터 연결을 확인하세요:\n"
+"\n"
+"1/ USB 프린터의 경우, IoT 박스와 영수증 프린터 간 케이블을 확인하세요\n"
+"2/ 네트워크 프린터의 경우, 프린터가 인터넷에 연결되어 있는지 확인하세요."
 
 #. module: pos_iot
 #: model:ir.model.fields,help:pos_iot.field_res_config_settings__module_pos_iot_ingenico
@@ -530,6 +537,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pos_iot.res_config_view_form_inherit_pos_iot
 msgid "none"
 msgstr "없음"
+
+#~ msgid "Please check if the terminal is still connected."
+#~ msgstr "단말기가 여전히 연결되어 있는지 확인하십시오."
+
+#~ msgid "Printing warning"
+#~ msgstr "경고 인쇄"
 
 #~ msgid "Amount:"
 #~ msgstr "금액:"

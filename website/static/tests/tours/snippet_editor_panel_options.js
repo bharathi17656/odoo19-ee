@@ -8,6 +8,7 @@ import {
     selectFullText,
 } from "@website/js/tours/tour_utils";
 import { browser } from "@web/core/browser/browser";
+import { delay } from "@web/core/utils/concurrency";
 
 const checkIfParagraphSelected = (trigger) => ({
     content: "Check if the paragraph is selected.",
@@ -25,6 +26,9 @@ const checkIfTextToolbarVisible = {
     content: "Check if the text toolbar is visible",
     trigger: ".o-we-toolbar",
 };
+
+const oldWriteText = browser.navigator.clipboard.writeText;
+let copiedText;
 
 registerWebsitePreviewTour(
     "snippet_editor_panel_options",
@@ -59,26 +63,22 @@ registerWebsitePreviewTour(
             async run(helpers) {
                 // Patch and ignore write on clipboard in tour as we don't have
                 // permissions.
-                const oldWriteText = browser.navigator.clipboard.writeText;
-                browser.navigator.clipboard.writeText = () => {
+                browser.navigator.clipboard.writeText = (text) => {
+                    copiedText = text;
                     console.info("Copy in clipboard ignored!");
                 };
                 await helpers.click();
-                // Restore the writeText after a short delay to avoid reverting
-                // it before the plugin function has been completed.
-                await new Promise((resolve) => setTimeout(resolve, 100));
-                browser.navigator.clipboard.writeText = oldWriteText;
             },
         },
         {
-            content: "Check the copied url from the notification toast",
+            content: "Check the copied url of the created anchor",
             trigger: ".o_notification_manager .o_notification_content",
             run() {
-                const { textContent } = this.anchor;
-                const url = textContent.substring(textContent.indexOf("/"));
+                // Cleanup the patched clipboard method
+                browser.navigator.clipboard.writeText = oldWriteText;
 
                 // The url should not target the client action
-                if (url.startsWith("/@")) {
+                if (copiedText.startsWith("/@")) {
                     console.error("The anchor option should target the frontend");
                 }
 
@@ -86,7 +86,7 @@ registerWebsitePreviewTour(
                     ".o_iframe_container iframe"
                 ).contentDocument;
                 const snippetId = iframeDocument.querySelector(".s_text_image").id;
-                if (!url || url.indexOf(snippetId) < 0) {
+                if (!copiedText || copiedText.indexOf(snippetId) < 0) {
                     console.error("The anchor option does not target the correct snippet.");
                 }
             },
@@ -99,6 +99,14 @@ registerWebsitePreviewTour(
             name: "Text",
             groupName: "Text",
         }),
+		{
+		    content: "Wait for the Scroll to finish",
+		    trigger: ":iframe .s_text_block",
+		    run: async function() {
+		        // Default scroll duration is 600ms
+		        await delay(610);
+		    },
+		},
         selectFullText("first paragraph", ".s_text_block p:not([data-selection-placeholder])"),
         checkIfParagraphSelected(":iframe .s_text_block p:not([data-selection-placeholder])"),
         checkIfTextToolbarVisible,

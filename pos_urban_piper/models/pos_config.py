@@ -233,6 +233,9 @@ class PosConfig(models.Model):
             })
         if not urban_piper_test and new_status == 'Acknowledged':
             up.urbanpiper_order_reference_update(order)
+        if new_status == 'Cancelled':
+            # Prevent loading cancelled orders in `getServerOrders` triggered by `_send_delivery_order_count`
+            order.state = 'cancel'
         self._send_delivery_order_count(order_id)
         return {'is_success': is_success, 'message': message}
 
@@ -252,6 +255,7 @@ class PosConfig(models.Model):
             'amount': order.amount_total,
             'payment_method_id': payment_method.id,
         }).check()
+        order._compute_prices()
 
     def _send_delivery_order_count(self, order_id=None):
         """
@@ -366,9 +370,9 @@ class PosConfig(models.Model):
 
     def _check_required_request_params(self, store_required=True):
         msg = ''
-        if not self.env.company.pos_urbanpiper_username:
+        if not self.env.company.sudo().pos_urbanpiper_username:
             msg += _('UrbanPiper Username is required.\n')
-        if not self.env.company.pos_urbanpiper_apikey:
+        if not self.env.company.sudo().pos_urbanpiper_apikey:
             msg += _('UrbanPiper API Key is required.\n')
         if not self.urbanpiper_store_identifier and store_required:
             msg += _('UrbanPiper Store ID is required.\n')
@@ -419,3 +423,10 @@ class PosConfig(models.Model):
         self.env['ir.config_parameter'].sudo().set_param('pos_urban_piper.toggle_state', json.dumps(config_state))
         self._notify('URBAN_PIPER_PROVIDER_STATES', config_state[str(self.id)])
         return config_state[str(self.id)]
+
+    def get_urbanpiper_special_products(self):
+        return [
+            self.env.ref("pos_urban_piper.product_other_charges", raise_if_not_found=False),
+            self.env.ref("pos_urban_piper.product_delivery_charges", raise_if_not_found=False),
+            self.env.ref("pos_urban_piper.product_packaging_charges", raise_if_not_found=False),
+        ]

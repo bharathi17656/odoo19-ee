@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from unittest import skip
 from unittest.mock import patch
 
-from odoo import http
+from odoo import Command, http
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tests.common import new_test_user
 from odoo.tests import users
@@ -574,6 +574,50 @@ class TestCaseDocuments(TransactionCaseDocuments):
         self.assertEqual(copied_document.attachment_id.res_id, copied_document.id)
         self.assertEqual(copied_document.attachment_id.res_model, "documents.document")
 
+    def test_copy_document_company_to_company(self):
+        """ Manager can copy both the company-root folder and doc to company-root. """
+        copied_folder = self.company_root_folder.with_user(self.document_manager).copy(default={'user_folder_id': 'COMPANY'})
+        self.assertTrue(copied_folder)
+        self.assertFalse(copied_folder.owner_id, "Copied folder should not have owner_id set")
+
+        copied_doc = self.company_root_document.with_user(self.document_manager).copy(default={'user_folder_id': 'COMPANY'})
+        self.assertTrue(copied_doc)
+        self.assertFalse(copied_doc.owner_id, "Copied document should not have owner_id set")
+
+    def test_copy_document_company_to_my_drive(self):
+        """
+        Manager can copy from company-root folder/doc to My drive.
+        Internal user can copy from company-root folder/doc to MY sets owner to that user.
+        """
+        copied_folder = self.company_root_folder.with_user(self.document_manager).copy(default={'user_folder_id': 'MY'})
+        self.assertTrue(copied_folder.owner_id, "Copied folder should have owner_id set")
+        self.assertEqual(copied_folder.owner_id.id, self.document_manager.id, "Copied folder owner should be the manager")
+
+        copied_doc = self.company_root_document.with_user(self.document_manager).copy(default={'user_folder_id': 'MY'})
+        self.assertTrue(copied_doc.owner_id, "Copied document should have owner_id set")
+        self.assertEqual(copied_doc.owner_id.id, self.document_manager.id, "Copied document owner should be the manager")
+
+        copied_folder = self.company_root_folder.with_user(self.doc_user).copy(default={'user_folder_id': 'MY'})
+        self.assertTrue(copied_folder.owner_id, "Copied folder should have owner_id set")
+        self.assertEqual(copied_folder.owner_id.id, self.doc_user.id, "Copied folder owner should be the internal user")
+
+        copied_doc = self.company_root_document.with_user(self.doc_user).copy(default={'user_folder_id': 'MY'})
+        self.assertTrue(copied_doc.owner_id, "Copied document should have owner_id set")
+        self.assertEqual(copied_doc.owner_id.id, self.doc_user.id, "Copied document owner should be the internal user")
+
+    def test_copy_document_to_itself(self):
+        """ Copying a folder into itself or one of its own descendants raises an UserError. """
+        folder = self.company_root_folder
+        sub_folder = self.company_sub_folder
+        with self.assertRaisesRegex(UserError, "cannot copy a folder into itself"):
+            folder.with_user(self.document_manager).copy(default={'user_folder_id': str(folder.id)})
+
+        with self.assertRaisesRegex(UserError, "cannot copy a folder into itself"):
+            sub_folder.with_user(self.document_manager).copy(default={'user_folder_id': str(sub_folder.id)})
+
+        with self.assertRaisesRegex(UserError, "cannot copy a folder into itself"):
+            folder.with_user(self.document_manager).copy(default={'user_folder_id': str(sub_folder.id)})
+
     def test_copy_shortcut(self):
         """Check that copying shortcuts works as intended."""
         manager_shortcut = self.document_txt.with_user(self.document_manager).action_create_shortcut()
@@ -592,8 +636,84 @@ class TestCaseDocuments(TransactionCaseDocuments):
         self.env['documents.document'].action_folder_embed_action(self.folder_a.id, self.server_action.id)
         doc.invalidate_recordset(['available_embedded_actions_ids'])
         embedded_action = doc.available_embedded_actions_ids
-        self.assertEqual(embedded_action.name, self.server_action.name)
-        self.assertEqual(embedded_action.with_context(lang='fr_FR').name, "Blablabla")
+        self.assertEqual(embedded_action.display_name, self.server_action.display_name)
+        self.assertEqual(embedded_action.with_context(lang='fr_FR').display_name, "Blablabla")
+
+    def test_embedding_actions_permission(self):
+        """Test that embedding actions enforces permissions but allows sudo bypass."""
+        user_no_rights = new_test_user(self.env, login='user_no_doc_rights', groups='base.group_user')
+
+        folder = self.env['documents.document'].create({
+            'name': 'Test Folder',
+            'type': 'folder'
+        })
+        action = self.env['ir.actions.server'].create({
+            'name': 'Test Server Action',
+            'model_id': self.env['ir.model']._get('documents.document').id,
+            'state': 'code',
+        })
+
+        self.env['documents.document'].with_user(user_no_rights).sudo().action_folder_embed_action(folder.id, action.id)
+        embedded = self.env['ir.embedded.actions'].search([
+            ('action_id', '=', action.id),
+            ('parent_res_id', '=', folder.id),
+            ('parent_res_model', '=', 'documents.document'),
+        ])
+        self.assertTrue(embedded, "The action should have been embedded in sudo mode")
+
+        with self.assertRaises(AccessError):
+            self.env['documents.document'].with_user(user_no_rights).action_folder_embed_action(folder.id, action.id)
+        self.assertTrue(embedded, "The action should not have been unembedded without rights or sudo")
+
+    def test_embedding_actions_obsolescence_gc(self):
+        """Actions made children should not be used as embedded actions anymore and are garbage collected."""
+        doc = self.env['documents.document'].create({
+            'name': 'A request',
+            'folder_id': self.folder_a.id,
+        })
+        parent_base = self.server_action
+        parent_base.group_ids = [Command.create({'name': 'Test Gr', 'user_ids': [Command.link(self.env.user.id)]})]
+        child_base = parent_base.copy()
+        self.assertTrue(child_base.group_ids)
+
+        self.env['documents.document'].action_folder_embed_action(self.folder_a.id, parent_base.id)
+        self.env['documents.document'].action_folder_embed_action(self.folder_a.id, child_base.id)
+        self.env['ir.embedded.actions'].with_user(self.env.ref('base.user_root'))._gc_documents_obsolete()
+        embedded_action = self.env["ir.embedded.actions"].search([
+            ("action_id", "in", (child_base | parent_base).ids)
+        ]).grouped(lambda a: a.action_id.id)
+
+        def _visible_action_ids():
+            actions = self.env['documents.document'].get_documents_actions(folder_id=self.folder_a.id)
+            return {a['id'] for a in actions}
+
+        actions_init = _visible_action_ids()
+        self.assertIn(parent_base.id, actions_init)
+        self.assertIn(child_base.id, actions_init)
+
+        doc.invalidate_recordset(['available_embedded_actions_ids'])
+
+        parent_base.write({
+            'child_ids': [Command.link(child_base.id)],
+        })
+
+        actions_before = _visible_action_ids()
+        self.assertIn(parent_base.id, actions_before)
+        # Child is no longer visible nor embeddable
+        self.assertNotIn(child_base.id, actions_before)
+        # Even if the record still exists, it cannot be used programmatically either
+        self.assertNotIn(child_base.id, doc.available_embedded_actions_ids.action_id.ids)
+        doc_in_context = self.env['documents.document'].with_context(
+            active_model='documents.document', active_id=doc.id)
+        child_embedded = embedded_action[child_base.id].exists()
+        self.assertTrue(child_embedded)
+        with self.assertRaises(UserError):
+            doc_in_context.action_execute_embedded_action(embedded_action[child_base.id].id)
+        # Child action gets gc'ed
+        self.env['ir.embedded.actions'].with_user(self.ref('base.user_root'))._gc_documents_obsolete()
+        self.assertFalse(child_embedded.exists())
+        # Not the parent
+        doc_in_context.action_execute_embedded_action(embedded_action[parent_base.id].id)
 
     def test_document_thumbnail_status(self):
         for mimetype in ['application/pdf', 'application/pdf;base64']:

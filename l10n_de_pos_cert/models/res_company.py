@@ -188,9 +188,14 @@ class ResCompany(models.Model):
                         'l10n_de_fiskaly_api_key': response['api_key'],
                         'l10n_de_fiskaly_api_secret': response['api_secret'],
                     })
+                    self.l10n_de_update_vat_export_data()
+                    self._check_vat_definition_export_id()
                 else:   # the request to create credentials failed but the company was still well registered
                     self.l10n_de_fiskaly_organization_id = response['organization_id']
-                self.l10n_de_update_vat_export_data()
+
+    def _check_vat_definition_export_id(self):
+        self.ensure_one()
+        self.env['account.tax'].search([*self._check_company_domain(self), ('l10n_de_vat_definition_export_identifier', '=', 0)]).get_vat_definition_export_id()
 
     def l10n_de_action_fiskaly_create_new_keys(self):
         self.ensure_one()
@@ -201,6 +206,8 @@ class ResCompany(models.Model):
             'l10n_de_fiskaly_api_key': response['api_key'],
             'l10n_de_fiskaly_api_secret': response['api_secret'],
         })
+        if not self.l10n_de_vat_export_data:
+            self.l10n_de_update_vat_export_data()
 
     def l10n_de_update_vat_export_data(self):
         """Fetch and update the VAT definition export IDs for the company's taxes from Fiskaly."""

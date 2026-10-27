@@ -18,9 +18,10 @@ registry.category("web_tour.tours").add("test_refund_with_gift_card_mx", {
             PaymentScreen.clickValidate(),
             ReceiptScreen.clickNextOrder(),
             ProductScreen.clickRefund(),
-            TicketScreen.selectOrder("-0001"),
+            TicketScreen.selectOrder("-000001"),
             ProductScreen.clickNumpad("1"),
             TicketScreen.confirmRefund(),
+            PaymentScreen.clickBack(),
             ProductScreen.clickControlButton("Enter Code"),
             TextInputPopup.inputText("043123456"),
             Dialog.confirm(),
@@ -30,5 +31,28 @@ registry.category("web_tour.tours").add("test_refund_with_gift_card_mx", {
             PaymentScreen.clickPaymentMethod("Cash"),
             PaymentScreen.clickValidate(),
             ReceiptScreen.isShown(),
+        ].flat(),
+});
+
+registry.category("web_tour.tours").add("test_refund_with_discount", {
+    steps: () =>
+        [
+            Chrome.startPoS(),
+            Dialog.confirm("Open Register"),
+            ProductScreen.clickDisplayedProduct("Whiteboard Pen"),
+            ProductScreen.totalAmountIs("3.20"),
+            ProductScreen.clickControlButton("Discount"),
+            Dialog.confirm(),
+            ProductScreen.totalAmountIs("2.88"),
+            ProductScreen.clickPayButton(),
+            PaymentScreen.clickPaymentMethod("Cash"),
+            PaymentScreen.clickValidate(),
+            ReceiptScreen.clickNextOrder(),
+            ProductScreen.clickRefund(),
+            TicketScreen.selectOrder("-000001"),
+            ProductScreen.clickNumpad("1"),
+            TicketScreen.confirmRefund(),
+            PaymentScreen.isShown(),
+            PaymentScreen.totalIs("-2.88"),
         ].flat(),
 });

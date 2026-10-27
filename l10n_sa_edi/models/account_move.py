@@ -29,6 +29,7 @@ class AccountMove(models.Model):
   )
 
     def _l10n_gcc_get_invoice_title(self):
+        # DEPRECATED - to be removed in master
         # EXTENDS l10n_gcc_invoice
         self.ensure_one()
         if self.company_id.country_code == 'SA' and self._l10n_sa_is_simplified():
@@ -37,6 +38,7 @@ class AccountMove(models.Model):
         return super()._l10n_gcc_get_invoice_title()
 
     def _l10n_sa_is_simplified(self):
+        # DEPRECATED - to be removed in master
         """
             Returns True if the customer is an individual, i.e: The invoice is B2C
         :return:
@@ -263,7 +265,7 @@ class AccountMove(models.Model):
             return
 
         if not response_data.get("excepted"):
-            self.journal_id.l10n_sa_latest_submission_hash = self.env['account.edi.xml.ubl_21.zatca']._l10n_sa_generate_invoice_xml_hash(xml_content)
+            self.journal_id.sudo().l10n_sa_latest_submission_hash = self.env['account.edi.xml.ubl_21.zatca']._l10n_sa_generate_invoice_xml_hash(xml_content)
 
         self.message_post(body=Markup("""
                 <div role='alert' class='alert alert-%s'>
@@ -338,6 +340,8 @@ class AccountMove(models.Model):
             Hook to reset the chain head error prior to retrying the submission
         """
         self.filtered(lambda m: m.country_code == 'SA').write({'l10n_sa_edi_chain_head_id': False})
+        zatca = self.env.ref('l10n_sa_edi.edi_sa_zatca')
+        self.filtered(lambda m: m._get_edi_document(zatca))._detach_attachments()
         return super()._retry_edi_documents_error()
 
     def action_show_chain_head(self):

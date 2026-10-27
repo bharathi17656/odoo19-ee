@@ -20,4 +20,13 @@ patch(ProductConfiguratorDialog.prototype, {
         }
         return params;
     },
+
+    _getAdditionalDialogProps() {
+        const props = super._getAdditionalDialogProps();
+        if (this.props.start_date && this.props.end_date) {
+            props.start_date = this.props.start_date;
+            props.end_date = this.props.end_date;
+        }
+        return props;
+    },
 });

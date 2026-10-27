@@ -36,6 +36,7 @@ test("Should open the search panel when search button is clicked", async () => {
     const channelId = pyEnv["discuss.channel"].create({ name: "General" });
     await start();
     await openDiscuss(channelId);
+    await contains(".o-discuss-ChannelMemberList"); // wait for auto-open of this panel
     await click("[title='Search Messages']");
     await contains(".o-mail-SearchMessagesPanel");
     await contains(".o_searchview");
@@ -220,6 +221,7 @@ test("Should close the search panel when search button is clicked again", async 
     const channelId = pyEnv["discuss.channel"].create({ name: "General" });
     await start();
     await openDiscuss(channelId);
+    await contains(".o-discuss-ChannelMemberList"); // wait for auto-open of this panel
     await click("[title='Search Messages']");
     await click("[title='Close Search']");
     await contains(".o-mail-SearchMessagesPanel");
@@ -301,6 +303,7 @@ test("Editing the searched term should not edit the current searched term", asyn
     });
     await start();
     await openDiscuss(channelId);
+    await contains(".o-discuss-ChannelMemberList"); // wait for auto-open of this panel
     await click("[title='Search Messages']");
     await insertText(".o_searchview_input", "message");
     triggerHotkey("Enter");
@@ -342,4 +345,33 @@ test("Search a message containing single quotes", async () => {
     await insertText(".o_searchview_input", "can't");
     triggerHotkey("Enter");
     await contains(".o-mail-SearchMessagesPanel .o-mail-Message");
+});
+
+test.tags("desktop");
+test("Empty search should not trigger rpc", async () => {
+    onRpcBefore("/discuss/channel/messages", (args) => {
+        if ("search_term" in args.fetch_params) {
+            expect.step(`search: ${args.fetch_params.search_term}`);
+        }
+    });
+    const pyEnv = await startServer();
+    const channelId = pyEnv["discuss.channel"].create({ name: "General" });
+    pyEnv["mail.message"].create({
+        author_id: serverState.partnerId,
+        body: "This is a message",
+        attachment_ids: [],
+        message_type: "comment",
+        model: "discuss.channel",
+        res_id: channelId,
+    });
+    await start();
+    await openDiscuss(channelId);
+    await contains(".o-mail-Message");
+    await click("button[title='Search Messages']");
+    await insertText(".o_searchview_input", "          ");
+    triggerHotkey("Enter");
+    await insertText(".o_searchview_input", "message", { replace: true });
+    triggerHotkey("Enter");
+    await contains(".o-mail-SearchMessagesPanel .o-mail-Message");
+    await expect.waitForSteps(["search: message"]);
 });

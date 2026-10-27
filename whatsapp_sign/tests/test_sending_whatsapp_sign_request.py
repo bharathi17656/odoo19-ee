@@ -90,3 +90,46 @@ class TestSignRequest(SignRequestCommon, WhatsAppCommon, WhatsAppSignCommon):
         ])
 
         self.assertEqual(len(refusal_messages), 3)
+
+    def test_partner_email_change_multiple_sign_requests(self):
+        """Changing a partner's email when they have sign request items from
+        multiple sign requests should not crash with a singleton error.
+        """
+        sign_request_1 = self.create_sign_request_1_role(self.partner_1, self.env['res.partner'])
+        sign_request_2 = self.create_sign_request_1_role(self.partner_1, self.env['res.partner'])
+        self.partner_1.email = 'laurie.new@example.com'
+
+        self.assertRecordValues(sign_request_1 + sign_request_2, [
+            {'state': 'sent'},
+            {'state': 'sent'}
+        ])
+        self.assertEqual(self.partner_1.email, 'laurie.new@example.com')
+
+    def test_whatsapp_with_active_model_context(self):
+        """ Test sending, completing, and refusing WhatsApp sign requests when
+            'active_model' is present in the context.
+        """
+        wa_templates = self.get_whatsapp_templates()
+        partner_ids = [self.partner_1.id, self.partner_2.id, self.partner_3.id]
+        ctx = {'active_model': 'sign.template', 'active_id': self.template_3_roles.id}
+
+        # Test completion
+        wizard = self.create_sign_send_request_wizard(self.template_3_roles, partner_ids)
+        wizard.with_context(**ctx).send_via_whatsapp()
+        sign_items = self.get_sign_request_items(self.template_3_roles.id)
+        sign_items[0].with_context(**ctx).sign(self.signer_1_sign_values)
+        sign_items[1].with_context(**ctx).sign(self.signer_2_sign_values)
+        sign_items[2].with_context(**ctx).sign(self.signer_3_sign_values)
+        self.assertEqual(len(self.env['whatsapp.message'].search([
+            ('wa_template_id', '=', wa_templates[1].id),
+        ])), 3)
+
+        # Test refusal
+        wizard = self.create_sign_send_request_wizard(self.template_3_roles, partner_ids)
+        wizard.with_context(**ctx).send_via_whatsapp()
+        sign_request = self.env['sign.request'].search([('template_id', '=', self.template_3_roles.id)], order='id desc', limit=1)
+        sign_items = sign_request.request_item_ids.sorted(key=lambda sri: sri.mail_sent_order)
+        sign_items[0].with_context(**ctx).sudo()._refuse('sent', 'Test refusal')
+        self.assertEqual(len(self.env['whatsapp.message'].search([
+            ('wa_template_id', '=', wa_templates[2].id),
+        ])), 3)

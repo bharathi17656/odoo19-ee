@@ -59,7 +59,7 @@ class HrPayslipRun(models.Model):
         default=lambda self: self.env.company)
     country_id = fields.Many2one(
         'res.country', string='Country',
-        related='company_id.country_id', readonly=True
+        related='company_id.country_id', readonly=True, search='_search_country_id'
     )
     country_code = fields.Char(related='country_id.code', depends=['country_id'], readonly=True)
     currency_id = fields.Many2one(related="company_id.currency_id")
@@ -100,18 +100,18 @@ class HrPayslipRun(models.Model):
         format_date_cached = self.env["hr.payslip"]._format_date_cached
         if date_end.year == date_start.year:
             if date_end.month - date_start.month == 11:
-                name += format_date_cached(cache, date_start, date_format="Y")
+                name += format_date_cached(cache, date_start, date_format="y")
             elif date_end.month == date_start.month:
                 if (date_start, date_end) == get_month(date_start):
-                    name += format_date_cached(cache, date_start, date_format="MMM Y")
+                    name += format_date_cached(cache, date_start, date_format="MMM y")
                 elif date_start.day == date_end.day:
-                    name += format_date_cached(cache, date_start, date_format="d MMM Y")
+                    name += format_date_cached(cache, date_start, date_format="d MMM y")
                 else:
-                    name += format_date_cached(cache, date_start, date_format="d MMM Y") + " - " + format_date_cached(cache, date_end, date_format="d MMM Y")
+                    name += format_date_cached(cache, date_start, date_format="d MMM y") + " - " + format_date_cached(cache, date_end, date_format="d MMM y")
             else:
-                name += format_date_cached(cache, date_start, date_format="MMM Y") + " - " + format_date_cached(cache, date_end, date_format="MMM Y")
+                name += format_date_cached(cache, date_start, date_format="MMM y") + " - " + format_date_cached(cache, date_end, date_format="MMM y")
         else:
-            name += format_date_cached(cache, date_start, date_format="Y") + " - " + format_date_cached(cache, date_end, date_format="Y")
+            name += format_date_cached(cache, date_start, date_format="y") + " - " + format_date_cached(cache, date_end, date_format="y")
         if structure_id:
             structure_id = self.env["hr.payroll.structure"].browse(structure_id)
             name += " - " + structure_id.name
@@ -126,6 +126,7 @@ class HrPayslipRun(models.Model):
         version_domain = Domain([
             ('company_id', '=', company),
             ('employee_id', '!=', False),
+            ('active_employee', '=', True),
             ('contract_date_start', '<=', date_end),
             '|',
                 ('contract_date_end', '=', False),
@@ -244,6 +245,9 @@ class HrPayslipRun(models.Model):
                 lambda slip: not slip.line_ids
             ))
 
+    def _search_country_id(self, operator, value):
+        return [('company_id.partner_id.country_id', operator, value)]
+
     def action_draft(self):
         if self.slip_ids.filtered(lambda s: s.state == 'paid'):
             raise ValidationError(self.env._('You cannot reset a pay run to draft if some of the payslips have already been paid.'))
@@ -264,11 +268,19 @@ class HrPayslipRun(models.Model):
 
     def action_payment_report(self, export_format='csv'):
         self.ensure_one()
-        self.env['hr.payroll.payment.report.wizard'].create([{
-            'payslip_ids': self.slip_ids.ids,
-            'payslip_run_id': self.id,
-            'export_format': export_format
-        }]).generate_payment_report()
+        return {
+            'name': self.env._('Generate a Payment Report'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.payroll.payment.report.wizard',
+            'view_mode': 'form',
+            'views': [(False, 'form')],
+            'target': 'new',
+            'context': {
+                'default_payslip_ids': self.slip_ids.ids,
+                'default_payslip_run_id': self.id,
+                'default_export_format': export_format,
+            },
+        }
 
     def action_paid(self):
         self.mapped('slip_ids').action_payslip_paid()

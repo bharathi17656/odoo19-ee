@@ -3,13 +3,14 @@
 # * account_online_synchronization
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:45+0000\n"
-"PO-Revision-Date: 2025-11-13 17:16+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2025-12-30 18:43+0000\n"
+"PO-Revision-Date: 2026-10-06 09:37+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "account_online_synchronization/lt/>\n"
 "Language: lt\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: account_online_synchronization
 #. odoo-python
@@ -30,6 +31,10 @@ msgid ""
 "If you've already opened a ticket for this issue, don't report it again: a "
 "support agent will contact you shortly."
 msgstr ""
+"\n"
+"\n"
+"Jei dėl šios problemos jau pateikėte užklausą, nepraneškite apie ją dar "
+"kartą: palaikymo specialistas netrukus su jumis susisieks."
 
 #. module: account_online_synchronization
 #. odoo-python
@@ -46,12 +51,12 @@ msgstr ""
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_duplicate_transaction_wizard_view_form
 msgid "<i class=\"fa fa-trash me-1\"/> Delete Selected"
-msgstr ""
+msgstr "<i class=\"fa fa-trash me-1\"/> Ištrinti pasirinktus"
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_journal_form
 msgid "<i class=\"oi oi-arrow-right me-2\"/> Send Now"
-msgstr ""
+msgstr "<i class=\"oi oi-arrow-right me-2\"/> Sųsti dabar"
 
 #. module: account_online_synchronization
 #: model:mail.template,body_html:account_online_synchronization.email_template_sync_reminder
@@ -152,6 +157,102 @@ msgid ""
 "                </table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: "
+"16px; background-color: #FFFFFF; font-family:Verdana, Arial,sans-serif; "
+"color: #454748; width: 100%; border-collapse:separate;\">\n"
+"                    <tr>\n"
+"                       <td align=\"center\">\n"
+"                            <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: "
+"#FFFFFF; color: #454748; border-collapse:separate;\"> \n"
+"                               <tbody>\n"
+"                                    <!-- CONTENT --> \n"
+"                                   <tr>\n"
+"                                        <td align=\"center\" style=\"min-"
+"width: 590px;\"> \n"
+"                                           <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; "
+"background-color: white; padding: 0px 8px 0px 8px; border-"
+"collapse:separate;\">\n"
+"                                                <tr> \n"
+"                                                   <td valign=\"top\" "
+"style=\"font-size: 13px;\">\n"
+"                                                        <div> \n"
+"                                                            Sveiki,<br/><br/>"
+"\n"
+"                                                            Ryšys tarp <b><a "
+"t-att-href=\"object.get_base_url()\" t-out=\"object.get_base_url() or ''\">"
+"https://yourcompany.odoo.com</a></b> ir <t t-"
+"out=\"object.account_online_link_id.name or ''\">Belfius</t> <t t-if=\"not "
+"object.expiring_synchronization_due_day\">baigėsi.</t><t t-else=\"\">"
+"galiojimas baigsis po <t t-out=\"object.expiring_synchronization_due_day or "
+"''\">10</t> dienų.</t><br/>\n"
+"                                                           <div "
+"style=\"margin: 16px 0px 16px 0px;\">\n"
+"                                                                <a t-attf-"
+"href=\"{{ website_url }}/renew_consent/{{ object.id }}?access_token={"
+"{object.access_token}}\" style=\"background-color: #4caf50; padding: 8px "
+"16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-"
+"size:13px;\"> \n"
+"                                                                    "
+"Atnaujinti sutikimą\n"
+"                                                               </a>\n"
+"                                                            </div> \n"
+"                                                            Saugumo "
+"patarimas: Patikrinkite, ar domeno vardas, į kurį esate nukreipti, yra: <b>"
+"<a t-att-href=\"object.get_base_url()\" t-out=\"object.get_base_url() or "
+"''\">https://yourcompany.odoo.com</a></b>\n"
+"                                                       </div>\n"
+"                                                    </td> \n"
+"                                               </tr>\n"
+"                                                <tr> \n"
+"                                                   <td style=\"text-"
+"align:center;\">\n"
+"                                                        <hr width=\"100%\" "
+"style=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; "
+"margin: 16px 0px 16px 0px;\"/> \n"
+"                                                   </td>\n"
+"                                                </tr> \n"
+"                                           </table>\n"
+"                                        </td> \n"
+"                                   </tr>\n"
+"                                </tbody> \n"
+"                           </table>\n"
+"                        </td> \n"
+"                   </tr>\n"
+"                    <!-- POWERED BY --> \n"
+"                   <tr>\n"
+"                        <td align=\"center\" style=\"min-width: 590px;\"> \n"
+"                           <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: "
+"#F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"                                <tr> \n"
+"                                   <td style=\"text-align: center; font-"
+"size: 13px;\"> \n"
+"                                        Sukurta naudojant „ <a "
+"target=\"_blank\" href=\"https://"
+"www.odoo.com?utm_source=db&amp;utm_medium=auth\" t-attf-style=\"color: {"
+"{object.company_id.email_secondary_color or '#875A7B'}};\">“ „Odoo“</a>\n"
+"                                    </td>\n"
+"                               </tr>\n"
+"                            </table> \n"
+"                           <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; color: #454748; "
+"padding: 8px; border-collapse:separate;\">\n"
+"                                <tr> \n"
+"                                   <td style=\"text-align: center; font-"
+"size: 11px;\"> \n"
+"                                        PS: Tai yra automatinis el. laiškas, "
+"kurį išsiuntė „Odoo Accounting“, siekdama priminti jums apie artėjantį "
+"sutikimo dėl banko sinchronizavimo galiojimo pabaigą.\n"
+"                                   </td>\n"
+"                                </tr> \n"
+"                           </table>\n"
+"                        </td> \n"
+"                   </tr>\n"
+"                </table> \n"
+"            "
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__access_token
@@ -185,7 +286,7 @@ msgstr "Sąskaitos numeris"
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_journal__account_online_account_id
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__account_online_account_ids
 msgid "Account Online Account"
-msgstr ""
+msgstr "Internetinė paskyra"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_bank_selection__account_online_link_id
@@ -193,27 +294,28 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_journal__account_online_link_id
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__account_online_link_id
 msgid "Account Online Link"
-msgstr ""
+msgstr "Nuoroda į paskyrą internete"
 
 #. module: account_online_synchronization
 #: model:ir.actions.server,name:account_online_synchronization.online_sync_cron_waiting_synchronization_ir_actions_server
 msgid "Account: Journal online Waiting Synchronization"
-msgstr ""
+msgstr "Paskyra: Internetinis žurnalas „Waiting Synchronization“"
 
 #. module: account_online_synchronization
 #: model:ir.actions.server,name:account_online_synchronization.online_sync_cron_ir_actions_server
 msgid "Account: Journal online sync"
-msgstr ""
+msgstr "Paskyra: Žurnalo sinchronizavimas internete"
 
 #. module: account_online_synchronization
 #: model:ir.actions.server,name:account_online_synchronization.online_sync_unused_connection_cron_ir_actions_server
 msgid "Account: Journal online sync cleanup unused connections"
 msgstr ""
+"Paskyra: žurnalo sinchronizavimo valymas – pašalinti nenaudojamus ryšius"
 
 #. module: account_online_synchronization
 #: model:ir.actions.server,name:account_online_synchronization.online_sync_mail_cron_ir_actions_server
 msgid "Account: Journal online sync reminder"
-msgstr ""
+msgstr "Paskyra: Priminimas apie žurnalo sinchronizavimą internete"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_needaction
@@ -329,12 +431,12 @@ msgstr ""
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_missing_transaction_wizard_view_form
 msgid "Choose a date and a journal from which you want to fetch transactions"
-msgstr ""
+msgstr "Pasirinkite datą ir sąskaitą, iš kurios norite gauti sandorius"
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_duplicate_transaction_wizard_view_form
 msgid "Choose a date from which you want to check the transactions."
-msgstr ""
+msgstr "Pasirinkite datą, nuo kurios norite patikrinti sandorius."
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__client_id
@@ -353,6 +455,8 @@ msgid ""
 "Comma separated list of email addresses to send consent renewal "
 "notifications 15, 3 and 1 days before expiry"
 msgstr ""
+"Kableliais atskirtas elektroninio pašto adresų sąrašas, į kuriuos 15, 3 ir 1 "
+"dieną prieš galiojimo pabaigą siunčiami pranešimai apie sutikimo atnaujinimą"
 
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_res_company
@@ -765,12 +869,12 @@ msgstr "Paskutinį kartą atnaujinta"
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.portal_renew_consent
 msgid "Latest Balance"
-msgstr ""
+msgstr "Naujausias balansas"
 
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_account_bank_selection
 msgid "Link a bank account to the selected journal"
-msgstr ""
+msgstr "Susiekite banko sąskaitą su pasirinktu žurnalu"
 
 #. module: account_online_synchronization
 #. odoo-python
@@ -875,12 +979,12 @@ msgstr "Odoo"
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_bank_statement_line__online_account_id
 msgid "Online Account"
-msgstr ""
+msgstr "Internetinė sąskaita"
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_online_link_view_form
 msgid "Online Accounts"
-msgstr ""
+msgstr "Internetinės paskyros"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__online_identifier
@@ -890,14 +994,14 @@ msgstr "Internetinė identifikacija"
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_journal__next_link_synchronization
 msgid "Online Link Next synchronization"
-msgstr ""
+msgstr "Internetinė nuoroda Kitas sinchronizavimas"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_bank_statement_line__online_partner_information
 #: model:ir.model.fields,field_description:account_online_synchronization.field_res_partner__online_partner_information
 #: model:ir.model.fields,field_description:account_online_synchronization.field_res_users__online_partner_information
 msgid "Online Partner Information"
-msgstr ""
+msgstr "Informacija apie internetinius partnerius"
 
 #. module: account_online_synchronization
 #. odoo-python
@@ -912,7 +1016,7 @@ msgstr "Tiesioginė sinchronizacija"
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_bank_statement_line__online_transaction_identifier
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_bank_statement_line_transient__online_transaction_identifier
 msgid "Online Transaction Identifier"
-msgstr ""
+msgstr "Internetinės transakcijos identifikatorius"
 
 #. module: account_online_synchronization
 #. odoo-python
@@ -928,7 +1032,7 @@ msgstr "Partnerio pavadinimas"
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_bank_statement_line_transient__payment_ref
 msgid "Payment Ref"
-msgstr ""
+msgstr "Mokėjimo nuoroda"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields.selection,name:account_online_synchronization.selection__account_bank_statement_line_transient__state__pending
@@ -956,13 +1060,13 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_online_synchronization/models/account_online.py:0
 msgid "Please reconnect your online account."
-msgstr ""
+msgstr "Prašome vėl prisijungti prie savo internetinės paskyros."
 
 #. module: account_online_synchronization
 #. odoo-python
 #: code:addons/account_online_synchronization/wizard/account_bank_statement_line.py:0
 msgid "Please select first the transactions you wish to import."
-msgstr ""
+msgstr "Pirmiausia pasirinkite sandorius, kuriuos norite importuoti."
 
 #. module: account_online_synchronization
 #: model:ir.model.fields.selection,name:account_online_synchronization.selection__account_bank_statement_line_transient__state__posted
@@ -1085,23 +1189,23 @@ msgstr ""
 #: code:addons/account_online_synchronization/models/account_online.py:0
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.view_account_bank_selection_form_wizard
 msgid "Select a Bank Account"
-msgstr ""
+msgstr "Pasirinkite banko sąskaitą"
 
 #. module: account_online_synchronization
 #. odoo-python
 #: code:addons/account_online_synchronization/models/account_online.py:0
 msgid "Select a Credit Card Account"
-msgstr ""
+msgstr "Pasirinkite kredito kortelės sąskaitą"
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.view_account_bank_selection_form_wizard
 msgid "Select the"
-msgstr ""
+msgstr "Pasirinkite"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_bank_selection__selected_account
 msgid "Selected Account"
-msgstr ""
+msgstr "Pasirinkta paskyra"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_bank_statement_line_transient__sequence
@@ -1177,7 +1281,7 @@ msgstr "Ačiū!"
 #. odoo-python
 #: code:addons/account_online_synchronization/models/account_online.py:0
 msgid "The consent for the selected account has expired."
-msgstr ""
+msgstr "Pasirinktos paskyros sutikimas nebegalioja."
 
 #. module: account_online_synchronization
 #. odoo-python
@@ -1186,6 +1290,8 @@ msgid ""
 "The online synchronization service is not available at the moment. Please "
 "try again later."
 msgstr ""
+"Internetinė sinchronizavimo paslauga šiuo metu neveikia. Prašome pabandyti "
+"vėliau."
 
 #. module: account_online_synchronization
 #. odoo-javascript
@@ -1210,6 +1316,7 @@ msgid ""
 "This action will delete all selected transactions. Are you sure you want to "
 "proceed?"
 msgstr ""
+"Šis veiksmas ištrins visas pasirinktas operacijas. Ar tikrai norite tęsti?"
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_online_link_view_form
@@ -1223,6 +1330,8 @@ msgid ""
 "This version of Odoo appears to be outdated and does not support the '%s' "
 "sync mode. Installing the latest update might solve this."
 msgstr ""
+"Ši „Odoo“ versija, atrodo, yra pasenusi ir nepalaiko sinchronizavimo režimo "
+"„%s “. Šią problemą galėtų išspręsti naujausio atnaujinimo įdiegimas."
 
 #. module: account_online_synchronization
 #: model_terms:ir.actions.act_window,help:account_online_synchronization.action_account_online_link_form
@@ -1311,11 +1420,19 @@ msgid ""
 "synchronization\n"
 "                    ("
 msgstr ""
+"Jūs importuojate sandorius prieš sukurdami savo internetinę sinchronizaciją\n"
+"                    ("
 
 #. module: account_online_synchronization
 #. odoo-python
 #: code:addons/account_online_synchronization/models/account_online.py:0
 msgid "You can contact Odoo support"
+msgstr ""
+
+#. module: account_online_synchronization
+#. odoo-python
+#: code:addons/account_online_synchronization/models/account_online.py:0
+msgid "You can manage your bank synchronization consent for this connection %s"
 msgstr ""
 
 #. module: account_online_synchronization
@@ -1336,7 +1453,7 @@ msgstr ""
 #: code:addons/account_online_synchronization/models/account_journal.py:0
 #: code:addons/account_online_synchronization/models/account_online.py:0
 msgid "You cannot have two journals associated with the same Online Account."
-msgstr ""
+msgstr "Vienai internetinei paskyrai negalima priskirti dviejų žurnalų."
 
 #. module: account_online_synchronization
 #. odoo-python
@@ -1354,7 +1471,7 @@ msgstr "Jūs turite"
 #. odoo-python
 #: code:addons/account_online_synchronization/wizard/account_journal_missing_transactions.py:0
 msgid "You have to select one journal to continue."
-msgstr ""
+msgstr "Norėdami tęsti, turite pasirinkti vieną žurnalą."
 
 #. module: account_online_synchronization
 #: model:mail.template,subject:account_online_synchronization.email_template_sync_reminder
@@ -1379,6 +1496,12 @@ msgid "entries"
 msgstr ""
 
 #. module: account_online_synchronization
+#. odoo-python
+#: code:addons/account_online_synchronization/models/account_online.py:0
+msgid "here."
+msgstr ""
+
+#. module: account_online_synchronization
 #. odoo-javascript
 #: code:addons/account_online_synchronization/static/src/components/bank_configure/bank_configure.xml:0
 msgid "loading..."
@@ -1398,7 +1521,7 @@ msgstr "nuo"
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_account_online_account
 msgid "representation of an online bank account"
-msgstr ""
+msgstr "internetinės banko sąskaitos atvaizdavimas"
 
 #. module: account_online_synchronization
 #. odoo-javascript
@@ -1412,6 +1535,8 @@ msgstr ""
 msgid ""
 "within this period that were not created using the online synchronization."
 msgstr ""
+"per šį laikotarpį, kurios nebuvo sukurtos naudojant internetinę "
+"sinchronizaciją."
 
 #. module: account_online_synchronization
 #. odoo-javascript

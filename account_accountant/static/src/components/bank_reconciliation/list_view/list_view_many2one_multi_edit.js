@@ -10,8 +10,8 @@ export class BankRecMany2OneMultiID extends Component {
 
     get m2oProps() {
         const props = computeM2OProps(this.props);
-        if (this.props.record.selected && this.props.record.model.multiEdit) {
-            props.context.active_ids = this.env.model.root.selection.map((r) => r.resId);
+        if (this.env.model && this.props.record.selected && this.props.record.model.multiEdit) {
+            props.context.active_ids = this.props.record.model.root.selection.map((r) => r.resId);
         }
         return props;
     }

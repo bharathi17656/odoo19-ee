@@ -1,12 +1,13 @@
 from odoo import Command
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 
-from odoo.addons.l10n_ar.tests.common import TestAr
+from odoo.addons.l10n_ar.tests.common import TestArCommon
 from odoo.addons.mail.tests.common import MailCommon
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
-class TestArDeliveryGuide(TestAr, MailCommon):
+class TestArDeliveryGuide(TestArCommon, MailCommon):
 
     @classmethod
     def setUpClass(cls):
@@ -91,3 +92,17 @@ class TestArDeliveryGuide(TestAr, MailCommon):
             self._new_mails.attachment_ids.name,
             "Email should contain the delivery guide PDF attachment."
         )
+
+    def test_delivery_guide_creation_sequence_validation(self):
+        """Test Sequence numbers are only validated if CAI
+        authorization code, start and end sequences are provided """
+        self.picking_type.l10n_ar_sequence_number_end = '00000002'
+        with self.assertRaises(UserError):
+            for sequence in range(int(self.picking_type.l10n_ar_sequence_number_end) + 1):
+                self.picking_type.invalidate_recordset(['l10n_ar_next_delivery_number'])
+                self.get_stock_picking().l10n_ar_action_create_delivery_guide()
+        # Without authorization code we will allow creation of delivery guide.
+        self.picking_type.l10n_ar_cai_authorization_code = False
+        for sequence in range(int(self.picking_type.l10n_ar_sequence_number_end) + 1):
+            self.picking_type.invalidate_recordset(['l10n_ar_next_delivery_number'])
+            self.get_stock_picking().l10n_ar_action_create_delivery_guide()

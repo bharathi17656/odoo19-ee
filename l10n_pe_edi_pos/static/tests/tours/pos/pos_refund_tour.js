@@ -12,7 +12,7 @@ registry.category("web_tour.tours").add("l10n_pe_edi_pos.RefundWithReasonTour", 
         [
             Chrome.startPoS(),
             Dialog.confirm("Open Register"),
-            ProductScreen.clickDisplayedProduct("Desk Organizer", true, "1.0", "5.10"),
+            ProductScreen.clickDisplayedProduct("Desk Organizer", true, "1.0"),
             ProductScreen.clickPartnerButton(),
             PartnerList.searchCustomerValue("company_1_data", true),
             PartnerList.clickPartner("company_1_data"),
@@ -24,6 +24,9 @@ registry.category("web_tour.tours").add("l10n_pe_edi_pos.RefundWithReasonTour", 
             TicketScreen.selectFilter("Active"),
             TicketScreen.selectFilter("Paid"),
             TicketScreen.selectOrder("0001"),
+            {
+                trigger: `button:disabled:contains("Reprint Invoice")`,
+            },
             TicketScreen.confirmRefund(),
             // Additional Refund Information Dialog
             Dialog.confirm("Ok"),

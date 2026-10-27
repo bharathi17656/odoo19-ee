@@ -52,6 +52,7 @@ class AccountMove(models.Model):
         selection=[
             ('expense', 'Deferred Expense'),
             ('revenue', 'Deferred Revenue'),
+            ('misc', 'Deferred Miscellaneous'),
         ],
         compute='_compute_deferred_entry_type',
         copy=False,
@@ -116,13 +117,6 @@ class AccountMove(models.Model):
                 move._generate_deferred_entries()
         return posted
 
-    def action_post(self):
-        # EXTENDS 'account' to trigger the CRON auto-reconciling the statement lines.
-        res = super().action_post()
-        if self.statement_line_id and not self.env.context.get('skip_statement_line_cron_trigger'):
-            self.env.ref('account_accountant.auto_reconcile_bank_statement_line')._trigger()
-        return res
-
     def button_draft(self):
         if any(len(deferral_move.deferred_original_move_ids) > 1 for deferral_move in self.deferred_move_ids):
             raise UserError(_("You cannot reset to draft an invoice that is grouped in deferral entry. You can create a credit note instead."))
@@ -146,7 +140,21 @@ class AccountMove(models.Model):
 
     def _get_deferred_entries_method(self):
         self.ensure_one()
-        if self.is_outbound():
+        if self.is_entry():
+            move_types = set(self.line_ids.filtered('deferred_start_date').account_id.mapped("internal_group"))
+            if (
+                "expense" in move_types and "income" in move_types
+                and self.company_id.generate_deferred_expense_entries_method != self.company_id.generate_deferred_revenue_entries_method
+            ):
+                raise UserError(self.env._(
+                    "Having different deferred entries generation methods for expenses and revenues is not supported on "
+                    "journal entries involving both expense and revenue accounts. You can split this entry into two entries instead."
+                ))
+            elif "expense" in move_types:
+                return self.company_id.generate_deferred_expense_entries_method
+            else:
+                return self.company_id.generate_deferred_revenue_entries_method
+        if self.is_purchase_document():
             return self.company_id.generate_deferred_expense_entries_method
         return self.company_id.generate_deferred_revenue_entries_method
 
@@ -154,7 +162,13 @@ class AccountMove(models.Model):
     def _compute_deferred_entry_type(self):
         for move in self:
             if move.deferred_original_move_ids:
-                move.deferred_entry_type = 'expense' if move.deferred_original_move_ids[0].is_outbound() else 'revenue'
+                move_types = set(move.deferred_original_move_ids.mapped('move_type'))
+                if len(move_types) > 1 or move.deferred_original_move_ids[0].is_entry():
+                    move.deferred_entry_type = 'misc'
+                elif move.deferred_original_move_ids[0].is_purchase_document():
+                    move.deferred_entry_type = 'expense'
+                else:
+                    move.deferred_entry_type = 'revenue'
             else:
                 move.deferred_entry_type = False
 
@@ -265,93 +279,111 @@ class AccountMove(models.Model):
         if self.state != 'posted':
             return
 
-        deferred_type = "expense" if self.is_purchase_document(include_receipts=True) else "revenue"
-        deferred_account = self.company_id.deferred_expense_account_id if deferred_type == "expense" else self.company_id.deferred_revenue_account_id
-        deferred_journal = self.company_id.deferred_expense_journal_id if deferred_type == "expense" else self.company_id.deferred_revenue_journal_id
-        if not deferred_journal:
-            raise UserError(_("Please set the deferred journal in the accounting settings."))
-        if not deferred_account:
-            raise UserError(_("Please set the deferred accounts in the accounting settings."))
-
-        moves_vals_to_create = []
-        lines_vals_to_create = []
-        lines_periods = []
-        for line in self.line_ids.filtered(lambda l: l.deferred_start_date and l.deferred_end_date):
-            periods = line._get_deferred_periods()
-            if not periods:
+        for deferred_type in ('expense', 'revenue'):
+            moves_vals_to_create = []
+            lines_vals_to_create = []
+            lines_periods = []
+            lines = self.line_ids.filtered(lambda l: (
+                l.account_id.internal_group == ('expense' if deferred_type == 'expense' else 'income')
+                and l.deferred_start_date
+                and l.deferred_end_date
+            ))
+            if not lines:
                 continue
 
-            ref = _("Deferral of %s", line.move_id.name or '')
+            deferred_account = self.company_id.deferred_expense_account_id if deferred_type == "expense" else self.company_id.deferred_revenue_account_id
+            deferred_journal = self.company_id.deferred_expense_journal_id if deferred_type == "expense" else self.company_id.deferred_revenue_journal_id
+            deferred_method = self.company_id.deferred_expense_amount_computation_method if deferred_type == "expense" else self.company_id.deferred_revenue_amount_computation_method
+            if not deferred_journal:
+                raise UserError(_("Please set the deferred journal in the accounting settings."))
+            if not deferred_account:
+                raise UserError(_("Please set the deferred accounts in the accounting settings."))
 
-            moves_vals_to_create.append({
-                'move_type': 'entry',
-                'deferred_original_move_ids': [Command.set(line.move_id.ids)],
-                'journal_id': deferred_journal.id,
-                'company_id': self.company_id.id,
-                'partner_id': line.partner_id.id,
-                'auto_post': 'at_date',
-                'ref': ref,
-                'name': False,
-                'date': line.move_id.date,
-            })
-            lines_vals_to_create.append([
-                self.env['account.move.line']._get_deferred_lines_values(account.id, coeff * line.balance, ref, line.analytic_distribution, line)
-                for (account, coeff) in [(line.account_id, -1), (deferred_account, 1)]
-            ])
-            lines_periods.append((line, periods))
-        # create the deferred moves
-        moves_fully_deferred = self.create(moves_vals_to_create)
-        # We write the lines after creation, to make sure the `deferred_original_move_ids` is set.
-        # This way we can avoid adding taxes for deferred moves.
-        for move_fully_deferred, lines_vals in zip(moves_fully_deferred, lines_vals_to_create):
-            for line_vals in lines_vals:
-                # This will link the moves to the lines. Instead of move.write('line_ids': lines_ids)
-                line_vals['move_id'] = move_fully_deferred.id
-        self.env['account.move.line'].create(list(chain(*lines_vals_to_create)))
+            for line in lines:
+                periods = line._get_deferred_periods()
+                if not periods:
+                    continue
 
-        deferral_moves_vals = []
-        deferral_moves_line_vals = []
-        # Create the deferred entries for the periods [deferred_start_date, deferred_end_date]
-        for (line, periods), move_vals in zip(lines_periods, moves_vals_to_create):
-            remaining_balance = line.balance
-            for period_index, period in enumerate(periods):
-                # For the last deferral move the balance is forced to remaining balance to avoid rounding errors
-                force_balance = remaining_balance if period_index == len(periods) - 1 else None
-                deferred_amounts = self._get_deferred_amounts_by_line(line, [period], deferred_type)[0]
-                balance = deferred_amounts[period] if force_balance is None else force_balance
-                remaining_balance -= line.currency_id.round(balance)
-                deferral_moves_vals.append({**move_vals, 'date': period[1]})
-                deferral_moves_line_vals.append([
+                start_date = line.deferred_start_date
+                end_date = line.deferred_end_date
+                accounting_date = line.date
+
+                # When using the 'full_months' computation method, every consumed month counts as a full month.
+                # We therefore need to subtract one month from the end date for the following check on dates.
+                if deferred_method == 'full_months':
+                    # We need to add one day to the end date since it's excluded by _get_deferred_diff_dates().
+                    if self._get_deferred_diff_dates(start_date.replace(day=1), end_date + relativedelta(days=1)) < 2:
+                        end_date += relativedelta(months=-1)
+
+                # When all move line dates (start, end, accounting) are within the same month, we skip the line.
+                # It would otherwise lead to the creation of both a reversal and a deferral move that would cancel each other out.
+                if start_date.replace(day=1) == end_date.replace(day=1) == accounting_date.replace(day=1):
+                    continue
+
+                ref = _("Deferral of %s", line.move_id.name or '')
+
+                moves_vals_to_create.append({
+                    'move_type': 'entry',
+                    'deferred_original_move_ids': [Command.set(line.move_id.ids)],
+                    'journal_id': deferred_journal.id,
+                    'company_id': self.company_id.id,
+                    'partner_id': line.partner_id.id,
+                    'auto_post': 'at_date',
+                    'ref': ref,
+                    'name': False,
+                    'date': line.move_id.date,
+                })
+                lines_vals_to_create.append([
                     {
-                        **self.env['account.move.line']._get_deferred_lines_values(account.id, coeff * balance, move_vals['ref'], line.analytic_distribution, line),
+                        **self.env['account.move.line']._get_deferred_lines_values(account.id, coeff * line.balance, ref, line.analytic_distribution, line),
                         'partner_id': line.partner_id.id,
-                        'product_id': line.product_id.id,
                     }
-                    for (account, coeff) in [(deferred_amounts['account_id'], 1), (deferred_account, -1)]
+                    for (account, coeff) in [(line.account_id, -1), (deferred_account, 1)]
                 ])
+                lines_periods.append((line, periods))
+            # create the deferred moves
+            moves_fully_deferred = self.create(moves_vals_to_create)
+            # We write the lines after creation, to make sure the `deferred_original_move_ids` is set.
+            # This way we can avoid adding taxes for deferred moves.
+            for move_fully_deferred, lines_vals in zip(moves_fully_deferred, lines_vals_to_create):
+                for line_vals in lines_vals:
+                    # This will link the moves to the lines. Instead of move.write('line_ids': lines_ids)
+                    line_vals['move_id'] = move_fully_deferred.id
+            self.env['account.move.line'].create(list(chain(*lines_vals_to_create)))
 
-        deferral_moves = self.create(deferral_moves_vals)
-        for deferral_move, lines_vals in zip(deferral_moves, deferral_moves_line_vals):
-            for line_vals in lines_vals:
-                # This will link the moves to the lines. Instead of move.write('line_ids': lines_ids)
-                line_vals['move_id'] = deferral_move.id
-        self.env['account.move.line'].create(list(chain(*deferral_moves_line_vals)))
+            deferral_moves_vals = []
+            deferral_moves_line_vals = []
+            # Create the deferred entries for the periods [deferred_start_date, deferred_end_date]
+            for (line, periods), move_vals in zip(lines_periods, moves_vals_to_create):
+                remaining_balance = line.balance
+                for period_index, period in enumerate(periods):
+                    # For the last deferral move the balance is forced to remaining balance to avoid rounding errors
+                    force_balance = remaining_balance if period_index == len(periods) - 1 else None
+                    deferred_amounts = self._get_deferred_amounts_by_line(line, [period], deferred_type)[0]
+                    balance = deferred_amounts[period] if force_balance is None else force_balance
+                    remaining_balance -= line.currency_id.round(balance)
+                    deferral_moves_vals.append({**move_vals, 'date': period[1]})
+                    deferral_moves_line_vals.append([
+                        {
+                            **self.env['account.move.line']._get_deferred_lines_values(account.id, coeff * balance, move_vals['ref'], line.analytic_distribution, line),
+                            'partner_id': line.partner_id.id,
+                            'product_id': line.product_id.id,
+                        }
+                        for (account, coeff) in [(deferred_amounts['account_id'], 1), (deferred_account, -1)]
+                    ])
 
-        to_unlink = deferral_moves.filtered(lambda move: move.currency_id.is_zero(move.amount_total))
-        for move_fully_deferred in moves_fully_deferred:
-            # If, after calculation, we have 2 deferral entries in the same month, it means that
-            # they simply cancel out each other, so there is no point in creating them.
-            deferred_move_ids = move_fully_deferred + deferral_moves
-            cancelling_moves = deferred_move_ids.filtered(lambda move:
-                move_fully_deferred.date.replace(day=1) == move.date.replace(day=1)
-                and move.amount_total == move_fully_deferred.amount_total
-            )
-            if len(cancelling_moves) == 2:
-                to_unlink |= cancelling_moves
-                continue
+            deferral_moves = self.create(deferral_moves_vals)
+            for deferral_move, lines_vals in zip(deferral_moves, deferral_moves_line_vals):
+                for line_vals in lines_vals:
+                    # This will link the moves to the lines. Instead of move.write('line_ids': lines_ids)
+                    line_vals['move_id'] = deferral_move.id
+            self.env['account.move.line'].create(list(chain(*deferral_moves_line_vals)))
 
-        to_unlink.unlink()
-        (moves_fully_deferred + deferral_moves - to_unlink)._post(soft=True)
+            # Avoid having deferral moves with a total amount of 0.
+            to_unlink = deferral_moves.filtered(lambda move: move.currency_id.is_zero(move.amount_total))
+            to_unlink.unlink()
+
+            (moves_fully_deferred + deferral_moves - to_unlink)._post(soft=True)
 
     def open_deferred_entries(self):
         self.ensure_one()
@@ -431,8 +463,31 @@ class AccountMove(models.Model):
             for line in move.invoice_line_ids - previous_lines:
                 line._onchange_name_predictive()
 
+    def _get_outstanding_bank_statement_lines_domain(self):
+        """
+        Returns a search domain for move lines for unreconciled bank payments
+        linked to this move's partner.
+        """
+        self.ensure_one()
+        return [
+                ('parent_state', '=', 'posted'),
+                ('partner_id', '=', self.commercial_partner_id.id),
+                ('partner_id', '!=', False),
+                ('account_id.account_type', '=', 'asset_cash'),
+                ('journal_id', 'in', self.env['account.journal']._search([
+                    *self.env['account.journal']._check_company_domain(self.company_id.id),
+                    ('type', '=', 'bank')
+                ])),
+                ('balance', '>' if self.is_inbound() else '<', 0.0),
+                ('statement_line_id', '!=', False),
+                ('move_id.line_ids', 'any', [
+                    ('account_id', '=', self.company_id.account_journal_suspense_account_id.id),
+                    ('reconciled', '=', False),
+                ]),
+            ]
+
     def _compute_payments_widget_to_reconcile_info(self):
-        # EXTENDS
+        # EXTENDS 'account'
         super()._compute_payments_widget_to_reconcile_info()
         for move in self:
             if move.state not in {'draft', 'posted'} \
@@ -447,9 +502,9 @@ class AccountMove(models.Model):
                 ('partner_id', '!=', False),
                 ('account_id.account_type', '=', 'asset_cash'),
                 ('journal_id', 'in', self.env['account.journal']._search([
-                    *self.env['account.journal']._check_company_domain(move.company_id.id),
-                    ('type', '=', 'bank')
-                ])),
+                        *self.env['account.journal']._check_company_domain(move.company_id.id),
+                        ('type', '=', 'bank')
+                    ])),
                 ('balance', '>' if move.is_inbound() else '<', 0.0),
                 ('statement_line_id', '!=', False),
                 ('move_id.line_ids', 'any', [
@@ -491,21 +546,52 @@ class AccountMove(models.Model):
             if payments_widget_vals['content']:
                 if move.invoice_outstanding_credits_debits_widget:
                     move.invoice_outstanding_credits_debits_widget['content'].extend(payments_widget_vals['content'])
+                    move.invoice_outstanding_credits_debits_widget['content'].sort(key=lambda x: (x['date'], x['id']), reverse=True)
                 else:
                     move.invoice_outstanding_credits_debits_widget = payments_widget_vals
+
+    def _get_partner_credit_warning_exclude_amount(self):
+        # EXTENDS 'account'
+        exclude_amount = super()._get_partner_credit_warning_exclude_amount()
+        bank_domain = self._get_outstanding_bank_statement_lines_domain()
+        for line in self.env['account.move.line'].search(bank_domain):
+            currency = line.statement_line_id.foreign_currency_id or line.statement_line_id.currency_id
+            exclude_amount += currency._convert(
+                from_amount=abs(line.statement_line_id.amount_residual),
+                to_currency=self.company_id.currency_id,
+                company=self.company_id,
+                date=line.date,
+            )
+
+        matched_credits = self.line_ids.filtered(lambda line: line.account_id.account_type == 'asset_receivable').matched_credit_ids
+        if matched_credits:
+            bank_line_amount = sum(matched_credits.mapped('amount'))
+            payment_date = max(matched_credits.mapped('max_date'))
+            amount_company = matched_credits[0].credit_currency_id._convert(
+                from_amount=bank_line_amount,
+                to_currency=self.company_id.currency_id,
+                company=self.company_id,
+                date=payment_date,
+            )
+            exclude_amount += amount_company
+
+        return exclude_amount
 
     def js_assign_outstanding_line(self, line_id):
         # EXTENDS
         super().js_assign_outstanding_line(line_id)
         line = self.env['account.move.line'].browse(line_id)
         if line.account_id.account_type == 'asset_cash' and line.statement_line_id:
-            return line.statement_line_id.with_context(skip_payment_tolerance=True).set_line_bank_statement_line(self.line_ids.filtered(lambda line: line.account_id.account_type in {'asset_receivable', 'liability_payable'}).ids)
+            return line.statement_line_id.with_context(
+                skip_payment_tolerance=True,
+                stop_reco_at_first_partial=True,
+            ).set_line_bank_statement_line(self.line_ids.filtered(lambda line: line.account_id.account_type in {'asset_receivable', 'liability_payable'}).ids)
 
     def js_remove_outstanding_partial(self, partial_id):
         # EXTENDS
         if st_line := self.statement_line_id:
             partial = self.env['account.partial.reconcile'].browse(partial_id)
-            st_line.delete_reconciled_line((partial.credit_move_id + partial.debit_move_id).ids)
+            st_line.delete_reconciled_line((partial.credit_move_id + partial.debit_move_id).filtered(lambda m: m.display_type != 'payment_term').ids)
         else:
             super().js_remove_outstanding_partial(partial_id)
 
@@ -584,7 +670,8 @@ class AccountMoveLine(models.Model):
     @api.depends('balance')
     def _compute_full_amount_switch_html(self):
         for line in self:
-            if not (reconciled_lines := line.reconciled_lines_excluding_exchange_diff_ids):
+            # Ignore lines with no reconciled lines or not linked to a bank statement.
+            if not (reconciled_lines := line.reconciled_lines_excluding_exchange_diff_ids) or len(reconciled_lines) > 1 or not line.statement_line_id:
                 line.full_amount_switch_html = False
                 continue
 
@@ -685,8 +772,8 @@ class AccountMoveLine(models.Model):
     def _onchange_deferred_end_date(self):
         if not self._has_deferred_compatible_account():
             self.deferred_end_date = False
-        if self.deferred_start_date and not self.deferred_end_date:
-            self.deferred_end_date = self.deferred_start_date
+        if self.deferred_end_date and not self.deferred_start_date:
+            self.deferred_start_date = self.deferred_end_date
 
     @api.depends('deferred_end_date', 'move_id.invoice_date', 'move_id.state')
     def _compute_deferred_start_date(self):
@@ -798,20 +885,19 @@ class AccountMoveLine(models.Model):
         return {'fr': 'french'}.get(lang, 'english')
 
     @api.model
-    def _build_predictive_query(self, move_id, additional_domain=None):
-        move_query = self.env['account.move']._search([
+    def _build_predictive_query(self, move_id, additional_domain=None, partner=None):
+        move_ids = self.env['account.move'].search([
             ('move_type', '=', move_id.move_type),
             ('state', '=', 'posted'),
-            ('partner_id', '=', move_id.partner_id.id),
+            ('partner_id', '=', (partner or move_id.partner_id).id),
             ('company_id', '=', move_id.journal_id.company_id.id or self.env.company.id),
-        ], bypass_access=True)
-        move_query.order = 'account_move.invoice_date'
-        move_query.limit = int(self.env["ir.config_parameter"].sudo().get_param(
+            ('invoice_date', '!=', False),
+        ], order='invoice_date desc, id desc', limit=int(self.env["ir.config_parameter"].sudo().get_param(
             "account.bill.predict.history.limit",
             '100',
-        ))
+        ))).ids
         return self.env['account.move.line']._search([
-            ('move_id', 'in', move_query),
+            ('move_id', 'in', move_ids),
             ('display_type', '=', 'product'),
         ] + (additional_domain or []), bypass_access=True)
 
@@ -852,7 +938,7 @@ class AccountMoveLine(models.Model):
         parsed_description = ' | '.join(parsed_description.split())
 
         try:
-            main_source = (query if query is not None else self._build_predictive_query(move_id)).select(
+            main_source = (query if query is not None else self._build_predictive_query(move_id, partner=partner_id)).select(
                 SQL("%s AS prediction", field),
                 SQL(
                     "setweight(to_tsvector(%s, account_move_line.name), 'B') || setweight(to_tsvector('simple', 'account_move_line'), 'A') AS document",
@@ -863,7 +949,7 @@ class AccountMoveLine(models.Model):
                 main_source = SQL("%s %s", main_source, SQL("GROUP BY account_move_line.id, account_move_line.name, account_move_line.partner_id"))
 
             self.env.cr.execute(SQL("""
-                WITH account_move_line AS MATERIALIZED (%(account_move_line)s),
+                WITH account_move_line AS (%(account_move_line)s),
 
                 source AS (%(source)s),
 
@@ -879,7 +965,7 @@ class AccountMoveLine(models.Model):
               ORDER BY ranking DESC, count DESC
                  LIMIT 2
                 """,
-                account_move_line=self._build_predictive_query(move_id).select(SQL('*')),
+                account_move_line=self._build_predictive_query(move_id, partner=partner_id).select(SQL('*')),
                 source=SQL('(%s)', SQL(') UNION ALL (').join([main_source] + (additional_queries or []))),
                 lang=psql_lang,
                 description=parsed_description,
@@ -912,7 +998,7 @@ class AccountMoveLine(models.Model):
     @api.model
     def _predict_specific_tax(self, move, name, partner, amount_type, amount, type_tax_use):
         field = SQL('array_agg(account_move_line__tax_rel__tax_ids.id ORDER BY account_move_line__tax_rel__tax_ids.id)')
-        query = self._build_predictive_query(move)
+        query = self._build_predictive_query(move, partner=partner)
         query.left_join('account_move_line', 'id', 'account_move_line_account_tax_rel', 'account_move_line_id', 'tax_rel')
         query.left_join('account_move_line__tax_rel', 'account_tax_id', 'account_tax', 'id', 'tax_ids')
         query.add_where("""
@@ -923,23 +1009,33 @@ class AccountMoveLine(models.Model):
         """, (amount_type, type_tax_use, amount))
         return self._predicted_field(move, name, partner, field, query)
 
-    def _predict_product(self):
+    @api.model
+    def _predict_specific_product(self, move, name, partner):
         predict_product = int(self.env['ir.config_parameter'].sudo().get_param('account_predictive_bills.predict_product', '1'))
-        if predict_product and self.company_id.predict_bill_product:
-            query = self._build_predictive_query(self.move_id, ['|', ('product_id', '=', False), ('product_id.active', '=', True)])
-            predicted_product_id = self._predicted_field(self.move_id, self.name, self.partner_id, SQL('account_move_line.product_id'), query)
-            if predicted_product_id and predicted_product_id != self.product_id.id:
-                return predicted_product_id
+        if predict_product and move.company_id.predict_bill_product:
+            query = self._build_predictive_query(
+                move_id=move,
+                additional_domain=['|', ('product_id', '=', False), ('product_id.active', '=', True)],
+                partner=partner or move.partner_id,
+            )
+            return self._predicted_field(move, name, partner, SQL('account_move_line.product_id'), query)
         return False
 
-    def _predict_account(self):
+    def _predict_product(self):
+        predicted_product_id = self._predict_specific_product(self.move_id, self.name, self.partner_id)
+        if predicted_product_id and predicted_product_id != self.product_id.id:
+            return predicted_product_id
+        return False
+
+    @api.model
+    def _predict_specific_account(self, move, name, partner):
         field = SQL('account_move_line.account_id')
-        if self.move_id.is_purchase_document(True):
+        if move.is_purchase_document(True):
             excluded_group = 'income'
         else:
             excluded_group = 'expense'
         account_query = self.env['account.account']._search([
-            *self.env['account.account']._check_company_domain(self.move_id.company_id or self.env.company),
+            *self.env['account.account']._check_company_domain(move.company_id or self.env.company),
             ('internal_group', 'not in', (excluded_group, 'off')),
             ('account_type', 'not in', ('liability_payable', 'asset_receivable')),
         ], bypass_access=True)
@@ -949,9 +1045,11 @@ class AccountMoveLine(models.Model):
             SQL("account_account.id AS account_id"),
             SQL("setweight(to_tsvector(%(psql_lang)s, %(account_name)s), 'B') AS document", psql_lang=psql_lang, account_name=account_name),
         ))]
-        query = self._build_predictive_query(self.move_id, [('account_id', 'in', account_query)])
+        query = self._build_predictive_query(move, [('account_id', 'in', account_query)], partner=partner)
+        return self._predicted_field(move, name, partner, field, query, additional_queries)
 
-        predicted_account_id = self._predicted_field(self.move_id, self.name, self.partner_id, field, query, additional_queries)
+    def _predict_account(self):
+        predicted_account_id = self._predict_specific_account(self.move_id, self.name, self.partner_id)
         if predicted_account_id and predicted_account_id != self.account_id.id:
             return predicted_account_id
         return False

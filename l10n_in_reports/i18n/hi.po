@@ -2,13 +2,13 @@
 # This file contains the translation of the following modules:
 # * l10n_in_reports
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 20:03+0000\n"
-"PO-Revision-Date: 2025-11-18 17:11+0000\n"
+"POT-Creation-Date: 2026-06-12 18:06+0000\n"
+"PO-Revision-Date: 2026-04-20 07:30+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Hindi <https://translate.odoo.com/projects/odoo-19-l10n/"
 "l10n_in_reports/hi/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n==0 || n==1);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: l10n_in_reports
 #: model:ir.model.fields,help:l10n_in_reports.field_account_bank_statement_line__l10n_in_gstr_activate_einvoice_fetch
@@ -32,6 +32,22 @@ msgid ""
 "            Fetch Automatically - Existing documents with an IRN are "
 "automatically updated, and incoming documents are fetched and populated "
 "automatically."
+msgstr ""
+
+#. module: l10n_in_reports
+#. odoo-python
+#: code:addons/l10n_in_reports/wizard/gst_otp_validation.py:0
+msgid ""
+"%(message)s\n"
+"Hint: Please confirm that GST E-filing Username(%(username)s) is associated "
+"with GST Number(%(vat)s)."
+msgstr ""
+
+#. module: l10n_in_reports
+#. odoo-python
+#: code:addons/l10n_in_reports/models/account_return.py:0
+#: code:addons/l10n_in_reports/wizard/gst_otp_validation.py:0
+msgid "%s"
 msgstr ""
 
 #. module: l10n_in_reports
@@ -391,16 +407,20 @@ msgid "Action triggered — now waiting in queue to prepare and send data."
 msgstr ""
 
 #. module: l10n_in_reports
-#. odoo-python
-#: code:addons/l10n_in_reports/models/res_config_settings.py:0
-msgid "Already Logged Out"
+#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_closing_amount0
+msgid "Add Closing Stock"
+msgstr ""
+
+#. module: l10n_in_reports
+#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_other_income0
+msgid "Add Other Income"
 msgstr ""
 
 #. module: l10n_in_reports
 #. odoo-python
-#: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
-msgid "Amount"
-msgstr "रकम"
+#: code:addons/l10n_in_reports/models/res_config_settings.py:0
+msgid "Already Logged Out"
+msgstr ""
 
 #. module: l10n_in_reports
 #: model:account.report.line,name:l10n_in_reports.account_report_gstr3b_3_2_cp_35
@@ -498,8 +518,12 @@ msgid "B2B Reverse Charge"
 msgstr ""
 
 #. module: l10n_in_reports
-#: model:account.report.line,name:l10n_in_reports.account_report_gstr2b_b2c_regular
 #: model:account.report.line,name:l10n_in_reports.account_report_gstr2b_cdnur_regular
+msgid "B2C Overseas"
+msgstr ""
+
+#. module: l10n_in_reports
+#: model:account.report.line,name:l10n_in_reports.account_report_gstr2b_b2c_regular
 msgid "B2C Regular"
 msgstr ""
 
@@ -579,6 +603,18 @@ msgstr "बिल"
 #. odoo-python
 #: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
 msgid "Bill Ref. (Supplier Inv. No.)"
+msgstr ""
+
+#. module: l10n_in_reports
+#. odoo-python
+#: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
+msgid "Bill/Payment Amount"
+msgstr ""
+
+#. module: l10n_in_reports
+#. odoo-python
+#: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
+msgid "Bill/Payment Date"
 msgstr ""
 
 #. module: l10n_in_reports
@@ -713,11 +749,6 @@ msgid "Close"
 msgstr "बंद करें"
 
 #. module: l10n_in_reports
-#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_closing_amount0
-msgid "Closing Stock"
-msgstr ""
-
-#. module: l10n_in_reports
 #: model:ir.model,name:l10n_in_reports.model_res_company
 msgid "Companies"
 msgstr "कंपनियां"
@@ -739,14 +770,14 @@ msgid "Complete"
 msgstr ""
 
 #. module: l10n_in_reports
+#: model:account.report.line,name:l10n_in_reports.account_report_gstr2b_composition
+msgid "Composition Taxable Supplies"
+msgstr ""
+
+#. module: l10n_in_reports
 #: model:ir.model,name:l10n_in_reports.model_res_config_settings
 msgid "Config Settings"
 msgstr "कॉन्फ़िगरेशन सेटिंग"
-
-#. module: l10n_in_reports
-#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_cost_sales0
-msgid "Cost of Revenue"
-msgstr "रेवेन्यू की लागत"
 
 #. module: l10n_in_reports
 #: model:ir.model.fields,field_description:l10n_in_reports.field_account_batch_payment__country_code
@@ -768,6 +799,12 @@ msgstr "इन्होंने बनाया"
 #: model:ir.model.fields,field_description:l10n_in_reports.field_l10n_in_gstr_document_summary_line__create_date
 msgid "Created on"
 msgstr "इस तारीख को बनाया गया"
+
+#. module: l10n_in_reports
+#. odoo-python
+#: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
+msgid "Credit Note/Refund/TDS Cr. Amount"
+msgstr ""
 
 #. module: l10n_in_reports
 #. odoo-javascript
@@ -816,6 +853,12 @@ msgstr ""
 #. module: l10n_in_reports
 #. odoo-python
 #: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
+msgid "Deductee Code (1. Company, 2. Other than Company)"
+msgstr ""
+
+#. module: l10n_in_reports
+#. odoo-python
+#: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
 msgid "Deduction Date"
 msgstr ""
 
@@ -825,11 +868,6 @@ msgstr ""
 #: model:account.report.line,name:l10n_in_reports.account_report_gstr3b_3_2_ur_07
 msgid "Delhi"
 msgstr ""
-
-#. module: l10n_in_reports
-#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_depreciation0
-msgid "Depreciation"
-msgstr "मूल्यह्रास"
 
 #. module: l10n_in_reports
 #: model:account.report.line,name:l10n_in_reports.account_report_gstr2b_cdnur
@@ -844,6 +882,11 @@ msgstr ""
 #. module: l10n_in_reports
 #: model:ir.model.fields,help:l10n_in_reports.field_account_return_type__states_workflow
 msgid "Determines the workflow of the return."
+msgstr ""
+
+#. module: l10n_in_reports
+#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_income0
+msgid "Direct Income"
 msgstr ""
 
 #. module: l10n_in_reports
@@ -986,7 +1029,6 @@ msgid "Exempted"
 msgstr ""
 
 #. module: l10n_in_reports
-#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_expense0
 #: model:account.report.line,name:l10n_in_reports.account_financial_report_in_less_expenses0
 msgid "Expenses"
 msgstr "एक्सपेंस"
@@ -1102,20 +1144,14 @@ msgstr ""
 
 #. module: l10n_in_reports
 #. odoo-python
-#: code:addons/l10n_in_reports/models/res_company.py:0
-msgid "First enable GST e-Filing feature from configuration for company %s."
+#: code:addons/l10n_in_reports/models/account_return.py:0
+msgid "First enable GST e-Filing feature from configuration for company(s) %s."
 msgstr ""
 
 #. module: l10n_in_reports
 #. odoo-python
 #: code:addons/l10n_in_reports/models/account_return.py:0
 msgid "First setup GST user name and validate using OTP from configuration"
-msgstr ""
-
-#. module: l10n_in_reports
-#. odoo-python
-#: code:addons/l10n_in_reports/models/account_return.py:0
-msgid "Fiscal Year Reversed Move"
 msgstr ""
 
 #. module: l10n_in_reports
@@ -1409,7 +1445,7 @@ msgstr ""
 
 #. module: l10n_in_reports
 #. odoo-python
-#: code:addons/l10n_in_reports/models/res_company.py:0
+#: code:addons/l10n_in_reports/models/account_return.py:0
 msgid "Go to configuration"
 msgstr ""
 
@@ -1456,34 +1492,6 @@ msgstr ""
 #. module: l10n_in_reports
 #: model:account.report.line,name:l10n_in_reports.account_report_gstr1_hsn_b2c
 msgid "HSN B2C"
-msgstr ""
-
-#. module: l10n_in_reports
-#. odoo-javascript
-#: code:addons/l10n_in_reports/static/src/components/tax_report/warnings.xml:0
-msgid "HSN for Service type product shall start with 99,"
-msgstr ""
-
-#. module: l10n_in_reports
-#. odoo-python
-#: code:addons/l10n_in_reports/models/account_return.py:0
-msgid ""
-"HSN for Service type product shall start with 99, Certain Product Lines do "
-"not comply."
-msgstr ""
-
-#. module: l10n_in_reports
-#. odoo-javascript
-#: code:addons/l10n_in_reports/static/src/components/tax_report/warnings.xml:0
-msgid "HSN for other than Service type product shall not start with 99,"
-msgstr ""
-
-#. module: l10n_in_reports
-#. odoo-python
-#: code:addons/l10n_in_reports/models/account_return.py:0
-msgid ""
-"HSN for other than Service type product shall not start with 99, Certain "
-"Product Lines do not comply."
 msgstr ""
 
 #. module: l10n_in_reports
@@ -1710,19 +1718,6 @@ msgstr ""
 
 #. module: l10n_in_reports
 #. odoo-python
-#: code:addons/l10n_in_reports/models/account_return.py:0
-#: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
-msgid "Invalid HSN Code"
-msgstr ""
-
-#. module: l10n_in_reports
-#. odoo-python
-#: code:addons/l10n_in_reports/models/account_return.py:0
-msgid "Invalid HSN Codes"
-msgstr ""
-
-#. module: l10n_in_reports
-#. odoo-python
 #: code:addons/l10n_in_reports/wizard/gst_otp_validation.py:0
 msgid "Invalid OTP"
 msgstr ""
@@ -1731,12 +1726,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_in_reports/wizard/gst_otp_validation.py:0
 msgid "Invalid OTP. Please enter a valid 6-digit OTP"
-msgstr ""
-
-#. module: l10n_in_reports
-#. odoo-python
-#: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
-msgid "Invalid Product Type"
 msgstr ""
 
 #. module: l10n_in_reports
@@ -1887,6 +1876,31 @@ msgstr "आखिरी बार अपडेट हुआ"
 #. module: l10n_in_reports
 #: model:account.report.line,name:l10n_in_reports.account_report_gstr3b_5_1_b
 msgid "Late Fees (Manual)"
+msgstr ""
+
+#. module: l10n_in_reports
+#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_cost_sales0
+msgid "Less Cost of Revenue"
+msgstr ""
+
+#. module: l10n_in_reports
+#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_depreciation0
+msgid "Less Depreciation"
+msgstr ""
+
+#. module: l10n_in_reports
+#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_expense0
+msgid "Less Expenses"
+msgstr ""
+
+#. module: l10n_in_reports
+#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_opening0
+msgid "Less Opening Stock"
+msgstr ""
+
+#. module: l10n_in_reports
+#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_other_expense0
+msgid "Less Other Expenses"
 msgstr ""
 
 #. module: l10n_in_reports
@@ -2059,16 +2073,6 @@ msgid "Only an Accounting Administrator can reset a tax return"
 msgstr ""
 
 #. module: l10n_in_reports
-#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_opening0
-msgid "Opening Stock"
-msgstr ""
-
-#. module: l10n_in_reports
-#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_income0
-msgid "Operating Income"
-msgstr ""
-
-#. module: l10n_in_reports
 #: model:account.report.line,name:l10n_in_reports.account_report_gstr3b_3_2_cp_21
 #: model:account.report.line,name:l10n_in_reports.account_report_gstr3b_3_2_uin_21
 #: model:account.report.line,name:l10n_in_reports.account_report_gstr3b_3_2_ur_21
@@ -2080,11 +2084,6 @@ msgstr ""
 #: code:addons/l10n_in_reports/models/account_move.py:0
 msgid "Other Charges"
 msgstr ""
-
-#. module: l10n_in_reports
-#: model:account.report.line,name:l10n_in_reports.account_financial_report_in_other_income0
-msgid "Other Income"
-msgstr "अन्य इनकम"
 
 #. module: l10n_in_reports
 #: model:account.report.line,name:l10n_in_reports.account_report_gstr3b_3_2_cp_97
@@ -2120,6 +2119,12 @@ msgstr ""
 #. module: l10n_in_reports
 #: model:ir.model.fields,field_description:l10n_in_reports.field_account_batch_payment__l10n_in_pay_order_attachment_ids
 msgid "Pay Order Attachments"
+msgstr ""
+
+#. module: l10n_in_reports
+#. odoo-python
+#: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
+msgid "Payment Amount"
 msgstr ""
 
 #. module: l10n_in_reports
@@ -2278,6 +2283,13 @@ msgid "Regenerate Document Summary"
 msgstr ""
 
 #. module: l10n_in_reports
+#. odoo-python
+#: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
+msgid ""
+"Remarks (Reason for non-deduction/lower deduction/higher deduction/threshold)"
+msgstr ""
+
+#. module: l10n_in_reports
 #: model_terms:ir.ui.view,arch_db:l10n_in_reports.view_account_move_form_inherit_account
 msgid "Reset Manual Match"
 msgstr ""
@@ -2419,15 +2431,6 @@ msgstr "कुछ"
 #. odoo-python
 #: code:addons/l10n_in_reports/models/account_return.py:0
 msgid ""
-"Some Credit Notes for invoices issued during financial year shouldn't be in "
-"GSTR-1 after November 30th,\n"
-"so it's advisable to remove the tax from it."
-msgstr ""
-
-#. module: l10n_in_reports
-#. odoo-python
-#: code:addons/l10n_in_reports/models/account_return.py:0
-msgid ""
 "Somehow this IRN attachment is not JSON. Please attempt to retrieve the data "
 "from the portal again."
 msgstr ""
@@ -2474,6 +2477,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_in_reports/models/account_return.py:0
 msgid "Spreadsheet for GSTR-1 return is attached here"
+msgstr ""
+
+#. module: l10n_in_reports
+#. odoo-python
+#: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
+msgid "Sr. No."
 msgstr ""
 
 #. module: l10n_in_reports
@@ -2525,13 +2534,13 @@ msgstr ""
 #. module: l10n_in_reports
 #. odoo-python
 #: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
-msgid "TCS Credit Amount"
+msgid "TCS Cr. Amount"
 msgstr ""
 
 #. module: l10n_in_reports
 #. odoo-python
 #: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
-msgid "TCS Debit Amount"
+msgid "TCS Dr. Amount"
 msgstr ""
 
 #. module: l10n_in_reports
@@ -2543,13 +2552,7 @@ msgstr ""
 #. module: l10n_in_reports
 #. odoo-python
 #: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
-msgid "TDS Credit Amount"
-msgstr ""
-
-#. module: l10n_in_reports
-#. odoo-python
-#: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
-msgid "TDS Debit Amount"
+msgid "TDS Dr. Amount"
 msgstr ""
 
 #. module: l10n_in_reports
@@ -2821,6 +2824,12 @@ msgid "Validate OTP"
 msgstr ""
 
 #. module: l10n_in_reports
+#. odoo-python
+#: code:addons/l10n_in_reports/models/l10n_in_report_handler.py:0
+msgid "Vendor"
+msgstr ""
+
+#. module: l10n_in_reports
 #: model_terms:ir.ui.view,arch_db:l10n_in_reports.account_return_kanban_view
 msgid "View Bills"
 msgstr ""
@@ -2911,12 +2920,6 @@ msgstr ""
 #. module: l10n_in_reports
 #. odoo-javascript
 #: code:addons/l10n_in_reports/static/src/components/tax_report/warnings.xml:0
-msgid "do not comply with"
-msgstr ""
-
-#. module: l10n_in_reports
-#. odoo-javascript
-#: code:addons/l10n_in_reports/static/src/components/tax_report/warnings.xml:0
 msgid "does not have HSN in Journal Items"
 msgstr ""
 
@@ -2955,3 +2958,15 @@ msgstr ""
 #: code:addons/l10n_in_reports/models/account_return.py:0
 msgid "spreadsheet for GSTR-1 return"
 msgstr ""
+
+#~ msgid "Amount"
+#~ msgstr "रकम"
+
+#~ msgid "Cost of Revenue"
+#~ msgstr "रेवेन्यू की लागत"
+
+#~ msgid "Depreciation"
+#~ msgstr "मूल्यह्रास"
+
+#~ msgid "Other Income"
+#~ msgstr "अन्य इनकम"

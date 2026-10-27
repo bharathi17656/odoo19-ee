@@ -18,7 +18,6 @@ class AssetModify(models.TransientModel):
         for record in self:
             if record.asset_id._l10n_in_check_degressive_special_asset():
                 record.l10n_in_value_residual = record.asset_id._get_residual_value_at_date(record.date) - record.salvage_value
-            record.value_residual = record.asset_id._get_residual_value_at_date(record.date)
 
     def _get_own_book_value(self):
         if not self.asset_id._l10n_in_check_degressive_special_asset():

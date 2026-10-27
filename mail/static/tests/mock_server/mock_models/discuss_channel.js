@@ -37,11 +37,9 @@ export class DiscussChannel extends models.ServerModel {
         relation: "discuss.channel.member",
         compute: "_compute_channel_name_member_ids",
     });
-    channel_type = fields.Generic({ default: "channel" });
-    group_public_id = fields.Generic({
-        default: () => serverState.groupId,
-    });
-    uuid = fields.Generic({
+    channel_type = fields.Selection({ default: "channel" });
+    group_public_id = fields.Many2one({ default: () => serverState.groupId });
+    uuid = fields.Char({
         default: () => uniqueId("discuss.channel_uuid-"),
     });
     last_interest_dt = fields.Datetime({ string: "Last Interest" });
@@ -579,11 +577,13 @@ export class DiscussChannel extends models.ServerModel {
 
     /**
      * @param {number[]} partners_to
+     * @param {string} [default_display_mode=undefined]
      * @param {string} name
      * */
-    _create_group(partners_to, name) {
-        const kwargs = getKwArgs(arguments, "partners_to", "name");
+    _create_group(partners_to, default_display_mode, name) {
+        const kwargs = getKwArgs(arguments, "partners_to", "default_display_mode", "name");
         partners_to = kwargs.partners_to || [];
+        default_display_mode = kwargs.default_display_mode;
         name = kwargs.name || "";
 
         /** @type {import("mock_models").DiscussChannel} */
@@ -597,6 +597,7 @@ export class DiscussChannel extends models.ServerModel {
             channel_member_ids: partners.map((partner) =>
                 Command.create({ partner_id: partner.id })
             ),
+            default_display_mode: default_display_mode,
             name,
         });
         this._broadcast(

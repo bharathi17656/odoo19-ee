@@ -21,16 +21,10 @@ class HrExpense(models.Model):
 
     sample = fields.Boolean(help='Expenses created from sample receipt')
 
-    def _needs_product_price_computation(self):
-        # EXTENDS 'hr_expense'
-        self.ensure_one()
-        is_extracted = self.extract_state in {'waiting_validation', 'to_validate', 'done'} and self.is_editable
-        return super()._needs_product_price_computation() and not is_extracted
-
     @api.depends('state')
     def _compute_is_in_extractable_state(self):
         for expense in self:
-            expense.is_in_extractable_state = expense.state == 'draft'
+            expense.is_in_extractable_state = expense.state == 'draft' and not expense.split_expense_origin_id
 
     @api.depends('extract_state', 'state')
     def _compute_extract_state_processed(self):
@@ -45,13 +39,37 @@ class HrExpense(models.Model):
         endpoint = self.env['ir.config_parameter'].sudo().get_param('iap_extract_endpoint', 'https://extract.api.odoo.com')
         return iap_tools.iap_jsonrpc(endpoint + '/api/extract/expense/2/' + pathinfo, params=params)
 
+    def _filter_preprocess_skipped_ocr(self):
+        """ If the hr_expense_stripe module is installed we want to skip the OCR """
+        if 'is_card_expense' not in self._fields:
+            return self
+
+        stripe_expenses = self.filtered('is_card_expense')
+        stripe_expenses.write({'extract_state': 'done'})
+        for expense in stripe_expenses:
+            expense.message_post(body=self.env._("Receipt not digitized: the expense already includes Stripe data."))
+
+        return self - stripe_expenses
+
+    def _upload_to_extract(self):
+        to_extract = self._filter_preprocess_skipped_ocr()
+        if to_extract:
+            super(HrExpense, to_extract)._upload_to_extract()
+
     def _autosend_for_digitization(self):
-        if self.env.company.expense_extract_show_ocr_option_selection == 'auto_send':
-            self.filtered('extract_can_show_send_button')._send_batch_for_digitization()
+        to_extract = self.filtered(lambda e:
+            e.company_id.expense_extract_show_ocr_option_selection == 'auto_send'
+            and e.extract_can_show_send_button
+        )._filter_preprocess_skipped_ocr()
+
+        # Expenses with an existing amount should not be sent for auto-digitization.
+        to_extract = to_extract.filtered(lambda e: not e.total_amount_currency)
+        if to_extract:
+            to_extract._send_batch_for_digitization()
 
     def _message_set_main_attachment_id(self, attachments, force=False, filter_xml=True):
         super()._message_set_main_attachment_id(attachments, force=force, filter_xml=filter_xml)
-        if not self.sample:
+        if not self.sample and attachments:
             self._autosend_for_digitization()
 
     def _get_validation(self, field):
@@ -81,13 +99,13 @@ class HrExpense(models.Model):
             currency_ocr = self._get_ocr_selected_value(ocr_results, 'currency', self.env.company.currency_id.name)
 
             # We need to set the user to ensure it will be translated in the same language
-            user_id = self.employee_id.user_id if self.employee_id.user_id else self.env.uid
-            default_receipt_name = self.with_user(user_id)._get_untitled_expense_name("").strip()
+            user_id = self.employee_id.user_id if self.employee_id.user_id else self.env.user
+            default_receipt_name = self.env['hr.expense'].with_context(lang=user_id.lang)._get_untitled_expense_name("").strip()
 
             if default_receipt_name in self.name:
                 predicted_product_id = self._predict_product(description_ocr)
                 if predicted_product_id:
-                    vals['product_id'] = predicted_product_id
+                    vals['product_id'] = predicted_product_id or self.product_id.id
                 vals['name'] = description_ocr
                 # We need to set the name after the product change as changing the product may change the name
 
@@ -95,29 +113,38 @@ class HrExpense(models.Model):
             if not self.date or self.date == context_create_date:
                 vals['date'] = date_ocr
 
-            if not self.total_amount_currency:
+            product_id = vals.get('product_id', self.product_id.id)
+            product_price = product_id and self.env['product.product'].with_company(self.company_id).browse(product_id).standard_price
+            if product_price:
+                vals['price_unit'] = product_price
+                vals['total_amount_currency'] = product_price
+                vals['total_amount'] = product_price
+            else:
                 vals['total_amount_currency'] = total_ocr
+                vals['quantity'] = 1  # Always the case for expense that are not using a flat rate
+                vals['price_unit'] = total_ocr
+                current_currency = self.currency_id
+                if not self.currency_id or self.currency_id == self.env.company.currency_id:
+                    for comparison in ['=ilike', 'ilike']:
+                        matched_currency = self.env["res.currency"].with_context(active_test=False).search([
+                            '|', '|',
+                            ('currency_unit_label', comparison, currency_ocr),
+                            ('name', comparison, currency_ocr),
+                            ('symbol', comparison, currency_ocr),
+                        ])
+                        if len(matched_currency) == 1:
+                            current_currency = matched_currency
 
-            self.flush_model()
-
-            if not self.currency_id or self.currency_id == self.env.company.currency_id:
-                for comparison in ['=ilike', 'ilike']:
-                    matched_currency = self.env["res.currency"].with_context(active_test=False).search([
-                        '|', '|',
-                        ('currency_unit_label', comparison, currency_ocr),
-                        ('name', comparison, currency_ocr),
-                        ('symbol', comparison, currency_ocr),
-                    ])
-                    if len(matched_currency) == 1:
-                        vals['currency_id'] = matched_currency.id
-
-                        if matched_currency != self.company_currency_id:
-                            vals['total_amount'] = matched_currency._convert(
-                                vals.get('total_amount_currency', self.total_amount_currency),
-                                self.company_currency_id,
-                                company=self.company_id,
-                                date=vals.get('date', self.date),
-                            )
+                vals['currency_id'] = current_currency.id
+                if current_currency and current_currency != self.company_currency_id:
+                    vals['total_amount'] = current_currency._convert(
+                        total_ocr,
+                        self.company_currency_id,
+                        company=self.company_id,
+                        date=vals.get('date', self.date),
+                    )
+                else:
+                    vals['total_amount'] = total_ocr
 
             self.write(vals)
 

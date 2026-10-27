@@ -25,6 +25,7 @@
                     onDimensionsUpdated.bind="onDimensionsUpdated"
                     pivotId="props.pivotId"
                     getScrollableContainerEl.bind="getScrollableContainerEl"
+                    addDraftField="store.addDraftField.bind(store)"
                 />
                 <SidePanelDomain
                     resModel="definition.model"
@@ -43,10 +44,10 @@
                     <ValidationMessages messages="[unusedPivotWarning]" msgType="'warning'"/>
                 </div>
             </div>
-            <div t-else="1">
+            <Section t-else="1">
                 <ValidationMessages messages="[invalidPivotModel]" msgType="'error'"/>
                 <button class="mx o-button o-button-primary mt-2 m-1" t-on-click="delete">Delete Pivot</button>
-            </div>
+            </Section>
         </div>
         <PivotDeferUpdate
             t-if="isModelValid and !isReadonly"

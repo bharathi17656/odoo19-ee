@@ -8,15 +8,18 @@ class HrContract(models.Model):
     l10n_ch_lpp_in_percentage = fields.Boolean(
         string="LPP Contributions in Percentage",
         default=False,
-        help="If checked, LPP contributions are specified as percentages instead of fixed amounts."
+        help="If checked, LPP contributions are specified as percentages instead of fixed amounts.",
+        groups="hr_payroll.group_hr_payroll_user"
     )
     l10n_ch_lpp_percentage_employee = fields.Float(
         string="Employee LPP Contribution (%)",
         digits='Payroll Rate',
+        groups="hr_payroll.group_hr_payroll_user"
     )
     l10n_ch_lpp_percentage_employer = fields.Float(
         string="Employer LPP Contribution (%)",
         digits='Payroll Rate',
+        groups="hr_payroll.group_hr_payroll_user"
     )
     #When engaging in gainful activity at the reference age, it is now possible to waive the exemption.
     #This waiver allows for filling contribution gaps and, in general, improving AVS pensions up to the maximum pension.
@@ -31,4 +34,4 @@ class HrContract(models.Model):
         ('retired_wave_deduct', "Retired with Waive of Pension Deduct")
     ])
 
-    l10n_ch_telework_percentage = fields.Float(string="Telework Percentage")
+    l10n_ch_telework_percentage = fields.Float(string="Telework Percentage", groups="hr_payroll.group_hr_payroll_user")

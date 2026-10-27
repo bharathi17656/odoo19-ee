@@ -22,17 +22,21 @@ from odoo.http import request
 from odoo.tools.mail import html_to_inner_content
 from odoo.tools.misc import mute_logger, submap
 
+from odoo.addons.ai.utils.ai_citation import apply_numeric_citations, get_attachment_ids_from_text
 from odoo.addons.ai.utils.llm_api_service import LLMApiService
-from odoo.addons.ai.utils.llm_providers import PROVIDERS, get_provider
+from odoo.addons.ai.utils.llm_providers import (
+    PROVIDERS,
+    TEMPERATURE_MAP as TEMP_MAP,
+    get_provider,
+    get_deprecated_model_replacement_label
+)
 
 _logger = logging.getLogger(__name__)
 
 
-TEMPERATURE_MAP = {
-    'analytical': 0.2,
-    'balanced': 0.5,
-    'creative': 0.8,
-}
+# TEMPERATURE_MAP is moved to llm_providers so that it can be used inside llm_providers.py without a circular dependency
+# on ai_agent. However, it is redefined here so as not to break customizations that import it from ai_agent.
+TEMPERATURE_MAP = TEMP_MAP
 
 # Pre-prompts are put in a dictionary so that they can easily be overridden
 PREPROMPTS = {
@@ -54,7 +58,7 @@ PREPROMPTS = {
 
         2. For all other questions, you MUST ONLY use information from the provided context and conversation history.
 
-        3. If the context and history don't contain information to answer the query:
+        3. If the RAG context and history don't contain information to answer the query or it is not provided at all:
            - use the assistant/user messages as context or ask the user to provide more information.
            - DO NOT make up information or use your general knowledge.
 
@@ -69,13 +73,13 @@ PREPROMPTS = {
         7. Avoid using HTML elements in your response.
     """).strip(),
     'context': dedent("""
-        - Use the context to answer the question.
-        - Provide references to all attachments as a new paragraph at the end of the response, listing each reference in a bullet point.
-        - If your response doesn't make use of the context, don't list the attachments.
-    """).strip(),
-    'unaccessible_references': dedent("""
-        - Ignore UNACCESSIBLE_REFERENCES in the response's references even if you use them in your response.
-        - Append only accessible references to the response's references if you use them, if you don't use any in the response or only unaccessible ones, don't append any references.
+        - Use the RAG context to answer the question.
+        - Every claim or piece of information provided in the answer **MUST** be immediately followed by an inline citation in the format **[SOURCE:Attachment ID]** to indicate its source from the RAG context (e.g., "The capital of France is Paris [SOURCE:210].").
+        - If a claim draws on multiple sources, cite all of them (e.g., "The process requires heat and pressure [SOURCE:210, 211].").
+        - If **NO** source chunks were used to answer the question, do not include any citations.
+
+        - Example of the required format for the response with the attachment IDs [SOURCE:210, 211] in its answer:
+        - The primary goal of the project is to enhance data security protocols [SOURCE:210]. This enhancement includes a mandatory two-factor authentication system [SOURCE:211].
     """).strip(),
 }
 
@@ -225,6 +229,20 @@ def validate_measures(model, measures):
             )
 
 
+def is_valid_date_groupby(model_fields, groupby):
+    if groupby.count(":") != 1:
+        return False
+
+    field_name, interval = groupby.split(":")
+    field_info = model_fields.get(field_name, {})
+
+    return (
+        interval in ["day", "week", "month", "quarter", "year"]
+        and field_info
+        and field_info.get("type") in ["date", "datetime"]
+    )
+
+
 def validate_groupbys(model, groupbys):
     if not groupbys:
         return
@@ -232,7 +250,9 @@ def validate_groupbys(model, groupbys):
     model_fields = model.fields_get()
     invalid_groupbys = []
     for groupby in groupbys:
-        if len(groupby.split(".")) > 1 or not model_fields.get(groupby, {}).get('groupable'):
+        if not is_valid_date_groupby(model_fields, groupby) and (
+            len(groupby.split(".")) > 1 or not model_fields.get(groupby, {}).get("groupable")
+        ):
             invalid_groupbys.append(groupby)
 
     if invalid_groupbys:
@@ -278,6 +298,7 @@ class AIAgent(models.Model):
         string="Response Style",
         default='balanced',
         required=True,
+        help="For thinking models (e.g. gpt-5): Analytical: Medium thinking, Balanced: Low thinking, Creative: Minimal thinking",
     )
 
     llm_model = fields.Selection(
@@ -286,6 +307,9 @@ class AIAgent(models.Model):
         default='gpt-4o',
         required=True,
     )
+
+    deprecated_model_replacement_hint = fields.Text(compute='_compute_deprecated_model_replacement_hint')
+
     restrict_to_sources = fields.Boolean(
         string="Restrict to Sources",
         help="If checked, the agent will only respond based on the provided sources.")
@@ -312,6 +336,17 @@ class AIAgent(models.Model):
         search='_search_is_ask_ai_agent'
     )
 
+    @api.depends('llm_model', 'response_style')
+    def _compute_deprecated_model_replacement_hint(self):
+        for agent in self:
+            if replacement_model_label := get_deprecated_model_replacement_label(agent.llm_model, agent.response_style):
+                agent.deprecated_model_replacement_hint = _(
+                    "Using %(llm_model_label)s based on your agent setup.",
+                    llm_model_label=replacement_model_label,
+                )
+            else:
+                agent.deprecated_model_replacement_hint = False
+
     @api.model_create_multi
     def create(self, vals_list):
         with file_open('ai/static/description/icon.png', 'rb') as f:
@@ -333,6 +368,7 @@ class AIAgent(models.Model):
             raise ValidationError(_("The partner linked to an AI agent can't be changed"))
 
         old_providers = {agent.id: agent._get_provider() for agent in self}
+
         result = super().write(vals)
         for agent in self:
             new_provider = agent._get_provider()
@@ -378,14 +414,8 @@ class AIAgent(models.Model):
     def action_refresh_sources(self):
         """
         Refresh the sources to show the new status if any was changed by the cron.
-        Run the cron if there are sources to process.
         """
         self.ensure_one()
-        cron = self.env.ref('ai.ir_cron_generate_embedding')
-        unprocessed_sources = self.sources_ids.filtered(lambda s: s.status == 'processing')
-        if unprocessed_sources:
-            cron._trigger()
-
         return {
             'type': 'ir.actions.client',
             'tag': 'soft_reload',
@@ -403,22 +433,17 @@ class AIAgent(models.Model):
 
     def _generate_response_for_channel(self, mail_message, channel):
         self.ensure_one()
-
         prompt, session_info_context = self._parse_user_message(mail_message)
-        response = self.with_context(discuss_channel=channel)._generate_response(
-            prompt=prompt,
-            chat_history=[{'content': session_info_context, 'role': 'user'}] + self._retrieve_chat_history(channel),
-            extra_system_context=self._build_extra_system_context(channel),
-        )
-        for message in response or []:
-            self._post_ai_response(channel, message)
-
-    def _post_error_message(self, error_message: str, channel):
-        self.ensure_one()
-        response = self._generate_response(
-            prompt=f"Error '{error_message}' occured. Generate a message for the user stating that we are unable to process the request but don't mention any technical details. Perhaps also tell them to try again later.",
-            chat_history=self._retrieve_chat_history(channel),
-            extra_system_context="Do not mention any technical terms, links, or error codes in the generated message.")
+        try:
+            response = self.with_context(discuss_channel=channel)._generate_response(
+                prompt=prompt,
+                chat_history=[{'content': session_info_context, 'role': 'user'}] + self._retrieve_chat_history(channel),
+                extra_system_context=self._build_extra_system_context(channel),
+            )
+        except Exception:
+            if self.env.user._is_internal():
+                raise
+            response = [self.env._("Oops, it looks like our AI is unreachable")]
         for message in response or []:
             self._post_ai_response(channel, message)
 
@@ -533,14 +558,55 @@ class AIAgent(models.Model):
         system_messages = self._build_system_context(extra_system_context=extra_system_context)
         if rag_context := self._build_rag_context(prompt):
             system_messages.extend(rag_context)
-        return LLMApiService(env=self.env, provider=self._get_provider()).request_llm(
+        llm_response = LLMApiService(env=self.env, provider=self._get_provider()).request_llm(
             self.llm_model,
             system_messages,
             [],
             inputs=(chat_history or []) + [{'role': 'user', 'content': prompt}],
-            tools=self.topic_ids.tool_ids._get_ai_tools(),
+            tools=self.sudo().topic_ids.tool_ids._get_ai_tools(),  # sudo => internal users without admin access should be able to access tools
             temperature=TEMPERATURE_MAP[self.response_style],
         )
+        if rag_context:
+            llm_response = self._get_llm_response_with_sources(llm_response)
+
+        return llm_response
+
+    def _get_llm_response_with_sources(self, llm_response):
+        """
+        Parses inline citations (e.g., [SOURCE:210]) from each LLM message,
+        replaces them with clickable sequential superscript numbers, and enriches
+        the message content with a numbered list of corresponding source names
+        and links.
+
+        :param llm_response: The list of messages from the LLM
+        :type llm_response: list[str]
+        :return: The list of messages with the sources added
+        :rtype: list[str]
+        """
+        llm_response_with_sources = []
+        base_url = self.get_base_url()
+        link_attrs = 'target="_blank" rel="noreferrer noopener"'
+
+        for message_content in llm_response:
+            unique_attachment_ids = get_attachment_ids_from_text(message_content)
+            attachment_data = {}
+            accessible_sources = self.env['ai.agent.source']
+            if unique_attachment_ids:
+                sources = self.env['ai.agent.source'].search([
+                    ('attachment_id', 'in', unique_attachment_ids),
+                    ('agent_id', '=', self.id),
+                ])
+                accessible_sources = sources.filtered(lambda s: s.user_has_access)
+                for source in accessible_sources:
+                    attachment_data[source.attachment_id.id] = {
+                        'source_name': source.name,
+                        'url': source.url or f"{base_url}/web/content/{source.attachment_id.id}",
+                    }
+
+            new_content = apply_numeric_citations(message_content, attachment_data, link_attrs=link_attrs)
+            llm_response_with_sources.append(new_content)
+
+        return llm_response_with_sources
 
     def _retrieve_chat_history(self, discuss_channel, no_messages=20):
         chat_history = [
@@ -592,8 +658,9 @@ class AIAgent(models.Model):
         if self.sources_ids:
             provider = self._get_provider()
             embedding_model = self._get_embedding_model()
-            response = LLMApiService(env=self.env, provider=provider).get_embedding(
-                input=prompt,
+            llm_service = LLMApiService(env=self.env, provider=provider)
+            response = llm_service.get_embedding(
+                input=llm_service._format_for_embedding(content=prompt, mode="query"),
                 dimensions=self.env['ai.embedding']._get_dimensions(),
                 model=embedding_model
             )
@@ -608,19 +675,25 @@ class AIAgent(models.Model):
                 top_n=5
             )
             if similar_embeddings:
-                referenced_attachments = set()
+                embeddings_attachment_checksums = similar_embeddings.mapped('attachment_id.checksum')
+                agent_sources = self.env['ai.agent.source'].search([
+                    ('attachment_id.checksum', 'in', embeddings_attachment_checksums),
+                    ('agent_id', '=', self.id),
+                ])
+                source_map = {source.attachment_id.checksum: source for source in agent_sources}
                 for embedding in similar_embeddings:
-                    context += f"{embedding.attachment_id.name}\n{embedding.content}\n\n"
-                    if embedding.attachment_id and embedding.attachment_id.name:
-                        referenced_attachments.add(embedding.attachment_id.name)
-                referenced_sources = self.env['ai.agent.source'].search([('attachment_id.name', 'in', referenced_attachments)])
-                unaccessible_sources_names = referenced_sources.filtered(lambda s: not s.user_has_access).mapped('name')
-                accessible_referenced_sources_names = referenced_sources.filtered(lambda s: s.user_has_access).mapped('name')
-                context += f"##References:\n{', '.join(accessible_referenced_sources_names)}"
-                if unaccessible_sources_names:
-                    context += f"\n [UNACCESSIBLE_REFERENCES: {', '.join(unaccessible_sources_names)}] {PREPROMPTS['unaccessible_references']}"
-        if context:
-            messages.append(f"##Context information:\n\n{context}\n{PREPROMPTS['context']}")
+                    checksum = embedding.attachment_id.checksum
+                    agent_source = source_map[checksum]
+                    context += (
+                        f"(Source Chunk {agent_source.name})\n"
+                        f" (attachment_id: {agent_source.attachment_id.id})\n"
+                        f"{embedding.content}\n\n"
+                    )
+
+                final_context_message = f"##RAG context information:\n\n{context}"
+
+                messages.append(final_context_message)
+                messages.append(PREPROMPTS['context'])
         return messages
 
     @api.depends("sources_ids.status")
@@ -637,6 +710,12 @@ class AIAgent(models.Model):
         root = lxml.html.fromstring(rendered_html)
 
         prompt_containers = root.xpath("//div[hasclass('o_editor_prompt')]")
+
+        root_is_prompt = root in prompt_containers
+
+        if root_is_prompt:
+            root = lxml.html.fromstring(f'<div>{rendered_html}</div>')
+            prompt_containers = root.xpath("//div[hasclass('o_editor_prompt')]")
 
         if not prompt_containers:
             return Wrapper(rendered_html)
@@ -775,10 +854,11 @@ class AIAgent(models.Model):
                     current_action = self.env['ir.actions.client'].browse(action_id)
                 if current_action:
                     current_action_name = current_action.name
-                    search_view = self.env[current_action.res_model].get_view(current_action.search_view_id.id, 'search')
-                    search_view_xml = clean_search_view_xml(search_view['arch']) if search_view else ""
-                    if search_view_xml:
-                        context_lines.append(f"  {search_view_xml}")
+                    if action.type == 'ir.actions.act_window':
+                        search_view = self.env[current_action.res_model].get_view(current_action.search_view_id.id, 'search')
+                        search_view_xml = clean_search_view_xml(search_view['arch']) if search_view else ""
+                        if search_view_xml:
+                            context_lines.append(f"  {search_view_xml}")
 
                 context_lines.append(
                     f'  <current_view id="{current_view_info.get("view_id")}" '

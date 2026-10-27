@@ -12,21 +12,22 @@
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 # Odoo Translation Bot <c3p@odoo.com>, 2025.
+# Alin Ilie <alin.ilie@logit-solutions.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-27 18:17+0000\n"
-"Last-Translator: Odoo Translation Bot <c3p@odoo.com>\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2025-12-06 09:54+0000\n"
+"Last-Translator: Alin Ilie <alin.ilie@logit-solutions.com>\n"
 "Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/"
 "marketing_automation/ro/>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : "
-"(n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
 "X-Generator: Weblate 5.14.3\n"
 
 #. module: marketing_automation
@@ -97,7 +98,7 @@ msgstr "<i class=\"fa fa-check-circle\"/> Sărit"
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_form
 msgid "<i class=\"fa fa-check-circle\"/> Clicked"
-msgstr "<i class=\"fa fa-check-circle\"/> Clicked"
+msgstr ""
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_form
@@ -172,9 +173,9 @@ msgid ""
 "Activity\"/>"
 msgstr ""
 "<i data-trigger-type=\"activity\" class=\"fa fa-code-fork fa-rotate-180 fa-"
-"flip-vertical o_ma_text_processed o_add_child_activity text-success\" title="
-"\"Adaugă altă activitate\" role=\"img\" aria-label=\"Adaugă altă activitate\""
-"/>"
+"flip-vertical o_ma_text_processed o_add_child_activity text-success\" "
+"title=\"Adaugă altă activitate\" role=\"img\" aria-label=\"Adaugă altă "
+"activitate\"/>"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_view_form
@@ -201,12 +202,12 @@ msgid ""
 "filter\"/>\n"
 "                                                        </span>"
 msgstr ""
-"<span role=\"img\" title=\"Grafic\" aria-label=\"Grafic\" class="
-"\"o_ma_activity_tab active\" data-tab-type=\"graph\">\n"
+"<span role=\"img\" title=\"Grafic\" aria-label=\"Grafic\" "
+"class=\"o_ma_activity_tab active\" data-tab-type=\"graph\">\n"
 "    <i class=\"fa fa-pie-chart\"/>\n"
 "</span>\n"
-"<span title=\"Filtru\" role=\"img\" aria-label=\"Filtru\" class="
-"\"o_ma_activity_tab\" data-tab-type=\"filter\">\n"
+"<span title=\"Filtru\" role=\"img\" aria-label=\"Filtru\" "
+"class=\"o_ma_activity_tab\" data-tab-type=\"filter\">\n"
 "    <i class=\"fa fa-filter\"/>\n"
 "</span>"
 
@@ -737,6 +738,12 @@ msgstr "Eroare! Nu puteți crea ierarhie recursivă a activității."
 #. module: marketing_automation
 #. odoo-python
 #: code:addons/marketing_automation/models/marketing_activity.py:0
+msgid "Error! You can't modify the hierarchy of an active Activity."
+msgstr ""
+
+#. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/marketing_activity.py:0
 msgid "Exception in mass mailing: %s"
 msgstr "Excepție în trimitere mail in masă: %s"
 
@@ -1235,6 +1242,14 @@ msgid "Offer free catalog"
 msgstr "Oferă catalog gratuit"
 
 #. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/mailing_mailing.py:0
+msgid ""
+"Oops! You can't retry sending emails from inside a Marketing Automation "
+"campaign."
+msgstr ""
+
+#. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
 msgid "Opened"
 msgstr "Deschis(a)"
@@ -1378,6 +1393,12 @@ msgstr "Înregistrare model"
 
 #. module: marketing_automation
 #. odoo-python
+#: code:addons/marketing_automation/models/marketing_campaign.py:0
+msgid "Record no longer matches campaign filter"
+msgstr ""
+
+#. module: marketing_automation
+#. odoo-python
 #: code:addons/marketing_automation/models/marketing_activity.py:0
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_activity__rejected
 #: model:ir.model.fields.selection,name:marketing_automation.selection__marketing_trace__state__rejected
@@ -1445,6 +1466,11 @@ msgstr "Responsabil"
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_form
 msgid "Run"
 msgstr "Execută"
+
+#. module: marketing_automation
+#: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
+msgid "Run Activities"
+msgstr ""
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
@@ -1613,7 +1639,7 @@ msgstr "Stare"
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_form
 msgid "State: {{0}}"
-msgstr ""
+msgstr "Stare: {{0}}"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_activity__statistics_graph_data
@@ -1706,6 +1732,12 @@ msgstr "Urmărire Test"
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
 msgid "Tests"
 msgstr "Teste"
+
+#. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/marketing_campaign.py:0
+msgid "The filter domain is using unauthorized fields."
+msgstr ""
 
 #. module: marketing_automation
 #. odoo-python
@@ -1900,8 +1932,8 @@ msgid ""
 "Please modify one of those activities before saving."
 msgstr ""
 "Încercați să setați activitatea „%(parent_activity)s” ca „%(parent_type)s” "
-"în timp ce activitatea copil „%(activity)s” are tipul de declanșator "
-"„%(trigger_type)s”.\n"
+"în timp ce activitatea copil „%(activity)s” are tipul de declanșator „%"
+"(trigger_type)s”.\n"
 "Vă rugăm să modificați una dintre aceste activități înainte de a salva."
 
 #. module: marketing_automation

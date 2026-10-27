@@ -20,7 +20,7 @@ defineHrModels(); // FIXME: somehow test non-deterministically needs "hr.employe
 test("can handle command and disable mentions in AI composer", async () => {
     const pyEnv = await startServer();
     const channelId = pyEnv["discuss.channel"].create({
-        channel_type: "ai_composer",
+        channel_type: "ai_chat",
         name: "my-ai-composer",
     });
     pyEnv["discuss.channel"].create({ name: "my-channel" });

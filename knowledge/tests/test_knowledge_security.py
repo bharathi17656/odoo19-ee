@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import exceptions
+from odoo import Command, exceptions
 from odoo.addons.knowledge.tests.common import KnowledgeArticlePermissionsCase
 from odoo.addons.mail.tests.common import mail_new_test_user
 from odoo.tests.common import tagged, users
@@ -69,6 +69,25 @@ class TestKnowledgeSecurity(KnowledgeArticlePermissionsCase):
                         "ACLs: should be accessible due to explicit 'read' member permission")
         self.assertTrue(article_accessible.is_user_favorite)
 
+        new_article = self.env["knowledge.article"].create({
+            "article_member_ids": [
+                (0, 0, {
+                    "partner_id": self.env.user.partner_id.id,
+                    "permission": "write",
+                }),
+            ],
+            "name": "New Article",
+            "internal_permission": "none",
+        })
+        self.assertTrue(new_article)
+
+        self.env.ref("knowledge.access_knowledge_article_portal").sudo().write({"perm_create": False})
+        with self.assertRaises(exceptions.AccessError):
+            self.env["knowledge.article"].create({
+                "name": "New Article",
+                "internal_permission": "none",
+            })
+
         # FAVORITES
         favs = self.env['knowledge.article.favorite'].search([])
         self.assertEqual(len(favs), 1)
@@ -81,12 +100,13 @@ class TestKnowledgeSecurity(KnowledgeArticlePermissionsCase):
 
         # MEMBERS
         my_members = self.env['knowledge.article.member'].search([])
-        self.assertEqual(len(my_members), 4)
+        self.assertEqual(len(my_members), 5)
         self.assertEqual(
             my_members, (
                 self.article_read_contents[0] |
                 self.article_read_contents[1] |
-                self.article_write_contents[2]
+                self.article_write_contents[2] |
+                new_article
             ).article_member_ids,
             msg="Portal can read all members from articles he has access to"
         )
@@ -222,6 +242,23 @@ class TestKnowledgeSecurity(KnowledgeArticlePermissionsCase):
                                msg="ACLs: 'none' internal permission"):
             article_hidden.body  # access body should trigger acls
 
+        new_article = self.env["knowledge.article"].create({
+            "article_member_ids": [
+                (0, 0, {
+                    "partner_id": self.env.user.partner_id.id,
+                    "permission": "write",
+                }),
+            ],
+            "name": "New Article",
+        })
+        self.assertTrue(new_article)
+
+        self.env.ref("knowledge.access_knowledge_article_user").sudo().write({"perm_create": False})
+        with self.assertRaises(exceptions.AccessError):
+            self.env["knowledge.article"].create({
+                "name": "New Article",
+            })
+
         # FAVORITES
         my_favs = self.env['knowledge.article.favorite'].search([])
         self.assertEqual(
@@ -265,6 +302,35 @@ class TestKnowledgeSecurity(KnowledgeArticlePermissionsCase):
         cover.write({'attachment_url': '/'})
         self.assertEqual(cover.attachment_url, '/')
         cover.unlink()
+
+    @mute_logger('odoo.addons.base.models.ir_model', 'odoo.addons.base.models.ir_rule')
+    @users('employee')
+    def test_create_private_article_with_message(self):
+        target_article = self.article_read_contents[3]
+        message = target_article.with_user(self.user_admin).message_post(
+            body='Original message',
+        ).with_user(self.env.user)
+
+        with self.assertRaises(exceptions.AccessError):
+            message.write({'body': 'Updated message'})
+
+        with self.assertRaises(exceptions.AccessError):
+            self.env['knowledge.article'].create({
+                'name': 'Private Article',
+                'internal_permission': 'none',
+                'article_member_ids': [Command.create({
+                    'partner_id': self.env.user.partner_id.id,
+                    'permission': 'write',
+                })],
+                'message_ids': [Command.update(message.id, {
+                    'body': 'Updated message',
+                })],
+            })
+
+        self.assertEqual(
+            message.with_user(self.user_admin).body,
+            '<p>Original message</p>',
+        )
 
     @mute_logger('odoo.addons.base.models.ir_model', 'odoo.addons.base.models.ir_rule')
     @users('employee')

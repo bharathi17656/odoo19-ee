@@ -24,6 +24,7 @@ export class PosOrderline extends PosOrderlineAccounting {
         this.uiState = {
             hasChange: true,
             savedQuantity: 0,
+            oldQty: this.qty,
         };
     }
 
@@ -138,12 +139,18 @@ export class PosOrderline extends PosOrderlineAccounting {
                 )?.custom_value || "";
 
             if (attrValue.attribute_id.display_type === "multi") {
-                if (!acc[attrValue.attribute_id.id]) {
-                    acc[attrValue.attribute_id.id] = { selected: [], custom_value: customValue };
+                if (!acc[attrValue.attribute_line_id.id]) {
+                    acc[attrValue.attribute_line_id.id] = {
+                        selected: [],
+                        custom_value: customValue,
+                    };
                 }
-                acc[attrValue.attribute_id.id].selected.push(attrValue);
+                acc[attrValue.attribute_line_id.id].selected.push(attrValue);
             } else {
-                acc[attrValue.attribute_id.id] = { selected: attrValue, custom_value: customValue };
+                acc[attrValue.attribute_line_id.id] = {
+                    selected: attrValue,
+                    custom_value: customValue,
+                };
             }
             return acc;
         }, {});
@@ -207,9 +214,14 @@ export class PosOrderline extends PosOrderlineAccounting {
                 pos_order_line_id: this,
             });
         }
-
+        const lotsExist = newPackLotLines.length || this.pack_lot_ids.length;
         // Set the qty of the line based on number of pack lots.
-        if (!this.product_id.to_weight && setQuantity) {
+        if (
+            !this.product_id.to_weight &&
+            setQuantity &&
+            lotsExist &&
+            this.product_id.tracking === "serial"
+        ) {
             this.setQuantityByLot();
         }
     }
@@ -230,11 +242,11 @@ export class PosOrderline extends PosOrderlineAccounting {
     // product's unity of measure properties. Quantities greater than zero will not get
     // rounded to zero
     setQuantity(quantity, keep_price) {
+        this.uiState.oldQty = this.qty;
         if (this.order_id.preset_id?.is_return) {
             quantity = -Math.abs(quantity);
         }
 
-        this.order_id.assertEditable();
         const quant =
             typeof quantity === "number" ? quantity : parseFloat("" + (quantity ? quantity : 0));
 
@@ -287,7 +299,9 @@ export class PosOrderline extends PosOrderlineAccounting {
                     this,
                     related_lines
                 );
-                related_lines.forEach((line) => line.setUnitPrice(price));
+                related_lines
+                    .filter((line) => line.price_type === "original")
+                    .forEach((line) => line.setUnitPrice(price));
             } else {
                 this.setUnitPrice(
                     productTemplate.getPrice(
@@ -300,6 +314,10 @@ export class PosOrderline extends PosOrderlineAccounting {
                 );
             }
         }
+        for (const comboLine of this.combo_line_ids) {
+            // If each combo contains 2 qty of a product, we wanna keep this ratio after setting the new quantity on the parent product.
+            comboLine.setQuantity((comboLine.qty / this.uiState.oldQty || 1) * quantity, true);
+        }
         return true;
     }
 
@@ -308,14 +326,10 @@ export class PosOrderline extends PosOrderlineAccounting {
         if (this.qty < 0) {
             valid_lots_quantity = -valid_lots_quantity;
         }
-        this.setQuantity(valid_lots_quantity);
+        this.setQuantity(valid_lots_quantity, !!this.combo_parent_id);
     }
 
     hasValidProductLot() {
-        if (this.pack_lot_ids.length > 0) {
-            return true;
-        }
-
         const valid_product_lot = this.getValidLots();
         const lotsRequired = this.product_id.tracking == "serial" ? Math.abs(this.qty) : 1;
         return lotsRequired === valid_product_lot.length;
@@ -327,14 +341,13 @@ export class PosOrderline extends PosOrderlineAccounting {
         );
         const price = ProductPrice.round(this.price_unit || 0);
         const product = orderline.getProduct();
-        let order_line_price = product.getPrice(
+        const order_line_price = product.getPrice(
             orderline.order_id.pricelist_id,
             this.getQuantity(),
             0,
             false,
             product
         );
-        order_line_price = this.currency.round(order_line_price);
 
         const isSameCustomerNote =
             (Boolean(orderline.getCustomerNote()) === false &&
@@ -346,9 +359,13 @@ export class PosOrderline extends PosOrderlineAccounting {
             orderline.getNote() === this.getNote() &&
             this.getProduct().id === orderline.getProduct().id &&
             this.isPosGroupable() &&
-            // don't merge discounted orderlines
-            this.getDiscount() === 0 &&
-            this.currency.isZero(price - order_line_price - orderline.getPriceExtra()) &&
+            this.getDiscount() === orderline.getDiscount() &&
+            this.price_type === orderline.price_type &&
+            this.currency.isZero(
+                this.currency.round(price) -
+                    this.currency.round(order_line_price) -
+                    orderline.getPriceExtra()
+            ) &&
             !this.isLotTracked() &&
             this.full_product_name === orderline.full_product_name &&
             isSameCustomerNote &&
@@ -379,16 +396,26 @@ export class PosOrderline extends PosOrderlineAccounting {
         });
     }
 
-    setUnitPrice(price) {
-        const ProductPrice = this.models["decimal.precision"].find(
+    get unitPricePrecision() {
+        const productPrice = this.models["decimal.precision"].find(
             (dp) => dp.name === "Product Price"
         );
+        if (
+            this.extra_tax_data?.price_unit !== undefined &&
+            this.currency.precision < productPrice.precision
+        ) {
+            return this.currency;
+        }
+        return productPrice;
+    }
+
+    setUnitPrice(price) {
         const parsed_price = !isNaN(price)
             ? price
             : isNaN(parseFloat(price))
             ? 0
             : parseFloat("" + price);
-        this.price_unit = ProductPrice.round(parsed_price || 0);
+        this.price_unit = this.unitPricePrecision.round(parsed_price || 0);
     }
 
     displayDiscountPolicy() {
@@ -421,6 +448,11 @@ export class PosOrderline extends PosOrderlineAccounting {
     isTipLine() {
         const tipProduct = this.config.tip_product_id;
         return tipProduct && this.product_id.id === tipProduct.id;
+    }
+
+    isGlobalDiscountLine() {
+        const discountProduct = this.config.discount_product_id;
+        return discountProduct && this.product_id.id === discountProduct.id;
     }
 
     getAllLinesInCombo() {
@@ -457,6 +489,10 @@ export class PosOrderline extends PosOrderlineAccounting {
 
     getDiscount() {
         return this.discount || 0;
+    }
+
+    isDiscountable() {
+        return !this.isTipLine();
     }
 
     // FIXME all below should be removed
@@ -513,7 +549,7 @@ export class PosOrderline extends PosOrderlineAccounting {
     get refundedQty() {
         return (
             this.refund_orderline_ids?.reduce(
-                (acc, line) => (line.order_id.state !== "cancel" ? acc - line.qty : acc),
+                (acc, line) => (line.order_id?.state !== "cancel" ? acc - line.qty : acc),
                 0
             ) || 0
         );

@@ -9,7 +9,7 @@ import websocket
 from threading import Thread
 
 from odoo.addons.iot_drivers import main
-from odoo.addons.iot_drivers.tools import helpers
+from odoo.addons.iot_drivers.tools import helpers, upgrade
 from odoo.addons.iot_drivers.server_logger import close_server_log_sender_handler
 from odoo.addons.iot_drivers.webrtc_client import webrtc_client
 
@@ -104,6 +104,8 @@ class WebsocketClient(Thread):
                     ws.close()
                     helpers.odoo_restart()
                 case 'webrtc_offer':
+                    if not webrtc_client:
+                        continue
                     answer = webrtc_client.offer(payload['offer'])
                     send_to_controller({
                         'iot_box_identifier': helpers.get_identifier(),
@@ -133,6 +135,11 @@ class WebsocketClient(Thread):
                             'wan_quality': helpers.check_network("www.odoo.com"),
                         }
                     })
+                case 'bundle_changed':
+                    # This message is sent by the DB whenever the web JS asset bundle changes.
+                    # While this is a bit of a hack we use this message to check if the DB has been upgraded,
+                    # since we know the bundle will always change in this situation.
+                    upgrade.check_git_branch()
                 case _:
                     continue
 
@@ -154,7 +161,7 @@ class WebsocketClient(Thread):
         self.websocket_url = urllib.parse.urlunsplit((scheme, url_parsed.netloc, 'websocket', '', ''))
         self.db_name = helpers.get_conf('db_name') or ''
         self.session_id = ''
-        super().__init__()
+        super().__init__(daemon=True)
 
     def run(self):
         if self.db_name:

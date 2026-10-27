@@ -20,8 +20,8 @@
             </ControlPanel>
              <div class="o_content">
                 <div id="warnings" class="warnings d-print-none"/>
-                <div class="mx-auto fit-content w-print-100">
-                    <table class="table table-borderless table-hover w-print-100">
+                <div class="fit-content w-print-100">
+                    <table class="table table-borderless table-hover w-print-100 mx-auto">
                         <tbody>
                             <t t-call="stock_account.StockValuationReport.InitialBalance"/>
                             <t t-if="data.inventory_loss" t-call="stock_account.StockValuationReport.InventoryLoss"/>
@@ -43,9 +43,10 @@
         <StockValuationReportLine
             label.translate="Initial Balance"
             level="0"
-            onClickMethod.bind="openAccountMoves"
+            onClickMethod="data.initial_balance.lines.length ? openAccountMoves.bind(this) : undefined"
             sublines="data.initial_balance.lines"
-            value="data.initial_balance.value"/>
+            value="data.initial_balance.value"
+        />
         <t t-call="stock_account.StockValuationReport.EmptyLine"/>
     </t>
 
@@ -63,7 +64,7 @@
         <StockValuationReportLine
             label.translate="Ending Stock"
             level="0"
-            onClickMethod.bind="openStockReport"
+            onClickMethod="data.ending_stock.lines.length ? openStockReport.bind(this) : undefined"
             sublines="data.ending_stock.lines"
             value="data.ending_stock.value"/>
         <t t-call="stock_account.StockValuationReport.EmptyLine"/>

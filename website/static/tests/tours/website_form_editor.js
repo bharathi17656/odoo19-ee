@@ -545,6 +545,11 @@ registerWebsitePreviewTour(
             run: "click",
         },
         {
+            content: "Verify that the button options do not have clone/remove/save buttons.",
+            trigger:
+                "div[data-container-title='Button'] .options-container-header:not(:has(.oe_snippet_remove, .oe_snippet_clone, .oe_snippet_save))",
+        },
+        {
             content: "Click on Edit Link in Popover",
             trigger: ".o-we-linkpopover .o_we_edit_link",
             run: "click",
@@ -556,7 +561,7 @@ registerWebsitePreviewTour(
         },
         {
             trigger: ".o-we-linkpopover select[name=link_style_shape]",
-            run: "select rounded-circle",
+            run: "select rounded-pill",
         },
         {
             trigger: ".o-we-linkpopover select[name='link_style_size']",
@@ -568,7 +573,7 @@ registerWebsitePreviewTour(
         },
         {
             content: "Check the resulting button",
-            trigger: ":iframe .s_website_form_send.btn.btn-sm.btn-custom.rounded-circle",
+            trigger: ":iframe .s_website_form_send.btn.btn-sm.btn-custom.rounded-pill",
         },
         // Add a default value to a auto-fillable field.
         ...selectFieldByLabel("Your Name"),

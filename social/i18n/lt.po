@@ -18,13 +18,14 @@
 # Arunas V. <arunas@devoro.com>, 2023
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-16 17:59+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-10 17:44+0000\n"
+"PO-Revision-Date: 2026-10-05 22:33+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "social/lt/>\n"
 "Language: lt\n"
@@ -32,9 +33,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < "
-"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 :"
-" n % 1 != 0 ? 2: 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 "
+": n % 1 != 0 ? 2: 3);\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: social
 #: model:ir.model.fields,field_description:social.field_social_media__accounts_count
@@ -45,7 +46,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/social/models/social_post.py:0
 msgid "%(media_name)s (max %(max_chars)s chars)"
-msgstr ""
+msgstr "%(media_name)s (maks. %(max_chars)s simbolių)"
 
 #. module: social
 #. odoo-javascript
@@ -77,7 +78,7 @@ msgstr ""
 #. module: social
 #: model_terms:ir.ui.view,arch_db:social.social_http_error_view
 msgid "<i class=\"oi oi-arrow-left\"/> Go back to Odoo"
-msgstr ""
+msgstr "<i class=\"oi oi-arrow-left\"/> Grįžti į „Odoo“"
 
 #. module: social
 #: model_terms:web_tour.tour,rainbow_man_message:social.social_tour
@@ -85,6 +86,8 @@ msgid ""
 "<strong>Congrats! Come back in a few minutes to check your statistics.</"
 "strong>"
 msgstr ""
+"<strong>Sveikiname! Grįžkite po kelių minučių, kad patikrintumėte savo "
+"statistiką.</strong>"
 
 #. module: social
 #: model:ir.model.fields,field_description:social.field_social_media__message_needaction
@@ -279,7 +282,7 @@ msgstr "Atšaukti"
 #. odoo-javascript
 #: code:addons/social/static/src/js/tours/social.js:0
 msgid "Choose which <b>account</b> you would like to link first."
-msgstr ""
+msgstr "Pasirinkite, kurią „ <b>“ paskyrą</b> norite susieti pirmiausia."
 
 #. module: social
 #. odoo-javascript
@@ -295,6 +298,12 @@ msgstr "Paspaudimai"
 #. module: social
 #: model_terms:ir.ui.view,arch_db:social.social_post_view_kanban
 msgid "Clicks:"
+msgstr ""
+
+#. module: social
+#. odoo-javascript
+#: code:addons/social/static/src/xml/social_templates.xml:0
+msgid "Comment GIF"
 msgstr ""
 
 #. module: social
@@ -617,7 +626,7 @@ msgstr ""
 #. module: social
 #: model:ir.model.fields,field_description:social.field_social_account__social_account_handle
 msgid "Handle / Short Name"
-msgstr ""
+msgstr "Vartotojo vardas / Trumpas vardas"
 
 #. module: social
 #. odoo-javascript
@@ -878,7 +887,7 @@ msgstr ""
 #. module: social
 #: model:ir.model.fields,help:social.field_social_post__account_allowed_ids
 msgid "List of the accounts which can be selected for this post."
-msgstr ""
+msgstr "Sąrašas paskyrų, kurias galima pasirinkti šiam įrašui."
 
 #. module: social
 #: model:ir.model.fields,field_description:social.field_social_post__live_posts_by_media
@@ -1364,6 +1373,8 @@ msgid ""
 "Selected accounts (%(account_list)s) do not match the selected company (%"
 "(company)s)"
 msgstr ""
+"Pasirinktos paskyros (%(account_list)s) neatitinka pasirinktos įmonės (%"
+"(company)s)"
 
 #. module: social
 #: model:ir.model.fields.selection,name:social.selection__social_post__post_method__now
@@ -1603,7 +1614,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:social.field_social_stream__stream_type_type
 #: model:ir.model.fields,field_description:social.field_social_stream_type__stream_type
 msgid "Stream type name (technical)"
-msgstr ""
+msgstr "Srauto tipo pavadinimas (techninis)"
 
 #. module: social
 #: model:ir.model.fields,field_description:social.field_social_media__has_streams
@@ -1614,6 +1625,8 @@ msgstr ""
 #: model:ir.model.fields,help:social.field_social_post__live_post_ids
 msgid "Sub-posts that will be published on each selected social accounts."
 msgstr ""
+"Atskiri įrašai, kurie bus paskelbti kiekvienoje pasirinktoje socialinės "
+"žiniasklaidos paskyroje."
 
 #. module: social
 #. odoo-javascript
@@ -1660,6 +1673,7 @@ msgstr ""
 #: model:ir.model.fields,help:social.field_social_post__media_ids
 msgid "The social medias linked to the selected social accounts."
 msgstr ""
+"Socialinės medijos, susietos su pasirinktomis socialinių tinklų paskyromis."
 
 #. module: social
 #: model:ir.model.fields,field_description:social.field_social_post__has_post_errors

@@ -5,13 +5,14 @@
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 # DeepL <noreply-mt-deepl@weblate.org>, 2025.
 # Odoo Turkish Import <dyki+tr@odoo.com>, 2025.
+# "Deniz Guvener Unal (degu)" <degu@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:40+0000\n"
-"PO-Revision-Date: 2025-11-21 14:20+0000\n"
-"Last-Translator: Odoo Turkish Import <dyki+tr@odoo.com>\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2026-04-09 11:26+0000\n"
+"Last-Translator: \"Deniz Guvener Unal (degu)\" <degu@odoo.com>\n"
 "Language-Team: Turkish <https://translate.odoo.com/projects/odoo-19/equity/"
 "tr/>\n"
 "Language: tr\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__securities
@@ -140,9 +141,9 @@ msgstr ""
 "                    <p> Merhaba <t t-out=\"ctx.get('holder_name')\"/>,<br/>\n"
 "                        En son işlemlerinizi ve değerlemelerinizi aşağıdaki "
 "bağlantıda bulabilirsiniz: <br/>\n"
-"                        <a t-attf-href="
-"\"/my/equity?access_token={{ctx.get('equity_access_token')}}\" class="
-"\"btn btn-primary\">Show Equity</a> <br/> <br/>\n"
+"                        <a t-attf-href=\"/my/equity?"
+"access_token={{ctx.get('equity_access_token')}}\" class=\"btn btn-"
+"primary\">Show Equity</a> <br/> <br/>\n"
 "                        En iyisi,\n"
 "                       <t t-if=\"user_id.signature\">\n"
 "                            <br/>--<br/>\n"
@@ -185,9 +186,9 @@ msgstr ""
 "şirketinin sermayesinin veya oy haklarının en az %25'ine sahip olması veya "
 "kontrol etmesi. <br/> <br/>\n"
 "                        Lütfen UBO talebini doldurun:<br/>\n"
-"                        <a t-attf-href="
-"\"/my/ubo?{{object._get_equity_url_params()}}\" class=\"btn btn-primary\""
-">UBO doldurun</a> <br/> <br/>\n"
+"                        <a t-attf-href=\"/my/ubo?"
+"{{object._get_equity_url_params()}}\" class=\"btn btn-primary\">UBO "
+"doldurun</a> <br/> <br/>\n"
 "                        Teşekkür ederim,\n"
 "                       <t t-if=\"user_id.signature\">\n"
 "                            <br/>--<br/>\n"
@@ -204,8 +205,8 @@ msgid ""
 "<i class=\"fa fa-envelope ms-2 mt-1\" aria-label=\"Email Address\" "
 "title=\"Email Address\"/>"
 msgstr ""
-"<i class=\"fa fa-envelope ms-2 mt-1\" aria-label=\"Email Address\" title="
-"\"Email Address\"/>"
+"<i class=\"fa fa-envelope ms-2 mt-1\" aria-label=\"Email Address\" "
+"title=\"Email Address\"/>"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_help
@@ -213,8 +214,8 @@ msgid ""
 "<i class=\"fa fa-phone ms-2 mt-1\" aria-label=\"Phone Number\" title=\"Phone "
 "Number\"/>"
 msgstr ""
-"<i class=\"fa fa-phone ms-2 mt-1\" aria-label=\"Phone Number\" title="
-"\"Phone Number\"/>"
+"<i class=\"fa fa-phone ms-2 mt-1\" aria-label=\"Phone Number\" title=\"Phone "
+"Number\"/>"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_kanban
@@ -222,8 +223,8 @@ msgid ""
 "<i title=\"To\" class=\"fa fa-fw fa-arrow-right mx-1\" "
 "invisible=\"transaction_type != 'exercise'\"/>"
 msgstr ""
-"<i title=\"To\" class=\"fa fa-fw fa-arrow-right mx-1\" invisible="
-"\"transaction_type != 'exercise'\"/>"
+"<i title=\"To\" class=\"fa fa-fw fa-arrow-right mx-1\" "
+"invisible=\"transaction_type != 'exercise'\"/>"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_kanban
@@ -231,8 +232,8 @@ msgid ""
 "<i title=\"To\" class=\"fa fa-fw fa-arrow-right mx-1\" "
 "invisible=\"transaction_type != 'transfer'\"/>"
 msgstr ""
-"<i title=\"To\" class=\"fa fa-fw fa-arrow-right mx-1\" invisible="
-"\"transaction_type != 'transfer'\"/>"
+"<i title=\"To\" class=\"fa fa-fw fa-arrow-right mx-1\" "
+"invisible=\"transaction_type != 'transfer'\"/>"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_view_partner_form
@@ -250,8 +251,8 @@ msgid ""
 "<span> Shareholder<span invisible=\"equity_shareholders_count == 1\">s</"
 "span></span>"
 msgstr ""
-"<span> Hissedar<span invisible=\"equity_shareholders_count == 1\""
-">s</span></span>"
+"<span> Hissedar<span invisible=\"equity_shareholders_count == 1\">s</span></"
+"span>"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_dashboard_res_partner
@@ -320,6 +321,12 @@ msgid ""
 msgstr ""
 "Borsada işlem gören bir şirket: hisseleri piyasada işlem gören bir şirket "
 "Avrupa Ekonomik Alan Üye Devletleri"
+
+#. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_transaction.py:0
+msgid "A partner cannot have transactions in different currencies."
+msgstr ""
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
@@ -448,6 +455,11 @@ msgid "CEO"
 msgstr "CEO"
 
 #. module: equity
+#: model:ir.model.fields,field_description:equity.field_equity_transaction__can_change_currency
+msgid "Can Change Currency"
+msgstr ""
+
+#. module: equity
 #. odoo-python
 #: code:addons/equity/models/equity_transaction.py:0
 msgid "Can only exercise options, please select an options class"
@@ -465,6 +477,12 @@ msgstr "İptal"
 msgid "Cannot change security class type because it has linked transactions"
 msgstr ""
 "Bağlantılı işlemlere sahip olduğu için güvenlik sınıfı türü değiştirilemiyor"
+
+#. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_ubo.py:0
+msgid "Cannot create new UBO for an existing holder"
+msgstr ""
 
 #. module: equity
 #. odoo-python
@@ -501,6 +519,7 @@ msgid "Clear"
 msgstr "Temizle"
 
 #. module: equity
+#: model:ir.model.fields,field_description:equity.field_equity_cap_table__company_id
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__partner_id
 #: model:ir.model.fields,field_description:equity.field_equity_ubo__partner_id
 #: model:ir.model.fields,field_description:equity.field_equity_valuation__partner_id
@@ -524,6 +543,13 @@ msgstr "Şirket - Kedi 2. Diğer yollarla kontrol"
 #: model:ir.model.fields.selection,name:equity.selection__equity_ubo__control_method__co_3
 msgid "Company - Cat 3. Executive officer"
 msgstr "Şirket - Kat 3. İcra memuru"
+
+#. module: equity
+#: model:ir.model.fields,help:equity.field_equity_transaction__company_id
+#: model:ir.model.fields,help:equity.field_equity_ubo__company_id
+#: model:ir.model.fields,help:equity.field_equity_valuation__company_id
+msgid "Company to which this record is visible"
+msgstr ""
 
 #. module: equity
 #: model:ir.ui.menu,name:equity.menu_equity_configuration
@@ -639,8 +665,8 @@ msgid ""
 "Definitions: \"beneficial owners\", \"control\", \"shareholder holding 25% "
 "or more\", \"decision makers\""
 msgstr ""
-"Tanımlar: \"intifa hakkı sahipleri\", \"kontrol\", "
-"\"25% or daha fazla hisseye sahip hissedar\", \"karar alıcılar\""
+"Tanımlar: \"intifa hakkı sahipleri\", \"kontrol\", \"25% or daha fazla "
+"hisseye sahip hissedar\", \"karar alıcılar\""
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__destination_class_id
@@ -1403,6 +1429,12 @@ msgid "Partner"
 msgstr "İş Ortağı"
 
 #. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_ubo.py:0
+msgid "Partner is not allowed to fill UBO form"
+msgstr ""
+
+#. module: equity
 #. odoo-javascript
 #: code:addons/equity/static/src/components/ubo_form/holder_edit_dialog.xml:0
 #: model:ir.model.fields,help:equity.field_res_partner__ubo_pep
@@ -1657,9 +1689,9 @@ msgid ""
 "issuance transactions because that is a strike price."
 msgstr ""
 "\"Menkul Kıymet Sayısı\" toplamı \"Opsiyon Kullanım\" işlemlerini "
-"saymamaktadır (\"Opsiyon İhracı\" sırasında sayıldıkları için). "
-"\"İşlem Fiyatı\" toplamı, opsiyon ihraç işlemlerinin fiyatlarını "
-"saymamaktadır çünkü bu bir kullanım fiyatıdır."
+"saymamaktadır (\"Opsiyon İhracı\" sırasında sayıldıkları için). \"İşlem "
+"Fiyatı\" toplamı, opsiyon ihraç işlemlerinin fiyatlarını saymamaktadır çünkü "
+"bu bir kullanım fiyatıdır."
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
@@ -1746,7 +1778,6 @@ msgstr "Toplam Değer"
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_valuation__event__transaction
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_form
-#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_form
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_search
 msgid "Transaction"
 msgstr "İşlem"
@@ -1767,7 +1798,6 @@ msgstr "İşlem Tipi"
 #: model:ir.actions.act_window,name:equity.action_equity_transaction
 #: model:ir.ui.menu,name:equity.menu_equity_ownership_transactions
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_list
-#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_list
 msgid "Transactions"
 msgstr "İşlemler"
 
@@ -1883,12 +1913,14 @@ msgstr "UBO Formunu Yükle"
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__valuation
 #: model:ir.model.fields,field_description:equity.field_equity_valuation__valuation
 #: model:ir.ui.menu,name:equity.menu_equity_reporting_valuation
+#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_form
 msgid "Valuation"
 msgstr "Değerleme"
 
 #. module: equity
 #: model:ir.actions.act_window,name:equity.action_equity_valuation
 #: model:ir.ui.menu,name:equity.menu_equity_ownership_valuations
+#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_list
 msgid "Valuations"
 msgstr "Değerlemeler"
 
@@ -1901,6 +1933,13 @@ msgstr "Hakediş süresi, son egzersiz tarihi, vb."
 #: model:res.groups,name:equity.group_equity_viewer
 msgid "Viewer"
 msgstr "Görüntüleyici"
+
+#. module: equity
+#: model:ir.model.fields,field_description:equity.field_equity_transaction__company_id
+#: model:ir.model.fields,field_description:equity.field_equity_ubo__company_id
+#: model:ir.model.fields,field_description:equity.field_equity_valuation__company_id
+msgid "Visible to"
+msgstr ""
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__votes
@@ -1976,6 +2015,14 @@ msgid ""
 msgstr ""
 "Hisseleri veya oy hakları 25% of'den az olan herhangi bir hissedarı "
 "çıkarabilirsiniz."
+
+#. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_transaction.py:0
+msgid ""
+"You cannot change the equity currency because this partner already has "
+"existing transactions."
+msgstr ""
 
 #. module: equity
 #. odoo-javascript

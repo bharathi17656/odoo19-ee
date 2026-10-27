@@ -72,7 +72,10 @@ export class DocumentsKanbanRenderer extends DocumentsRendererMixin(KanbanRender
             model: this.env.model,
             targetSelector: ".o_kanban_record.o_folder_record",
             elements: ".o_kanban_record",
-            preventDrag: () => this.env.searchModel.getSelectedFolderId() === "TRASH",
+            preventDrag: () =>
+                this.isMobile ||
+                this.env.searchModel.getSelectedFolderId() === "TRASH" ||
+                this.getIsDomainSelected(),
             onTargetPointerEnter: ({ addClass, target, isInvalid }) => {
                 addClass(target, isInvalid ? "o_drag_invalid" : "o_drag_hover");
             },

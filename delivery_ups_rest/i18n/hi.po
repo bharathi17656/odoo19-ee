@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.4+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
 "PO-Revision-Date: 2025-11-14 15:22+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Hindi <https://translate.odoo.com/projects/odoo-19/"
@@ -79,6 +79,17 @@ msgid "Create an app"
 msgstr ""
 
 #. module: delivery_ups_rest
+#. odoo-python
+#: code:addons/delivery_ups_rest/models/ups_request.py:0
+msgid ""
+"Detected a problem when validating delivery %(delivery_name)s. Invoicing "
+"address of the commercial invoice has been defaulted to %(ship_to_partner)s "
+"instead of %(sold_to_partner)s to avoid the following error from UPS: \"The "
+"Sold To party's country code must be the same as the Ship To party's country "
+"code with the exception of Canada and satellite countries.\""
+msgstr ""
+
+#. module: delivery_ups_rest
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_delivery_carrier__display_name
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_payment_provider__display_name
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_res_partner__display_name
@@ -140,8 +151,8 @@ msgid ""
 "If checked, ecommerce users will be prompted their UPS account number\n"
 "and delivery fees will be charged on it."
 msgstr ""
-"अगर इसे चुना गया है, तो ई-कॉमर्स यूज़र से उनके यूपीएस (UPS) खाते का नंबर मांगा जाएगा और "
-"\n"
+"अगर इसे चुना गया है, तो ई-कॉमर्स यूज़र से उनके यूपीएस (UPS) खाते का नंबर मांगा जाएगा "
+"और \n"
 "डिलीवरी शुल्क उनसे लिया जाएगा।"
 
 #. module: delivery_ups_rest
@@ -246,8 +257,8 @@ msgstr "पाने वाला"
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
-msgid "Recipient Phone must be at least 10 alphanumeric characters."
-msgstr "पाने वाले का फ़ोन नंबर कम से कम 10 अक्षरों या संख्याओं का होना चाहिए।"
+msgid "Recipient Phone must be between 1 and 15 alphanumeric characters."
+msgstr ""
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_delivery_carrier__ups_require_signature
@@ -304,8 +315,8 @@ msgstr ""
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
-msgid "Shipper Phone must be at least 10 alphanumeric characters."
-msgstr "भेजने वाले का फ़ोन नंबर कम से कम 10 अक्षरों या संख्याओं का होना चाहिए।"
+msgid "Shipper Phone must be between 1 and 15 alphanumeric characters."
+msgstr ""
 
 #. module: delivery_ups_rest
 #: model:ir.model,name:delivery_ups_rest.model_delivery_carrier
@@ -442,8 +453,18 @@ msgid "UPS Configuration"
 msgstr "यूपीएस कॉन्फ़िगरेशन"
 
 #. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__74
+msgid "UPS Express Midday"
+msgstr ""
+
+#. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__03
 msgid "UPS Ground"
+msgstr ""
+
+#. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__75
+msgid "UPS Heavy Goods"
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -492,6 +513,16 @@ msgid "UPS Standard"
 msgstr ""
 
 #. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__72
+msgid "UPS Worldwide Economy DDP"
+msgstr ""
+
+#. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__17
+msgid "UPS Worldwide Economy DDU"
+msgstr ""
+
+#. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__08
 msgid "UPS Worldwide Expedited"
 msgstr ""
@@ -504,6 +535,11 @@ msgstr ""
 #. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__96
 msgid "UPS Worldwide Express Freight"
+msgstr ""
+
+#. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__71
+msgid "UPS Worldwide Express Freight Midday"
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -523,8 +559,8 @@ msgid ""
 "UPS address lines can only contain a maximum of 35 characters. You can split "
 "the contacts addresses on multiple lines to try to avoid this limitation."
 msgstr ""
-"यूपीएस (UPS) पते की लाइनों में ज़्यादा से ज़्यादा 35 अक्षर हो सकते हैं. इस सीमा से बचने के लि"
-"ए, आप संपर्क के पते को कई लाइनों में बांट सकते हैं।"
+"यूपीएस (UPS) पते की लाइनों में ज़्यादा से ज़्यादा 35 अक्षर हो सकते हैं. इस सीमा से बचने के "
+"लिए, आप संपर्क के पते को कई लाइनों में बांट सकते हैं।"
 
 #. module: delivery_ups_rest
 #. odoo-python
@@ -547,8 +583,8 @@ msgstr "यूपीएस पैकेज के वज़न की इकाई"
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
-msgid "Warehouse Phone must be at least 10 alphanumeric characters."
-msgstr "वेयरहाउस का फ़ोन नंबर कम से कम 10 अक्षरों या संख्याओं का होना चाहिए।"
+msgid "Warehouse Phone must be between 1 and 15 alphanumeric characters."
+msgstr ""
 
 #. module: delivery_ups_rest
 #. odoo-python
@@ -634,3 +670,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
 msgid "you're ready to go!"
 msgstr ""
+
+#~ msgid "Recipient Phone must be at least 10 alphanumeric characters."
+#~ msgstr "पाने वाले का फ़ोन नंबर कम से कम 10 अक्षरों या संख्याओं का होना चाहिए।"
+
+#~ msgid "Shipper Phone must be at least 10 alphanumeric characters."
+#~ msgstr "भेजने वाले का फ़ोन नंबर कम से कम 10 अक्षरों या संख्याओं का होना चाहिए।"
+
+#~ msgid "Warehouse Phone must be at least 10 alphanumeric characters."
+#~ msgstr "वेयरहाउस का फ़ोन नंबर कम से कम 10 अक्षरों या संख्याओं का होना चाहिए।"

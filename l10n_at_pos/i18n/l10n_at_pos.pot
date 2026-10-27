@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 19:53+0000\n"
-"PO-Revision-Date: 2025-11-13 19:53+0000\n"
+"POT-Creation-Date: 2026-10-09 18:11+0000\n"
+"PO-Revision-Date: 2026-10-09 18:11+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -33,6 +33,11 @@ msgstr ""
 #. module: l10n_at_pos
 #: model_terms:ir.ui.view,arch_db:l10n_at_pos.view_company_form
 msgid "API Secret"
+msgstr ""
+
+#. module: l10n_at_pos
+#: model_terms:ir.ui.view,arch_db:l10n_at_pos.view_pos_fiskaly_details_wizard
+msgid "All PoS"
 msgstr ""
 
 #. module: l10n_at_pos
@@ -174,12 +179,6 @@ msgid ""
 msgstr ""
 
 #. module: l10n_at_pos
-#. odoo-javascript
-#: code:addons/l10n_at_pos/static/src/overrirde/point_of_sale/components/navbar/navbar.js:0
-msgid "Fetched data is empty"
-msgstr ""
-
-#. module: l10n_at_pos
 #: model:ir.ui.menu,name:l10n_at_pos.pos_fiskaly_reports
 #: model_terms:ir.ui.view,arch_db:l10n_at_pos.view_company_form
 msgid "Fiskaly"
@@ -198,13 +197,13 @@ msgstr ""
 #. module: l10n_at_pos
 #. odoo-python
 #: code:addons/l10n_at_pos/models/fiskaly_client.py:0
-msgid "Fiskaly API request failed, %s"
+msgid "Fiskaly API request failed, %(error)s%(detail)s"
 msgstr ""
 
 #. module: l10n_at_pos
 #. odoo-python
 #: code:addons/l10n_at_pos/models/res_company.py:0
-msgid "Fiskaly Authenticated Successfully!"
+msgid "Fiskaly Authentication Successful!"
 msgstr ""
 
 #. module: l10n_at_pos
@@ -251,6 +250,13 @@ msgid "Fiskaly authentication failed: %s"
 msgstr ""
 
 #. module: l10n_at_pos
+#: model_terms:ir.ui.view,arch_db:l10n_at_pos.view_company_form
+msgid ""
+"Fiskaly credentials are now managed by Odoo. Please regenerate your "
+"credentials for this company."
+msgstr ""
+
+#. module: l10n_at_pos
 #: model:ir.model.fields,field_description:l10n_at_pos.field_res_company__l10n_at_fiskaly_organization_id
 msgid "Fiskaly organization identifier"
 msgstr ""
@@ -289,6 +295,12 @@ msgstr ""
 #. module: l10n_at_pos
 #: model:ir.model,name:l10n_at_pos.model_report_l10n_at_pos_report_config_audit_template
 msgid "Get DEP7 Report for Session."
+msgstr ""
+
+#. module: l10n_at_pos
+#. odoo-python
+#: code:addons/l10n_at_pos/models/res_company.py:0
+msgid "Go to Point of Sale"
 msgstr ""
 
 #. module: l10n_at_pos
@@ -372,9 +384,21 @@ msgid "Monthly / Yearly Receipts"
 msgstr ""
 
 #. module: l10n_at_pos
+#. odoo-python
+#: code:addons/l10n_at_pos/models/pos_config.py:0
+msgid "No closing receipt found for the selected period."
+msgstr ""
+
+#. module: l10n_at_pos
 #. odoo-javascript
 #: code:addons/l10n_at_pos/static/src/overrirde/point_of_sale/components/navbar/navbar.js:0
-msgid "No printer found"
+msgid "No data found!"
+msgstr ""
+
+#. module: l10n_at_pos
+#. odoo-javascript
+#: code:addons/l10n_at_pos/static/src/overrirde/point_of_sale/components/navbar/navbar.js:0
+msgid "No printer connected to print the receipt"
 msgstr ""
 
 #. module: l10n_at_pos
@@ -407,7 +431,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_at_pos/models/res_company.py:0
 msgid ""
-"Please close and validate the following open PoS Sessions before authenticating FON.\n"
+"Please close and validate the following open PoS Sessions before generating Fiskaly Credentials.\n"
 "Open sessions: %s"
 msgstr ""
 
@@ -529,6 +553,14 @@ msgstr ""
 
 #. module: l10n_at_pos
 #. odoo-python
+#: code:addons/l10n_at_pos/models/fiskaly_client.py:0
+msgid ""
+"The Fiskaly signature creation unit is still being created (state "
+"%(state)s). Please try again in a few minutes."
+msgstr ""
+
+#. module: l10n_at_pos
+#. odoo-python
 #: code:addons/l10n_at_pos/models/res_company.py:0
 msgid "The VAT should not be empty"
 msgstr ""
@@ -572,12 +604,6 @@ msgid "The zip should not be empty"
 msgstr ""
 
 #. module: l10n_at_pos
-#. odoo-python
-#: code:addons/l10n_at_pos/models/pos_config.py:0
-msgid "This is the entire Report of this cash register"
-msgstr ""
-
-#. module: l10n_at_pos
 #: model:ir.model.fields,field_description:l10n_at_pos.field_res_company__l10n_at_fon_user_id
 msgid "User Identifier"
 msgstr ""
@@ -597,4 +623,11 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/l10n_at_pos/static/src/app/components/popup/date_selection_popup/date_selection_popup.xml:0
 msgid "Yearly"
+msgstr ""
+
+#. module: l10n_at_pos
+#: model_terms:ir.ui.view,arch_db:l10n_at_pos.view_company_form
+msgid ""
+"Your Fiskaly credentials are configured, but you are not authenticated. "
+"Please try to authenticate again."
 msgstr ""

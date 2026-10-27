@@ -1,5 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from datetime import date, datetime
+
 from odoo.tests import tagged
 from .common import TestPayrollCommon
 
@@ -37,3 +39,67 @@ class TestPayrollRightToLegalLeaves(TestPayrollCommon):
             ('res_model', '=', 'hr.leave'),
         ])
         self.assertFalse(activity)
+
+    def test_sick_time_off_without_guaranteed_salary(self):
+        """
+        Test for long term sickness that the public holiday is overwritten with a sick time off (without guarantee salary),
+        and that the time off is correctly linked to the work entry
+        """
+        sick_leave_type = self.env.ref('hr_holidays.leave_type_sick_time_off')
+        sick_work_entry_type_without_salary = self.env.ref('hr_work_entry.l10n_be_work_entry_type_part_sick')
+        sick_leave = self.env['hr.leave'].create({
+            'name': 'Sick leave',
+            'employee_id': self.employee_georges.id,
+            'holiday_status_id': sick_leave_type.id,
+            'request_date_from': datetime(2024, 1, 16),
+            'request_date_to': datetime(2024, 9, 19),
+        })
+        sick_leave._action_validate()
+
+        self.env['resource.calendar.leaves'].create({
+            'name': 'Public Holiday',
+            'date_from': datetime(2024, 9, 19, 8),
+            'date_to': datetime(2024, 9, 19, 16),
+            'calendar_id': self.employee_georges.resource_calendar_id.id,
+            'work_entry_type_id': self.env.ref('hr_work_entry.l10n_be_work_entry_type_bank_holiday').id,
+            'time_type': 'leave',
+        })
+
+        work_entries = self.employee_georges.generate_work_entries(date(2024, 1, 16), date(2024, 9, 19))
+        public_holiday_date_work_entry = work_entries.filtered(lambda we: we.date == date(2024, 9, 19))
+        self.assertEqual(public_holiday_date_work_entry.work_entry_type_id, sick_work_entry_type_without_salary)
+        self.assertEqual(public_holiday_date_work_entry.leave_id, sick_leave)
+
+    def test_multi_day_leave_be_payroll(self):
+        flexible_calendar = self.env['resource.calendar'].sudo().create({
+            'name': 'flexible calendar',
+            'flexible_hours': True,
+            'full_time_required_hours': 21,
+            'hours_per_day': 3,
+            'hours_per_week': 21,
+        })
+
+        self.employee_georges.resource_calendar_id = flexible_calendar
+        self.employee_georges.version_id.resource_calendar_id = flexible_calendar
+
+        self.env['hr.leave.allocation'].create({
+            'name': 'Allocation',
+            'employee_id': self.employee_georges.id,
+            'holiday_status_id': self.holiday_leave_types.id,
+            'number_of_days': 20,
+            'date_from': '2026-05-01',
+        }).action_approve()
+
+        multi_day_leave = self.env['hr.leave'].create({
+            'name': 'Leave',
+            'employee_id': self.employee_georges.id,
+            'holiday_status_id': self.holiday_leave_types.id,
+            'request_date_from': datetime(2026, 5, 8),
+            'request_date_to': datetime(2026, 5, 12),
+        })
+
+        self.assertEqual(multi_day_leave.number_of_days, 5)
+
+        multi_day_leave.action_approve()
+
+        self.assertEqual(multi_day_leave.state, 'validate')

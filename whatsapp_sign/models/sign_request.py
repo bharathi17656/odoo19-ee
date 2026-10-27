@@ -89,8 +89,10 @@ class SignRequest(models.Model):
 
         template_id = self.env['ir.config_parameter'].sudo().get_param('whatsapp_sign.whatsapp_completion_template_id')
         whatsapp_template = self.env['whatsapp.template'].browse(int(template_id))
-        whatsapp_composer = self.env['whatsapp.composer'].with_context({'active_id': sign_request_item.id}).create({
-            'wa_template_id': whatsapp_template.id,
+        whatsapp_composer = self.env['whatsapp.composer'].with_context(
+            active_id=sign_request_item.id,
+            default_wa_template_id=whatsapp_template.id
+        ).create({
             'res_model': 'sign.request.item'
         })
         whatsapp_composer.sudo()._send_whatsapp_template(force_send_by_cron=not force_send)
@@ -121,9 +123,10 @@ class SignRequest(models.Model):
         template_id = self.env['ir.config_parameter'].sudo().get_param('whatsapp_sign.whatsapp_refusal_template_id')
         whatsapp_template = self.env['whatsapp.template'].browse(int(template_id))
         self.refusal_reason = refusal_reason
-
-        whatsapp_composer = self.env['whatsapp.composer'].with_context({'active_id': sign_request_item.id}).create({
-            'wa_template_id': whatsapp_template.id,
+        whatsapp_composer = self.env['whatsapp.composer'].with_context(
+            active_id=sign_request_item.id,
+            default_wa_template_id=whatsapp_template.id
+        ).create({
             'res_model': 'sign.request.item'
         })
         whatsapp_composer.sudo()._send_whatsapp_template(force_send_by_cron=not force_send)

@@ -749,3 +749,52 @@ class TestMrpPlm(TestPlmCommon):
         bom_eco.new_bom_id.bom_line_ids[0].product_qty = 1.0003
         self.assertEqual(bom_eco.new_bom_id.bom_line_ids[0].product_qty, 1.0003)
         self.assertEqual(bom_eco.bom_change_ids.upd_product_qty, 0.0003)
+
+    def test_eco_attachments(self):
+        """Test that applying an ECO updates the origin_attachment_id for product.document"""
+        tmpl = self.env["product.template"].create({"name": "Test"})
+        eco_form = Form(self.env["mrp.eco"])
+        eco_form.name = "ELCT ECO"
+        eco_form.type_id = self.eco_type
+        eco_form.type = "product"
+        eco_form.product_tmpl_id = tmpl
+        eco = eco_form.save()
+        eco.stage_id = self.eco_stage
+        eco.action_new_revision()
+        eco.document_ids = [
+            (
+                0,
+                0,
+                {
+                    "name": "test.pdf",
+                    "type": "binary",
+                    "raw": b"Original content",
+                    "res_id": eco.id,
+                    "res_model": "mrp.eco",
+                },
+            )
+        ]
+        doc = eco.document_ids[0]
+        old_origin_id = doc.origin_attachment_id
+        eco.action_apply()
+        self.assertNotEqual(doc.origin_attachment_id, old_origin_id)
+
+    def test_eco_duplicate_component_update(self):
+        """
+        Ensure ECOs created for BoMs with the same component/byproduct on multiple lines do not
+        confuse the multiple lines for changes.
+        """
+        self.bom_table.bom_line_ids.product_id = self.table_leg
+        self.bom_table.byproduct_ids = [
+            Command.create({'product_id': self.table_bolt.id, 'product_qty': 1}),
+            Command.create({'product_id': self.table_bolt.id, 'product_qty': 2}),
+        ]
+        eco = self.env['mrp.eco'].create({
+            'name': 'eco',
+            'product_tmpl_id': self.table.product_tmpl_id.id,
+            'type_id': self.eco_type.id,
+            'type': 'bom',
+            'bom_id': self.bom_table.id,
+        })
+        eco.action_new_revision()
+        self.assertFalse(eco.bom_change_ids)

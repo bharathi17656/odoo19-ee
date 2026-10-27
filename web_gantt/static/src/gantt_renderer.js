@@ -61,7 +61,7 @@ import { GanttTimeDisplayBadge } from "./gantt_time_display_badge";
 
 const viewRegistry = registry.category("views");
 
-const { DateTime, Interval } = luxon;
+const { DateTime } = luxon;
 
 /**
  * @typedef {`__connector__${number | "new"}`} ConnectorId
@@ -343,23 +343,6 @@ export class GanttRenderer extends Component {
             onDrop: (params) => this.dragPillDrop(params),
         });
 
-        // Un-draggable pills
-        const unDragState = useGanttUndraggable({
-            // Refs and selectors
-            ref: this.gridRef,
-            elements: ".o_undraggable",
-            ignore: ".o_resize_handle,.o_connector_creator_bullet",
-            edgeScrolling: { enabled: false },
-            onWillStartDrag: this.cleanMultiSelection.bind(this),
-            // Handlers
-            onDragStart: () => {
-                this.interaction.mode = "locked";
-            },
-            onDragEnd: () => {
-                this.interaction.mode = null;
-            },
-        });
-
         // Resizable pills
         const resizeState = useGanttResizable({
             // Refs and selectors
@@ -377,6 +360,9 @@ export class GanttRenderer extends Component {
             }),
             showHandles: (pillEl) => {
                 const pill = this.pills[pillEl.dataset.pillId];
+                if (!pill) {
+                    return;
+                }
                 const hideHandles = this.connectorDragState.dragging;
                 return {
                     start: !pill.disableStartResize && !hideHandles,
@@ -445,7 +431,27 @@ export class GanttRenderer extends Component {
             },
         });
 
-        this.dragStates = [dragState, unDragState, resizeState];
+        this.dragStates = [dragState, resizeState];
+
+        if (!this.model.hasMultiCreate) {
+            // Un-draggable pills
+            const unDragState = useGanttUndraggable({
+                // Refs and selectors
+                ref: this.gridRef,
+                elements: ".o_undraggable",
+                ignore: ".o_resize_handle,.o_connector_creator_bullet",
+                edgeScrolling: { enabled: false },
+                onWillStartDrag: this.cleanMultiSelection.bind(this),
+                // Handlers
+                onDragStart: () => {
+                    this.interaction.mode = "locked";
+                },
+                onDragEnd: () => {
+                    this.interaction.mode = null;
+                },
+            });
+            this.dragStates.push(unDragState);
+        }
 
         this.prepareSelectionFeature();
 
@@ -706,6 +712,12 @@ export class GanttRenderer extends Component {
             );
         };
 
+        /**
+         * Variable used to indicate whether the "dragend" event should invoke cleanups
+         * on the current selection. This can be the case in multi-select when the
+         * "drop" event was called, since we want to keep the selection in that case.
+         */
+        let shouldCleanupOnDragEnd = true;
         // Cells selection
         const selectState = useGanttSelectable({
             enable: () =>
@@ -714,7 +726,8 @@ export class GanttRenderer extends Component {
                 (this.model.metaData.canCellCreate || this.model.hasMultiCreate),
             ref: this.gridRef,
             hoveredCell: this.cellForDrag,
-            elements: ".o_gantt_cell",
+            elements: ".o_gantt_cells",
+            ignore: ".o_gantt_pill_wrapper,.o_gantt_connector",
             edgeScrolling: {
                 speed: 40,
                 threshold: 150,
@@ -731,14 +744,55 @@ export class GanttRenderer extends Component {
             onDrop: ({ rowId, startCol, endCol, startRow, endRow }) => {
                 if (this.model.hasMultiCreate) {
                     this.updateMultiSelection({ startCol, endCol, startRow, endRow }, action);
+                    shouldCleanupOnDragEnd = false;
                 } else {
-                    this.removeCellGhost();
-                    this.clearBadges();
                     this.onCreate(rowId, startCol, endCol - 1);
                 }
                 action = null;
             },
+            onDragEnd: () => {
+                if (!shouldCleanupOnDragEnd) {
+                    shouldCleanupOnDragEnd = true;
+                    return;
+                }
+                if (this.model.hasMultiCreate) {
+                    this.removeCellGhosts();
+                    this.cleanMultiSelection();
+                } else {
+                    this.removeCellGhost();
+                }
+                this.clearBadges();
+            },
         });
+
+        if (this.model.hasMultiCreate) {
+            const pillSelectState = useGanttSelectable({
+                enable: () =>
+                    Boolean(this.cellForDrag.el) &&
+                    !this.cellForDrag.el.classList.contains("o_gantt_group"),
+                ref: this.gridRef,
+                hoveredCell: this.cellForDrag,
+                elements: ".o_undraggable",
+                edgeScrolling: {
+                    speed: 40,
+                    threshold: 150,
+                    direction: undefined,
+                },
+                hasMultiCreate: () => true,
+                rtl,
+                scale,
+                onDragStart: ({ startCol, endCol, startRow, endRow }) => {
+                    action = this.ctrlPressed ? "add" : "replace";
+                    update({ startCol, endCol, startRow, endRow });
+                },
+                onDrag: update,
+                onDrop: ({ startCol, endCol, startRow, endRow }) => {
+                    this.updateMultiSelection({ startCol, endCol, startRow, endRow }, action);
+                    action = null;
+                },
+            });
+            this.dragStates.push(pillSelectState);
+        }
 
         useBus(this.model.bus, "update", this.cleanMultiSelection.bind(this));
 
@@ -1416,7 +1470,11 @@ export class GanttRenderer extends Component {
         let copyResId;
         let fallbackSchedule;
         if (isCopyMode) {
-            copyResId = await this.model.copy(record.id, schedule, this.openPlanDialogCallback.bind(this));
+            copyResId = await this.model.copy(
+                record.id,
+                schedule,
+                this.openPlanDialogCallback.bind(this)
+            );
         } else {
             const fallbackParams = {
                 ...this.getUndoAfterDragRecordData(record),
@@ -1430,7 +1488,11 @@ export class GanttRenderer extends Component {
                     this.rescheduleAccordingToDependencyCallback.bind(this)
                 );
             } else {
-                await this.model.reschedule(record.id, schedule, this.openPlanDialogCallback.bind(this));
+                await this.model.reschedule(
+                    record.id,
+                    schedule,
+                    this.openPlanDialogCallback.bind(this)
+                );
             }
         }
 
@@ -1468,31 +1530,39 @@ export class GanttRenderer extends Component {
                     {
                         name: "Undo",
                         icon: "fa-undo",
-                        onClick: async () => {
-                            // Undo the last drag & drop action
-                            const result = await this.model.orm.call(
-                                this.model.metaData.resModel,
-                                "gantt_undo_drag_drop",
-                                [resId, dragAction, fallbackData]
-                            );
-                            this.closeNotificationFn?.();
-                            if (result) {
-                                this.closeNotificationFn = this.notificationService.add(
-                                    markup`<i class="fa fa-fw fa-check"></i><span class="ms-1">${messages.undo}</span>`,
-                                    { type: "success" }
-                                );
-                            } else {
-                                this.closeNotificationFn = this.notificationService.add(
-                                    markup`<i class="fa fa-fw fa-check"></i><span class="ms-1">${messages.failure}</span>`,
-                                    { type: "danger" }
-                                );
-                            }
-                            this.model.fetchData();
-                        },
+                        onClick: async () => await this.undoDragDropAction(resId, dragAction, fallbackData, messages)
                     },
                 ],
             }
         );
+    }
+
+    /**
+     * @param {number} resId
+     * @param {string} dragAction
+     * @param {Object} fallbackData
+     * @param {Object} messages
+     */
+    async undoDragDropAction(resId, dragAction, fallbackData, messages) {
+        // Undo the last drag & drop action
+        const result = await this.model.orm.call(
+            this.model.metaData.resModel,
+            "gantt_undo_drag_drop",
+            [resId, dragAction, fallbackData]
+        );
+        this.closeNotificationFn?.();
+        if (result) {
+            this.closeNotificationFn = this.notificationService.add(
+                markup`<i class="fa fa-fw fa-check"></i><span class="ms-1">${messages.undo}</span>`,
+                { type: "success" }
+            );
+        } else {
+            this.closeNotificationFn = this.notificationService.add(
+                markup`<i class="fa fa-fw fa-check"></i><span class="ms-1">${messages.failure}</span>`,
+                { type: "danger" }
+            );
+        }
+        this.model.fetchData();
     }
 
     /**
@@ -1585,7 +1655,7 @@ export class GanttRenderer extends Component {
         const diff = focusedDate.diff(globalStart);
         const totalDiff = globalStop.diff(globalStart);
         const factor = diff / totalDiff;
-        if (!focusGroup && (factor < 0 || 1 < factor)) {
+        if (!focusGroup && (factor < 0 || 1 <= factor)) {
             return false;
         }
         const rtlFactor = rtl() ? -1 : 1;
@@ -1802,15 +1872,7 @@ export class GanttRenderer extends Component {
         const stopDate = record[dateStopField];
         const yearlessDateFormat = omit(DateTime.DATE_SHORT, "year");
 
-        const daysDelta = Interval.fromDateTimes(
-            startDate.startOf("day"),
-            stopDate.startOf("day")
-        ).toDuration(["day", "hour"]).days;
-        const spanAccrossDays =
-            daysDelta &&
-            (daysDelta > 2 ||
-                (startDate.endOf("day").diff(startDate, "hours").toObject().hours >= 3 &&
-                    stopDate.diff(stopDate.startOf("day"), "hours").toObject().hours >= 3));
+        const spanAccrossDays = stopDate.startOf("day") > startDate.startOf("day");
 
         /** @type {string[]} */
         const labels = [];
@@ -1962,7 +2024,7 @@ export class GanttRenderer extends Component {
 
     getSubColumnFromDate(date, onLeft = true) {
         const { interval, cellPart, cellTime, time } = this.model.metaData.scale;
-        const column = date.startOf(interval);
+        const column = localStartOf(date, interval);
         let delta;
         if (onLeft) {
             delta = 0;
@@ -2757,7 +2819,19 @@ export class GanttRenderer extends Component {
         const fallbackParams = this.getUndoAfterDragRecordData(record);
         const fallbackSchedule = this.model.getSchedule(fallbackParams);
 
-        await this.model.reschedule(record.id, schedule, this.openPlanDialogCallback.bind(this));
+        if (this.isAutoPlan) {
+            await this.model.rescheduleAccordingToDependency(
+                record.id,
+                schedule,
+                this.rescheduleAccordingToDependencyCallback.bind(this)
+            );
+        } else {
+            await this.model.reschedule(
+                record.id,
+                schedule,
+                this.openPlanDialogCallback.bind(this)
+            );
+        }
         this.displayUndoNotificationAfterDrag(
             record.id,
             this.interaction.dragAction,
@@ -2827,9 +2901,9 @@ export class GanttRenderer extends Component {
      * @returns {boolean}: whether one of the "groupedBy" fields of the model is readonly
      */
     containsReadonlyGroup() {
-        return this.model.metaData.groupedBy.some((groupedByField) => {
-            return this.model.metaData.fields[groupedByField].readonly;
-        });
+        return this.model.metaData.groupedBy.some(
+            (groupedByField) => this.model.metaData.fields[groupedByField].readonly
+        );
     }
 
     /**

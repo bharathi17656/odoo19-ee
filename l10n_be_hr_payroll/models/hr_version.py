@@ -251,9 +251,7 @@ Source: Opinion on the indexation of the amounts set in Article 1, paragraph 4, 
         whitelisted_fields = super()._get_whitelist_fields_from_template()
         if self.env.company.country_id.code == "BE":
             whitelisted_fields += [
-                "bike_id",
                 "car_atn",
-                "car_id",
                 "commission_on_target",
                 "contract_type_id",
                 "distance_home_work",
@@ -290,10 +288,6 @@ Source: Opinion on the indexation of the amounts set in Article 1, paragraph 4, 
                 "l10n_be_onss_restructuring",
                 "meal_voucher_amount",
                 "mobile",
-                "new_bike",
-                "new_bike_model_id",
-                "new_car",
-                "new_car_model_id",
                 "no_onss",
                 "no_withholding_taxes",
                 "private_car_reimbursed_amount",
@@ -303,7 +297,6 @@ Source: Opinion on the indexation of the amounts set in Article 1, paragraph 4, 
                 "representation_fees",
                 "train_transport_employee_amount",
                 "train_transport_reimbursed_amount",
-                "transport_mode_bike",
                 "transport_mode_car",
                 "transport_mode_private_car",
                 "transport_mode_public",
@@ -319,6 +312,14 @@ Source: Opinion on the indexation of the amounts set in Article 1, paragraph 4, 
         return super()._get_marital_status_selection() + [
             ("separated", self.env._("Judicially Separated"))
         ]
+
+    def write(self, vals):
+        res = super().write(vals)
+        if vals.get('contract_date_start'):
+            self.employee_id.current_version_id.sudo().filtered(
+                lambda v: v._is_struct_from_country('BE') and v.contract_date_start
+            )._trigger_l10n_be_next_activities()
+        return res
 
     @api.depends('disabled_children_bool', 'disabled_children_number', 'children')
     def _compute_dependent_children(self):
@@ -529,8 +530,10 @@ Source: Opinion on the indexation of the amounts set in Article 1, paragraph 4, 
             self.fuel_card = 0
             self.company_car_total_depreciated_cost = 0
         if not self.transport_mode_train:
+            self.train_transport_employee_amount = 0
             self.train_transport_reimbursed_amount = 0
         if not self.transport_mode_public:
+            self.public_transport_employee_amount = 0
             self.public_transport_reimbursed_amount = 0
         if self.transport_mode_car:
             self.transport_mode_private_car = False
@@ -688,8 +691,8 @@ Source: Opinion on the indexation of the amounts set in Article 1, paragraph 4, 
         if not self._is_struct_from_country('BE'):
             return result
 
-        # The public holidays are paid only during the 14 first days of unemployment
         if result.code == "LEAVE500":
+            # The public holidays are paid only during the 14 first days of unemployment
             unemployed_less_than_14_days_before = self.env['hr.leave'].search([
                 ('employee_id', '=', self.employee_id.id),
                 ('date_to', '>=', leave.date_from + relativedelta(days=-14)),
@@ -706,34 +709,38 @@ Source: Opinion on the indexation of the amounts set in Article 1, paragraph 4, 
                 if is_unemployed:
                     return unemployed_less_than_14_days_before[0].holiday_status_id.work_entry_type_id
 
-        # The public holidays are paid only during the period of 30 days following the start of the
-        # suspension of the employment contract due to illness or accident, work accident or
-        # occupational disease, pregnancy or childbirth leave, strike or lockout;
-        if result.code == "LEAVE500":
+            # The public holidays are paid only during the period of 30 days following the start of the
+            # suspension of the employment contract due to illness or accident, work accident or
+            # occupational disease, pregnancy or childbirth leave, strike or lockout;
             absent_less_than_X_days_before = self.env['hr.leave'].search([
                 ('employee_id', '=', self.employee_id.id),
                 ('date_to', '>=', leave.date_from + relativedelta(days=-30)),
                 ('date_from', '<=', leave.date_from),
-                ('holiday_status_id.work_entry_type_id.code', 'in', ['LEAVE210', 'LEAVE220', 'LEAVE230', 'LEAVE115', 'LEAVE281']),
+                ('holiday_status_id.work_entry_type_id.code', 'in', [
+                    'LEAVE210', 'LEAVE220', 'LEAVE230', 'LEAVE115', 'LEAVE281', 'LEAVE280', 'LEAVE110', 'LEAVE214'
+                ]),
                 ('state', '=', 'validate'),
             ], order="date_from asc")
             if absent_less_than_X_days_before:
+                unpaid_work_entry_type = absent_less_than_X_days_before[0].holiday_status_id.work_entry_type_id
+                if unpaid_work_entry_type.code == 'LEAVE110':
+                    unpaid_work_entry_type = self.env.ref('hr_work_entry.l10n_be_work_entry_type_part_sick', False)
                 is_absent = True
                 # Special case for credit-times
                 # If time credit duration X is:
                 # X < 1 month -> Unpaid
                 # 1 <= X < 3 months -> Paid the first 14 days
                 # X >= 3 months -> Paid the first 30 days
-                # Alway unpaid for full time credit time
+                # Always unpaid for full time credit time
                 paid_duration = 30
                 if self.l10n_be_time_credit:
                     if not self.work_time_rate:
-                        return absent_less_than_X_days_before[0].holiday_status_id.work_entry_type_id
+                        return unpaid_work_entry_type
                     duration_start = self._get_occupation_dates()[0][1]
                     duration_stop = leave.date_from.date()
                     number_of_months = (duration_stop.year - duration_start.year) * 12 + (duration_stop.month - duration_start.month)
                     if number_of_months < 1:
-                        return absent_less_than_X_days_before[0].holiday_status_id.work_entry_type_id
+                        return unpaid_work_entry_type
                     if number_of_months < 3:
                         paid_duration = 14
                         absent_less_than_X_days_before = absent_less_than_X_days_before.filtered_domain([
@@ -743,7 +750,7 @@ Source: Opinion on the indexation of the amounts set in Article 1, paragraph 4, 
                     if all(l.date_from > day or l.date_to < day for l in absent_less_than_X_days_before):
                         is_absent = False
                 if is_absent:
-                    return absent_less_than_X_days_before[0].holiday_status_id.work_entry_type_id
+                    return unpaid_work_entry_type
 
         # The salary is not guaranteed after 30 calendar days of sick leave (it means from the 31th
         # day of sick leave)
@@ -805,6 +812,9 @@ Source: Opinion on the indexation of the amounts set in Article 1, paragraph 4, 
             # Also note that public holidays do not impact this calculation.
             # If 07/08 was a public holiday, 12/08-15/08 would still not be covered.
 
+            # Starting form 1/1/2026, the relapse period updated to 56 days
+            # So, needed to check the gap between the leaves is less than or equal to 56 days
+
             current_leave_duration = (date_from - leave.holiday_id.date_from).days + 1
             if current_leave_duration > 30:
                 return partial_sick_work_entry_type
@@ -824,9 +834,10 @@ Source: Opinion on the indexation of the amounts set in Article 1, paragraph 4, 
 
             prev_leaves_sum = current_leave_duration
             prev_leave_start = leave.holiday_id.date_from
+            relapse_period = 56 if prev_leave_start.year >= 2026 else 14
 
             for leave in all_sick_leaves:
-                if (prev_leave_start - leave.date_to).days > 14:
+                if (prev_leave_start - leave.date_to).days > relapse_period:
                     return result
                 prev_leaves_sum += (leave.date_to - leave.date_from).days + 1
                 if prev_leaves_sum > 30:
@@ -866,19 +877,20 @@ Source: Opinion on the indexation of the amounts set in Article 1, paragraph 4, 
         self.ensure_one()
         part_time_link = "https://www.socialsecurity.be/site_fr/employer/applics/elo/index.htm"
         part_time_link = '<a href="%s" target="_blank">%s</a>' % (part_time_link, part_time_link)
-        self.activity_schedule(
+        self.employee_id.activity_schedule(
             'mail.mail_activity_data_todo',
             note=_('Part Time of %(employee)s must be stated at %(link)s.',
                    employee=self.employee_id.name,
                    link=part_time_link),
             user_id=self.hr_responsible_id.id or self.env.user.id,
+            summary='Part Time'
         )
 
     def _create_dimona_next_activity(self):
         self.ensure_one()
         dimona_link = "https://www.socialsecurity.be/site_fr/employer/applics/dimona/index.htm"
         dimona_link = '<a href="%s" target="_blank">%s</a>' % (dimona_link, dimona_link)
-        self.activity_schedule(
+        self.employee_id.activity_schedule(
             'mail.mail_activity_data_todo',
             note=_('State the Dimona at %(link)s to declare the arrival of %(employee)s.',
                    link=dimona_link,
@@ -888,17 +900,31 @@ Source: Opinion on the indexation of the amounts set in Article 1, paragraph 4, 
             )
 
     def _trigger_l10n_be_next_activities(self):
-        employees_with_contract_domain = [
-            ('employee_id', 'in', self.employee_id.ids),
-            ('id', 'not in', self.ids),
-        ]
-        employees_already_started = self.env['hr.version'].search(employees_with_contract_domain).employee_id
+        if self.env.context.get('pending_employee_creation'):
+            return
+        activities_by_summary = dict(
+            self.env['mail.activity']._read_group(
+                domain=[
+                    ('res_model', '=', 'hr.employee'),
+                    ('summary', 'in', ['Part Time', 'Dimona']),
+                    ('res_id', 'in', self.employee_id.ids),
+                ],
+                groupby=['summary'],
+                aggregates=['id:recordset'],
+            )
+        )
+        dimona_activities = activities_by_summary.get('Dimona', self.env['mail.activity'])
+        part_time_activities = activities_by_summary.get('Part Time', self.env['mail.activity'])
         for version in self:
-            if not version._is_struct_from_country('BE'):
+            if not version.employee_id.id:
                 continue
-            if version.l10n_be_time_credit:
+            has_part_time_activity = any(activity.res_id == version.employee_id.id
+                and activity.date_deadline >= version.contract_date_start
+                for activity in part_time_activities)
+            has_dimona_activity = version.employee_id.id in dimona_activities.mapped('res_id')
+            if version.l10n_be_time_credit and not has_part_time_activity:
                 version._create_credit_time_next_activity()
-            if version.employee_id not in employees_already_started:
+            if version.employee_id and not has_dimona_activity:
                 version._create_dimona_next_activity()
 
     def _get_contract_insurance_amount(self, name):
@@ -944,6 +970,14 @@ Source: Opinion on the indexation of the amounts set in Article 1, paragraph 4, 
             'no_onss',
             'no_withholding_taxes',
         ]
+
+    def _l10n_be_is_isolated(self):
+        self.ensure_one()
+        return self.marital in ['divorced', 'single', 'widower', 'separated']
+
+    def _l10n_be_is_coupled(self):
+        self.ensure_one()
+        return self.marital in ['married', 'cohabitant']
 
     def action_work_schedule_change_wizard(self):
         if len(self) != 1:

@@ -46,3 +46,15 @@ hr {
         margin-left: 32px;
     }
 }
+
+.table-bordered {
+    border-collapse: collapse;
+    > :not(caption) > * {
+        border-style: solid;
+        border-width: 1px 0;
+        > * {
+            border-style: solid;
+            border-width: 0 1px;
+        }
+    }
+}

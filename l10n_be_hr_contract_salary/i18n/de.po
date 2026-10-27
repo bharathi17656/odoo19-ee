@@ -8,13 +8,14 @@
 # Wil Odoo, 2025
 # Larissa Manderfeld, 2025
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# "Larissa Manderfeld (lman)" <lman@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 19:54+0000\n"
-"PO-Revision-Date: 2025-11-15 22:50+0000\n"
+"POT-Creation-Date: 2026-04-10 19:14+0000\n"
+"PO-Revision-Date: 2026-04-20 07:24+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: German <https://translate.odoo.com/projects/odoo-19-l10n/"
 "l10n_be_hr_contract_salary/de/>\n"
@@ -23,25 +24,25 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: l10n_be_hr_contract_salary
 #. odoo-javascript
 #: code:addons/l10n_be_hr_contract_salary/static/src/js/hr_contract_salary.js:0
 msgid "# Children < 19"
-msgstr ""
+msgstr "Anzahl Kinder unter 19"
 
 #. module: l10n_be_hr_contract_salary
 #. odoo-javascript
 #: code:addons/l10n_be_hr_contract_salary/static/src/js/hr_contract_salary.js:0
 msgid "# Children >= 19"
-msgstr ""
+msgstr "Anzahl Kinder >= 19"
 
 #. module: l10n_be_hr_contract_salary
 #. odoo-python
 #: code:addons/l10n_be_hr_contract_salary/models/hr_version.py:0
 msgid "%(co2)s %(unit)s"
-msgstr ""
+msgstr "%(co2)s %(unit)s"
 
 #. module: l10n_be_hr_contract_salary
 #. odoo-python
@@ -53,7 +54,7 @@ msgstr "%(co2_fee)s € (CO2-Gebühren) + %(rent)s € (Rente)"
 #. odoo-python
 #: code:addons/l10n_be_hr_contract_salary/models/hr_version.py:0
 msgid "%(range)s %(unit)s"
-msgstr ""
+msgstr "%(range)s %(unit)s"
 
 #. module: l10n_be_hr_contract_salary
 #. odoo-python
@@ -82,11 +83,6 @@ msgid "13th Month"
 msgstr "13. Monat"
 
 #. module: l10n_be_hr_contract_salary
-#: model:hr.contract.salary.benefit.value,name:l10n_be_hr_contract_salary.l10n_be_representation_fees_value_2
-msgid "150 €"
-msgstr "150 €"
-
-#. module: l10n_be_hr_contract_salary
 #: model_terms:hr.job,job_details:l10n_be_hr_contract_salary.job_developer_be
 msgid "2 open days"
 msgstr "2 offene Tage"
@@ -98,11 +94,8 @@ msgid ""
 "20 days are the maximum amount an employee could get if she/he worked on a "
 "full working rate during the previous year in Belgium"
 msgstr ""
-
-#. module: l10n_be_hr_contract_salary
-#: model:hr.contract.salary.benefit.value,name:l10n_be_hr_contract_salary.l10n_be_mobile_value_1
-msgid "30.0 €"
-msgstr "30,00 €"
+"Ein Arbeitnehmer, der im Vorjahr in Belgien in Vollzeit gearbeitet hat, kann "
+"maximal 20 Tage erhalten"
 
 #. module: l10n_be_hr_contract_salary
 #: model_terms:hr.job,job_details:l10n_be_hr_contract_salary.job_developer_be
@@ -121,8 +114,8 @@ msgid ""
 "<a href=\"/\" class=\"btn btn-primary o_translate_inline\" "
 "target=\"_blank\"><small><b>READ</b></small></a>"
 msgstr ""
-"<a href=\"/\" class=\"btn btn-primary o_translate_inline\" target=\"_blank\""
-"><small><b>LESEN</b></small></a>"
+"<a href=\"/\" class=\"btn btn-primary o_translate_inline\" target=\"_blank\">"
+"<small><b>LESEN</b></small></a>"
 
 #. module: l10n_be_hr_contract_salary
 #: model_terms:hr.job,job_details:l10n_be_hr_contract_salary.job_developer_be
@@ -138,6 +131,11 @@ msgstr "<span class=\"text-muted small\">Verfahren</span>"
 #: model_terms:hr.job,job_details:l10n_be_hr_contract_salary.job_developer_be
 msgid "<span class=\"text-muted small\">Time to Answer</span>"
 msgstr "<span class=\"text-muted small\">Zeit zum Antworten</span>"
+
+#. module: l10n_be_hr_contract_salary
+#: model_terms:ir.ui.view,arch_db:l10n_be_hr_contract_salary.l10n_be_hr_contract_salary_view_employee_form
+msgid "<span>/ Month</span>"
+msgstr "<span>/ Monat</span>"
 
 #. module: l10n_be_hr_contract_salary
 #: model_terms:ir.ui.view,arch_db:l10n_be_hr_contract_salary.hr_employee_view_form
@@ -180,6 +178,11 @@ msgstr ">= 66 Jahre alt"
 #: model_terms:hr.job,website_description:l10n_be_hr_contract_salary.job_developer_be
 msgid "A full-time position <br>Attractive salary package."
 msgstr "Eine Vollzeitstelle <br>Attraktives Gehaltspaket."
+
+#. module: l10n_be_hr_contract_salary
+#: model:hr.contract.salary.personal.info,name:l10n_be_hr_contract_salary.hr_contract_salary_personal_info_account_holder_name
+msgid "Account Holder Name"
+msgstr "Name des Kontoinhabers"
 
 #. module: l10n_be_hr_contract_salary
 #: model_terms:hr.job,website_description:l10n_be_hr_contract_salary.job_developer_be
@@ -230,7 +233,7 @@ msgstr "Ambulante Versicherung (Info)"
 #. module: l10n_be_hr_contract_salary
 #: model:hr.contract.salary.resume,name:l10n_be_hr_contract_salary.hr_contract_salary_resume_annual_time_off
 msgid "Annual Time Off"
-msgstr ""
+msgstr "Jahresurlaub"
 
 #. module: l10n_be_hr_contract_salary
 #: model_terms:hr.job,website_description:l10n_be_hr_contract_salary.job_developer_be
@@ -578,7 +581,7 @@ msgstr "Erfahrung im Schreiben von Online-Inhalten"
 #. module: l10n_be_hr_contract_salary
 #: model:hr.job,name:l10n_be_hr_contract_salary.job_developer_be
 msgid "Experienced Developer (BE)"
-msgstr ""
+msgstr "Erfahrener Entwickler (BE)"
 
 #. module: l10n_be_hr_contract_salary
 #: model:hr.contract.salary.benefit,name:l10n_be_hr_contract_salary.l10n_be_extra_time_off
@@ -626,7 +629,7 @@ msgstr "Brutto"
 #. module: l10n_be_hr_contract_salary
 #: model:hr.contract.salary.resume,name:l10n_be_hr_contract_salary.hr_contract_salary_resume_gross_with_commission
 msgid "Gross (Incl. Comm)"
-msgstr ""
+msgstr "Brutto (inkl. Provisionen)"
 
 #. module: l10n_be_hr_contract_salary
 #. odoo-python
@@ -695,8 +698,7 @@ msgstr "Dateiname des Personalausweises"
 #. module: l10n_be_hr_contract_salary
 #: model:ir.model.fields,help:l10n_be_hr_contract_salary.field_hr_job__l10n_be_contract_ip
 msgid "If checked, the job position is eligible to Intellectual Property"
-msgstr ""
-"Wenn angekreuzt, ist die Stelle für intellektuelles Eigentum berechtigt"
+msgstr "Wenn angekreuzt, ist die Stelle für intellektuelles Eigentum berechtigt"
 
 #. module: l10n_be_hr_contract_salary
 #: model:ir.model.fields,help:l10n_be_hr_contract_salary.field_hr_job__l10n_be_contract_withholding_taxes_exemption
@@ -825,7 +827,7 @@ msgstr "Jobs"
 #. module: l10n_be_hr_contract_salary
 #: model:hr.contract.salary.personal.info.value,name:l10n_be_hr_contract_salary.hr_contract_salary_personal_info_marital_separation
 msgid "Judicially Separated"
-msgstr ""
+msgstr "Gerichtlich getrennt"
 
 #. module: l10n_be_hr_contract_salary
 #: model:hr.contract.salary.personal.info,name:l10n_be_hr_contract_salary.hr_contract_salary_personal_info_km_home_work
@@ -900,7 +902,7 @@ msgstr "Must-have"
 #. module: l10n_be_hr_contract_salary
 #: model:hr.contract.salary.resume,name:l10n_be_hr_contract_salary.hr_contract_salary_resume_monthly_benefit
 msgid "Nature"
-msgstr ""
+msgstr "In natura"
 
 #. module: l10n_be_hr_contract_salary
 #: model_terms:hr.job,website_description:l10n_be_hr_contract_salary.job_developer_be
@@ -1135,7 +1137,7 @@ msgstr "Dateiname der SIM-Karte"
 #. odoo-javascript
 #: code:addons/l10n_be_hr_contract_salary/static/src/js/hr_contract_salary.js:0
 msgid "Simulation"
-msgstr ""
+msgstr "Simulation"
 
 #. module: l10n_be_hr_contract_salary
 #: model_terms:ir.ui.view,arch_db:l10n_be_hr_contract_salary.salary_package_wishlist_sidebar
@@ -1310,6 +1312,10 @@ msgid ""
 "clients to explain the technical\n"
 "            possibilities that can meet their needs."
 msgstr ""
+"Wir suchen einen erfahrenen Entwickler für unser Webteam in Belgien.\n"
+"Eine Person, die sowohl programmieren als auch Analysen durchführen oder "
+"Kunden treffen kann, um ihnen die technischen\n"
+"Möglichkeiten zu erläutern, die ihren Anforderungen entsprechen."
 
 #. module: l10n_be_hr_contract_salary
 #: model_terms:hr.job,website_description:l10n_be_hr_contract_salary.job_developer_be
@@ -1435,12 +1441,16 @@ msgid "close"
 msgstr "Schließen"
 
 #. module: l10n_be_hr_contract_salary
-#: model_terms:ir.ui.view,arch_db:l10n_be_hr_contract_salary.hr_contract_salary_offer_view_form
-msgid "e.g. Permanent, Replacement, Short term"
-msgstr ""
-
-#. module: l10n_be_hr_contract_salary
 #. odoo-python
 #: code:addons/l10n_be_hr_contract_salary/controllers/main.py:0
 msgid "• Available in %s"
 msgstr "• Verfügbar in %s"
+
+#~ msgid "150 €"
+#~ msgstr "150 €"
+
+#~ msgid "30.0 €"
+#~ msgstr "30,00 €"
+
+#~ msgid "e.g. Permanent, Replacement, Short term"
+#~ msgstr "Beispiel: unbefristet, befristet, befristet"

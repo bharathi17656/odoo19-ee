@@ -1,9 +1,10 @@
 import { describe, expect, test } from "@odoo/hoot";
 import { edit } from "@odoo/hoot-dom";
-import { mockUserAgent } from "@odoo/hoot-mock";
+import { advanceTime } from "@odoo/hoot-mock";
 import {
     click,
     contains,
+    focus,
     insertText,
     start,
     startServer,
@@ -158,6 +159,28 @@ test("pressing Enter in the input doesn't make a call if the trimmed input is em
     expect(pyEnv["voip.call"].search_count([])).toBe(0);
 });
 
+test.tags("focus required");
+test("pressing Enter in the DTMF input doesn't start a new call", async () => {
+    const pyEnv = await startServer();
+    await start();
+    await click(".o_menu_systray [data-hotkey='Shift+S']");
+    await click(".o-voip-Softphone nav .oi-numpad");
+    await insertText(".o-voip-Keypad-input:focus", "9223372036854775807");
+    await triggerHotkey("Enter");
+    await advanceTime(3000);
+    expect(pyEnv["voip.call"].search_count([])).toBe(1);
+    await click(".o-voip-InCallView .oi-numpad");
+    await click(".o-voip-Keypad-digitBtn:nth-child(1)");
+    await click(".o-voip-Keypad-digitBtn:nth-child(2)");
+    await click(".o-voip-Keypad-digitBtn:nth-child(3)");
+    await contains(".o-voip-Keypad-input[readonly]", { value: "123" });
+    await focus(".o-voip-Keypad-input");
+    expect(".o-voip-Keypad-input").toBeFocused();
+    await triggerHotkey("Enter");
+    await advanceTime(3000);
+    expect(pyEnv["voip.call"].search_count([])).toBe(1);
+});
+
 test("input font size classes update dynamically when input changes", async () => {
     await start();
     await click(".o_menu_systray [title='Show Softphone']");
@@ -219,6 +242,23 @@ test("Search by phone number works", async () => {
     await contains(".o-voip-Keypad button:contains(123456)");
 });
 
+test("Search by phone number falls back to phone_sanitized", async () => {
+    const pyEnv = await startServer();
+    pyEnv["res.partner"].create({
+        name: "John Doe",
+        phone: "1234567890",
+        phone_sanitized: "+11234567890",
+    });
+    await start();
+    await click(".o_menu_systray [title='Show Softphone']");
+    await click(".o-voip-Softphone nav button:contains(Keypad)");
+    // Search term has country code prefix that doesn't match raw `phone`,
+    // but should match `phone_sanitized` via fallback.
+    await insertText(".o-voip-Keypad-input", "+11234567890");
+    await contains(".o-voip-Keypad button:contains(John Doe)");
+    await contains(".o-voip-Keypad button:contains(+11234567890)");
+});
+
 test("T9 search does not match when contact has falsy t9_name", async () => {
     const pyEnv = await startServer();
     pyEnv["res.partner"].create([{ name: " ", phone: "+1234567890", t9_name: false }]);
@@ -229,16 +269,6 @@ test("T9 search does not match when contact has falsy t9_name", async () => {
     await contains(".o-voip-Keypad button:contains(+1234567890)");
     await edit("66");
     await contains(".o-voip-Keypad .d-flex.flex-column.mx-3", { count: 0 });
-});
-
-test("clicking a keypad key should not focus the input on mobile", async () => {
-    await start();
-    mockUserAgent("android");
-    await click(".o_menu_systray [title='Show Softphone']");
-    await click(".o-voip-Softphone nav button:contains(Keypad)");
-    await click(".o-voip-Keypad-digit:contains(2)");
-    const input = document.querySelector(".o-voip-Keypad-searchBar input");
-    expect(document.activeElement).not.toBe(input);
 });
 
 test.tags("focus required");

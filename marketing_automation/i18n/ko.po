@@ -7,15 +7,15 @@
 # JH CHOI <hwangtog@gmail.com>, 2022
 # Sarah Park, 2022
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Kwanghee Park (kwpa)" <kwpa@odoo.com>, 2025.
+# "Kwanghee Park (kwpa)" <kwpa@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-16 17:53+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2026-02-14 10:01+0000\n"
+"Last-Translator: \"Kwanghee Park (kwpa)\" <kwpa@odoo.com>\n"
 "Language-Team: Korean <https://translate.odoo.com/projects/odoo-19/"
 "marketing_automation/ko/>\n"
 "Language: ko\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_summary_template
@@ -212,7 +212,7 @@ msgstr ""
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_kanban
 msgid "<span>Completed</span>"
-msgstr "<span>완료됨</span>"
+msgstr "<span>완료</span>"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_kanban
@@ -222,7 +222,7 @@ msgstr "<span>진행중</span>"
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_kanban
 msgid "<span>Total</span>"
-msgstr "<span>전체 작업</span>"
+msgstr "<span>전체</span>"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_summary_template
@@ -728,6 +728,12 @@ msgstr "오류가 발생했습니다! 활동의 재귀 계층 구조를 생성�
 #. module: marketing_automation
 #. odoo-python
 #: code:addons/marketing_automation/models/marketing_activity.py:0
+msgid "Error! You can't modify the hierarchy of an active Activity."
+msgstr ""
+
+#. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/marketing_activity.py:0
 msgid "Exception in mass mailing: %s"
 msgstr "일괄 메일에 예외 발생 : %s"
 
@@ -977,8 +983,8 @@ msgid ""
 "Mailings %(mailing_names)s are used in marketing campaigns. You should take "
 "care of this before unlinking the mailings."
 msgstr ""
-"메일 %(mailing_names)s이(가) 마케팅 캠페인에 사용됩니다. 메일링 연결을 "
-"해제하기 전에 이 문제를 처리해야 합니다."
+"메일 %(mailing_names)s이(가) 마케팅 캠페인에 사용됩니다. 메일링 연결을 해제하"
+"기 전에 이 문제를 처리해야 합니다."
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
@@ -1222,6 +1228,14 @@ msgid "Offer free catalog"
 msgstr "무료 상품안내서 제공"
 
 #. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/mailing_mailing.py:0
+msgid ""
+"Oops! You can't retry sending emails from inside a Marketing Automation "
+"campaign."
+msgstr ""
+
+#. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
 msgid "Opened"
 msgstr "확인함"
@@ -1365,6 +1379,12 @@ msgstr "기록 모델"
 
 #. module: marketing_automation
 #. odoo-python
+#: code:addons/marketing_automation/models/marketing_campaign.py:0
+msgid "Record no longer matches campaign filter"
+msgstr ""
+
+#. module: marketing_automation
+#. odoo-python
 #: code:addons/marketing_automation/models/marketing_activity.py:0
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_activity__rejected
 #: model:ir.model.fields.selection,name:marketing_automation.selection__marketing_trace__state__rejected
@@ -1435,6 +1455,11 @@ msgstr "실행"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
+msgid "Run Activities"
+msgstr "활동 실행"
+
+#. module: marketing_automation
+#: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
 msgid "Run the next scheduled activity for each participant of this campaign?"
 msgstr "해당 캠페인의 각 참가자를 위해 다음 예정 활동을 진행할까요?"
 
@@ -1445,7 +1470,7 @@ msgstr "해당 캠페인의 각 참가자를 위해 다음 예정 활동을 진�
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_search
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_trace_view_search
 msgid "Running"
-msgstr "실행 중"
+msgstr "진행 중"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
@@ -1645,7 +1670,7 @@ msgstr "참가자들의 동기화가 필요합니다"
 #. odoo-python
 #: code:addons/marketing_automation/models/marketing_campaign.py:0
 msgid "Tag Hot Contacts"
-msgstr "인기 연락처 태그"
+msgstr "핫 리드 태그"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__tag_ids
@@ -1688,6 +1713,12 @@ msgstr "추적 테스트"
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
 msgid "Tests"
 msgstr "테스트"
+
+#. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/marketing_campaign.py:0
+msgid "The filter domain is using unauthorized fields."
+msgstr ""
 
 #. module: marketing_automation
 #. odoo-python
@@ -1843,7 +1874,7 @@ msgstr "주"
 #. odoo-python
 #: code:addons/marketing_automation/models/marketing_campaign.py:0
 msgid "Welcome Flow"
-msgstr "환영 인사 단계"
+msgstr "웰컴 진행 순서"
 
 #. module: marketing_automation
 #. odoo-python
@@ -1925,22 +1956,25 @@ msgstr "<strong>워크플로우 시작</strong> 후,<br/>"
 msgid ""
 "after the Participant <strong>clicked</strong>,<br/>on any link included in "
 "the <strong>Mailing</strong> sent by the Activity \""
-msgstr "참가자가 활동에서 보낸 <strong>메일링</strong>에 포함된 링크를 "
-"<strong>클릭</strong><br/>하면\""
+msgstr ""
+"참가자가 활동에서 보낸 <strong>메일링</strong>에 포함된 링크를 <strong>클릭</"
+"strong><br/>하면\""
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_summary_template
 msgid ""
 "after the Participant <strong>opened</strong> the <strong>Mailing</strong> "
 "sent by the Activity \""
-msgstr "참가자가 활동에서 보낸 <strong>메일링</strong>을 <strong>열면</strong>\""
+msgstr ""
+"참가자가 활동에서 보낸 <strong>메일링</strong>을 <strong>열면</strong>\""
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_summary_template
 msgid ""
 "after the Participant <strong>replied</strong> to the <strong>Mailing</"
 "strong> sent by the Activity \""
-msgstr "참가자가 활동에서 보낸 <strong>메일링</strong>에 <strong>회신</strong>하면 ”"
+msgstr ""
+"참가자가 활동에서 보낸 <strong>메일링</strong>에 <strong>회신</strong>하면 ”"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_summary_template
@@ -1992,7 +2026,8 @@ msgstr "예정된 날짜가 경과했습니다."
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_summary_template
 msgid ""
 "if no link included in the <strong>Mailing</strong> sent by the Activity \""
-msgstr "활동에서 보낸 <strong>메일링</strong>에 링크가 포함되어 있지 않은 경우 \""
+msgstr ""
+"활동에서 보낸 <strong>메일링</strong>에 링크가 포함되어 있지 않은 경우 \""
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_summary_template

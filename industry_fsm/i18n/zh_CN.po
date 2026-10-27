@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
+"POT-Creation-Date: 2026-04-10 18:45+0000\n"
 "PO-Revision-Date: 2025-11-16 17:51+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://translate.odoo.com/"
@@ -52,17 +52,6 @@ msgstr "（包括"
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
 msgid "10 days"
 msgstr "10天"
-
-#. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
-msgid "10:00"
-msgstr "10:00"
-
-#. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
-#, fuzzy
-msgid "2023-01-01"
-msgstr "2023 年 1 月 1 日"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
@@ -167,9 +156,9 @@ msgid ""
 "title=\"By saving this change, the customer contact number will also be "
 "updated.\" invisible=\"not partner_id or not is_task_phone_update\"/>"
 msgstr ""
-"<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" title="
-"\"By saving this change, the customer contact number will also be updated.\" "
-"invisible=\"not partner_id or not is_task_phone_update\"/>"
+"<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
+"title=\"By saving this change, the customer contact number will also be "
+"updated.\" invisible=\"not partner_id or not is_task_phone_update\"/>"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
@@ -192,15 +181,16 @@ msgid ""
 "                            Signed\n"
 "                        </span>"
 msgstr ""
-"<span style=\"                             font-size: 10px;"
-"                             color: #fff;                             text-"
-"transform: uppercase;                             text-align: center;"
-"                             font-weight: bold; line-height: 20px;"
-"                             transform: rotate(45deg);"
-"                             width: 100px; height: auto; display: block;"
-"                             background: green;                             "
-"position: absolute;                             top: 19px; right: -21px; "
-"left: auto;                             padding: 0;\">\n"
+"<span style=\"                             font-size: "
+"10px;                             color: #fff;                             "
+"text-transform: uppercase;                             text-align: "
+"center;                             font-weight: bold; line-height: "
+"20px;                             transform: "
+"rotate(45deg);                             width: 100px; height: auto; "
+"display: block;                             background: "
+"green;                             position: "
+"absolute;                             top: 19px; right: -21px; left: "
+"auto;                             padding: 0;\">\n"
 "                            已签署\n"
 "                        </span>"
 
@@ -1485,8 +1475,8 @@ msgid ""
 msgstr ""
 "您的干预计划 {{ object.planned_date_begin 和 object.date_deadline 以及 '从 ' "
 "+ format_datetime(object.planned_date_begin, tz=object.partner_id.tz, "
-"lang_code=object.partner_id.lang) + ' 到 ' + format_datetime("
-"object.date_deadline, tz=object.partner_id.tz, "
+"lang_code=object.partner_id.lang) + ' 到 ' + "
+"format_datetime(object.date_deadline, tz=object.partner_id.tz, "
 "lang_code=object.partner_id.lang) 或 '' }}"
 
 #. module: industry_fsm
@@ -1514,6 +1504,13 @@ msgid ""
 msgstr ""
 "在\n"
 "                        <span class=\"fw-bold text-dark\">子任务</span>）"
+
+#~ msgid "10:00"
+#~ msgstr "10:00"
+
+#, fuzzy
+#~ msgid "2023-01-01"
+#~ msgstr "2023 年 1 月 1 日"
 
 #~ msgid "<b>Review and sign</b> the <b>task report</b> with your customer."
 #~ msgstr "与您的客户一起<b>审查并签署</b> <b>任务报告</b>。"

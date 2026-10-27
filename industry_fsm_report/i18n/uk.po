@@ -4,15 +4,15 @@
 #
 # Translators:
 # Martin Trigaux, 2022
-# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2023
+# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2023, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:47+0000\n"
-"PO-Revision-Date: 2025-11-16 13:36+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-03-20 18:44+0000\n"
+"PO-Revision-Date: 2026-10-07 10:33+0000\n"
+"Last-Translator: Alina Lisnenko <alina.lisnenko@erp.co.ua>\n"
 "Language-Team: Ukrainian <https://translate.odoo.com/projects/odoo-19/"
 "industry_fsm_report/uk/>\n"
 "Language: uk\n"
@@ -23,7 +23,13 @@ msgstr ""
 "? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > "
 "14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % "
 "100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
+
+#. module: industry_fsm_report
+#. odoo-javascript
+#: code:addons/industry_fsm_report/static/src/js/tours/industry_fsm_report_tour.js:0
+msgid "<b>Click to edit."
+msgstr "<b>Натисніть для редагування."
 
 #. module: industry_fsm_report
 #. odoo-javascript
@@ -97,7 +103,7 @@ msgstr "Шаблон документу компанії"
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.project_project_form_inherit_industry_fsm_report
 msgid "Complete custom worksheets for your interventions"
-msgstr ""
+msgstr "Заповніть індивідуальні робочі аркуші для ваших втручань"
 
 #. module: industry_fsm_report
 #: model:ir.model,website_form_label:industry_fsm_report.model_project_task
@@ -133,7 +139,7 @@ msgstr "Створено"
 #. odoo-javascript
 #: code:addons/industry_fsm_report/static/src/js/tours/industry_fsm_report_tour.js:0
 msgid "Customize your <b>layout</b>."
-msgstr ""
+msgstr "Налаштуйте ваш <b>шаблон</b>."
 
 #. module: industry_fsm_report
 #: model:ir.model.fields,field_description:industry_fsm_report.fsm_template_field6
@@ -155,7 +161,7 @@ msgstr "Опис втручання"
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.res_config_settings_view_form
 msgid "Design worksheet templates"
-msgstr ""
+msgstr "Розробка шаблонів робочих аркушів"
 
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.x_project_task_worksheet_template_4_ir_model_1
@@ -187,7 +193,7 @@ msgstr "Назва для відображення"
 #. odoo-python
 #: code:addons/industry_fsm_report/models/project_task.py:0
 msgid "Explore Worksheets Using an Example Template"
-msgstr ""
+msgstr "Ознайомтеся з робочими аркушами на прикладі шаблону"
 
 #. module: industry_fsm_report
 #. odoo-javascript
@@ -201,6 +207,8 @@ msgid ""
 "Give it a try using one of our example templates. You can remove them at any "
 "time."
 msgstr ""
+"Спробуйте скористатися одним із наших шаблонів-прикладів. Ви можете видалити "
+"їх у будь-який момент."
 
 #. module: industry_fsm_report
 #. odoo-javascript
@@ -268,7 +276,7 @@ msgstr "Завантажити шаблон"
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_worksheet_template_load_wizard
 msgid "Load the worksheet template"
-msgstr ""
+msgstr "Завантажте шаблон робочого аркуша"
 
 #. module: industry_fsm_report
 #: model:ir.model.fields,field_description:industry_fsm_report.fsm_template_field3
@@ -317,7 +325,7 @@ msgstr "Планування за шаблоном робочого аркушу
 #. module: industry_fsm_report
 #: model:ir.actions.server,name:industry_fsm_report.project_task_fsm_planning_groupby_worksheet_server_action
 msgid "Planning by Worksheet Template Server Action"
-msgstr ""
+msgstr "Планування за допомогою дії сервера на основі шаблону робочого аркуша"
 
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_project_project
@@ -339,7 +347,7 @@ msgstr "Зберігайте час, автоматично генеруючи <
 #: model_terms:ir.actions.act_window,help:industry_fsm_report.project_task_action_fsm_planning_groupby_worksheet
 #: model_terms:ir.actions.act_window,help:industry_fsm_report.project_task_action_fsm_planning_groupby_worksheet2
 msgid "Schedule your tasks and assign them to your technicians."
-msgstr ""
+msgstr "Плануйте завдання та призначайте їх своїм технічним спеціалістам."
 
 #. module: industry_fsm_report
 #: model:ir.actions.server,name:industry_fsm_report.action_fsm_task_send_report
@@ -355,7 +363,7 @@ msgstr "Серійний номер"
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.view_worksheet_template_load_form
 msgid "Start Blank"
-msgstr ""
+msgstr "Почати аркуш"
 
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.view_worksheet_template_load_form
@@ -364,6 +372,9 @@ msgid ""
 "content with customers and request their signatures to validate the "
 "completed work."
 msgstr ""
+"Адаптуйте шаблони робочих листів під свої конкретні потреби. Легко діліться "
+"вмістом робочих листів із клієнтами та запитуйте їхні підписи для "
+"підтвердження виконаної роботи."
 
 #. module: industry_fsm_report
 #: model_terms:ir.actions.act_window,help:industry_fsm_report.fsm_worksheets_action_settings
@@ -372,6 +383,9 @@ msgid ""
 "content with customers and request their signatures to validate the "
 "completed work.<br>"
 msgstr ""
+"Адаптуйте шаблони робочих листів під свої конкретні потреби. Легко діліться "
+"вмістом робочих листів із клієнтами та запитуйте їхні підписи для "
+"підтвердження виконаної роботи.<br>"
 
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_project_task
@@ -400,7 +414,7 @@ msgstr "Аналіз завдань"
 #: model:ir.model.fields,field_description:industry_fsm_report.fsm_template_field7
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.report_custom_x_project_task_worksheet_template_4
 msgid "Technician Signature"
-msgstr ""
+msgstr "Підпис техніка"
 
 #. module: industry_fsm_report
 #. odoo-javascript
@@ -423,6 +437,18 @@ msgid ""
 "        Make sure to use the right format and order e.g. Improve the "
 "configuration screen 5h #feature #v16 @Mitchell !"
 msgstr ""
+"Використовуйте ці ключові слова в заголовку під час створення нових "
+"завдань:\n"
+"\n"
+"30h Виділити на завдання 30 годин\n"
+"#tags Додати теги до завдання\n"
+"@user Призначити завдання користувачеві\n"
+"! Встановити середній пріоритет завдання\n"
+"!! Встановити високий пріоритет завдання\n"
+"!!! Встановити терміновий пріоритет завдання\n"
+"\n"
+"Обов’язково дотримуйтеся правильного формату та порядку, наприклад: Improve "
+"the configuration screen 5h #feature #v16 @Mitchell !"
 
 #. module: industry_fsm_report
 #. odoo-javascript
@@ -467,7 +493,7 @@ msgstr "Робочі аркуші"
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.project_project_form_inherit_industry_fsm_report
 msgid "e.g. Device Installation"
-msgstr ""
+msgstr "напр. Встановлення обладнання"
 
 #~ msgid "<strong>Template — </strong>"
 #~ msgstr "<strong>Шаблон — </strong>"

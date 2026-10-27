@@ -3,16 +3,16 @@
 # * hr_contract_salary_payroll
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Junko Augias (juau)" <juau@odoo.com>, 2025.
+# "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 # Odoo Translation Bot <c3p@odoo.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:46+0000\n"
-"PO-Revision-Date: 2025-11-27 14:16+0000\n"
-"Last-Translator: Odoo Translation Bot <c3p@odoo.com>\n"
+"POT-Creation-Date: 2026-01-22 18:43+0000\n"
+"PO-Revision-Date: 2026-10-06 03:33+0000\n"
+"Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
 "Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/"
 "hr_contract_salary_payroll/ja/>\n"
 "Language: ja\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: hr_contract_salary_payroll
 #: model_terms:ir.ui.view,arch_db:hr_contract_salary_payroll.hr_employee_view_form
@@ -178,7 +178,7 @@ msgstr "従業員"
 #. module: hr_contract_salary_payroll
 #: model:ir.model,name:hr_contract_salary_payroll.model_hr_version
 msgid "Employee Contract"
-msgstr "従業員契約書"
+msgstr "雇用契約"
 
 #. module: hr_contract_salary_payroll
 #: model:ir.model.fields,field_description:hr_contract_salary_payroll.field_hr_contract_salary_offer__final_yearly_costs
@@ -188,7 +188,7 @@ msgstr "雇用主予算"
 #. module: hr_contract_salary_payroll
 #: model:ir.model.fields,field_description:hr_contract_salary_payroll.field_hr_payroll_headcount_line__employer_cost
 msgid "Employer Cost"
-msgstr "雇用コスト"
+msgstr "雇用主負担額"
 
 #. module: hr_contract_salary_payroll
 #: model:ir.ui.menu,name:hr_contract_salary_payroll.hr_payroll_menu_contract_type
@@ -325,35 +325,13 @@ msgstr ""
 #. module: hr_contract_salary_payroll
 #. odoo-javascript
 #: code:addons/hr_contract_salary_payroll/static/src/xml/brut2net_modal.xml:0
+#: model_terms:ir.ui.view,arch_db:hr_contract_salary_payroll.hr_contract_salary_offer_view_form_inherit
 msgid ""
 "Please note that this information may be inaccurate and should be used for "
 "reference only."
 msgstr ""
 "この情報は不正確である可能性がありますので、あくまでも参考としてご利用下さ"
 "い。"
-
-#. module: hr_contract_salary_payroll
-#: model_terms:ir.ui.view,arch_db:hr_contract_salary_payroll.hr_contract_salary_offer_view_form_inherit
-msgid ""
-"Please note that this information may be inaccurate and should be used for "
-"reference only. The amounts are calculated based on a full time permanent "
-"contract, and benefits are computed from the selected contract template"
-msgstr ""
-"この情報は不正確である可能性がありますので、あくまでも参考としてご利用くださ"
-"い。金額はフルタイムの正社員契約に基づいて計算されており、手当は選択した契約"
-"テンプレートに基づいて計算されています"
-
-#. module: hr_contract_salary_payroll
-#: model_terms:ir.ui.view,arch_db:hr_contract_salary_payroll.hr_contract_salary_offer_view_form_inherit
-msgid ""
-"Please note that this information may be inaccurate and should be used for "
-"reference only. The amounts are calculated based on a full time permanent "
-"contract, and benefits are computed from the selected employee and/or the "
-"selected contract template"
-msgstr ""
-"この情報は不正確である可能性がありますので、あくまでも参考としてご利用くださ"
-"い。金額はフルタイムの正社員契約に基づいて計算されており、手当は選択された従"
-"業員および／または選択された契約テンプレートに基づいて計算されています"
 
 #. module: hr_contract_salary_payroll
 #: model_terms:ir.ui.view,arch_db:hr_contract_salary_payroll.hr_contract_salary_offer_view_form
@@ -365,6 +343,12 @@ msgstr "給与"
 #: model:ir.ui.menu,name:hr_contract_salary_payroll.menu_hr_payroll_salary_calculator
 msgid "Salary Calculator"
 msgstr "給与計算機"
+
+#. module: hr_contract_salary_payroll
+#: model:ir.model.fields,field_description:hr_contract_salary_payroll.field_hr_employee__salary_offer_ids
+#: model:ir.model.fields,field_description:hr_contract_salary_payroll.field_hr_version__salary_offer_ids
+msgid "Salary Offer"
+msgstr ""
 
 #. module: hr_contract_salary_payroll
 #: model:ir.model,name:hr_contract_salary_payroll.model_hr_contract_salary_benefit
@@ -416,18 +400,12 @@ msgstr "シミュレーション従業員"
 #. module: hr_contract_salary_payroll
 #: model:hr.contract.salary.resume,name:hr_contract_salary_payroll.hr_contract_salary_payroll_resume_gross_worker
 msgid "Taxable Salary"
-msgstr "課税可能給与"
+msgstr "課税対象給与"
 
 #. module: hr_contract_salary_payroll
 #: model:ir.ui.menu,name:hr_contract_salary_payroll.hr_payroll_menu_contract_templates
 msgid "Templates"
 msgstr "テンプレート"
-
-#. module: hr_contract_salary_payroll
-#. odoo-javascript
-#: code:addons/hr_contract_salary_payroll/static/src/xml/brut2net_modal.xml:0
-msgid "The amounts are calculated  based on a full time permanent contract."
-msgstr "金額はフルタイムの正社員契約に基づいて算出されています。"
 
 #. module: hr_contract_salary_payroll
 #. odoo-javascript
@@ -456,7 +434,8 @@ msgstr "リンクは無効です。人事担当者に連絡して新しいリン
 #. odoo-python
 #: code:addons/hr_contract_salary_payroll/controllers/main.py:0
 msgid "This offer is a simulation. You cannot submit this salary package."
-msgstr "このオファーはシミュレーションです。この給与パッケージを提出することはできま"
+msgstr ""
+"このオファーはシミュレーションです。この給与パッケージを提出することはできま"
 "せん。"
 
 #. module: hr_contract_salary_payroll
@@ -496,13 +475,13 @@ msgstr "年間福利厚生"
 #: model:ir.model.fields,field_description:hr_contract_salary_payroll.field_hr_employee__final_yearly_costs
 #: model:ir.model.fields,field_description:hr_contract_salary_payroll.field_hr_version__final_yearly_costs
 msgid "Yearly Cost"
-msgstr "年額費用"
+msgstr "年間コスト"
 
 #. module: hr_contract_salary_payroll
 #: model:ir.model.fields,field_description:hr_contract_salary_payroll.field_hr_contract_salary_offer__yearly_employer_cost
 #: model:ir.model.fields.selection,name:hr_contract_salary_payroll.selection__hr_contract_salary_offer__budget_type__yearly_employer
 msgid "Yearly Employer Cost"
-msgstr "年間雇用者負担額"
+msgstr "年間雇用主負担額"
 
 #. module: hr_contract_salary_payroll
 #: model_terms:ir.ui.view,arch_db:hr_contract_salary_payroll.hr_contract_salary_offer_view_form
@@ -515,3 +494,26 @@ msgstr "月"
 #: model_terms:ir.ui.view,arch_db:hr_contract_salary_payroll.hr_contract_salary_offer_view_form_inherit
 msgid "year"
 msgstr "年"
+
+#~ msgid ""
+#~ "Please note that this information may be inaccurate and should be used "
+#~ "for reference only. The amounts are calculated based on a full time "
+#~ "permanent contract, and benefits are computed from the selected contract "
+#~ "template"
+#~ msgstr ""
+#~ "この情報は不正確である可能性がありますので、あくまでも参考としてご利用くだ"
+#~ "さい。金額はフルタイムの正社員契約に基づいて計算されており、手当は選択した"
+#~ "契約テンプレートに基づいて計算されています"
+
+#~ msgid ""
+#~ "Please note that this information may be inaccurate and should be used "
+#~ "for reference only. The amounts are calculated based on a full time "
+#~ "permanent contract, and benefits are computed from the selected employee "
+#~ "and/or the selected contract template"
+#~ msgstr ""
+#~ "この情報は不正確である可能性がありますので、あくまでも参考としてご利用くだ"
+#~ "さい。金額はフルタイムの正社員契約に基づいて計算されており、手当は選択され"
+#~ "た従業員および／または選択された契約テンプレートに基づいて計算されています"
+
+#~ msgid "The amounts are calculated  based on a full time permanent contract."
+#~ msgstr "金額はフルタイムの正社員契約に基づいて算出されています。"

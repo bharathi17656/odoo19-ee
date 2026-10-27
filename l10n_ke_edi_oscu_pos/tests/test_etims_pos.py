@@ -1,8 +1,12 @@
+from odoo import Command
 from odoo.addons.l10n_ke_edi_oscu_pos.tests.common import CommonPosKeEdiTest
+from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
 from odoo.addons.l10n_ke_edi_oscu.tests.common import TestKeEdiCommon
 from odoo.addons.l10n_ke_edi_oscu.tests.test_live import TestKeEdi
 from odoo.exceptions import UserError
 from odoo.tests import tagged
+
+from freezegun import freeze_time
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
@@ -37,6 +41,53 @@ class TestEtimsPos(TestKeEdiCommon, CommonPosKeEdiTest):
         with self.enter_registry_test_mode():
             self.env.ref('l10n_ke_edi_oscu_stock.ir_cron_send_stock_moves').method_direct_trigger()
         self.assertEqual(order.picking_ids.l10n_ke_oscu_sar_number, 1)
+
+    def test_combo_line_excluded_from_etims(self):
+        """
+        A combo adds a "0 price" parent line in the PoS, with the chosen combo item as a
+        child line. Only the combo item must be sent to eTIMS, not the combo parent line.
+        """
+        self.pos_config_usd.open_ui()
+        product = self.twenty_dollars_with_10_incl.product_variant_id
+        combo = self.env['product.combo'].create({
+            'name': 'Drinks Combo',
+            'combo_item_ids': [Command.create({'product_id': product.id})],
+        })
+        combo_product = self.env['product.product'].create({
+            'name': 'Burger Combo',
+            'type': 'combo',
+            'combo_ids': [Command.set(combo.ids)],
+        })
+        pos_order = self.env['pos.order'].create({
+            'session_id': self.pos_config_usd.current_session_id.id,
+            'partner_id': self.partner_moda.id,
+            'amount_tax': 0.0,
+            'amount_total': 0.0,
+            'amount_paid': 0.0,
+            'amount_return': 0.0,
+        })
+        combo_line = self.env['pos.order.line'].create({
+            'order_id': pos_order.id,
+            'product_id': combo_product.id,
+            'qty': 1,
+            'price_subtotal': 0,
+            'price_subtotal_incl': 0,
+        })
+        combo_item_line = self.env['pos.order.line'].create({
+            'order_id': pos_order.id,
+            'product_id': product.id,
+            'qty': 1,
+            'price_unit': 100,
+            'price_subtotal': 100,
+            'price_subtotal_incl': 110,
+            'tax_ids': product.taxes_id.ids,
+            'combo_item_id': combo.combo_item_ids.id,
+            'combo_parent_id': combo_line.id,
+        })
+
+        line_items = pos_order._l10n_ke_oscu_get_json_from_order_lines()
+        self.assertEqual(len(line_items), 1, "the combo parent line must not be sent to eTIMS")
+        self.assertEqual(line_items[0]['itemNm'], combo_item_line.name, "only the combo item line should be sent")
 
     def test_invoice_order(self):
         order, _ = self.create_backend_pos_order({
@@ -78,7 +129,7 @@ class TestEtimsPos(TestKeEdiCommon, CommonPosKeEdiTest):
             order.action_post_order()
 
     def test_refund_pos_order(self):
-        _, refund = self.create_backend_pos_order({
+        order, refund = self.create_backend_pos_order({
             'order_data': {
                 'partner_id': self.partner_moda.id,
                 'to_invoice': True,
@@ -94,7 +145,103 @@ class TestEtimsPos(TestKeEdiCommon, CommonPosKeEdiTest):
             ]
         })
 
+        order.action_post_order()
         refund.action_post_order()
         self.assertEqual(refund.l10n_ke_oscu_internal_data, 'GRKJVWYCFBPTYQ225X2UEYONVE')
         self.assertEqual(refund.l10n_ke_oscu_signature, '123456789ODOOGR3')
         self.assertEqual(refund.l10n_ke_oscu_receipt_number, 169)
+
+        # The refund must reference the KRA invoice number of the order it refunds, not its own order number.
+        self.assertEqual(refund.l10n_ke_order_json['orgInvcNo'], order.l10n_ke_oscu_order_number)
+        self.assertNotEqual(refund.l10n_ke_order_json['orgInvcNo'], refund.sequence_number)
+
+    def test_send_order_complex(self):
+        """
+        Test that complex orders return the same values from POS and invoices.
+        Mirror of test_send_invoice_complex.
+        """
+        with freeze_time('2024-04-15'), self.patch_session([
+            ('saveTrnsSalesOsdc', 'save_pos_order_complex', 'save_sale_success'),
+            ('saveItem', 'save_item_pos_1', 'success'),
+            ('insertStockIO', 'save_stock_io_pos_1', 'success'),
+            ('saveStockMaster', 'save_stock_master_pos_1', 'success'),
+        ]):
+            price_unit = 1300
+            discount = 10
+            qty = 2
+
+            # ensure that the excise tax applies before the sales and withholding taxes
+            wh_tax = self.env['account.chart.template'].ref('SWT10')
+            (wh_tax | self.standard_rate_sales_tax).with_context(mail_notrack=True).sequence = 2
+
+            # 1) create the complex pos order
+            pos_order = self.create_backend_pos_order({
+                'pos_config': self.pos_config_usd,
+                'order_data': {
+                    'partner_id': self.partner_a.id,
+                    'lines': [
+                        Command.create({
+                            'product_id': self.twenty_dollars_with_10_incl.product_variant_id.id,
+                            'price_unit': price_unit,
+                            'price_subtotal': price_unit * qty * (1.0 - discount / 100.0),
+                            'price_subtotal_incl': 0,
+                            'discount': 10,
+                            'qty': qty,
+                            'tax_ids': [Command.set((self.excise_tax | self.standard_rate_sales_tax | wh_tax).ids)],
+                    })],
+                    'amount_total': price_unit * qty * (1.0 - discount) / 100.0,
+                },
+                'payment_data': [
+                    {'payment_method_id': self.bank_payment_method.id}
+            ]})[0]
+
+            # 2) Send order to eTIMS
+            # patch_session requires real sending data
+            self.company.l10n_ke_server_mode = 'prod'
+            pos_order.action_post_order()
+
+            self.assertEqual(pos_order.l10n_ke_oscu_internal_data, 'GRKJVWYCFBPTYQ225X2UEYONVE')
+            self.assertEqual(pos_order.l10n_ke_oscu_signature, '123456789ODOOGR3')
+            self.assertEqual(pos_order.l10n_ke_oscu_receipt_number, 169)
+
+
+@tagged('post_install_l10n', 'post_install', '-at_install')
+class TestEtimsComboTour(TestKeEdiCommon, TestPointOfSaleHttpCommon):
+
+    @classmethod
+    @TestKeEdi.setup_country('ke')
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company.l10n_ke_server_mode = 'demo'
+        cls.main_pos_config.payment_method_ids = [Command.link(cls.bank_payment_method.id)]
+
+        drink = cls.env['product.product'].create({
+            'name': 'Registered Drink',
+            'available_in_pos': True,
+            'standard_price': 30,
+            'taxes_id': cls.tax_sale_a.ids,
+            'l10n_ke_product_type_code': '2',
+            'l10n_ke_packaging_unit_id': cls.env['l10n_ke_edi_oscu.code'].search([('code', '=', 'BA')], limit=1).id,
+            'unspsc_code_id': cls.env['product.unspsc.code'].search([('code', '=', '52161557')], limit=1).id,
+            'l10n_ke_origin_country_id': cls.env.ref('base.be').id,
+        })
+        combo = cls.env['product.combo'].create({
+            'name': 'Drinks Combo',
+            'combo_item_ids': [Command.create({'product_id': drink.id})],
+        })
+        cls.env['product.product'].create({
+            'name': 'Non-registered Combo',
+            'type': 'combo',
+            'available_in_pos': True,
+            'list_price': 10,
+            'taxes_id': False,
+            'combo_ids': [Command.set(combo.ids)],
+        })
+
+    def test_etims_combo(self):
+        """
+        A combo whose components are registered can be validated without registering the
+        combo itself, and no eTIMS warning should be shown.
+        """
+        self.main_pos_config.open_ui()
+        self.start_pos_tour('l10n_ke_edi_pos_combo_registered', login="accountman")

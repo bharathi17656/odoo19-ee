@@ -109,6 +109,9 @@
                                     </cac:PartyLegalEntity>
                                </cac:AgentParty>
                         </cac:CarrierParty>
+                        <cac:LoadingTransportEvent t-if="record.l10n_pe_edi_transport_type == '01'">
+                            <cbc:OccurrenceDate t-out='format_date(record.l10n_pe_edi_departure_start_date)'/>
+                        </cac:LoadingTransportEvent>
                         <cac:DriverPerson t-if="record.l10n_pe_edi_transport_type == '02' and not record.l10n_pe_edi_vehicle_id.is_m1l">
                             <cbc:ID t-att-schemeID="record.l10n_pe_edi_operator_id.l10n_latam_identification_type_id.l10n_pe_vat_code"
                                 schemeName="Documento de Identidad"
@@ -126,7 +129,7 @@
                         <cac:DeliveryAddress>
                             <cbc:ID schemeName="Ubigeos"
                                 schemeAgencyName="PE:INEI"><t t-out="record.partner_id.l10n_pe_district.code"/></cbc:ID>
-                            <t t-if="record.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code == '6'">
+                            <t t-if="record.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code == '6' and record.l10n_pe_edi_reason_for_transfer != '18'">
                                 <cbc:AddressTypeCode
                                     t-att-listID="record.partner_id.vat"
                                     listAgencyName="PE:SUNAT"

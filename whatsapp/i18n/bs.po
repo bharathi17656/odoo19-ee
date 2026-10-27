@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
+"POT-Creation-Date: 2025-12-30 18:42+0000\n"
 "PO-Revision-Date: 2025-10-08 18:43+0000\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -73,7 +73,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:whatsapp.template_message_preview
 msgid ""
 "<span class=\"o-whatsapp-font-11\">{{Location name}}</span><br/>\n"
-"                            <span class=\"text-600 o-whatsapp-font-9\">{{Address}}</span>"
+"                            <span class=\"text-600 o-whatsapp-"
+"font-9\">{{Address}}</span>"
 msgstr ""
 
 #. module: whatsapp
@@ -89,7 +90,8 @@ msgstr ""
 #. module: whatsapp
 #: model_terms:ir.ui.view,arch_db:whatsapp.template_message_preview
 msgid ""
-"<span class=\"position-absolute bottom-0 end-0 o-whatsapp-font-11 py-1 px-2 text-black-50\" area-hidden=\"true\">\n"
+"<span class=\"position-absolute bottom-0 end-0 o-whatsapp-font-11 py-1 px-2 "
+"text-black-50\" area-hidden=\"true\">\n"
 "                        06:00\n"
 "                    </span>"
 msgstr ""
@@ -103,7 +105,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:whatsapp.whatsapp_composer_view_form
 msgid ""
 "<strong>Invalid number: </strong>\n"
-"                            <span>make sure to set a country on the Contact or to specify the country code.</span>"
+"                            <span>make sure to set a country on the Contact "
+"or to specify the country code.</span>"
 msgstr ""
 
 #. module: whatsapp
@@ -290,9 +293,12 @@ msgstr ""
 #. module: whatsapp
 #: model:ir.model.fields,help:whatsapp.field_whatsapp_template__template_type
 msgid ""
-"Authentication - One-time passwords that your customers use to authenticate a transaction or login.\n"
-"Marketing - Promotions or information about your business, products or services. Or any message that isn't utility or authentication.\n"
-"Utility - Messages about a specific transaction, account, order or customer request."
+"Authentication - One-time passwords that your customers use to authenticate "
+"a transaction or login.\n"
+"Marketing - Promotions or information about your business, products or "
+"services. Or any message that isn't utility or authentication.\n"
+"Utility - Messages about a specific transaction, account, order or customer "
+"request."
 msgstr ""
 
 #. module: whatsapp
@@ -440,8 +446,8 @@ msgstr ""
 #. module: whatsapp
 #: model:ir.model.fields,help:whatsapp.field_discuss_channel__channel_type
 msgid ""
-"Chat is private and unique between 2 persons. Group is private among invited"
-" persons. Channel can be freely joined (depending on its configuration)."
+"Chat is private and unique between 2 persons. Group is private among invited "
+"persons. Channel can be freely joined (depending on its configuration)."
 msgstr ""
 
 #. module: whatsapp
@@ -686,8 +692,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/whatsapp/models/whatsapp_template_variable.py:0
 msgid ""
-"Dynamic button variable name must be the same as its respective button's "
-"name"
+"Dynamic button variable name must be the same as its respective button's name"
 msgstr ""
 
 #. module: whatsapp
@@ -710,8 +715,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/whatsapp/models/whatsapp_account.py:0
 msgid ""
-"Enabling WhatsApp debug stops medias (pictures, videos, pdf, ...) from being"
-" received."
+"Enabling WhatsApp debug stops medias (pictures, videos, pdf, ...) from being "
+"received."
 msgstr ""
 
 #. module: whatsapp
@@ -837,8 +842,7 @@ msgstr ""
 #. module: whatsapp
 #. odoo-python
 #: code:addons/whatsapp/models/whatsapp_template_variable.py:0
-msgid ""
-"Field template variables %(var_names)s must be associated with a field."
+msgid "Field template variables %(var_names)s must be associated with a field."
 msgstr ""
 
 #. module: whatsapp
@@ -2141,8 +2145,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/whatsapp/models/whatsapp_template_variable.py:0
 msgid ""
-"Template variable should be in format {{number}}. Cannot parse "
-"\"%(placeholder)s\""
+"Template variable should be in format {{number}}. Cannot parse \"%"
+"(placeholder)s\""
 msgstr ""
 
 #. module: whatsapp
@@ -2188,8 +2192,7 @@ msgstr ""
 #. module: whatsapp
 #. odoo-python
 #: code:addons/whatsapp/models/whatsapp_template.py:0
-msgid ""
-"The Header Text must either contain no variable or the first one {{1}}."
+msgid "The Header Text must either contain no variable or the first one {{1}}."
 msgstr ""
 
 #. module: whatsapp
@@ -2327,11 +2330,14 @@ msgid ""
 "- 'Update a Record': update the values of a record\n"
 "- 'Create Activity': create an activity (Discuss)\n"
 "- 'Send Email': post a message, a note or send an email (Discuss)\n"
-"- 'Send SMS': send SMS, log them on documents (SMS)- 'Add/Remove Followers': add or remove followers to a record (Discuss)\n"
+"- 'Send SMS': send SMS, log them on documents (SMS)- 'Add/Remove Followers': "
+"add or remove followers to a record (Discuss)\n"
 "- 'Create Record': create a new record with new values\n"
 "- 'Execute Code': a block of Python code that will be executed\n"
-"- 'Send Webhook Notification': send a POST request to an external system, also known as a Webhook\n"
-"- 'Multi Actions': define an action that triggers several other server actions\n"
+"- 'Send Webhook Notification': send a POST request to an external system, "
+"also known as a Webhook\n"
+"- 'Multi Actions': define an action that triggers several other server "
+"actions\n"
 msgstr ""
 
 #. module: whatsapp
@@ -2369,7 +2375,8 @@ msgid ""
 "'comment': generated by user input e.g. through discuss or composer\n"
 "'email_outgoing': generated by a mailing\n"
 "'notification': generated by system e.g. tracking messages\n"
-"'auto_comment': generated by automated notification mechanism e.g. acknowledgment\n"
+"'auto_comment': generated by automated notification mechanism e.g. "
+"acknowledgment\n"
 "'user_notification': generated for a specific recipient"
 msgstr ""
 
@@ -2459,8 +2466,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/whatsapp/models/whatsapp_template_variable.py:0
 msgid ""
-"Variables %(field_names)s do not seem to be valid field path for model "
-"%(model_name)s."
+"Variables %(field_names)s do not seem to be valid field path for model %"
+"(model_name)s."
 msgstr ""
 
 #. module: whatsapp
@@ -2673,8 +2680,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/whatsapp/models/whatsapp_template.py:0
 msgid ""
-"When using a \"location\" header, there should 4 location variables not "
-"%(count)d."
+"When using a \"location\" header, there should 4 location variables not %"
+"(count)d."
 msgstr ""
 
 #. module: whatsapp
@@ -2698,8 +2705,7 @@ msgstr ""
 #. module: whatsapp
 #. odoo-python
 #: code:addons/whatsapp/models/whatsapp_template_variable.py:0
-msgid ""
-"You are not allowed to use field %(field)s, contact your administrator."
+msgid "You are not allowed to use field %(field)s, contact your administrator."
 msgstr ""
 
 #. module: whatsapp
@@ -2731,15 +2737,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/whatsapp/models/discuss_channel.py:0
 msgid ""
-"You can't leave this channel. As you are the owner of this WhatsApp channel,"
-" you can only delete it."
+"You can't leave this channel. As you are the owner of this WhatsApp channel, "
+"you can only delete it."
 msgstr ""
 
 #. module: whatsapp
 #. odoo-python
 #: code:addons/whatsapp/models/whatsapp_template.py:0
-msgid ""
-"You cannot modify a template model when it is linked to server actions."
+msgid "You cannot modify a template model when it is linked to server actions."
 msgstr ""
 
 #. module: whatsapp
@@ -2832,5 +2837,6 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:whatsapp.whatsapp_template_action
 msgid ""
 "will be visible here once they're synced.\n"
-"                You can also write new ones from here and submit them for approval, following the"
+"                You can also write new ones from here and submit them for "
+"approval, following the"
 msgstr ""

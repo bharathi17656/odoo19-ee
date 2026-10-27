@@ -12,7 +12,7 @@ class VoipCountryCode(models.AbstractModel):
     identifying the origin of a phone number.
 
     Models inheriting this mixin should have a phone number field. If the field
-    is not named 'phone', they should override `_voip_get_phone_field()`.
+    is not named 'phone', they should override `_phone_get_number_fields()`.
     """
 
     _name = "voip.country.code.mixin"

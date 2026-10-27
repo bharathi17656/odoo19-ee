@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-28 07:26+0000\n"
+"POT-Creation-Date: 2026-10-02 17:42+0000\n"
+"PO-Revision-Date: 2025-12-06 09:53+0000\n"
 "Last-Translator: \"Thi Huong Nguyen (thng)\" <thng@odoo.com>\n"
 "Language-Team: Vietnamese <https://translate.odoo.com/projects/odoo-19/"
 "hr_appraisal/vi/>\n"
@@ -69,30 +69,10 @@ msgid ". Then, share it with appraisers."
 msgstr ""
 
 #. module: hr_appraisal
-#: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__100
-msgid "100%"
-msgstr "100%"
-
-#. module: hr_appraisal
-#: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__025
-msgid "25%"
-msgstr "25%"
-
-#. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__module_hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "360 Feedback"
 msgstr "Phản hồi 360"
-
-#. module: hr_appraisal
-#: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__050
-msgid "50%"
-msgstr "50%"
-
-#. module: hr_appraisal
-#: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__075
-msgid "75%"
-msgstr "75%"
 
 #. module: hr_appraisal
 #: model:mail.template,body_html:hr_appraisal.mail_template_appraisal_confirm
@@ -122,21 +102,21 @@ msgid ""
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">"
-"\n"
-"                        Đánh giá của <t t-out=\"ctx.get('employee_to_name')\""
-">nhân viên</t> đã được xác nhận.\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;"
+"\">\n"
+"                        Đánh giá của <t t-out=\"ctx.get('employee_to_name')"
+"\">nhân viên</t> đã được xác nhận.\n"
 "                        <br/><br/>\n"
 "                        Vui lòng lên kế hoạch một ngày đánh giá cùng nhau.\n"
 "                        <br/><br/>\n"
 "                        <t t-if=\"ctx.get('recipient_users')\">\n"
-"                            <p style="
-"\"margin: 16px 0px 16px 0px; text-align: center;\">\n"
-"                                <a t-att-href=\"ctx.get('url')\" t-attf-style"
-"=\"background-color: {{object.company_id.email_secondary_color or "
-"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: {{"
-"object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;\">"
-"\n"
+"                            <p style=\"margin: 16px 0px 16px 0px; text-"
+"align: center;\">\n"
+"                                <a t-att-href=\"ctx.get('url')\" t-attf-"
+"style=\"background-color: {{object.company_id.email_secondary_color or "
+"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;"
+"\">\n"
 "                                    Xem đánh giá\n"
 "                               </a> \n"
 "                            </p>\n"
@@ -182,14 +162,14 @@ msgid ""
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">"
-"\n"
-"                        Xin chào <t t-out=\"ctx.get('employee_to_name')\""
-">nhân viên</t>,\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;"
+"\">\n"
+"                        Xin chào <t t-out=\"ctx.get('employee_to_name')"
+"\">nhân viên</t>,\n"
 "                        <br/>\n"
 "                        <t t-out=\"ctx.get('author_name', '')\">Addison "
-"Olson</t> (<t t-out=\"ctx.get('author_mail', '')\""
-">addison.olson28@example.com</t>) muốn tiến hành đánh giá.\n"
+"Olson</t> (<t t-out=\"ctx.get('author_mail', '')"
+"\">addison.olson28@example.com</t>) muốn tiến hành đánh giá.\n"
 "                        <t t-if=\"ctx.get('user_body')\">\n"
 "                            <div style=\"margin: 16px 0px 16px 0px; padding: "
 "8px 16px 8px 16px; background-color: #F1F1F1;\">\n"
@@ -200,11 +180,11 @@ msgstr ""
 "                        <t t-if=\"ctx.get('recipient_users')\">\n"
 "                            <p style=\"margin: 16px 0px 16px 0px; padding: "
 "8px 16px 8px 16px; text-align: center;\">\n"
-"                               <a t-att-href=\"ctx.get('url')\" t-attf-style="
-"\" margin: auto; background-color: {{"
-"object.employee_id.company_id.email_secondary_color or '#875A7B'}}; padding: "
-"8px 16px 8px 16px; text-decoration: none; color: {{"
-"object.employee_id.company_id.email_primary_color or '#FFFFFF'}}; border-"
+"                               <a t-att-href=\"ctx.get('url')\" t-attf-"
+"style=\" margin: auto; background-color: "
+"{{object.employee_id.company_id.email_secondary_color or '#875A7B'}}; "
+"padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"{{object.employee_id.company_id.email_primary_color or '#FFFFFF'}}; border-"
 "radius: 5px;\"> \n"
 "                                    Xem đánh giá\n"
 "                                </a>\n"
@@ -258,20 +238,20 @@ msgid ""
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">"
-"\n"
-"                        Xin chào <t t-out=\"ctx.get('employee_to_name')\">"
-"[nhân viên]</t>,\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;"
+"\">\n"
+"                        Xin chào <t t-out=\"ctx.get('employee_to_name')"
+"\">[nhân viên]</t>,\n"
 "                        <br/>\n"
 "                        Đây là lời nhắc nhanh rằng buổi đánh giá sắp tới của "
 "bạn với <t t-out=\"ctx.get('manager_names')\"> [người đánh giá]</t>\n"
-"                        được lên lịch vào ngày <t t-out="
-"\"ctx.get('date_close')\">[ngày]</t>.\n"
+"                        được lên lịch vào ngày <t t-"
+"out=\"ctx.get('date_close')\">[ngày]</t>.\n"
 "                        <br/>\n"
 "                        <t t-if=\"ctx.get('user_body')\">\n"
 "                            <div class=\"my-3 py-2 px-3 bg-secondary\">\n"
-"                                <t t-out=\"ctx.get('user_body')\">"
-"[Ghi chú bổ sung]</t>\n"
+"                                <t t-out=\"ctx.get('user_body')\">[Ghi chú "
+"bổ sung]</t>\n"
 "                            </div>\n"
 "                        </t>\n"
 "                        <t t-if=\"ctx.get('recipient_users')\">\n"
@@ -279,11 +259,11 @@ msgstr ""
 "tại đây:\n"
 "                            <p class=\"text-center my-3 py-2 px-3\">\n"
 "                                <a t-att-href=\"ctx.get('url')\" t-attf-"
-"style=\" margin: auto; background-color: {{"
-"object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
-"8px 16px; text-decoration: none; color: {{"
-"object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;\">"
-"\n"
+"style=\" margin: auto; background-color: "
+"{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
+"8px 16px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;"
+"\">\n"
 "                                    Xem đánh giá\n"
 "                                </a>\n"
 "                            </p>\n"
@@ -326,6 +306,11 @@ msgid ""
 "                        enjoy the most and which the least?\n"
 "                    </em>"
 msgstr ""
+"<em>\n"
+"                        Mỗi công việc đều có những điểm mạnh riêng. Theo "
+"bạn, nhiệm vụ nào bạn\n"
+"thích nhất và nhiệm vụ nào bạn ít thích nhất?\n"
+"                    </em>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_manager_feedback_template:hr_appraisal.hr_appraisal_default_template
@@ -345,6 +330,11 @@ msgid ""
 "                        reach your goals and foster better collaboration?\n"
 "                    </em>"
 msgstr ""
+"<em>\n"
+"                        Công ty có thể hỗ trợ nhu cầu và mục tiêu của bạn "
+"như thế nào để giúp bạn\n"
+"đạt được mục tiêu và thúc đẩy sự hợp tác tốt hơn?\n"
+"                    </em>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_manager_feedback_template:hr_appraisal.hr_appraisal_default_template
@@ -355,6 +345,11 @@ msgid ""
 "                        the employee’s goals?\n"
 "                    </em>"
 msgstr ""
+"<em>\n"
+"                        Bạn nhìn nhận nhân viên như thế nào trong tương lai? "
+"Tầm nhìn của bạn có phù hợp với \n"
+"                        mục tiêu của nhân viên không?\n"
+"                   </em>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_manager_feedback_template:hr_appraisal.hr_appraisal_default_template
@@ -659,8 +654,8 @@ msgstr "<strong>Ngày tháng — </strong>"
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_yearly_template
 msgid "<strong>Do you seek any particular career path ?</strong>"
 msgstr ""
-"<strong>Bạn có đang hướng đến một con đường sự nghiệp cụ thể nào "
-"không?</strong>"
+"<strong>Bạn có đang hướng đến một con đường sự nghiệp cụ thể nào không?</"
+"strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_exit_interview_template
@@ -729,8 +724,8 @@ msgstr ""
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_post_training_template
 msgid "<strong>How would you assess your level post training ?</strong>"
 msgstr ""
-"<strong>Bạn đánh giá trình độ của mình như thế nào sau khi tham gia đào "
-"tạo?</strong>"
+"<strong>Bạn đánh giá trình độ của mình như thế nào sau khi tham gia đào tạo?"
+"</strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_manager_feedback_template:hr_appraisal.hr_appraisal_post_training_template
@@ -867,7 +862,8 @@ msgstr "<strong>Bạn sẽ đưa ra lời khuyên gì cho người kế nhiệm?
 msgid ""
 "<strong>What are your thoughts on the company culture and work environment ?"
 "</strong>"
-msgstr "<strong>Bạn nghĩ gì về văn hóa công ty và môi trường làm việc?</strong>"
+msgstr ""
+"<strong>Bạn nghĩ gì về văn hóa công ty và môi trường làm việc?</strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_yearly_template
@@ -906,8 +902,8 @@ msgstr ""
 msgid ""
 "<strong>What aspects of your role have you enjoyed the most/least ?</strong>"
 msgstr ""
-"<strong>Bạn thích/không thích khía cạnh nào nhất trong vai trò của "
-"mình?</strong>"
+"<strong>Bạn thích/không thích khía cạnh nào nhất trong vai trò của mình?</"
+"strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_probationary_period_template
@@ -1262,6 +1258,14 @@ msgid "Appraisal to start"
 msgstr "Bắt đầu đánh giá"
 
 #. module: hr_appraisal
+#. odoo-python
+#: code:addons/hr_appraisal/wizard/hr_departure_wizard.py:0
+msgid ""
+"Appraisal's managers have been updated due to the end of collaboration with "
+"an employee."
+msgstr ""
+
+#. module: hr_appraisal
 #: model:ir.actions.server,name:hr_appraisal.ir_cron_scheduler_appraisal_ir_actions_server
 msgid "Appraisal: Run employee appraisal"
 msgstr "Đánh giá: thực hiện đánh giá nhân viên"
@@ -1304,8 +1308,8 @@ msgid ""
 "Appraisals won't be created for the following employees because they don't "
 "have a manager: %(employees)s"
 msgstr ""
-"Không thể tạo đánh giá cho các nhân viên sau vì họ không có quản lý: "
-"%(employees)s"
+"Không thể tạo đánh giá cho các nhân viên sau vì họ không có quản lý: %"
+"(employees)s"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -2448,8 +2452,8 @@ msgid ""
 msgstr ""
 "Ngôn ngữ dịch thuật tùy chọn (mã ISO) cần chọn khi gửi email. Nếu không được "
 "thiết lập, ngôn ngữ của đối tác chính sẽ được sử dụng. Đây thường là một "
-"biểu thức giữ chỗ cung cấp ngôn ngữ phù hợp, ví dụ: {{ "
-"object.partner_id.lang }}."
+"biểu thức giữ chỗ cung cấp ngôn ngữ phù hợp, ví dụ: "
+"{{ object.partner_id.lang }}."
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_campaign_wizard__manager__person
@@ -2615,11 +2619,6 @@ msgid "Request Appraisal"
 msgstr "Yêu cầu đánh giá"
 
 #. module: hr_appraisal
-#: model:ir.actions.server,name:hr_appraisal.action_create_multi_appraisals
-msgid "Request Appraisals"
-msgstr "Yêu cầu đánh giá"
-
-#. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_request_appraisal
 msgid "Request an Appraisal"
 msgstr "Yêu cầu đánh giá"
@@ -2628,6 +2627,13 @@ msgstr "Yêu cầu đánh giá"
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Reset"
 msgstr "Đặt lại"
+
+#. module: hr_appraisal
+#: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
+msgid ""
+"Resetting the appraisal will erase all manually entered content in the "
+"Employee and Manager Feedback sections. Do you want to continue?"
+msgstr ""
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__activity_user_id
@@ -2878,6 +2884,8 @@ msgid ""
 "The average timing for the goals to be completed. It will populate the "
 "estimated end date when assigned"
 msgstr ""
+"Thời gian trung bình để hoàn thành các mục tiêu. Nó sẽ tự động điền ngày kết "
+"thúc ước tính khi được giao"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -2940,8 +2948,8 @@ msgid ""
 "(employees)s. The existing appraisals will be used instead of creating new "
 "ones."
 msgstr ""
-"Những nhân viên sau đây đã có đánh giá vào ngày %(appraisal_date)s: "
-"%(employees)s. Các đánh giá hiện có sẽ được sử dụng thay vì tạo mới."
+"Những nhân viên sau đây đã có đánh giá vào ngày %(appraisal_date)s: %"
+"(employees)s. Các đánh giá hiện có sẽ được sử dụng thay vì tạo mới."
 
 #. module: hr_appraisal
 #. odoo-python
@@ -3150,6 +3158,9 @@ msgid ""
 "You cannot duplicate at the same time a goal and one of its children.\n"
 "Duplicating a goal will also duplicate its children."
 msgstr ""
+"Bạn không thể sao chép cùng lúc một mục tiêu và một trong các mục phụ của "
+"nó.\n"
+"Khi sao chép một mục tiêu, các mục phụ của nó cũng sẽ được sao chép."
 
 #. module: hr_appraisal
 #. odoo-python
@@ -3228,6 +3239,21 @@ msgstr "{{ hasattr(object, 'name') and object.name or '' }} yêu cầu Đánh gi
 #: model:mail.template,subject:hr_appraisal.mail_template_appraisal_confirm
 msgid "{{ object.employee_id.name }}: Appraisal Confirmed"
 msgstr "{{ object.employee_id.name }}: Đánh giá đã xác nhận"
+
+#~ msgid "Request Appraisals"
+#~ msgstr "Yêu cầu đánh giá"
+
+#~ msgid "100%"
+#~ msgstr "100%"
+
+#~ msgid "25%"
+#~ msgstr "25%"
+
+#~ msgid "50%"
+#~ msgstr "50%"
+
+#~ msgid "75%"
+#~ msgstr "75%"
 
 #~ msgid "%s Goals"
 #~ msgstr "%s Mục tiêu"

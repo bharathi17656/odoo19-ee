@@ -6,6 +6,9 @@ import logging
 import psycopg2
 
 from odoo import _, fields, models
+from odoo.exceptions import UserError
+
+from odoo.addons.ai.utils.llm_api_service import LLMApiService
 from odoo.addons.ai_fields.tools import parse_ai_prompt_values
 
 _logger = logging.getLogger(__name__)
@@ -19,6 +22,13 @@ class IrActionsServer(models.Model):
         string="Sorted Folder",
         domain=[("type", "=", "folder"), ("shortcut_document_id", "=", False)],
     )
+
+    def _ai_provider_has_api_key(self):
+        try:
+            LLMApiService(self.env, self.AI_PROVIDER)._get_api_token()
+        except UserError:
+            return False
+        return True
 
     def _ai_action_run(self, record):
         self.ensure_one()
@@ -44,7 +54,7 @@ class IrActionsServer(models.Model):
             if isinstance(record, self.pool['mail.thread']):
                 record._message_log(body=_("AI: An error occurred: %s", error), author_id=self._ai_partner().id)
 
-            if self.env.user.active:
+            if self.env.user.active and self._ai_provider_has_api_key():
                 self.env["bus.bus"]._sendone(
                     self.env.user.partner_id,
                     "ai_documents.auto_sort_notification",

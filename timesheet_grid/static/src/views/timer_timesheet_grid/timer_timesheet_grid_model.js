@@ -150,7 +150,6 @@ export class TimerTimesheetGridModel extends TimesheetGridModel {
                 data.timer.row.timerRunning = false;
             }
             data.timer.row = row;
-            row.timerRunning = true;
         } else if (data.timer.row) {
             data.timer.row.timerRunning = false;
             delete data.timer.row;
@@ -234,5 +233,12 @@ export class TimerTimesheetGridModel extends TimesheetGridModel {
         const timesheetId = this.data.timer && this.data.timer.id;
         await this.orm.call(this.resModel, "action_add_time_to_timesheet", [timesheetId, data]);
         await this.reload();
+    }
+
+    async _fetchUnavailabilityDays(metaData, args = {}) {
+        return super._fetchUnavailabilityDays(metaData, {
+            context: { get_current_user_unavailable_dates: true },
+            ...args,
+        });
     }
 }

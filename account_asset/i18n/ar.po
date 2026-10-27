@@ -10,13 +10,13 @@
 # Malaz Abuidris <msea@odoo.com>, 2023
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2025.
+# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-05 17:58+0000\n"
+"POT-Creation-Date: 2026-08-21 17:44+0000\n"
+"PO-Revision-Date: 2026-08-24 05:08+0000\n"
 "Last-Translator: \"Malaz Siddig Elsayed Abuidris (msea)\" <msea@odoo.com>\n"
 "Language-Team: Arabic <https://translate.odoo.com/projects/odoo-19/"
 "account_asset/ar/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__total_depreciation_entries_count
@@ -128,8 +128,8 @@ msgid ""
 "A disposal entry will be posted on the %(account_type)s account <b>%"
 "(account)s</b>."
 msgstr ""
-"سيتم ترحيل قيد الإهلاك بتاريخ %(date)s.<br/> سيتم ترحيل قيد التصرف في "
-"%(account_type)s الحساب <b>%(account)s</b>."
+"سيتم ترحيل قيد الإهلاك بتاريخ %(date)s.<br/> سيتم ترحيل قيد التصرف في %"
+"(account_type)s الحساب <b>%(account)s</b>."
 
 #. module: account_asset
 #. odoo-python
@@ -482,8 +482,8 @@ msgstr "الأصل الذي تم إنشاؤه من الفاتورة: %s"
 #. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
-msgid "Asset disposed. %s"
-msgstr "تم التخلص من الأصل. %s"
+msgid "Asset disposed. %(message)s"
+msgstr "تم التخلص من الأصل. %(message)s"
 
 #. module: account_asset
 #: model:account.return.check.template,name:account_asset.account_return_check_template_asset_movement_and_accounting_treatment
@@ -499,8 +499,14 @@ msgstr "تم إيقاف الأصل مؤقتاً. %s"
 #. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
-msgid "Asset sold. %s"
-msgstr "بيع الأصل. %s"
+msgid "Asset sold. %(message)s See %(invoice_links)s"
+msgstr "تم بيع الأصل. %(message)s ألقِ نظرة على %(invoice_links)s"
+
+#. module: account_asset
+#. odoo-python
+#: code:addons/account_asset/models/account_asset.py:0
+msgid "Asset sold: %s"
+msgstr "الأصل المباع: %s"
 
 #. module: account_asset
 #. odoo-python
@@ -993,6 +999,19 @@ msgstr ""
 "المدة."
 
 #. module: account_asset
+#: model:account.return.check.template,description:account_asset.account_return_check_template_monitoring_of_depreciation
+msgid ""
+"Ensure compliance with local tax rules on depreciation.\n"
+"Verify that the depreciation methods, depreciation period, and start dates "
+"align with tax requirements (e.g. linear depreciation, pro rata temporis "
+"application, no double declining for tax purposes)."
+msgstr ""
+"تأكد من الامتثال للقواعد الضريبية المحلية المتعلقة بالاستهلاك.\n"
+"احرص على توافق طرق الاستهلاك وفترة الاستهلاك وتواريخ البدء مع المتطلبات "
+"الضريبية (مثل: الاستهلاك الثابت، تطبيق طريقة الاستهلاك التناسبي، وعدم تطبيق "
+"طريقة الاستهلاك المتناقص المزدوج لأغراض ضريبية)."
+
+#. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/controller/asset_template_controller.py:0
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__account_depreciation_expense_id
@@ -1157,7 +1176,8 @@ msgstr "إذا كان محددًا، فقد حدث خطأ في تسليم بعض
 msgid ""
 "Import your fixed assets' original data and their already accumulated "
 "depreciation."
-msgstr "قم باستيراد البيانات الأصلية لأصولك الثابتة واستهلاكها المتراكم بالفعل."
+msgstr ""
+"قم باستيراد البيانات الأصلية لأصولك الثابتة واستهلاكها المتراكم بالفعل."
 
 #. module: account_asset
 #: model:ir.model.fields,help:account_asset.field_account_asset__already_depreciated_amount_import
@@ -1229,7 +1249,8 @@ msgstr "عناصر اليومية"
 msgid ""
 "Journal Items of %(account)s should have a label in order to generate an "
 "asset"
-msgstr "يجب أن يكون لعناصر يومية %(account)s علامة تصنيف حتى تتمكن من إنشاء أصل"
+msgstr ""
+"يجب أن يكون لعناصر يومية %(account)s علامة تصنيف حتى تتمكن من إنشاء أصل"
 
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__write_uid
@@ -1330,6 +1351,11 @@ msgstr "تعديل الأصل"
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_form
 msgid "Modify Depreciation"
 msgstr "تعديل الإهلاكات"
+
+#. module: account_asset
+#: model:account.return.check.template,name:account_asset.account_return_check_template_monitoring_of_depreciation
+msgid "Monitoring of Depreciation "
+msgstr "مراقبة عمليات الإهلاك"
 
 #. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__method_period__1
@@ -1558,8 +1584,8 @@ msgid ""
 "Optional. The name or external ID of the asset group. Must exist in Odoo "
 "(e.g., Office Equipment, Vehicles, Machinery)."
 msgstr ""
-"اختياري. الاسم أو المعرف الخارجي لمجموعة الأصول. يجب أن يكون موجودًا في أودو ("
-"على سبيل المثال، معدات مكتبية، مركبات، آلات)."
+"اختياري. الاسم أو المعرف الخارجي لمجموعة الأصول. يجب أن يكون موجودًا في أودو "
+"(على سبيل المثال، معدات مكتبية، مركبات، آلات)."
 
 #. module: account_asset
 #. odoo-python
@@ -1816,8 +1842,8 @@ msgid ""
 "account %(dep_acc)s has been debited by %(dep_delta)s. This corresponds to %"
 "(move_count)s cancelled %(word)s:"
 msgstr ""
-"الحساب %(exp_acc)s تم الإيداع فيه من قِبَل %(exp_delta)s، بينما الحساب "
-"%(dep_acc)s تم الخصم منه من قِبَل %(dep_delta)s. يتوافق ذلك مع %(move_count)s "
+"الحساب %(exp_acc)s تم الإيداع فيه من قِبَل %(exp_delta)s، بينما الحساب %"
+"(dep_acc)s تم الخصم منه من قِبَل %(dep_delta)s. يتوافق ذلك مع %(move_count)s "
 "الملغية %(word)s:"
 
 #. module: account_asset
@@ -1850,8 +1876,8 @@ msgid ""
 "Purchase's value (%(purchase_value)s). Please make sure this is what you "
 "want."
 msgstr ""
-"لا يطابق المبلغ الذي أدخلته (%(entered_amount)s) قيمة الشراء ذات الصلة "
-"(%(purchase_value)s). يرجى التأكد من أن ذلك هو ما تريده."
+"لا يطابق المبلغ الذي أدخلته (%(entered_amount)s) قيمة الشراء ذات الصلة (%"
+"(purchase_value)s). يرجى التأكد من أن ذلك هو ما تريده."
 
 #. module: account_asset
 #: model:ir.model.fields,help:account_asset.field_asset_modify__asset_id
@@ -1913,6 +1939,12 @@ msgstr ""
 "حساب النفقات الخاص بتسجيل قيود الإهلاك الدورية (على سبيل المثال، ”630000 "
 "نفقات الإهلاك“). يجب أن يكون موجودًا في أودو وأن يكون من نوع ”الإهلاك“ أو "
 "”النفقات“."
+
+#. module: account_asset
+#. odoo-javascript
+#: code:addons/account_asset/static/src/components/depreciation_schedule/warnings.xml:0
+msgid "The fixed asset account differs from the account on the bill. Click"
+msgstr "يختلف حساب الأصول الثابتة عن الحساب الوارد في الفاتورة. اضغط على"
 
 #. module: account_asset
 #: model:ir.model.fields,help:account_asset.field_account_asset__method_number
@@ -2287,6 +2319,12 @@ msgid "gain/loss"
 msgstr "الأرباح/الخسائر"
 
 #. module: account_asset
+#. odoo-javascript
+#: code:addons/account_asset/static/src/components/depreciation_schedule/warnings.xml:0
+msgid "here"
+msgstr "هنا "
+
+#. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/controller/asset_template_controller.py:0
 msgid "journal_id"
@@ -2363,6 +2401,12 @@ msgstr "salvage_value"
 #: code:addons/account_asset/wizard/asset_modify.py:0
 msgid "sell"
 msgstr "بيع"
+
+#~ msgid "Asset disposed. %s"
+#~ msgstr "تم التخلص من الأصل. %s"
+
+#~ msgid "Asset sold. %s"
+#~ msgstr "بيع الأصل. %s"
 
 #~ msgid " (%s of %s)"
 #~ msgstr " (%s من %s)"

@@ -1,170 +1,237 @@
-import { CONSOLE_COLOR, PosStore } from "@point_of_sale/app/services/pos_store";
-import { logPosMessage } from "@point_of_sale/app/utils/pretty_console_log";
+import { PosStore } from "@point_of_sale/app/services/pos_store";
 import { patch } from "@web/core/utils/patch";
 import { uuidv4 } from "@point_of_sale/utils";
+import { changesToOrder } from "@point_of_sale/app/models/utils/order_change";
 
 patch(PosStore.prototype, {
     isRestaurantCountryGermanyAndFiskaly() {
         return this.isCountryGermanyAndFiskaly() && this.config.module_pos_restaurant;
     },
-    //@Override
-    disallowLineQuantityChange() {
-        const result = super.disallowLineQuantityChange(...arguments);
-        return this.isRestaurantCountryGermanyAndFiskaly() || result;
-    },
-    //@Override
-    _updateOrder(orderResponseData, tableOrders) {
-        const order = super._updateOrder(...arguments);
-        if (this.isRestaurantCountryGermanyAndFiskaly() && orderResponseData.differences && order) {
-            order.createAndFinishOrderTransaction(orderResponseData.differences);
+
+    // Fiskaly Order API calls payload helpers
+    getOrderUpdates(orderChanges, tx_revision) {
+        const data = { order: { line_items: [] } };
+        const changedLines = [...orderChanges.new, ...orderChanges.cancelled];
+        // If `tx_revision` is `1`, send empty data on the first activation call, as it is only used for activation.
+        // line details will be sent from next syncronization
+        if (!orderChanges || !changedLines.length || tx_revision == 1) {
+            return data;
         }
-        return order;
-    },
-    //@Override
-    _postRemoveFromServer(serverIds, data) {
-        if (this.isRestaurantCountryGermanyAndFiskaly() && data.length > 0) {
-            // at this point of the flow, it's impossible to retrieve the local order, only the ids were stored
-            // therefore we create an "empty" order object in order to call the needed methods
-            data.forEach(async (elem) => {
-                const order = this.createNewOrder();
-                await this.cancelOrderTransaction(order, elem.differences);
+
+        changedLines.forEach((line) => {
+            const qty = line.quantity || line.qty;
+            const sign = qty < 0 ? -1 : 1;
+            data.order.line_items.push({
+                quantity: String(qty),
+                text: line.name || line.full_product_name,
+                // Since `price_unit` is always positive, we multiply by the sign to preserve the direction of the change.
+                price_per_unit: (
+                    this.models["pos.order.line"].getBy("uuid", line.uuid)?.price_unit * sign
+                ).toFixed(2),
             });
-        }
-        return super._postRemoveFromServer(...arguments);
-    },
-    async retrieveAndSendLineDifference(order) {
-        const data = await this.data.call("pos.order", "retrieve_line_difference", [
-            [order.serializeForORM()],
-        ]);
-        if (data[order.uuid].length > 0) {
-            await this.sendLineDifference(order, data[order.uuid]);
-        }
-    },
-    async cancelOrderTransaction(order, lineDifference) {
-        if (lineDifference.length > 0) {
-            await this.createAndFinishOrderTransaction(lineDifference);
-        }
-        await this.createTransaction(order);
-        await this.cancelTransaction(order);
-    },
-    async sendLineDifference(order, difference) {
-        await this.createAndFinishOrderTransaction(difference);
-        order.uiState.fiskalyLinesSent = true;
-    },
-    async createAndFinishOrderTransaction(lineDifference) {
-        const transactionUuid = uuidv4();
-        if (!this.getApiToken()) {
-            await this._authenticate();
-        }
-
-        lineDifference.forEach((line) => {
-            line.quantity = line.qty.toString(); // Fiskaly ask this to be a string and called quantity
-            line.price_per_unit = this.env.utils.roundCurrency(line.price_per_unit).toFixed(2);
         });
+        return data;
+    },
+    /**
+     * Compute and return only the changes made to the order since the last synchronization.
+     *
+     * For example:
+     * - If a product quantity changes from 5 to 8, only the additional quantity (3) is sent.
+     * - If a product quantity changes from 5 to 3, only the removed quantity (-2) is sent.
+     *
+     * The computation is based on all available order changes (iface_available_categ_ids) using the `changesToOrder`
+     * method, and not on preparation categories, since all updates must be synchronized.
+     */
+    orderUpdatePayload(order, state) {
+        let linesData;
+        if (order && ["FINISHED", "CANCELLED"].includes(state)) {
+            // send entire cart at the end
+            linesData = this.getOrderUpdates({ new: order.lines, cancelled: [] });
+        } else {
+            // Only updates should be sent like 2 qty added for product A and 2 removed for product B.
+            const orderChanges = changesToOrder(order, order.config.preparationCategories);
+            // For cancelled lines when changesToOrder return 1, means 1 cancelled so the line have -1 qty.
+            orderChanges.cancelled.forEach((l) => (l.quantity *= -1));
+            linesData = this.getOrderUpdates(orderChanges, order.uiState.tx_revision);
+        }
+        return {
+            state: state,
+            client_id: this.getClientId(),
+            schema: {
+                standard_v1: linesData,
+            },
+            metadata: {
+                pos_config_id: order.config_id.id,
+                pos_order_uuid: order.uuid,
+            },
+        };
+    },
 
-        const baseUrl = this.getApiUrl();
-        const tssId = this.getTssId();
-        const apiToken = this.getApiToken();
-        const isApiV2 = this.isUsingApiV2();
-        const clientId = this.getClientId();
-        try {
-            const activeData = { state: "ACTIVE", client_id: clientId };
-            const activeResponse = await fetch(
-                `${baseUrl}/tss/${tssId}/tx/${transactionUuid}${isApiV2 ? "?tx_revision=1" : ""}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        Authorization: `Bearer ${apiToken}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(activeData),
-                }
-            );
+    // Fiskaly Order API calls
+    async createOrderTransaction(order) {
+        const transactionUuid = order.uiState.l10n_de_fiskaly_order_tx_uuid || uuidv4();
+        const data = this.orderUpdatePayload(order, "ACTIVE");
+        const payload = `${transactionUuid}${
+            this.isUsingApiV2() ? `?tx_revision=${order.uiState.tx_revision}` : ""
+        }`;
+        const result = await this.transactionCall(payload, data, order);
+        if (result) {
+            order.uiState.l10n_de_fiskaly_order_tx_uuid = transactionUuid;
+            order.transactionStarted();
+        }
+    },
+    async finishOrderTransaction(order) {
+        const data = this.orderUpdatePayload(order, "FINISHED");
+        const payload = `${order.uiState.l10n_de_fiskaly_order_tx_uuid}?${
+            this.isUsingApiV2() ? `tx_revision=${order.uiState.tx_revision}` : "last_revision=1"
+        }`;
+        const result = await this.transactionCall(payload, data, order);
+        if (!order.fiskalyServerError && result) {
+            order._updateTssInfo(result);
+        }
+    },
+    async cancelOrderTransaction(order) {
+        const data = this.orderUpdatePayload(order, "CANCELLED");
+        const payload = `${order.uiState.l10n_de_fiskaly_order_tx_uuid}?${
+            this.isUsingApiV2() ? `tx_revision=${order.uiState.tx_revision}` : "last_revision=1"
+        }`;
+        await this.transactionCall(payload, data, order);
+        order.uiState.transactionState = "inactive";
+        order.uiState.l10n_de_fiskaly_order_tx_uuid = "";
+        order.uiState.tx_revision = 1;
+    },
 
-            if (!activeResponse.ok) {
-                throw new Error(`Failed to activate transaction: ${activeResponse.status}`);
+    /**
+     * @override
+     */
+    // Initialize order transaction on first line add
+    async addLineToCurrentOrder(vals, opts = {}, configure = true) {
+        // we need to start order transaction only for restaurants
+        if (!this.isRestaurantCountryGermanyAndFiskaly()) {
+            return await super.addLineToCurrentOrder(vals, opts, configure);
+        }
+        // If same product added multiple times it will be better to check before adding line if there was an empty order or not
+        const order = this.getOrder();
+        const isEmptyOrder = order.isEmpty();
+        const newLine = await super.addLineToCurrentOrder(vals, opts, configure);
+        // This call initiates the transaction when the first item is added to the cart.
+        if (isEmptyOrder && order.isTransactionInactive()) {
+            try {
+                await this.createOrderTransaction(order);
+            } catch (error) {
+                this.fiskalyError(error);
+                return false;
             }
-
-            const finishedData = {
-                state: "FINISHED",
-                client_id: clientId,
-                schema: {
-                    standard_v1: {
-                        order: { line_items: lineDifference },
-                    },
-                },
-            };
-
-            const finishedResponse = await fetch(
-                `${baseUrl}/tss/${tssId}/tx/${transactionUuid}?${
-                    isApiV2 ? "tx_revision=2" : "last_revision=1"
-                }`,
-                {
-                    method: "PUT",
-                    headers: {
-                        Authorization: `Bearer ${apiToken}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(finishedData),
+        }
+        return newLine;
+    },
+    // update order transaction on each time we send it to kitchen
+    async sendOrderInPreparation(order, opts) {
+        if (!order.isTransactionFinished() && this.isRestaurantCountryGermanyAndFiskaly()) {
+            await this.createOrderTransaction(order);
+        }
+        return await super.sendOrderInPreparation(order, opts);
+    },
+    // cancel order transaction
+    async handleFiskalyCancellation(order) {
+        try {
+            this.env.services.ui.block();
+            if (this.isRestaurantCountryGermanyAndFiskaly()) {
+                if (order.uiState.l10n_de_fiskaly_order_tx_uuid && order.isTransactionInactive()) {
+                    await this.fetchTransaction(order);
                 }
-            );
-
-            if (!finishedResponse.ok) {
-                throw new Error(`Failed to finish transaction: ${finishedResponse.status}`);
+                if (order?.uiState?.l10n_de_fiskaly_order_tx_uuid) {
+                    await this.cancelOrderTransaction(order);
+                }
             }
         } catch (error) {
-            if (error.status === 401) {
-                // Handle token expiration, re-authenticate, and retry
-                await this._authenticate();
-                return this.createAndFinishOrderTransaction(transactionUuid, lineDifference);
+            this.fiskalyError(error);
+            return false;
+        } finally {
+            this.env.services.ui.unblock();
+        }
+        return super.handleFiskalyCancellation(order);
+    },
+    // fetch transaction from fiskaly in case of multi device to get updated tx_revision
+    async fetchTransaction(order) {
+        const txId = order.uiState.l10n_de_fiskaly_order_tx_uuid;
+        if (!txId) {
+            return;
+        }
+        let token = this.getApiToken();
+        if (!token) {
+            await this._authenticate();
+            token = this.getApiToken();
+        }
+        const response = await fetch(`${this.getApiUrl()}/tss/${this.getTssId()}/tx/${txId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            method: "GET",
+        });
+        if (response.ok) {
+            const result = await response.json();
+            // Sync the revision so subsequent PUT calls use the correct value.
+            order.uiState.tx_revision = result.revision + 1;
+            if (result.state === "ACTIVE") {
+                order.transactionStarted();
             }
-            logPosMessage("Store", "createAndFinishOrderTransaction", "Error", CONSOLE_COLOR, [
-                error,
-            ]);
-            throw error; // Re-throw for higher-level error handling
         }
     },
-    async syncAllOrders(options = {}) {
-        if (!this.isRestaurantCountryGermanyAndFiskaly()) {
-            return super.syncAllOrders(options);
+    getCancellationSchema(transaction) {
+        // Restaurants can have active order transactions too. When their schema is missing we
+        // must rebuild an order schema (not a receipt one) so the transaction type is unchanged.
+        // Order transactions carry no `fiskaly_order_tx_uuid` in their metadata, unlike receipts.
+        const hasSchema = transaction.schema && Object.keys(transaction.schema).length > 0;
+        if (!hasSchema && !transaction.metadata?.fiskaly_order_tx_uuid) {
+            return { standard_v1: { order: { line_items: [] } } };
         }
-
-        const { orderToCreate, orderToUpdate } = this.getPendingOrder();
-        const orders = [...orderToCreate, ...orderToUpdate];
-
-        if (orders.length === 0) {
-            return super.syncAllOrders(options);
-        }
-
-        const ordersCheckDifference = orders
-            .filter((o) => !o.uiState.fiskalyLinesSent)
-            .map((elem) => elem.serializeForORM());
-
-        let differences = {};
-        if (ordersCheckDifference.length > 0) {
-            differences = await this.data.call("pos.order", "retrieve_line_difference", [
-                ordersCheckDifference,
-            ]);
-        }
-
-        let fiskalyError;
-        if (Object.keys(differences).length > 0) {
-            for (const orderJsonData of ordersCheckDifference) {
-                if (!fiskalyError && differences[orderJsonData.uuid].length > 0) {
-                    const order = this.models["pos.order"].getBy("uuid", orderJsonData.uuid);
-                    try {
-                        await this.sendLineDifference(order, differences[orderJsonData.uuid]);
-                    } catch (error) {
-                        fiskalyError = error;
-                    }
-                }
+        return super.getCancellationSchema(transaction);
+    },
+    // update transaction payload to have link with order transaction
+    getTransactionPayload(order, state, receiptType = "RECEIPT") {
+        const payload = super.getTransactionPayload(order, state, (receiptType = "RECEIPT"));
+        payload.metadata["fiskaly_order_tx_uuid"] = order.uiState.l10n_de_fiskaly_order_tx_uuid;
+        console.log(payload);
+        return payload;
+    },
+    //@Override
+    /**
+     * This function first attempts to send the orders remaining in the queue to Fiskaly before trying to
+     * send it to Odoo. Two cases can happen:
+     * - Failure to send to Fiskaly => we assume that if one order fails, EVERY order will fail
+     * - Failure to send to Odoo => the order is already sent to Fiskaly, we store them locally with the TSS info
+     */
+    async handleOrderTransaction(order, orderObject) {
+        // order transaction is only needed for restaurants
+        if (this.isRestaurantCountryGermanyAndFiskaly()) {
+            if (orderObject.isTransactionInactive()) {
+                await this.createOrderTransaction(order);
             }
-            if (fiskalyError) {
-                fiskalyError.code = "fiskaly";
-                throw fiskalyError;
+            if (orderObject.isTransactionStarted() && order.state == "paid") {
+                // finish the transaction based on the state of order if paid than finish else update it
+                await this.finishOrderTransaction(order);
+                return super.handleOrderTransaction(order, orderObject);
             }
         }
-
-        return super.syncAllOrders(options);
+        return super.handleOrderTransaction(order, orderObject);
+    },
+    shouldSyncOrder(orderObject) {
+        const isReceiptTxnSent = super.shouldSyncOrder(orderObject);
+        if (this.isRestaurantCountryGermanyAndFiskaly()) {
+            const isOrderTxnSent =
+                !orderObject.isTransactionInactive() ||
+                orderObject.fiskalyServerError ||
+                orderObject.networkError;
+            if (orderObject.state !== "paid") {
+                // Receipt txn will be sent when payment starts
+                return isOrderTxnSent;
+            } else {
+                // At the time of payment both order and receipt both txn should be registered
+                return isReceiptTxnSent && isOrderTxnSent;
+            }
+        }
+        return isReceiptTxnSent;
     },
 });

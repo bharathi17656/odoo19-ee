@@ -4,13 +4,14 @@
 #
 # Odoo Translation Bot <c3p@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Tomáš Píšek <Tomas.Pisek@seznam.cz>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-17 03:31+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-04-10 18:45+0000\n"
+"PO-Revision-Date: 2026-04-04 10:53+0000\n"
+"Last-Translator: Tomáš Píšek <Tomas.Pisek@seznam.cz>\n"
 "Language-Team: Slovak <https://translate.odoo.com/projects/odoo-19/"
 "hr_referral/sk/>\n"
 "Language: sk\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: hr_referral
 #. odoo-python
@@ -34,11 +35,6 @@ msgid "# Hired by Referral"
 msgstr "# Prijatí odporúčaním"
 
 #. module: hr_referral
-#: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_send_sms_view_form
-msgid "+1 123 456 789"
-msgstr ""
-
-#. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.referral_campaign_email_body_template
 msgid ""
 ",\n"
@@ -50,7 +46,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_referral.referral_campaign_sms_template
 msgid ""
 ".\n"
-"If you know someone who would be a great fit for this position, please share this link with them:"
+"If you know someone who would be a great fit for this position, please share "
+"this link with them:"
 msgstr ""
 
 #. module: hr_referral
@@ -74,9 +71,11 @@ msgstr ""
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
 msgid ""
-"<i class=\"fa fa-2x fa-envelope-o\" role=\"img\" aria-label=\"Send by Mail\"/>\n"
+"<i class=\"fa fa-2x fa-envelope-o\" role=\"img\" aria-label=\"Send by Mail\"/"
+">\n"
 "                                        <br/>\n"
-"                                        <span title=\"Send by Mail\">Send Email</span>"
+"                                        <span title=\"Send by Mail\">Send "
+"Email</span>"
 msgstr ""
 
 #. module: hr_referral
@@ -84,7 +83,8 @@ msgstr ""
 msgid ""
 "<i class=\"fa fa-2x fa-globe\" role=\"img\" aria-label=\"Job Page\"/>\n"
 "                                        <br/>\n"
-"                                        <span title=\"More info\">Job Page</span>"
+"                                        <span title=\"More info\">Job Page</"
+"span>"
 msgstr ""
 
 #. module: hr_referral
@@ -92,7 +92,8 @@ msgstr ""
 msgid ""
 "<i class=\"fa fa-2x fa-mobile\" role=\"img\" aria-label=\"Send by SMS\"/>\n"
 "                                        <br/>\n"
-"                                        <span title=\"Send by SMS\">Send SMS</span>"
+"                                        <span title=\"Send by SMS\">Send "
+"SMS</span>"
 msgstr ""
 
 #. module: hr_referral
@@ -138,7 +139,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
 msgid ""
 "<span title=\"Share on Facebook\">\n"
-"                                            <i class=\"fa fa-2x fa-facebook\" role=\"img\" aria-label=\"Share on facebook\"/>\n"
+"                                            <i class=\"fa fa-2x fa-"
+"facebook\" role=\"img\" aria-label=\"Share on facebook\"/>\n"
 "                                        </span>"
 msgstr ""
 
@@ -146,7 +148,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
 msgid ""
 "<span title=\"Share on Linkedin\">\n"
-"                                            <i class=\"fa fa-2x fa-linkedin\" role=\"img\" aria-label=\"Share on linkedin\"/>\n"
+"                                            <i class=\"fa fa-2x fa-"
+"linkedin\" role=\"img\" aria-label=\"Share on linkedin\"/>\n"
 "                                        </span>"
 msgstr ""
 
@@ -154,7 +157,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
 msgid ""
 "<span title=\"Share on Twitter\">\n"
-"                                            <i class=\"fa fa-2x fa-twitter\" role=\"img\" aria-label=\"Share on twitter\"/>\n"
+"                                            <i class=\"fa fa-2x fa-twitter\" "
+"role=\"img\" aria-label=\"Share on twitter\"/>\n"
 "                                        </span>"
 msgstr ""
 
@@ -162,8 +166,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/hr_referral/wizard/hr_referral_alert_mail_wizard.py:0
 msgid ""
-"A new alert has been added to the Referrals app! Check your <a "
-"href=%(url)s>dashboard</a> now!"
+"A new alert has been added to the Referrals app! Check your <a href=%"
+"(url)s>dashboard</a> now!"
 msgstr ""
 "Do aplikácie odporúčania bolo pridané nové upozornenie! Skontroluj svoj<a "
 "href=%(url)s>riadiaci panel</a>!"
@@ -330,7 +334,7 @@ msgstr "Kampaň"
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_send_sms_view_form
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_view_form_reward_purchase_dialog
 msgid "Cancel"
-msgstr "Zrušené"
+msgstr "Zrušiť"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_link_to_share__channel
@@ -672,8 +676,8 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_alert__url
 msgid ""
-"External links must start with 'http://www.'. For an internal url, you don't"
-" need to put domain name, you can just insert the path."
+"External links must start with 'http://www.'. For an internal url, you don't "
+"need to put domain name, you can just insert the path."
 msgstr ""
 "Externé odkazy musia začínať zámenou „http: // www.“. Pre internú adresu URL "
 "nemusíte zadávať názov domény, stačí vložiť cestu."
@@ -791,15 +795,16 @@ msgstr "Dobrý deň,"
 #. odoo-python
 #: code:addons/hr_referral/wizard/hr_referral_send_sms.py:0
 msgid ""
-"Hello! There is an amazing job offer for %(job_name)s in my company! It will"
-" be a fit for you %(referral_url)s"
+"Hello! There is an amazing job offer for %(job_name)s in my company! It will "
+"be a fit for you %(referral_url)s"
 msgstr ""
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.referral_email_body_template
 msgid ""
 "Hello,<br/><br/>\n"
-"                There are some amazing job offers in my company! Have a look, they can be interesting for you:"
+"                There are some amazing job offers in my company! Have a "
+"look, they can be interesting for you:"
 msgstr ""
 
 #. module: hr_referral
@@ -1062,7 +1067,7 @@ msgstr "Médium"
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__message_has_error
 msgid "Message Delivery error"
-msgstr "Chyba zobrazovania správ"
+msgstr "Chyba doručenia správy"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__message_ids
@@ -1723,8 +1728,8 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_friend__image_head
 msgid ""
-"This field holds the image used as image for the head's friend when the user"
-" must choose a new friend, limited to 1024x1024px."
+"This field holds the image used as image for the head's friend when the user "
+"must choose a new friend, limited to 1024x1024px."
 msgstr ""
 "Toto pole obsahuje obraz použitý ako obrázok pre priateľa hlavy, keď si "
 "používateľ musí zvoliť nového priateľa, obmedzený na 1024x1024 pixelov."
@@ -1750,8 +1755,8 @@ msgstr ""
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_link_to_share_view_form
 msgid ""
-"This link contains a tracker so that people clicking on it will account to a"
-" referral for you, even if they apply on a position after a few days."
+"This link contains a tracker so that people clicking on it will account to a "
+"referral for you, even if they apply on a position after a few days."
 msgstr ""
 "Tento odkaz obsahuje nástroj na sledovanie, takže ľudia, ktorí na neho "
 "kliknú, zodpovedajú za vaše sprostredkovanie, a to aj v prípade, že sa o "
@@ -1887,6 +1892,11 @@ msgid "Welcome Onboarding in Referral App"
 msgstr "Vitajte pri registrácii v aplikácii Odporúčanie"
 
 #. module: hr_referral
+#: model:ir.model.fields.selection,name:hr_referral.selection__hr_referral_link_to_share__channel__twitter
+msgid "X"
+msgstr ""
+
+#. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_job__twitter_clicks
 msgid "X Clicks"
 msgstr ""
@@ -1901,8 +1911,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/hr_referral/models/hr_applicant.py:0
 msgid ""
-"You are not allowed to access this application record because you're not one"
-" of the interviewers of this application. If you think that's an error, "
+"You are not allowed to access this application record because you're not one "
+"of the interviewers of this application. If you think that's an error, "
 "please contact your administrator."
 msgstr ""
 
@@ -1910,7 +1920,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/hr_referral/models/utm_campaign.py:0
 msgid ""
-"You cannot delete these UTM Campaigns as they are linked to the following jobs in Referral:\n"
+"You cannot delete these UTM Campaigns as they are linked to the following "
+"jobs in Referral:\n"
 "%(job_names)s"
 msgstr ""
 
@@ -1918,7 +1929,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/hr_referral/models/utm_source.py:0
 msgid ""
-"You cannot delete these UTM Sources as they are linked to the following users in Referral:\n"
+"You cannot delete these UTM Sources as they are linked to the following "
+"users in Referral:\n"
 "%(employee_names)s"
 msgstr ""
 
@@ -1992,7 +2004,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_referral.referral_campaign_email_body_template
 msgid ""
 "position.\n"
-"                If you know someone who would be a great fit for this position, please share this link with them:"
+"                If you know someone who would be a great fit for this "
+"position, please share this link with them:"
 msgstr ""
 
 #. module: hr_referral
@@ -2013,7 +2026,7 @@ msgstr "zdieľam"
 #: code:addons/hr_referral/wizard/hr_referral_link_to_share.py:0
 msgid ""
 "🚀 An exciting opportunity for a %(job_name)s at my company. If you're "
-"looking for a new challenge, check it "
-"out!👇%(new_line_code)s🔗%(short_url)s%(new_line_code)s%(hashtag_code)sHiring "
-"%(hashtag_code)sJobOpening %(hashtag_code)sCareerOpportunity"
+"looking for a new challenge, check it out!👇%(new_line_code)s🔗%(short_url)s%"
+"(new_line_code)s%(hashtag_code)sHiring %(hashtag_code)sJobOpening %"
+"(hashtag_code)sCareerOpportunity"
 msgstr ""

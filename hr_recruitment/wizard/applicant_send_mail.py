@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.tools.misc import clean_context
 
 
 class ApplicantSendMail(models.TransientModel):
@@ -8,7 +9,7 @@ class ApplicantSendMail(models.TransientModel):
     _inherit = ['mail.composer.mixin']
     _description = 'Send mails to applicants'
 
-    applicant_ids = fields.Many2many('hr.applicant', string='Applications', required=True)
+    applicant_ids = fields.Many2many('hr.applicant', string='Applications', required=True, context={'active_test': False})
     author_id = fields.Many2one('res.partner', 'Author', required=True, default=lambda self: self.env.user.partner_id.id)
     attachment_ids = fields.Many2many('ir.attachment', string='Attachments', readonly=False, store=True, bypass_search_access=True)
 
@@ -39,7 +40,7 @@ class ApplicantSendMail(models.TransientModel):
 
         for applicant in self.applicant_ids:
             if not applicant.partner_id:
-                applicant.partner_id = self.env['res.partner'].create({
+                applicant.partner_id = self.env['res.partner'].with_context(clean_context(self.env.context)).create({
                     'is_company': False,
                     'name': applicant.partner_name,
                     'email': applicant.email_from,

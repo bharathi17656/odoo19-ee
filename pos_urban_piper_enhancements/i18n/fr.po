@@ -3,13 +3,15 @@
 # * pos_urban_piper_enhancements
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
+# "Manon Rondou (ronm)" <ronm@odoo.com>, 2025, 2026.
+# "Cécile Collart (cco)" <cco@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.4+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:48+0000\n"
-"PO-Revision-Date: 2025-09-18 02:40+0000\n"
-"Last-Translator: \"Tiffany Chang (tic)\" <tic@odoo.com>\n"
+"POT-Creation-Date: 2026-04-10 18:50+0000\n"
+"PO-Revision-Date: 2026-10-23 16:13+0000\n"
+"Last-Translator: \"Cécile Collart (cco)\" <cco@odoo.com>\n"
 "Language-Team: French <https://translate.odoo.com/projects/odoo-19/"
 "pos_urban_piper_enhancements/fr/>\n"
 "Language: fr\n"
@@ -17,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: pos_urban_piper_enhancements
 #: model_terms:ir.actions.act_window,help:pos_urban_piper_enhancements.action_pos_store_timing
@@ -27,7 +29,7 @@ msgstr "Ajouter un horaire de magasin"
 #. module: pos_urban_piper_enhancements
 #: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_product_template_attribute_value__urbanpiper_pos_config_ids
 msgid "Available on Food Delivery"
-msgstr "Disponilbe pour la livraison de nourriture"
+msgstr "Disponible pour la livraison de nourriture"
 
 #. module: pos_urban_piper_enhancements
 #: model:ir.model.fields,help:pos_urban_piper_enhancements.field_product_template_attribute_value__urbanpiper_pos_config_ids
@@ -73,6 +75,7 @@ msgstr "Date et heure de livraison"
 #: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_pos_prep_order__display_name
 #: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_pos_session__display_name
 #: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_pos_store_timing__display_name
+#: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_pos_urbanpiper_test_order_wizard__display_name
 #: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_product_template__display_name
 #: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_product_template_attribute_value__display_name
 #: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_res_config_settings__display_name
@@ -89,8 +92,7 @@ msgstr "Heure de fin"
 #. odoo-javascript
 #: code:addons/pos_urban_piper_enhancements/static/src/point_of_sale_override/store/pos_store.js:0
 msgid "Error to send delivery order in preparation display."
-msgstr ""
-"Erreur lors de l'envoi du bon de livraison dans l'affichage de préparation."
+msgstr "Erreur lors de l’envoi de la commande vers l’écran de préparation."
 
 #. module: pos_urban_piper_enhancements
 #: model:ir.model.fields,help:pos_urban_piper_enhancements.field_pos_order__is_notified
@@ -108,6 +110,7 @@ msgstr "Vendredi"
 #: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_pos_prep_order__id
 #: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_pos_session__id
 #: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_pos_store_timing__id
+#: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_pos_urbanpiper_test_order_wizard__id
 #: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_product_template__id
 #: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_product_template_attribute_value__id
 #: model:ir.model.fields,field_description:pos_urban_piper_enhancements.field_res_config_settings__id
@@ -285,6 +288,11 @@ msgstr "UrbanPiper"
 #: model:ir.actions.server,name:pos_urban_piper_enhancements.cron_check_future_delivery_orders_ir_actions_server
 msgid "UrbanPiper: Notify future delivery orders"
 msgstr "UrbanPiper : Notifier les bons de livraison futurs"
+
+#. module: pos_urban_piper_enhancements
+#: model:ir.model,name:pos_urban_piper_enhancements.model_pos_urbanpiper_test_order_wizard
+msgid "Urbanpiper test order wizard"
+msgstr "Assistant de test de commande Urbanpiper"
 
 #. module: pos_urban_piper_enhancements
 #: model:ir.model.fields.selection,name:pos_urban_piper_enhancements.selection__pos_store_timing__weekday__wednesday

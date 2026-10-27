@@ -1,6 +1,7 @@
 import { PermissionPanel } from "@knowledge/components/permission_panel/permission_panel";
 import { knowledgeTopbar } from "@knowledge/components/topbar/topbar";
 import { defineMailModels } from "@mail/../tests/mail_test_helpers";
+import { animationFrame, beforeEach, click, expect, queryText, test } from "@odoo/hoot";
 import {
     defineActions,
     defineModels,
@@ -14,19 +15,10 @@ import {
     serverState,
 } from "@web/../tests/web_test_helpers";
 import { user } from "@web/core/user";
-
-import { beforeEach, expect, test } from "@odoo/hoot";
-import { click, queryText } from "@odoo/hoot-dom";
-import { animationFrame } from "@odoo/hoot-mock";
 import { mockKnowledgePermissionPanelRpc } from "./knowledge_test_helpers";
 
-const permissions = {
+const permission = {
     none: "No Access",
-    read: "Can Read",
-    write: "Can Edit",
-};
-const internalPermissions = {
-    none: "Members only",
     read: "Can Read",
     write: "Can Edit",
 };
@@ -42,20 +34,7 @@ let members = [];
 class KnowledgeArticle extends models.ServerModel {
     _name = "knowledge.article";
 
-    name = fields.Char();
-    active = fields.Boolean({ default: true });
-    icon = fields.Char();
-    parent_path = fields.Char();
-    parent_id = fields.Many2one({ relation: "knowledge.article" });
-    root_article_id = fields.Many2one({ relation: "knowledge.article" });
-    category = fields.Selection({ selection: ["private", "workspace", "shared"] });
-    is_article_visible_by_everyone = fields.Boolean();
-    is_desynchronized = fields.Boolean();
-    internal_permission = fields.Selection({ selection: Object.keys(internalPermissions) });
-    inherited_permission_parent_id = fields.Many2one({ relation: "knowledge.article" });
-    inherited_permission = fields.Selection({ selection: Object.keys(internalPermissions) });
     user_can_write = fields.Boolean({ compute: "_compute_user_can_write" });
-    user_permission = fields.Selection({ selection: Object.keys(permissions) });
 
     _records = [
         {
@@ -139,7 +118,14 @@ class KnowledgeArticle extends models.ServerModel {
     ];
 
     _views = {
-        form: '<form><widget name="knowledge_topbar"/></form>',
+        form: /* xml */ `
+            <form>
+                <field name="category" />
+                <field name="is_article_visible_by_everyone" />
+                <field name="user_permission" />
+                <widget name="knowledge_topbar" />
+            </form>
+        `,
     };
 
     _compute_display_name() {
@@ -222,6 +208,10 @@ class KnowledgeArticle extends models.ServerModel {
     action_redirect_to_parent() {
         return { action: "redirect to parent" };
     }
+
+    has_access = function () {
+        return Promise.resolve(true);
+    };
 }
 
 defineMailModels();
@@ -253,7 +243,7 @@ const expectMember = (member, disabled) => {
     if (member.based_on) {
         texts.push(`Based on ${member.based_on_icon} ${member.based_on_name}`);
     }
-    texts.push(permissions[member.permission]);
+    texts.push(permission[member.permission]);
     expect(queryText(selector).split("\n")).toEqual(texts);
     if (disabled) {
         expect(selector + " .dropdown-toggle").toHaveClass("disabled");
@@ -262,11 +252,11 @@ const expectMember = (member, disabled) => {
     }
 };
 
+const BLACK_LISTED_DEPENDENCIES = ["article_properties", "cover_image_id"];
 patchWithCleanup(knowledgeTopbar, {
-    fieldDependencies: Object.entries(KnowledgeArticle._fields).map(([fieldName, field]) => ({
-        name: fieldName,
-        type: field.type,
-    })),
+    fieldDependencies: knowledgeTopbar.fieldDependencies.filter(
+        (f) => !BLACK_LISTED_DEPENDENCIES.includes(f.name)
+    ),
 });
 
 let mockServer;
@@ -295,10 +285,8 @@ beforeEach(async () => {
     });
 });
 
-async function mountPermissionPanel(articleId, user_can_write = undefined) {
-    if (user_can_write !== undefined) {
-        mockServer.env["knowledge.article"].write(articleId, { user_can_write });
-    }
+async function mountPermissionPanel(articleId, user_can_write) {
+    mockServer.env["knowledge.article"].write(articleId, { user_can_write });
     await mountView({
         resId: articleId,
         resModel: "knowledge.article",

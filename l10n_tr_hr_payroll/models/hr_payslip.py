@@ -55,7 +55,7 @@ class HrPayslip(models.Model):
         A safe version of Newton's method using the secant method to avoid division by zero.
         """
         self.ensure_one()
-        guess1, guess2 = self.version_id.wage, self.version_id.wage * 2
+        guess1, guess2 = self.paid_amount, self.paid_amount * 2
         for _ in range(max_iterations):
             value1 = self._l10n_tr_calculate_net_guess_accuracy(guess1, target)
             value2 = self._l10n_tr_calculate_net_guess_accuracy(guess2, target)
@@ -79,7 +79,7 @@ class HrPayslip(models.Model):
     def _compute_l10n_tr_current_month_gross(self):
         for payslip in self:
             if payslip.country_code == 'TR' and payslip.version_id.l10n_tr_is_net_to_gross:
-                payslip.l10n_tr_current_month_gross = payslip._estimate_l10n_tr_gross_from_net(payslip.version_id.wage)
+                payslip.l10n_tr_current_month_gross = payslip._estimate_l10n_tr_gross_from_net(payslip.paid_amount)
             else:
                 payslip.l10n_tr_current_month_gross = 0
 

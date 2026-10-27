@@ -3,13 +3,14 @@
 # * ai_app
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Saara Hakanen <sahak@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:40+0000\n"
-"PO-Revision-Date: 2025-11-08 20:05+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2025-12-30 18:41+0000\n"
+"PO-Revision-Date: 2026-08-11 11:56+0000\n"
+"Last-Translator: Saara Hakanen <sahak@odoo.com>\n"
 "Language-Team: Finnish <https://translate.odoo.com/projects/odoo-19/ai_app/"
 "fi/>\n"
 "Language: fi\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_agent_view_form
@@ -45,6 +46,9 @@ msgid ""
 "<span class=\"text-muted\" invisible=\"(not is_system_default or "
 "focused_models) and interface_key != 'systray_ai_button'\">All Models</span>"
 msgstr ""
+"<span class=\"text-muted\" invisible=\"(not is_system_default or "
+"focused_models) and interface_key != 'systray_ai_button'\">Kaikki mallit</"
+"span>"
 
 #. module: ai_app
 #: model:ir.ui.menu,name:ai_app.ai_menu_root
@@ -55,13 +59,13 @@ msgstr "Tekoäly"
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_agent_view_form
 msgid "Add a source"
-msgstr ""
+msgstr "Lisää lähde"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_agent_view_kanban
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_agent_view_search
 msgid "Agent"
-msgstr "Asiakaspalvelija"
+msgstr "Agentti"
 
 #. module: ai_app
 #. odoo-javascript
@@ -70,17 +74,18 @@ msgstr "Asiakaspalvelija"
 #: model:ir.ui.menu,name:ai_app.ai_agent_menu_action
 #: model:ir.ui.menu,name:ai_app.ai_menu
 msgid "Agents"
-msgstr "Myyntiedustat"
+msgstr "Agentit"
 
 #. module: ai_app
 #: model_terms:ir.actions.act_window,help:ai_app.ai_agent_action
 msgid "Agents help you manage and organize your AI operations."
-msgstr "Agentti autta sinua hallitsemaan ja järjestämään Tekoäly-toimintosi."
+msgstr ""
+"Agentit auttavat sinua hallitsemaan ja järjestämään Tekoälytoimintojasi."
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_composer_form
 msgid "All Models"
-msgstr ""
+msgstr "Kaikki mallit"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_agent_view_form
@@ -97,7 +102,7 @@ msgstr "Painikkeet"
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_composer_form
 msgid "Call the Agent"
-msgstr ""
+msgstr "Soita agentille"
 
 #. module: ai_app
 #: model:ir.ui.menu,name:ai_app.ai_config_menu
@@ -118,14 +123,14 @@ msgstr "Luo ensimmäinen aiheesi!"
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_composer_view_search
 msgid "Custom Rules"
-msgstr ""
+msgstr "Mukautetut säännöt"
 
 #. module: ai_app
 #: model:ir.actions.act_window,name:ai_app.ai_composer_action
 #: model:ir.ui.menu,name:ai_app.menu_ai_composer
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_composer_tree
 msgid "Default Prompts"
-msgstr ""
+msgstr "Oletuskehotteet"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_topic_view_form
@@ -141,7 +146,7 @@ msgstr "Avain"
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_composer_form
 msgid "Mail Template extra prompt"
-msgstr ""
+msgstr "Sähköpostipohjan lisäkehote"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_agent_view_search
@@ -158,12 +163,12 @@ msgstr "Nimi"
 #. module: ai_app
 #: model_terms:ir.actions.act_window,help:ai_app.ai_composer_action
 msgid "No Default Prompts found!"
-msgstr ""
+msgstr "Oletuskehotteita ei löytynyt!"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_composer_form
 msgid "On the Model"
-msgstr ""
+msgstr "Mallissa"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_agent_view_tree
@@ -173,7 +178,7 @@ msgstr "Ominaisuudet"
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.res_config_settings_view_form
 msgid "Provide your API key to connect with your account"
-msgstr ""
+msgstr "Anna API-avaimesi yhdistääksesi tiliisi"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.res_config_settings_view_form
@@ -183,7 +188,7 @@ msgstr "Palveluntarjoajat"
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_agent_view_form
 msgid "Reprocess"
-msgstr ""
+msgstr "Käsittele uudelleen"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_agent_view_form
@@ -198,7 +203,7 @@ msgstr "Säännön nimi"
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_composer_form
 msgid "Select an action..."
-msgstr ""
+msgstr "Valitse toiminto..."
 
 #. module: ai_app
 #: model:ir.actions.act_window,name:ai_app.ai_settings_action
@@ -220,7 +225,7 @@ msgstr "Tiivistä, mitä tämä aihe tekee"
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_composer_view_search
 msgid "System Rules"
-msgstr ""
+msgstr "Järjestelmän säännöt"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_agent_view_form
@@ -233,6 +238,8 @@ msgid ""
 "Those are used to configure when to call a specific agent, or to add an "
 "extra prompt to your request."
 msgstr ""
+"Niitä käytetään määrittämään, milloin kutsutaan tietty agentti, tai "
+"lisäämään pyyntöön ylimääräinen kehote."
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_topic_view_search
@@ -249,37 +256,38 @@ msgstr "Aiheet"
 #. module: ai_app
 #: model_terms:ir.actions.act_window,help:ai_app.ai_topic_action
 msgid "Topics help you manage and organize your AI operations."
-msgstr "Aiheet auttavat sinua hallitsemaan ja järjestämään Tekoäly-toimintosi."
+msgstr ""
+"Aiheet auttavat sinua hallitsemaan ja organisoimaan Tekoälytoimintojasi."
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.res_config_settings_view_form
 msgid "Use your own ChatGPT account"
-msgstr ""
+msgstr "Käytä omaa ChatGPT-tiliäsi"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.res_config_settings_view_form
 msgid "Use your own Google Gemini account"
-msgstr ""
+msgstr "Käytä omaa Google Gemini -tiliäsi"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_composer_form
 msgid "When users need to"
-msgstr ""
+msgstr "Kun käyttäjien tarvitsee"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_composer_form
 msgid "Write your prompt..."
-msgstr ""
+msgstr "Kirjoita kehotteesi..."
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_topic_view_form
 msgid "e.g. Chat with customers"
-msgstr "esim. Keskustele asiakkaiden kanssa"
+msgstr "esim. Chattaa asiakkaiden kanssa"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_agent_view_form
 msgid "e.g. Get tips to close more sales"
-msgstr "esim. Saat vinkkejä, miten klousaat useampia kauppoja"
+msgstr "esim. Hanki vinkkejä, miten klousata useampia kauppoja"
 
 #. module: ai_app
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_agent_view_form
@@ -290,4 +298,4 @@ msgstr "esim. SDR-neuvoja"
 #: model_terms:ir.ui.view,arch_db:ai_app.ai_agent_view_form
 msgid ""
 "e.g. You are a support operator, you can answer questions related to ..."
-msgstr "esim. Olet tukihenkilö, voit vastata kysymyksiin, jotka liittyvät ..."
+msgstr "esim. Olet tukihenkilö; voit vastata kysymyksiin, jotka liittyvät ..."

@@ -21,13 +21,14 @@
 # Arunas V. <arunas@devoro.com>, 2023
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-16 18:00+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-05-15 17:40+0000\n"
+"PO-Revision-Date: 2026-10-13 11:33+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "sale_subscription/lt/>\n"
 "Language: lt\n"
@@ -35,9 +36,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < "
-"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 :"
-" n % 1 != 0 ? 2: 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 "
+": n % 1 != 0 ? 2: 3);\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: sale_subscription
 #. odoo-python
@@ -184,7 +185,7 @@ msgstr ""
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_sidebar
 msgid "<b>Payment Method</b>"
-msgstr ""
+msgstr "<b>Mokėjimo būdas:</b>"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.view_sale_advance_payment_inv_sale_subscription
@@ -230,6 +231,41 @@ msgid ""
 "            </div>\n"
 "        "
 msgstr ""
+"<div style=\"background:#F0F0F0;color:#515166;padding:10px 0px;font-"
+"family:Arial,Helvetica,sans-serif;font-size:14px;\">\n"
+"                <table style=\"width:600px;margin:5px auto;\">\n"
+"                   <tbody>\n"
+"                        <tr> <td t-if=\"not "
+"object.company_id.uses_default_logo\">\n"
+"                            <a href=\"/\"> <img t-attf-src=\"/"
+"logo.png?company={{ object.company_id.id }}\" style=\"vertical-"
+"align:baseline;max-width:100px;\"/></a> \n"
+"                       </td><td style=\"text-align:right;vertical-"
+"align:middle;\"> \n"
+"                                Prenumeratos pratęsimas\n"
+"                       </td></tr> \n"
+"                   </tbody>\n"
+"                </table> \n"
+"               <table style=\"width:600px;margin:0px "
+"auto;background:white;border:1px solid #e1e1e1;\">\n"
+"                    <tbody> \n"
+"                       <tr><td style=\"padding:15px 20px 10px 20px;\"> \n"
+"                           <p> Gerb. <t t-out=\"object.partner_id.name or "
+"''\">Brandon Freeman</t>,</p>\n"
+"                            <p>Jūsų prenumerata <strong t-out=\"object.name "
+"or ''\">Office Cleaning Service\"</strong> reikalauja jūsų dėmesio.</p>\n"
+"                            <p>Kviečiame ją pratęsti, paspaudus šią "
+"nuorodą.</p>\n"
+"                            <p>Su pagarba.</p>\n"
+"                        </td></tr>\n"
+"                        <tr data-o-mail-quote-container=\"1\"> <td "
+"style=\"padding:15px 20px 10px 20px;\" t-out=\"object.user_id.signature or "
+"''\" data-o-mail-quote=\"1\"> --<br data-o-mail-quote=\"1\"/>Mitchell Admin</"
+"td></tr>\n"
+"                   </tbody>\n"
+"                </table> \n"
+"           </div> \n"
+"        "
 
 #. module: sale_subscription
 #: model:mail.template,body_html:sale_subscription.mail_template_subscription_rating
@@ -335,6 +371,106 @@ msgid ""
 "            </div>\n"
 "        "
 msgstr ""
+"<div style=\"background:#F0F0F0;color:#515166;padding:10px 0px;font-"
+"family:Arial,Helvetica,sans-serif;font-size:14px;\">\n"
+"            <t t-set=\"access_token\" t-"
+"value=\"object._rating_get_access_token()\"/>\n"
+"               <table style=\"width:600px;margin:5px auto;\">\n"
+"                    <tbody> \n"
+"                       <tr><td t-if=\"not "
+"object.company_id.uses_default_logo\"> \n"
+"                           <a href=\"/\"><img t-attf-src=\"/logo.png?company="
+"{{ object.company_id.id }}\" style=\"vertical-align:baseline;max-"
+"width:100px;\"/> </a>\n"
+"                        </td> <td style=\"text-align:right;vertical-"
+"align:middle;\"> \n"
+"                                Pasitenkinimo apklausa\n"
+"                       </td></tr> \n"
+"                   </tbody>\n"
+"                </table> \n"
+"               <table style=\"width:600px;margin:0px "
+"auto;background:white;border:1px solid #e1e1e1;\">\n"
+"                    <tbody> \n"
+"                       <tr><td style=\"padding:15px 20px 10px 20px;\"> \n"
+"                           <p> Sveiki,</p>\n"
+"                            <p>Prašome skirti šiek tiek laiko ir įvertinti "
+"mūsų paslaugas, susijusias su jūsų prenumerata „<strong t-out=\"object.name "
+"or ''\">biurų valymo paslauga“</strong> „\n"
+"                              , kurią tvarko <strong t-"
+"out=\"object._rating_get_operator().name or ''\">Mitchell Admin</strong>.</p>"
+"\n"
+"                            <p>Dėkojame už jūsų atsiliepimą. Jis padeda mums "
+"nuolat tobulėti.</p>\n"
+"                        </td></tr>\n"
+"                        <tr> <td style=\"padding:10px 20px\">\n"
+"                            <table summary=\"o_mail_notification\" "
+"style=\"width:100%;border-top:1px solid #e1e1e1;\"> \n"
+"                               <tr>\n"
+"                                    <td style=\"text-align:center;\"> \n"
+"                                       <h2 style=\"font-weight:300;font-"
+"size:18px;\"> \n"
+"                                            Pasakykite, ką manote apie mūsų "
+"paslaugas:\n"
+"                                       </h2>\n"
+"                                        <div style=\"text-color: #888888\"> "
+"(spustelėkite vieną iš šių šypsenėlių)</div>\n"
+"                                    </td>\n"
+"                               </tr>\n"
+"                                <tr> \n"
+"                                   <td style=\"padding:10px 10px;\">\n"
+"                                        <table style=\"width:100%;text-"
+"align:center;\"> \n"
+"                                           <tr>\n"
+"                                                <td> \n"
+"                                                   <a t-attf-href=\"/rate/{{ "
+"access_token }}/5\">\n"
+"                                                        <img alt=\"Happy\" "
+"src=\"/rating/static/src/img/rating_5.png\" title=\"Happy\"/> \n"
+"                                                   </a>\n"
+"                                                </td> \n"
+"                                               <td>\n"
+"                                                    <a t-attf-href=\"/rate/{"
+"{ access_token }}/3\"> \n"
+"                                                       <img alt=\"Neutral\" "
+"src=\"/rating/static/src/img/rating_3.png\" title=\"Neutral\"/>\n"
+"                                                    </a> \n"
+"                                               </td>\n"
+"                                                <td> \n"
+"                                                   <a t-attf-href=\"/rate/{{ "
+"access_token }}/1\">\n"
+"                                                        <img alt=\"Unhappy\" "
+"src=\"/rating/static/src/img/rating_1.png\" title=\"Unhappy\"/> \n"
+"                                                   </a>\n"
+"                                                </td> \n"
+"                                           </tr>\n"
+"                                        </table> \n"
+"                                   </td>\n"
+"                                </tr> \n"
+"                           </table>\n"
+"                        </td> </tr>\n"
+"                        <tr data-o-mail-quote-container=\"1\"> <td "
+"style=\"padding:15px 20px 10px 20px;\" t-out=\"object.user_id.signature or "
+"''\" data-o-mail-quote=\"1\"> --<br data-o-mail-quote=\"1\"/>Mitchell Admin</"
+"td></tr>\n"
+"                   </tbody>\n"
+"                </table> \n"
+"               <table style=\"width:600px;margin:auto;text-align:center;font-"
+"size:12px;\">\n"
+"                    <tbody> \n"
+"                       <tr><td style=\"padding-top:10px;color:#afafaf;\"> \n"
+"                           <p> El. laiškas automatiškai išsiųstas iš <a "
+"target=\"_blank\" href=\"https://www.odoo.com/app/subscriptions\" t-attf-"
+"style=\"color: {{object.company_id.email_secondary_color or '#875A7B'}}; "
+"text-decoration:none;\">„Odoo“ prenumerata</a>, skirta <a t-att-"
+"href=\"object.company_id.website\" t-attf-style=\"color: {"
+"{object.company_id.email_secondary_color or '#875A7B'}}; text-"
+"decoration:none;\" t-out=\"object.company_id.name or ''\">„YourCompany“</a></"
+"p>\n"
+"                       </td></tr> \n"
+"                   </tbody>\n"
+"                </table> \n"
+"           </div> \n"
+"        "
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_sidebar
@@ -384,7 +520,7 @@ msgstr "<i class=\"oi oi-arrow-right me-1\"/>Grįžtkite į prenumeratą"
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_template
 msgid "<option value=\"\">Choose a reason...</option>"
-msgstr ""
+msgstr "<option value=\"\">Pasirinkite priežastį...</option>"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.payment_method_form
@@ -393,6 +529,8 @@ msgid ""
 "<small class=\"text-600\">Automate payments for the linked subscriptions</"
 "small>"
 msgstr ""
+"<small class=\"text-600\">Automatizuokite mokėjimus už susietas "
+"prenumeratas</small>"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.portal_my_subscriptions
@@ -501,6 +639,10 @@ msgid ""
 "subscription.\n"
 "                            </span>"
 msgstr ""
+"<span>\n"
+"                                Jau yra laukiantis mokėjimas už šią "
+"prenumeratą.\n"
+"                           </span>"
 
 #. module: sale_subscription
 #: model_terms:web_tour.tour,rainbow_man_message:sale_subscription.sale_subscription_tour
@@ -658,6 +800,138 @@ msgid ""
 "</table>\n"
 "        "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: "
+"16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; "
+"color: #454748; width: 100%; border-collapse:separate;\"><tr><td "
+"align=\"center\">\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
+"style=\"padding: 16px; background-color: white; color: #454748; border-"
+"collapse:separate;\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"   <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\"> \n"
+"           <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
+"0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr> <td valign=\"middle\">\n"
+"                    <t t-set=\"company\" t-value=\"object.company_id or "
+"object.user_id.company_id or user.company_id\"/> \n"
+"                   <span style=\"font-size: 10px;\"> Jūsų prenumerata</span>"
+"<br/>\n"
+"                   <span style=\"font-size: 20px; font-weight: bold;\" t-"
+"out=\"object.name or ''\"> Biurų valymo paslaugos</span>\n"
+"                </td></tr>\n"
+"                <tr> <td valign=\"middle\" align=\"right\" t-if=\"not "
+"company.uses_default_logo\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ company.id }}\" "
+"style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-"
+"alt=\"company.name\"/> \n"
+"               </td></tr> \n"
+"               <tr><td colspan=\"2\" style=\"text-align:center;\"> \n"
+"                   <hr width=\"100%\" style=\"background-color:rgb"
+"(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-"
+"height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                </td> </tr>\n"
+"            </table> \n"
+"       </td>\n"
+"    </tr> \n"
+"   <!-- CONTENT -->\n"
+"    <tr> \n"
+"       <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
+"0px 8px 0px 8px; border-collapse:separate;\"> \n"
+"               <tr><td valign=\"top\" style=\"font-size: 13px;\"> \n"
+"                    Sveiki <t t-out=\"object.partner_id.name or ''\">Brandon "
+"Freeman</t>,<br/><br/>\n"
+"                   <t t-if=\"ctx.get('payment_token') and ctx.get"
+"('next_invoice_amount')\"> \n"
+"                        Mūsų paskutinis bandymas apdoroti mokėjimą už jūsų "
+"prenumeratą naudojant jūsų mokėjimo būdą\n"
+"                       <t t-out=\"ctx.get('payment_token') or ''\"> TOKEN</t>"
+"\n"
+"                        už <t t-out=\"ctx['next_invoice_amount'] or ''\">"
+"100</t> <t t-out=\"ctx.get('currency') or ''\">$</t> nepavyko.\n"
+"                       <t t-if=\"ctx.get('error')\"> \n"
+"                            Jūsų bankas ar kredito įstaiga pateikė šią "
+"informaciją apie problemą: <pre t-out=\"ctx['error'] or ''\"/>.\n"
+"                       </t>\n"
+"                    </t> \n"
+"                   <t t-else=\"\"> \n"
+"                        Mūsų paskutinis bandymas apdoroti mokėjimą už jūsų "
+"prenumeratą nepavyko, nes neturime užregistruoto jūsų mokėjimo būdo.\n"
+"                   </t>\n"
+"                    <br/> <br/> \n"
+"                    Kadangi jūsų mokėjimas turėjo būti atliktas <strong><t t-"
+"out=\"ctx.get('auto_close_limit') or ''\">5</t> dienų prieš</strong>, jūsų "
+"prenumerata buvo nutraukta.\n"
+"                    Jei norite išspręsti šią problemą, nedvejodami "
+"susisiekite su mumis.<br/><br/>\n"
+"                    Dėkojame, kad pasirinkote <t t-out=\"company.name or "
+"''\">YourCompany</t>!\n"
+"                   <div t-if=\"user.signature\" data-o-mail-quote-"
+"container=\"1\">\n"
+"                        <br/> <br/>\n"
+"                        <div data-o-mail-quote=\"1\"> --<br data-o-mail-"
+"quote=\"1\"/><t t-out=\"user.signature or ''\" data-o-mail-quote=\"1\">"
+"Mitchell Admin</t></div>\n"
+"                   </div>\n"
+"                </td> </tr>\n"
+"                <tr> <td style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb"
+"(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-"
+"height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/> \n"
+"               </td></tr> \n"
+"           </table>\n"
+"        </td> \n"
+"   </tr>\n"
+"    <!-- FOOTER --> \n"
+"   <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\"> \n"
+"           <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: white; font-size: "
+"11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr> <td valign=\"middle\" align=\"left\">\n"
+"                    <t t-out=\"company.name or ''\"> JūsųĮmonė</t>\n"
+"                </td></tr>\n"
+"                <tr> <td valign=\"middle\" align=\"left\" style=\"opacity: "
+"0.7;\">\n"
+"                    <t t-if=\"company.phone\"> \n"
+"                       <t t-out=\"company.phone or ''\"> +1 650-123-4567</t> "
+"|\n"
+"                   </t>\n"
+"                    <t t-if=\"company.email\"> \n"
+"                       <a t-attf-href=\"'mailto:%s' % {{ company.email }}\" "
+"style=\"text-decoration:none; color: #454748;\" t-out=\"company.email or "
+"''\"> info@yourcompany.com</a> |\n"
+"                   </t>\n"
+"                    <t t-if=\"company.website\"> \n"
+"                       <a t-attf-href=\"'%s' % {{ company.website }}\" "
+"style=\"text-decoration:none; color: #454748;\" t-out=\"company.website or "
+"''\"> http://www.example.com</a>\n"
+"                    </t>\n"
+"               </td></tr> \n"
+"           </table>\n"
+"        </td> \n"
+"   </tr>\n"
+"</tbody> \n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY --> \n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"   <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
+"style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; "
+"padding: 8px; border-collapse:separate;\">\n"
+"      <tr> <td style=\"text-align: center; font-size: 13px;\"> \n"
+"        Sukurta naudojant <a target=\"_blank\" href=\"https://"
+"www.odoo.com?utm_source=db&amp;utm_medium=mail\" t-attf-style=\"color: {"
+"{company.email_secondary_color or '#875A7B'}};\">Odoo</a>\n"
+"      </td></tr>\n"
+"    </table> \n"
+"</td></tr>\n"
+"</table>\n"
+"        "
 
 #. module: sale_subscription
 #: model:mail.template,body_html:sale_subscription.email_payment_reminder
@@ -720,16 +994,17 @@ msgid ""
 "                        </t>\n"
 "                    </t>\n"
 "                    <t t-else=\"\">\n"
-"                        Your subscription <t t-out=\"ctx.get('code') or "
-"''\">CODE</t> is due for renewal but we haven’t received your payment yet. "
-"To keep your subscription active, please make your payment as soon as "
+"                        Your subscription <t t-out=\"object.client_order_ref "
+"or ''\">CODE</t> is due for renewal but we haven’t received your payment "
+"yet. To keep your subscription active, please make your payment as soon as "
 "possible.\n"
 "                    </t>\n"
 "                    <br/><br/>\n"
-"                    Your subscription <t t-out=\"ctx.get('code') or "
+"                    Your subscription <t t-out=\"object.client_order_ref or "
 "''\">CODE</t> is still valid but will be <strong>suspended</strong>\n"
-"                    on <t t-out=\"format_date(ctx.get('date_close')) or "
-"''\">05/05/2021</t><br/>\n"
+"                    on <t t-"
+"out=\"format_date(object._get_subscription_close_date()) or ''\">05/05/2021</"
+"t><br/>\n"
 "                    <div style=\"margin: 16px 0px; text-align: center;\">\n"
 "                        <a t-attf-href=\"{{ ctx.get('payment_link', "
 "object.get_portal_url()) }}\" t-attf-style=\"display: inline-block; padding: "
@@ -809,6 +1084,152 @@ msgid ""
 "</table>\n"
 "        "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: "
+"16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; "
+"color: #454748; width: 100%; border-collapse:separate;\"><tr><td "
+"align=\"center\">\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
+"style=\"padding: 16px; background-color: white; color: #454748; border-"
+"collapse:separate;\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"   <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\"> \n"
+"           <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
+"0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr> <td valign=\"middle\">\n"
+"                    <t t-set=\"company\" t-value=\"object.company_id or "
+"object.user_id.company_id or user.company_id\"/> \n"
+"                   <span style=\"font-size: 10px;\"> Jūsų prenumerata</span>"
+"<br/>\n"
+"                   <span style=\"font-size: 20px; font-weight: bold;\" t-"
+"out=\"object.name or ''\"> Biurų valymo paslaugos</span>\n"
+"                </td></tr>\n"
+"                <tr> <td valign=\"middle\" align=\"right\" t-if=\"not "
+"company.uses_default_logo\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ company.id }}\" "
+"style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-"
+"alt=\"company.name\"/> \n"
+"               </td></tr> \n"
+"               <tr><td colspan=\"2\" style=\"text-align:center;\"> \n"
+"                   <hr width=\"100%\" style=\"background-color:rgb"
+"(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-"
+"height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                </td> </tr>\n"
+"            </table> \n"
+"       </td>\n"
+"    </tr> \n"
+"   <!-- CONTENT -->\n"
+"    <tr> \n"
+"       <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
+"0px 8px 0px 8px; border-collapse:separate;\"> \n"
+"               <tr><td valign=\"top\" style=\"font-size: 13px;\"> \n"
+"                    Sveiki <t t-out=\"object.partner_id.name or ''\">Brandon "
+"Freeman</t>,<br/><br/>\n"
+"                   <t t-if=\"ctx.get('payment_token') and ctx.get"
+"('next_invoice_amount')\"> \n"
+"                        Nepavyko apdoroti jūsų prenumeratos mokėjimo "
+"naudojant jūsų mokėjimo būdą\n"
+"                       <t t-out=\"ctx['payment_token'] or ''\"> TOKEN</t>\n"
+"                        už <t t-out=\"ctx['next_invoice_amount'] or ''\">10</"
+"t> <t t-out=\"ctx.get('currency_name') or ''\">$</t>.\n"
+"                       <t t-if=\"ctx.get('error')\"> \n"
+"                            Jūsų bankas ar kredito įstaiga pateikė šią "
+"informaciją apie šį klausimą: <pre t-out=\"ctx['error'] or ''\"/>.\n"
+"                       </t>\n"
+"                    </t> \n"
+"                   <t t-else=\"\"> \n"
+"                        Jūsų prenumerata <t t-out=\"object.client_order_ref "
+"or ''\">CODE</t> turi būti atnaujinta, tačiau mes dar negavome jūsų "
+"mokėjimo. Kad jūsų prenumerata liktų aktyvi, prašome kuo greičiau atlikti "
+"mokėjimą.\n"
+"                   </t>\n"
+"                    <br/> <br/> \n"
+"                    Jūsų prenumerata <t t-out=\"object.client_order_ref or "
+"''\">CODE</t> vis dar galioja, tačiau bus <strong>sustabdyta</strong>\n"
+"                   <t t-out=\"format_date(object._get_subscription_close_date"
+"()) or ''\"> 2021 m. gegužės 5 d.</t><br/>\n"
+"                   <div style=\"margin: 16px 0px; text-align: center;\">\n"
+"                        <a t-attf-href=\"{{ ctx.get('payment_link', "
+"object.get_portal_url()) }}\" t-attf-style=\"display: inline-block; padding: "
+"10px 30px; text-decoration: none; background-color: {"
+"{company.email_secondary_color or '#875A7B'}}; color: {"
+"{company.email_primary_color or '#FFFFFF'}}; border-radius: 5px;\"> \n"
+"                            Apmokėti dabar\n"
+"                       </a>\n"
+"                    </div> \n"
+"                   <br/> \n"
+"                    Jei turite klausimų, nedvejodami susisiekite su "
+"mumis.<br/><br/>\n"
+"                    Dėkojame, kad pasirinkote <t t-out=\"company.name or "
+"''\">YourCompany</t>!\n"
+"                   <div>\n"
+"                    <t t-if=\"user.signature\" data-o-mail-quote-"
+"container=\"1\"> \n"
+"                       <br/><br/> \n"
+"                       <div data-o-mail-quote=\"1\"> --<br data-o-mail-"
+"quote=\"1\"/><t t-out=\"user.signature or ''\" data-o-mail-quote=\"1\">"
+"Mitchell Admin</t></div>\n"
+"                   </t>\n"
+"                    </div> \n"
+"               </td></tr> \n"
+"               <tr><td style=\"text-align:center;\"> \n"
+"                   <hr width=\"100%\" style=\"background-color:rgb"
+"(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-"
+"height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td> </tr>\n"
+"            </table> \n"
+"       </td>\n"
+"    </tr> \n"
+"   <!-- FOOTER -->\n"
+"    <tr> \n"
+"       <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: white; font-size: "
+"11px; padding: 0px 8px 0px 8px; border-collapse:separate;\"> \n"
+"               <tr><td valign=\"middle\" align=\"left\"> \n"
+"                   <t t-out=\"company.name or ''\"> „YourCompany“</t>\n"
+"                </td></tr>\n"
+"                <tr> <td valign=\"middle\" align=\"left\" style=\"opacity: "
+"0.7;\">\n"
+"                    <t t-if=\"company.phone\"> \n"
+"                       <t t-out=\"company.phone or ''\"> +1 650-123-4567</t> "
+"|\n"
+"                   </t>\n"
+"                    <t t-if=\"company.email\"> \n"
+"                       <a t-attf-href=\"'mailto:%s' % {{ company.email }}\" "
+"style=\"text-decoration:none; color: #454748;\" t-out=\"company.email or "
+"''\"> info@yourcompany.com</a> |\n"
+"                   </t>\n"
+"                    <t t-if=\"company.website\"> \n"
+"                       <a t-attf-href=\"'%s' % {{ company.website }}\" "
+"style=\"text-decoration:none; color: #454748;\" t-out=\"company.website or "
+"''\"> http://www.example.com</a>\n"
+"                    </t>\n"
+"               </td></tr> \n"
+"           </table>\n"
+"        </td> \n"
+"   </tr>\n"
+"</tbody> \n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY --> \n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"   <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
+"style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; "
+"padding: 8px; border-collapse:separate;\">\n"
+"      <tr> <td style=\"text-align: center; font-size: 13px;\"> \n"
+"        Sukurta naudojant „ <a target=\"_blank\" href=\"https://"
+"www.odoo.com?utm_source=db&amp;utm_medium=mail\" t-attf-style=\"color: {"
+"{company.email_secondary_color or '#875A7B'}};\">“ „Odoo“</a>\n"
+"      </td></tr>\n"
+"    </table> \n"
+"</td></tr>\n"
+"</table>\n"
+"        "
 
 #. module: sale_subscription
 #. odoo-python
@@ -990,11 +1411,6 @@ msgid "Annual Recurring Revenue"
 msgstr ""
 
 #. module: sale_subscription
-#: model_terms:ir.ui.view,arch_db:sale_subscription.product_template_only_view_form_recurring
-msgid "Applied On"
-msgstr "Taikoma"
-
-#. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_template_view_search
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_plan_view_form
 msgid "Archived"
@@ -1027,6 +1443,9 @@ msgid ""
 "Automate invoices and payments, simplify upsell quotes, reduce churn and get "
 "insights (MRR, churn, CLTV, ...)"
 msgstr ""
+"Automatizuokite sąskaitas faktūras ir mokėjimus, supaprastinkite papildomų "
+"pardavimų pasiūlymus, sumažinkite klientų praradimą ir gaukite įžvalgas "
+"(MRR, klientų praradimas, CLTV ir kt.)"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_subscription_plan__auto_close_limit
@@ -1047,7 +1466,7 @@ msgstr ""
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_search
 msgid "Automatic Payments"
-msgstr ""
+msgstr "Automatiniai apmokėjimai"
 
 #. module: sale_subscription
 #. odoo-python
@@ -1056,6 +1475,8 @@ msgid ""
 "Automatic payment failed after multiple attempts. Contract closed "
 "automatically."
 msgstr ""
+"Po keleto bandymų automatinis mokėjimas nepavyko. Sutartis automatiškai "
+"nutraukta."
 
 #. module: sale_subscription
 #. odoo-python
@@ -1064,25 +1485,23 @@ msgid ""
 "Automatic payment failed. Check the corresponding invoice %s. We can't "
 "automatically process negative payment"
 msgstr ""
+"Automatinis mokėjimas nepavyko. Patikrinkite atitinkamą sąskaitą %s. "
+"Negalime automatiškai apdoroti neigiamo mokėjimo"
 
 #. module: sale_subscription
 #. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 msgid "Automatic payment failed. Email sent to customer. Error: %s"
 msgstr ""
-
-#. module: sale_subscription
-#. odoo-python
-#: code:addons/sale_subscription/models/sale_order.py:0
-msgid ""
-"Automatic payment failed. No country specified on payment_token's partner"
-msgstr ""
+"Automatinis mokėjimas nepavyko. Klientui išsiųstas el. laiškas. Klaida: %s"
 
 #. module: sale_subscription
 #. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 msgid "Automatic payment failed. No email sent this time. Error: %s"
 msgstr ""
+"Automatinis mokėjimas nepavyko. Šį kartą el. laiškas nebuvo išsiųstas. "
+"Klaida: %s"
 
 #. module: sale_subscription
 #. odoo-python
@@ -1091,6 +1510,9 @@ msgid ""
 "Automatic payment succeeded. Payment reference: %(ref)s. Amount: %(amount)s. "
 "Contract set to: In Progress, Next Invoice: %(inv)s. Email sent to customer."
 msgstr ""
+"Automatinis mokėjimas atliktas sėkmingai. Mokėjimo nuoroda: %(ref)s. Suma: %"
+"(amount)s. Sutarties būsena: Vykdoma, Kitas sąskaitos faktūros numeris: %"
+"(inv)s. El. laiškas išsiųstas klientui."
 
 #. module: sale_subscription
 #: model:ir.model.fields,help:sale_subscription.field_sale_order__payment_exception
@@ -1098,6 +1520,8 @@ msgid ""
 "Automatic payment with token failed. The payment provider configuration and "
 "token should be checked"
 msgstr ""
+"Nepavyko atlikti automatinio mokėjimo su žetonu. Reikia patikrinti mokėjimo "
+"paslaugų teikėjo konfigūraciją ir žetoną"
 
 #. module: sale_subscription
 #: model:sale.order.close.reason,name:sale_subscription.close_reason_auto_close_limit_reached
@@ -1209,7 +1633,7 @@ msgstr ""
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_portal_content_inherit
 msgid "Change addresses"
-msgstr ""
+msgstr "Keisti adresus"
 
 #. module: sale_subscription
 #: model:ir.actions.server,name:sale_subscription.model_sale_order_subscription_change_customer
@@ -1227,19 +1651,19 @@ msgstr ""
 #: code:addons/sale_subscription/static/src/interactions/subscription_close_select.js:0
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_template
 msgid "Choose a closing reason before submitting"
-msgstr ""
+msgstr "Prieš pateikiant pasirinkite uždarymo priežastį"
 
 #. module: sale_subscription
 #. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 msgid "Choose a product name.<br/><i>(e.g. eLearning Access)</i>"
-msgstr ""
+msgstr "Pasirinkite produkto pavadinimą.<br/><i>(pvz., „eLearning Access“)</i>"
 
 #. module: sale_subscription
 #. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 msgid "Choose the invoice duration for your subscription"
-msgstr ""
+msgstr "Pasirinkite savo prenumeratos sąskaitos galiojimo laikotarpį"
 
 #. module: sale_subscription
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_log__event_type__2_churn
@@ -1400,7 +1824,7 @@ msgstr ""
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_search
 msgid "Contracts whose payment has failed"
-msgstr ""
+msgstr "Sutartys, pagal kurias mokėjimas nebuvo atliktas"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_subscription_report__country_id
@@ -1461,6 +1885,8 @@ msgid ""
 "Create subscriptions to manage recurring invoicing and payments from your "
 "customers."
 msgstr ""
+"Sukurkite prenumeratas, kad galėtumėte valdyti periodines sąskaitas ir "
+"mokėjimus iš savo klientų."
 
 #. module: sale_subscription
 #. odoo-javascript
@@ -1741,12 +2167,13 @@ msgid ""
 "Error during renewal of contract %(order_ids)s %(order_refs)s %"
 "(payment_state)s"
 msgstr ""
+"Klaida atnaujinant sutartį %(order_ids)s %(order_refs)s %(payment_state)s"
 
 #. module: sale_subscription
 #. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 msgid "Error during renewal of contract %s (Payment not recorded)"
-msgstr ""
+msgstr "Klaida atnaujinant sutartį „ %s “ (Mokėjimas neužregistruotas)"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order_log__event_date
@@ -1858,7 +2285,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 msgid "Go back to the subscription view"
-msgstr ""
+msgstr "Grįžti į prenumeratos peržiūrą"
 
 #. module: sale_subscription
 #: model_terms:ir.actions.act_window,help:sale_subscription.sale_subscription_action_pending
@@ -1956,7 +2383,7 @@ msgstr "Jei pažymėta, yra žinučių, turinčių pristatymo klaidų."
 #. module: sale_subscription
 #: model:ir.model.fields,help:sale_subscription.field_sale_order__payment_token_id
 msgid "If not set, the automatic payment will fail."
-msgstr ""
+msgstr "Jei nenustatyta, automatinis mokėjimas nepavyks."
 
 #. module: sale_subscription
 #: model:ir.model.fields,help:sale_subscription.field_sale_order__end_date
@@ -2102,6 +2529,8 @@ msgid ""
 "It could be due to the fail of the automatic payment\n"
 "            or because the new invoice has not yet been issued."
 msgstr ""
+"Tai gali būti dėl to, kad nepavyko atlikti automatinio mokėjimo\n"
+"            arba dėl to, kad nauja sąskaita dar nebuvo išrašyta."
 
 #. module: sale_subscription
 #: model:ir.model,name:sale_subscription.model_account_move
@@ -2174,7 +2603,7 @@ msgstr ""
 #. module: sale_subscription
 #: model:ir.model.fields,help:sale_subscription.field_sale_order__last_reminder_date
 msgid "Last time when we sent a payment reminder"
-msgstr ""
+msgstr "Paskutinį kartą, kai išsiuntėme priminimą apie mokėjimą"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_search
@@ -2184,17 +2613,17 @@ msgstr "Vėluojančios veiklos"
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_kanban
 msgid "Latest Rating: Happy"
-msgstr ""
+msgstr "Naujausias įvertinimas: Patenkintas"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_kanban
 msgid "Latest Rating: Neutral"
-msgstr ""
+msgstr "Naujausias įvertinimas: Neutralus"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_kanban
 msgid "Latest Rating: Unhappy"
-msgstr ""
+msgstr "Naujausias įvertinimas: Nepatenkintas"
 
 #. module: sale_subscription
 #. odoo-javascript
@@ -2206,13 +2635,13 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 msgid "Let's add price for selected recurrence"
-msgstr ""
+msgstr "Pridėkime kainą už pasirinktą pasikartojimą"
 
 #. module: sale_subscription
 #. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 msgid "Let's choose the customer for your subscription"
-msgstr ""
+msgstr "Pasirinkime jūsų prenumeratos klientą"
 
 #. module: sale_subscription
 #. odoo-javascript
@@ -2295,6 +2724,7 @@ msgstr ""
 msgid ""
 "Managing payment methods requires to be logged in under the customer order."
 msgstr ""
+"Norint valdyti mokėjimo būdus, reikia prisijungti prie kliento užsakymo."
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_search
@@ -2308,6 +2738,9 @@ msgid ""
 "Manual payment succeeded. Payment reference: %(ref)s. Amount: %(amount)s. "
 "Contract set to: In Progress, Next Invoice: %(inv)s. Email sent to customer."
 msgstr ""
+"Rankinis mokėjimas atliktas sėkmingai. Mokėjimo nuoroda: %(ref)s. Suma: %"
+"(amount)s. Sutarties būsena: Vykdoma, Kitas sąskaitos faktūros numeris: %"
+"(inv)s. El. laiškas išsiųstas klientui."
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_subscription_report__margin
@@ -2473,7 +2906,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 msgid "No Payment Method"
-msgstr ""
+msgstr "Nėra mokėjimo būdo"
 
 #. module: sale_subscription
 #: model_terms:ir.actions.act_window,help:sale_subscription.sale_subscription_action_upsell
@@ -2488,13 +2921,13 @@ msgstr ""
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_template
 msgid "No thanks, close my account"
-msgstr ""
+msgstr "Ne, ačiū, uždarykite mano paskyrą"
 
 #. module: sale_subscription
 #. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 msgid "No valid Payment Method"
-msgstr ""
+msgstr "Nėra galiojančio mokėjimo būdo"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_tree
@@ -2717,7 +3150,7 @@ msgstr "Apmokėti dabar"
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_order_view_form
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_kanban
 msgid "Payment Failure"
-msgstr ""
+msgstr "Mokėjimo nesėkmė"
 
 #. module: sale_subscription
 #: model:ir.model,name:sale_subscription.model_payment_provider
@@ -2744,13 +3177,13 @@ msgstr "Mokėjimo operacija"
 #. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 msgid "Payment not recorded"
-msgstr ""
+msgstr "Mokėjimas neužregistruotas"
 
 #. module: sale_subscription
 #. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 msgid "Payment recorded: %s"
-msgstr ""
+msgstr "Mokėjimas užregistruotas: %s"
 
 #. module: sale_subscription
 #: model:mail.template,subject:sale_subscription.email_payment_reminder
@@ -2758,6 +3191,8 @@ msgid ""
 "Payment reminder for subscription {{ object.client_order_ref or "
 "object.name }}"
 msgstr ""
+"Priminimas apie prenumeratos apmokėjimą {{ object.client_order_ref or "
+"object.name }}"
 
 #. module: sale_subscription
 #: model:ir.model.fields.selection,name:sale_subscription.selection__payment_transaction__renewal_state__pending
@@ -2813,7 +3248,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/sale_subscription/static/src/xml/payment_form_templates.xml:0
 msgid "Please provide another payment method for these subscriptions first."
-msgstr ""
+msgstr "Pirmiausia nurodykite kitą mokėjimo būdą šioms prenumeratoms."
 
 #. module: sale_subscription
 #. odoo-python
@@ -2827,7 +3262,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 msgid "Please select a date to pause the subscription until."
-msgstr ""
+msgstr "Prašome pasirinkti datą, iki kurios norite sustabdyti prenumeratą."
 
 #. module: sale_subscription
 #. odoo-python
@@ -2893,6 +3328,11 @@ msgid "Product Variant"
 msgstr "Produkto variantas"
 
 #. module: sale_subscription
+#: model_terms:ir.ui.view,arch_db:sale_subscription.product_template_only_view_form_recurring
+msgid "Product Variants"
+msgstr ""
+
+#. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_sale_order_line_list
 msgid "Product Varient"
 msgstr ""
@@ -2943,8 +3383,6 @@ msgid "Quantity"
 msgstr "Kiekis"
 
 #. module: sale_subscription
-#. odoo-python
-#: code:addons/sale_subscription/models/sale_order.py:0
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order__subscription_state__1_draft
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_log__subscription_state__1_draft
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_log_report__state__draft
@@ -3196,6 +3634,9 @@ msgid ""
 "Request a online payment from the customer to confirm the order. For a "
 "subscription, a payment will be required also before each renewal"
 msgstr ""
+"Paprašykite kliento atlikti mokėjimą internetu, kad užsakymas būtų "
+"patvirtintas. Jei tai prenumerata, mokėjimas taip pat bus reikalaujamas "
+"prieš kiekvieną pratęsimą"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_order_view_form
@@ -3354,12 +3795,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 msgid "Select a recurring product"
-msgstr ""
+msgstr "Pasirinkite pasikartojantį produktą"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_close_reason_view_form
 msgid "Selectable in Portal"
-msgstr ""
+msgstr "Pasirenkama portale"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_plan_view_form
@@ -3369,12 +3810,12 @@ msgstr ""
 #. module: sale_subscription
 #: model:ir.model.fields.selection,name:sale_subscription.selection__payment_transaction__subscription_action__automatic_send_mail
 msgid "Send Mail (automatic payment)"
-msgstr ""
+msgstr "Siųsti laišką (automatinis mokėjimas)"
 
 #. module: sale_subscription
 #: model:ir.model.fields.selection,name:sale_subscription.selection__payment_transaction__subscription_action__manual_send_mail
 msgid "Send Mail (manual payment)"
-msgstr ""
+msgstr "Siųsti laišką (rankinis mokėjimas)"
 
 #. module: sale_subscription
 #: model:ir.actions.act_window,name:sale_subscription.sale_subscription_act_window_sms_composer_multi
@@ -3393,6 +3834,7 @@ msgstr ""
 msgid ""
 "Sent to customer when payment failed but subscription is not yet cancelled"
 msgstr ""
+"Siunčiama klientui, kai mokėjimas nepavyko, bet prenumerata dar nėra atšaukta"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order_close_reason__sequence
@@ -3410,7 +3852,7 @@ msgstr ""
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.payment_form_inherit
 msgid "Set payment method for subscription"
-msgstr ""
+msgstr "Nustatykite prenumeratos mokėjimo būdą"
 
 #. module: sale_subscription
 #: model:ir.ui.menu,name:sale_subscription.menu_sale_subscription_settings
@@ -3545,7 +3987,7 @@ msgstr ""
 #. module: sale_subscription
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_line__display_type__subscription_discount
 msgid "Subscription Discount"
-msgstr ""
+msgstr "Nuolaida už prenumeratą"
 
 #. module: sale_subscription
 #. odoo-python
@@ -3669,22 +4111,22 @@ msgstr "SMS perspėjimas pagal nutylėjimą"
 #. module: sale_subscription
 #: model:mail.template,name:sale_subscription.email_payment_close
 msgid "Subscription: Payment Failure"
-msgstr ""
+msgstr "Prenumerata: mokėjimo nesėkmė"
 
 #. module: sale_subscription
 #: model:mail.template,name:sale_subscription.email_payment_reminder
 msgid "Subscription: Payment Reminder"
-msgstr ""
+msgstr "Prenumerata: priminimas apie mokėjimą"
 
 #. module: sale_subscription
 #: model:sms.template,name:sale_subscription.sms_template_data_payment_failure
 msgid "Subscription: Payment failure"
-msgstr ""
+msgstr "Prenumerata: mokėjimo nesėkmė"
 
 #. module: sale_subscription
 #: model:sms.template,name:sale_subscription.sms_template_data_payment_reminder
 msgid "Subscription: Payment reminder"
-msgstr ""
+msgstr "Prenumerata: priminimas apie mokėjimą"
 
 #. module: sale_subscription
 #: model:mail.template,name:sale_subscription.mail_template_subscription_rating
@@ -3729,6 +4171,9 @@ msgid ""
 "continuously,customer didn't pay, etc.) will be automatically closed after "
 "this period."
 msgstr ""
+"Prenumeratos, kurių atnaujinimas vėluoja (pvz., nuolat nepavyksta atlikti "
+"automatinio mokėjimo, klientas nesumokėjo ir pan.), po šio laikotarpio bus "
+"automatiškai nutrauktos."
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_search
@@ -3869,6 +4314,8 @@ msgid ""
 "The payment method you selected can only pay amounts up to %s. Please create "
 "or select another one."
 msgstr ""
+"Pasirinktu mokėjimo būdu galima sumokėti tik sumas, neviršijančias %s. "
+"Prašome sukurti arba pasirinkti kitą mokėjimo būdą."
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_close_reason_view_form
@@ -3898,6 +4345,16 @@ msgstr ""
 #: model:ir.model.fields,help:sale_subscription.field_sale_order__start_date
 #: model:ir.model.fields,help:sale_subscription.field_sale_order_line__subscription_start_date
 msgid "The start date indicate when the subscription periods begin."
+msgstr ""
+
+#. module: sale_subscription
+#. odoo-python
+#: code:addons/sale_subscription/models/sale_order.py:0
+msgid ""
+"The start date of an upsell cannot be greater or equal to the next invoice "
+"date of the subscription %s.\n"
+"You should first invoice the original subscription, use an earlier start "
+"date for the upsell or create a renewal quotation."
 msgstr ""
 
 #. module: sale_subscription
@@ -3957,6 +4414,8 @@ msgid ""
 "the\n"
 "                following active subscriptions:"
 msgstr ""
+"Šio mokėjimo būdo negalima ištrinti, nes šiuo metu jis susietas su\n"
+"                šiais aktyviais prenumeratais:"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_order_view_form
@@ -4183,7 +4642,7 @@ msgstr "Tūris"
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_order_view_form
 msgid "Waiting customer payment"
-msgstr ""
+msgstr "Laukiama kliento mokėjimo"
 
 #. module: sale_subscription
 #. odoo-javascript
@@ -4297,6 +4756,14 @@ msgstr ""
 #: code:addons/sale_subscription/models/product_template.py:0
 msgid ""
 "You can not change the recurring property of this product because it has "
+"been sold already (%s)"
+msgstr ""
+
+#. module: sale_subscription
+#. odoo-python
+#: code:addons/sale_subscription/models/product_template.py:0
+msgid ""
+"You can not change the recurring property of this product because it has "
 "been sold already."
 msgstr ""
 
@@ -4352,6 +4819,7 @@ msgid ""
 "You cannot generate a payment link for a recurring plan without a recurring "
 "product."
 msgstr ""
+"Be periodinio produkto negalima sukurti mokėjimo nuorodos periodiniam planui."
 
 #. module: sale_subscription
 #. odoo-python
@@ -4360,12 +4828,14 @@ msgid ""
 "You cannot generate a payment link for a recurring product without a "
 "recurring plan."
 msgstr ""
+"Be periodinio plano negalima sukurti mokėjimo nuorodos periodiniam produktui."
 
 #. module: sale_subscription
 #. odoo-python
 #: code:addons/sale_subscription/wizard/payment_link_wizard.py:0
 msgid "You cannot generate a payment link for a renewed subscription"
 msgstr ""
+"Negalima sukurti mokėjimo nuorodos atnaujintam prenumeratos laikotarpiui"
 
 #. module: sale_subscription
 #: model:ir.model.constraint,message:sale_subscription.constraint_sale_order_sale_subscription_state_coherence_2
@@ -4439,14 +4909,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 msgid ""
-"You cannot upsell a subscription whose next invoice date is in the past.\n"
-"Please, invoice directly the %s contract."
-msgstr ""
-
-#. module: sale_subscription
-#. odoo-python
-#: code:addons/sale_subscription/models/sale_order.py:0
-msgid ""
 "You cannot validate a renewal quotation starting before the next invoice "
 "date of the parent contract. Please update the start date after the %s."
 msgstr ""
@@ -4471,7 +4933,7 @@ msgstr ""
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.payment_method_form
 msgid "Your payment details will be saved for automatic renewals."
-msgstr ""
+msgstr "Jūsų mokėjimo duomenys bus išsaugoti automatiniam pratęsimui."
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_content
@@ -4643,6 +5105,9 @@ msgid ""
 "your subscription failed. As your payment should have been made on "
 "{{ object.next_invoice_date }}, your subscription has been terminated."
 msgstr ""
+"{{ object.company_id.name }}: Mūsų paskutinis bandymas apdoroti jūsų "
+"prenumeratos mokėjimą nepavyko. Kadangi mokėjimas turėjo būti atliktas "
+"svetainėje {{ object.next_invoice_date }}, jūsų prenumerata buvo nutraukta."
 
 #. module: sale_subscription
 #: model:mail.template,subject:sale_subscription.mail_template_subscription_alert
@@ -4663,6 +5128,10 @@ msgid ""
 "suspended on {{ object.next_invoice_date }} unless the payment succeeds in "
 "the meantime."
 msgstr ""
+"{{ object.company_id.name }}: Nepavyko apdoroti jūsų prenumeratos mokėjimo. "
+"Jūsų prenumerata {{ object.name }} vis dar galioja, tačiau bus sustabdyta {{ "
+"object.next_invoice_date }}, jei iki to laiko mokėjimas nebus sėkmingai "
+"atliktas."
 
 #. module: sale_subscription
 #: model:sms.template,body:sale_subscription.sms_template_data_default_alert
@@ -4671,6 +5140,9 @@ msgid ""
 "attention. If you have some concerns about it, please contact "
 "{{ object.user_id.name }}, your contact person."
 msgstr ""
+
+#~ msgid "Applied On"
+#~ msgstr "Taikoma"
 
 #~ msgid "(Wrong address?)"
 #~ msgstr "(Neteisingas adresas?)"

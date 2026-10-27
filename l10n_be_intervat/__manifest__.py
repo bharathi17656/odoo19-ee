@@ -10,9 +10,13 @@ your electronic VAT declarations.
     'data': [
         'security/ir.model.access.csv',
         'security/l10n_be_vat_declaration_rules.xml',
+        'data/cron.xml',
         'views/account_return_views.xml',
         'views/res_config_settings_views.xml',
         'wizard/vat_return_lock_wizard.xml',
+    ],
+    'demo': [
+        'demo/demo_company.xml',
     ],
     'installable': True,
     'auto_install': ['l10n_be', 'l10n_be_reports'],

@@ -37,6 +37,7 @@ export class BuilderList extends Component {
         defaultNewValue: { type: Object, optional: true },
         columnWidth: { optional: true },
         forbidLastItemRemoval: { type: Boolean, optional: true },
+        isInputDisabled: { type: Boolean, optional: true },
     };
     static defaultProps = {
         addItemTitle: _t("Add"),
@@ -48,6 +49,7 @@ export class BuilderList extends Component {
         defaultNewValue: {},
         columnWidth: {},
         forbidLastItemRemoval: false,
+        isInputDisabled: false,
     };
     static components = { BuilderComponent, Dropdown };
 
@@ -122,10 +124,9 @@ export class BuilderList extends Component {
         if (!ev.currentTarget.dataset.id) {
             items.push(this.makeDefaultItem());
         } else {
-            const elementToAdd = this.allRecords.find(
-                (el) => el.id === Number(ev.currentTarget.dataset.id)
-            );
-            if (!items.some((item) => item.id === Number(ev.currentTarget.dataset.id))) {
+            const matchId = (el) => el.id.toString() === ev.currentTarget.dataset.id.toString();
+            const elementToAdd = this.allRecords.find(matchId);
+            if (!items.some(matchId)) {
                 items.push(elementToAdd);
             }
             this.dropdown.close();

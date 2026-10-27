@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from collections import defaultdict
+
 from odoo import fields, models, api
 
 
@@ -41,35 +43,90 @@ class ResPartner(models.Model):
             partner.invoices_amount_due = due_map.get(commercial_partner_ids[partner.id], 0.0)
 
     def get_total_due(self, config_id):
+        self.ensure_one()
+        return self._get_total_due_data(config_id)[0]
+
+    def get_all_total_due(self, config_id):
+        return self.exists()._get_total_due_data(config_id)
+
+    def _get_total_due_data(self, config_id):
+        """ Return the PoS payload of ``self``, with 'total_due' expressed in the
+        currency of the given config and including the not yet posted pay later
+        payments. Everything is queried for the whole recordset at once. """
+        if not self:
+            return []
+
         config = self.env['pos.config'].browse(config_id)
-        pos_payments = self.env['pos.order'].search([
-            ('commercial_partner_id', '=', self.commercial_partner_id.id), ('state', '=', 'paid'),
-            ('session_id.state', '!=', 'closed')]).mapped('payment_ids')
-        total_settled = sum(pos_payments.filtered_domain(
-            [('payment_method_id.type', '=', 'pay_later')]).mapped('amount'))
+        pos_currency = config.currency_id
+        company_currency = self.env.company.currency_id
+        date = fields.Date.today()
+
+        pos_orders = self.env['pos.order'].search([
+            ('commercial_partner_id', 'in', self.commercial_partner_id.ids), ('state', '=', 'paid'),
+            ('session_id.state', '!=', 'closed')])
+        # pos.payment.amount is expressed in the currency of its order, so it is
+        # converted to the PoS currency instead of the company one.
+        total_settled = defaultdict(float)
+        for payment in pos_orders.payment_ids.filtered_domain([('payment_method_id.type', '=', 'pay_later')]):
+            commercial_partner = payment.pos_order_id.commercial_partner_id
+            total_settled[commercial_partner.id] += payment.currency_id._convert(
+                payment.amount, pos_currency, self.env.company, date)
 
         self_sudo = self
         group_pos_user = self.env.ref('point_of_sale.group_pos_user')
         if group_pos_user in self.env.user.all_group_ids:
             self_sudo = self.sudo()  # allow POS users without accounting rights to settle dues
 
-        total_due = self_sudo.parent_id.total_due if self.parent_id else self_sudo.total_due
-        total_due += total_settled
-        if self.env.company.currency_id.id != config.currency_id.id:
-            pos_currency = config.currency_id
-            total_due = self.env.company.currency_id._convert(total_due, pos_currency, self.env.company, fields.Date.today())
-        partner = self.env['res.partner']._load_pos_data_read(self, config)[0]
-        partner['total_due'] = total_due
-        return {
-            'res.partner': [partner],
+        # total_due comes from the accounting entries, it is in company currency.
+        total_due_per_partner = {
+            partner.id: (partner.parent_id or partner).total_due
+            for partner in self_sudo
         }
 
-    def get_all_total_due(self, config_id):
+        partners_data = {p['id']: p for p in self.env['res.partner']._load_pos_data_read(self, config)}
         due_amounts = []
-        partners = self.exists()
-        for partner in partners:
-            due_amounts.append(partner.get_total_due(config_id))
+        for partner in self:
+            partner_data = partners_data.get(partner.id)
+            if not partner_data:
+                continue
+            total_due = total_due_per_partner[partner.id]
+            if company_currency != pos_currency:
+                total_due = company_currency._convert(total_due, pos_currency, self.env.company, date)
+            partner_data['total_due'] = total_due + total_settled[partner.commercial_partner_id.id]
+            due_amounts.append({
+                'res.partner': [partner_data],
+            })
         return due_amounts
+
+    def get_matching_paylater_orders(self):
+        self.ensure_one()
+
+        pay_later_refund_orders = self.env["pos.order"].search([
+            ("commercial_partner_id", "=", self.id),
+            ("state", "in", ["paid", "done"]),
+        ]).filtered(
+            lambda o: (
+                o.refunded_order_id
+                and any(
+                    p.payment_method_id.type == "pay_later"
+                    for p in o.payment_ids
+                )
+            )
+        )
+
+        original_orders = pay_later_refund_orders.mapped("refunded_order_id").filtered(lambda o: o.state in ["paid", "done"])
+
+        orders_matched = []
+        for order in original_orders:
+            refund_orders = pay_later_refund_orders.filtered(lambda o: o.refunded_order_id.id == order.id)
+
+            original_pay_later_amount = sum(order.payment_ids.filtered(lambda p: p.payment_method_id.type == "pay_later").mapped("amount"))
+            refund_pay_later_amount = sum(refund_orders.mapped("payment_ids").filtered(lambda p: p.payment_method_id.type == "pay_later").mapped("amount"))
+
+            if order.currency_id.is_zero(original_pay_later_amount + refund_pay_later_amount):
+                orders_matched += order.ids + refund_orders.ids
+
+        return orders_matched
 
     @api.model
     def _load_pos_data_fields(self, config):

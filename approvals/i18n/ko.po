@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:40+0000\n"
-"PO-Revision-Date: 2025-11-08 20:04+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2025-12-10 10:29+0000\n"
+"Last-Translator: \"Kwanghee Park (kwpa)\" <kwpa@odoo.com>\n"
 "Language-Team: Korean <https://translate.odoo.com/projects/odoo-19/approvals/"
 "ko/>\n"
 "Language: ko\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: approvals
 #. odoo-python
@@ -33,34 +33,14 @@ msgid "'Approval - %s' % object.name"
 msgstr "'승인 - %s' % object.name"
 
 #. module: approvals
-#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
-msgid "07/07/2023 10:00:00"
-msgstr "07/07/2023 10:00:00"
-
-#. module: approvals
-#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
-msgid "07/08/2023 10:00:00"
-msgstr "07/08/2023 10:00:00"
-
-#. module: approvals
-#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
-msgid "1200"
-msgstr "1200"
-
-#. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_kanban
 msgid "<i class=\"fa fa-check text-success me-1\"/>Approve"
-msgstr ""
+msgstr "<i class=\"fa fa-check text-success me-1\"/>승인"
 
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_kanban
 msgid "<i class=\"fa fa-times text-danger me-1\"/>Refuse"
-msgstr ""
-
-#. module: approvals
-#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
-msgid "<span class=\"col-2 fw-bold\">Description:</span>"
-msgstr "<span class=\"col-2 fw-bold\">설명:</span>"
+msgstr "<i class=\"fa fa-times text-danger me-1\"/>반려"
 
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_category_view_form
@@ -527,6 +507,11 @@ msgid "Description"
 msgstr "설명"
 
 #. module: approvals
+#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
+msgid "Description:"
+msgstr ""
+
+#. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_approver__display_name
 #: model:ir.model.fields,field_description:approvals.field_approval_category__display_name
 #: model:ir.model.fields,field_description:approvals.field_approval_category_approver__display_name
@@ -613,7 +598,7 @@ msgstr "시작일"
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_search_view_search
 msgid "Future Activities"
-msgstr ""
+msgstr "향후 활동"
 
 #. module: approvals
 #: model:approval.category,name:approvals.approval_category_data_general_approval
@@ -812,7 +797,7 @@ msgstr "최근 갱신 일자"
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_search_view_search
 msgid "Late Activities"
-msgstr ""
+msgstr "지연된 활동"
 
 #. module: approvals
 #: model_terms:ir.actions.act_window,help:approvals.approval_request_action
@@ -1391,7 +1376,7 @@ msgstr "기안 작성"
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_search_view_search
 msgid "Today Activities"
-msgstr ""
+msgstr "오늘의 활동"
 
 #. module: approvals
 #: model:ir.model.fields,help:approvals.field_approval_request__activity_exception_decoration
@@ -1471,6 +1456,12 @@ msgstr "이전 결재권자보다 먼저 결재할 수 없습니다."
 
 #. module: approvals
 #. odoo-python
+#: code:addons/approvals/models/approval_approver.py:0
+msgid "You cannot change approval request."
+msgstr ""
+
+#. module: approvals
+#. odoo-python
 #: code:addons/approvals/models/ir_attachment.py:0
 msgid ""
 "You cannot unlink an attachment which is linked to a validated, refused or "
@@ -1544,6 +1535,18 @@ msgstr "새 요청"
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_form
 msgid "to:"
 msgstr "종료일"
+
+#~ msgid "<span class=\"col-2 fw-bold\">Description:</span>"
+#~ msgstr "<span class=\"col-2 fw-bold\">설명:</span>"
+
+#~ msgid "07/07/2023 10:00:00"
+#~ msgstr "07/07/2023 10:00:00"
+
+#~ msgid "07/08/2023 10:00:00"
+#~ msgstr "07/08/2023 10:00:00"
+
+#~ msgid "1200"
+#~ msgstr "1200"
 
 #~ msgid "<span class=\"fw-bold\">Description:</span>"
 #~ msgstr "<span class=\"fw-bold\">설명:</span>"

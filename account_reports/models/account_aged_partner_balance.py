@@ -98,7 +98,8 @@ class AccountAgedPartnerBalanceReportHandler(models.AbstractModel):
         interval = options['aging_interval']
         periods = [(False, fields.Date.to_string(date_to))]
         # Since we added the first period in the list we have to do one less iteration
-        nb_periods = len([column for column in options['columns'] if column['expression_label'].startswith('period')]) - 1
+        nb_column_groups = len(options['column_groups'])
+        nb_periods = len([column for column in options['columns'] if column['expression_label'].startswith('period')]) // nb_column_groups - 1
         for i in range(nb_periods):
             start_date = minus_days(date_to, (interval * i) + 1)
             # The last element of the list will have False for the end date
@@ -363,10 +364,12 @@ class AccountAgedPartnerBalanceReportHandler(models.AbstractModel):
 
     def aged_partner_balance_audit(self, options, params, journal_type):
         """ Open a list of invoices/bills and/or deferral entries for the clicked cell
+
         :param dict options: the report's `options`
         :param dict params:  a dict containing:
-                                 `calling_line_dict_id`: line id containing the optional account of the cell
-                                 `expression_label`: the expression label of the cell
+
+             * ``calling_line_dict_id``: line id containing the optional account of the cell
+             * ``expression_label``: the expression label of the cell
         """
         report = self.env['account.report'].browse(options['report_id'])
         action = self.env['ir.actions.actions']._for_xml_id('account.action_amounts_to_settle')
@@ -386,14 +389,26 @@ class AccountAgedPartnerBalanceReportHandler(models.AbstractModel):
         if period != "total" and period[-1].isdigit():
             period_number = int(period[-1])
             if period_number == 0:
-                domain = [('date_maturity', '>=', options['date']['date_to'])]
+                domain = [
+                    '|',
+                    ('date_maturity', '>=', options['date']['date_to']),
+                    '&', ('date_maturity', '=', False), ('date', '>=', options['date']['date_to']),
+                ]
             else:
                 options_date_to = datetime.datetime.strptime(options['date']['date_to'], '%Y-%m-%d')
                 period_end = options_date_to - datetime.timedelta(30*(period_number-1)+1)
                 period_start = options_date_to - datetime.timedelta(30*(period_number))
-                domain = [('date_maturity', '>=', period_start), ('date_maturity', '<=', period_end)]
+                domain = [
+                        '|',
+                        '&', ('date_maturity', '>=', period_start), ('date_maturity', '<=', period_end),
+                        '&', '&', ('date_maturity', '=', False), ('date', '>=', period_start), ('date', '<=', period_end),
+                    ]
                 if period_number == 5:
-                    domain = [('date_maturity', '<=', period_end)]
+                    domain = [
+                        '|',
+                        ('date_maturity', '<=', period_end),
+                        '&', ('date_maturity', '=', False), ('date', '<=', period_end),
+                    ]
         else:
             domain = []
         return domain

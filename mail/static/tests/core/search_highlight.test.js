@@ -109,13 +109,18 @@ test("Search highlight", async () => {
             output: `<p>&lt;strong&gt;<span class="${HIGHLIGHT_CLASS}">test</span>&lt;/strong&gt; <span class="${HIGHLIGHT_CLASS}">hello</span></p>`,
             searchTerm: "test hello",
         },
+        {
+            input: markup`test odoo`,
+            output: `t<span class="${HIGHLIGHT_CLASS}">e</span>st o<span class="${HIGHLIGHT_CLASS}">d</span>oo`,
+            searchTerm: "e               d",
+        },
     ];
     for (const { input, output, searchTerm } of testCases) {
         expect(searchHighlight(searchTerm, input).toString()).toBe(output);
     }
 });
 
-test("Display highligthed search in chatter", async () => {
+test("Display highlighted search in chatter", async () => {
     patchUiSize({ size: SIZES.XXL });
     const pyEnv = await startServer();
     const partnerId = pyEnv["res.partner"].create({ name: "John Doe" });
@@ -132,7 +137,7 @@ test("Display highligthed search in chatter", async () => {
     await contains(`.o-mail-SearchMessageResult .o-mail-Message span.${HIGHLIGHT_CLASS}`);
 });
 
-test("Display multiple highligthed search in chatter", async () => {
+test("Display multiple highlighted search in chatter", async () => {
     patchUiSize({ size: SIZES.XXL });
     const pyEnv = await startServer();
     const partnerId = pyEnv["res.partner"].create({ name: "John Doe" });
@@ -151,7 +156,7 @@ test("Display multiple highligthed search in chatter", async () => {
     });
 });
 
-test("Display highligthed search in Discuss", async () => {
+test("Display highlighted search in Discuss", async () => {
     const pyEnv = await startServer();
     const channelId = pyEnv["discuss.channel"].create({ name: "General" });
     pyEnv["mail.message"].create({
@@ -171,7 +176,7 @@ test("Display highligthed search in Discuss", async () => {
     await contains(`.o-mail-SearchMessagesPanel .o-mail-Message span.${HIGHLIGHT_CLASS}`);
 });
 
-test("Display multiple highligthed search in Discuss", async () => {
+test("Display multiple highlighted search in Discuss", async () => {
     const pyEnv = await startServer();
     const channelId = pyEnv["discuss.channel"].create({ name: "General" });
     pyEnv["mail.message"].create({
@@ -193,7 +198,7 @@ test("Display multiple highligthed search in Discuss", async () => {
     });
 });
 
-test("Display highligthed with escaped character must ignore them", async () => {
+test("Display highlighted with escaped character must ignore them", async () => {
     patchUiSize({ size: SIZES.XXL });
     const pyEnv = await startServer();
     const partnerId = pyEnv["res.partner"].create({ name: "John Doe" });

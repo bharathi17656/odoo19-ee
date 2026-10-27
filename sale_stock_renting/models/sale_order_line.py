@@ -142,6 +142,13 @@ class SaleOrderLine(models.Model):
                         from_date=from_date,
                         to_date=to_date,
                         warehouse_id=warehouse_id).qty_available
+                    # The rented_qty_during_period can overlap with ongoing rentals already picked up
+                    # and therefore already subtracted from qty_available
+                    rentable_qty += line.product_id._get_physical_unavailable_qty_in_rent(
+                        pivot_date=from_date,
+                        ignored_soline_id=line and line.state == 'draft' and line.id,
+                        warehouse_id=line.order_id.warehouse_id.id,
+                    )
                 else:
                     # For performance reason it is not reasonable to find the minimal forecasted quantity
                     # during the rental period so that we fallback on the forecasted quantity at the
@@ -162,7 +169,9 @@ class SaleOrderLine(models.Model):
                     ignored_soline_id=line and line.id,
                     warehouse_id=line.order_id.warehouse_id.id,
                 )
-                virtual_available_at_date = max(rentable_qty - rented_qty_during_period, 0)
+                virtual_available_at_date = line.product_id.uom_id._compute_quantity(
+                    max(rentable_qty - rented_qty_during_period, 0), line.product_uom_id
+                )
                 line.update(dict(line_default_values,
                     virtual_available_at_date=virtual_available_at_date,
                     scheduled_date=from_date,
@@ -197,7 +206,7 @@ class SaleOrderLine(models.Model):
         """
         if (
             not any(key in vals for key in ['qty_delivered', 'pickedup_lot_ids', 'qty_returned', 'returned_lot_ids'])
-            or self._are_rental_pickings_enabled()
+            or (self._are_rental_pickings_enabled() and not self.env.context.get('rental_direct_stock_move'))
         ):
             # If nothing to catch for rental: usual write behavior
             return super().write(vals)
@@ -330,7 +339,7 @@ class SaleOrderLine(models.Model):
         rental_stock_move = self.env['stock.move'].create({
             'product_id': self.product_id.id,
             'product_uom_qty': qty,
-            'product_uom': self.product_id.uom_id.id,
+            'product_uom': self.product_uom_id.id,
             'location_id': location_id.id,
             'location_dest_id': location_dest_id.id,
             'partner_id': self.order_partner_id.id,
@@ -398,7 +407,8 @@ class SaleOrderLine(models.Model):
             groupby=['product_id'],
             aggregates=['quantity:sum'],
         ))
-        reserved_quants = dict(self.env['sale.order.line']._read_group(
+        reserved_quants = defaultdict(float)
+        for product, uom, product_uom_qty in self.env['sale.order.line']._read_group(
             Domain([
                 ('product_id', 'in', storable_products.ids),
                 ('is_rental', '=', True),
@@ -407,9 +417,10 @@ class SaleOrderLine(models.Model):
                 ('start_date', '<=', self.return_date),
                 ('return_date', '>=', self.start_date),
             ]),
-            groupby=['product_id'],
+            groupby=['product_id', 'product_uom_id'],
             aggregates=['product_uom_qty:sum'],
-        ))
+        ):
+            reserved_quants[product] += uom._compute_quantity(product_uom_qty, product.uom_id, round=False)
         for product in stock_quants.keys() | reserved_quants.keys():
             if stock_quants.get(product, 0) < reserved_quants.get(product, 0):
                 result['notifications'].append({
@@ -418,7 +429,7 @@ class SaleOrderLine(models.Model):
                         "Not enough %(product)s in stock.\n"
                         "%(reserved_qty)s reserved but only %(stock_qty)s in stock.",
                         product=product.display_name,
-                        reserved_qty=reserved_quants.get(product, 0),
+                        reserved_qty=product.uom_id.round(reserved_quants.get(product, 0)),
                         stock_qty=stock_quants.get(product, 0),
                     ),
                     'code': 'stock_inconsistency',
@@ -483,7 +494,7 @@ class SaleOrderLine(models.Model):
     def _create_procurements(self, product_qty, procurement_uom, values):
         """ Change the destination for rental procurement. """
         if self.is_rental and self._are_rental_pickings_enabled():
-            values['route_ids'] = values.get('route_ids') or self.env.ref('sale_stock_renting.route_rental')
+            values['route_ids'] = values.get('route_ids', self.env['stock.route']) | (self.env.ref('sale_stock_renting.route_rental', raise_if_not_found=False) or self.env['stock.route'])
             delivery_values = {
                 **values,
                 'date_planned': self.order_id.rental_start_date,
@@ -531,7 +542,7 @@ class SaleOrderLine(models.Model):
                     'move_orig_ids': [Command.link(pick.id) for pick in moves['picks']],
                     'procure_method': 'make_to_order'
                 })
-                moves['returns'].picking_id.return_id = moves['picks'].picking_id
+                moves['returns'].picking_id.return_id = moves['picks'].picking_id[:1]
             returns._recompute_state()
         else:
             other_lines = self.filtered(lambda sol: not sol.is_rental)
@@ -597,21 +608,28 @@ class SaleOrderLine(models.Model):
         self.product_id.ensure_one()
         rented_quantities = defaultdict(float)
         now = fields.Datetime.now()
-        for so_line in self.filtered('is_rental'):
-            rented_quantities[so_line.reservation_begin] += so_line.product_uom_qty
-            rented_quantities[so_line.return_date] -= so_line.product_uom_qty
+        for so_line in self:
+            if not so_line.is_rental:
+                continue
+            product_uom = so_line.product_id.uom_id
+            product_qty, qty_delivered, qty_returned = (
+                so_line.product_uom_id._compute_quantity(qty, product_uom, round=False)
+                for qty in (so_line.product_uom_qty, so_line.qty_delivered, so_line.qty_returned)
+            )
+            rented_quantities[so_line.reservation_begin] += product_qty
+            rented_quantities[so_line.return_date] -= product_qty
             # Adjust the rented quantities for early pickups.
             # We don't know when the order was picked up, so we apply the adjustment from the
             # current date to the expected pickup date.
-            if so_line.reservation_begin > now and so_line.qty_delivered > 0:
-                rented_quantities[now] += so_line.qty_delivered
-                rented_quantities[so_line.reservation_begin] -= so_line.qty_delivered
+            if so_line.reservation_begin > now and qty_delivered > 0:
+                rented_quantities[now] += qty_delivered
+                rented_quantities[so_line.reservation_begin] -= qty_delivered
             # Adjust the rented quantities for early returns.
             # We don't know when the order was returned, so we apply the adjustment from the current
             # date to the expected return date.
-            if so_line.return_date > now and so_line.qty_returned > 0:
-                rented_quantities[now] -= so_line.qty_returned
-                rented_quantities[so_line.return_date] += so_line.qty_returned
+            if so_line.return_date > now and qty_returned > 0:
+                rented_quantities[now] -= qty_returned
+                rented_quantities[so_line.return_date] += qty_returned
 
         key_dates = sorted(set(rented_quantities.keys()) | set(mandatory_dates))
         return rented_quantities, key_dates

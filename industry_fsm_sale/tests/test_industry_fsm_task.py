@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details
 
 from odoo import Command
+from odoo.exceptions import AccessError
 from odoo.tests import tagged, Form
 from .common import TestFsmFlowSaleCommon
 
@@ -208,3 +209,99 @@ class TestIndustryFsmTask(TestFsmFlowSaleCommon):
         self.task.under_warranty = False
         self.assertEqual(sol.price_unit, self.consu_product_delivered.list_price,
                          "The price should match the product's listed price.")
+
+    def test_no_double_discount_for_fsm_task(self):
+        """
+        Test that the timesheet service line only gives discount
+        once from the customer's assigned pricelist.
+
+            Steps to reproduce:
+            - Enable discounts
+            - Create a discount pricelist that applies to all products.
+            - Assign the pricelist to the customer.
+            - Create a task linked to that customer.
+            - Add a timesheet entry to the task.
+            - Mark the task as done.
+            - Verify that the price of the timesheet service line
+            in the sale order does not have discount applied twice.
+        """
+        self.env['res.config.settings'].create({'group_discount_per_so_line': True}).execute()
+
+        pricelist = self.env['product.pricelist'].create({
+            'name': 'Price List',
+            'item_ids': [Command.create({
+                'applied_on': '3_global',
+                'compute_price': 'percentage',
+                'percent_price': 10,
+            })],
+        })
+        self.partner.property_product_pricelist = pricelist
+        self.task.partner_id = self.partner
+
+        analytic_line = self.env['account.analytic.line'].create({
+            'employee_id': self.employee_user2.id,
+            'task_id': self.task.id,
+            'unit_amount': 1.0,
+            'date': '2025-06-17',
+        })
+        self.task.action_fsm_validate()
+        discounted_price = pricelist._get_product_price(
+            self.task.timesheet_product_id, analytic_line.unit_amount
+        )
+        self.assertEqual(self.task.sale_line_id.price_subtotal, discounted_price)
+
+    def test_fsm_user_can_get_catalog_data_from_task(self):
+        fsm_product = self.service_product_ordered
+        fsm_product.service_tracking = "task_global_project"
+        fsm_product.project_id = self.fsm_project
+
+        fsm_user = self.env["res.users"].create({
+            "name": "John",
+            "login": "john",
+            "group_ids": [Command.set([
+                self.env.ref("industry_fsm.group_fsm_user").id,
+                self.env.ref("sales_team.group_sale_salesman").id,
+            ])],
+        })
+
+        sale_order = self.env["sale.order"].create({
+            "partner_id": self.partner_1.id,
+            "order_line": [Command.create({
+                "product_id": fsm_product.id,
+                "product_uom_qty": 1,
+            })],
+        })
+        sale_order.action_confirm()
+
+        other_order = self.env["sale.order"].create({
+            "partner_id": self.partner_1.id,
+            "order_line": [
+                Command.create({"display_type": "line_section", "name": "Other Section"}),
+                Command.create({"product_id": self.product_a.id, "product_uom_qty": 1}),
+            ],
+        })
+
+        fsm_task = sale_order.order_line.task_id
+        order = sale_order.with_user(fsm_user).with_context(fsm_task_id=fsm_task.id)
+
+        self.assertFalse(order.has_access("read"))
+        self.assertTrue(fsm_task.with_user(fsm_user).has_access("write"))
+
+        # values cached while creating the orders as admin would bypass the access checks
+        self.env.invalidate_all()
+        sections = order._get_sections(child_field="order_line", task_id=fsm_task.id)
+        self.assertEqual(
+            [(section["id"], section["line_count"]) for section in sections],
+            [(False, 1)],
+        )
+        self.env.invalidate_all()
+        record_lines = order._get_product_catalog_record_lines(product_ids=fsm_product.ids)
+        self.assertEqual(
+            {product.id: lines.ids for product, lines in record_lines.items()},
+            {fsm_product.id: sale_order.order_line.ids},
+        )
+
+        # the task must not grant access to the sections of an order it is not linked to
+        self.env.invalidate_all()
+        with self.assertRaises(AccessError):
+            other_order.with_user(fsm_user)._get_sections(child_field="order_line", task_id=fsm_task.id)

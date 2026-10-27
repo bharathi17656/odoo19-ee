@@ -127,6 +127,12 @@ export class PaymentPineLabs extends PaymentInterface {
             this._showError(response?.error || _t("Pine Labs payment cancellation request failed"));
             return false;
         } else if (response.notification) {
+            if (!line) {
+                // This can happen if the payment line was processed or reset
+                // while waiting for the cancellation response from Pine Labs
+                this._removePaymentHandler();
+                return false;
+            }
             line.setPaymentStatus("retry");
             if (this.payment_stopped) {
                 this._showError(_t("Transaction failed due to inactivity"));
@@ -169,11 +175,9 @@ export class PaymentPineLabs extends PaymentInterface {
             return false;
         }
 
-        const orderId = order?.pos_reference?.replace(" ", "").replaceAll("-", "").toUpperCase();
-        const referencePrefix = this.pos.config.name.replace(/\s/g, "").slice(0, 4);
+        const referenceId = `${this.pos.config.id}/${order.uuid}/${this.payment_method_id.id}/${this.pos.config.currency_id.name}/${paymentLine.amount}/${sequenceNumber}`;
         paymentLine.update({
-            payment_ref_no:
-                referencePrefix + "/" + orderId + "/" + crypto.randomUUID().replaceAll("-", ""),
+            payment_ref_no: referenceId,
         });
 
         // Assume that the Pine Labs terminal payment method is configured with INR (Indian Rupees) as the currency_id in the POS config.
@@ -193,7 +197,11 @@ export class PaymentPineLabs extends PaymentInterface {
      */
     async _waitForPaymentToConfirm() {
         const paymentLine = this.pos.getOrder().getSelectedPaymentline();
-        if (!paymentLine || paymentLine.payment_status == "retry") {
+        if (
+            !paymentLine ||
+            paymentLine.payment_status == "retry" ||
+            !paymentLine.pine_labs_plutus_transaction_ref
+        ) {
             return false;
         }
         const data = {

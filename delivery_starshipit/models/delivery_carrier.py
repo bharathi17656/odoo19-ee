@@ -73,12 +73,30 @@ class DeliveryCarrier(models.Model):
         """ Get the rates for the given order, according to the selected service code for this carrier.
         This method is used when getting the rate for a specific shipping.method.
         """
+        check_value = self._starshipit_check_required_value(
+            order.partner_shipping_id, order.warehouse_id.partner_id
+        )
+        if check_value:
+            return {
+                'success': False,
+                'price': 0.0,
+                'error_message': check_value,
+                'warning_message': False,
+            }
         starshipit = self._get_starshipit()
 
-        rates = starshipit._rate_shipment(
-            self._starshipit_get_package_information(order=order)[0],
-            order=order,
-        )
+        try:
+            rates = starshipit._rate_shipment(
+                self._starshipit_get_package_information(order=order)[0],
+                order=order,
+            )
+        except UserError as e:
+            return {
+                'success': False,
+                'price': 0.0,
+                'error_message': e.args[0],
+                'warning_message': False,
+            }
         rate = rates['success'] and rates['rates'].get(self.starshipit_service_code)
         if rate:
             return {
@@ -95,16 +113,46 @@ class DeliveryCarrier(models.Model):
                 'warning_message': False,
             }
 
+    def _starshipit_check_required_value(self, recipient, shipper):
+        """ Check that the addresses hold the fields starshipit requires to rate a shipment.
+        Returns an error message if a field is missing, an empty string otherwise.
+        """
+        required_fields = ['city', 'zip', 'country_id', 'state_id']
+
+        res = [field for field in required_fields if not recipient[field]]
+        if res:
+            return _(
+                "The recipient address is incomplete or wrong (Missing field(s):  \n %s)",
+                ", ".join(res).replace("_id", ""),
+            )
+        if not recipient.street and not recipient.street2:
+            if recipient.env.context.get('express_checkout_partial_delivery_address', False):
+                return _('Error: this delivery method is not available for this order.')
+            return _(
+                "The recipient address is incomplete or wrong (Missing field(s):  \n %s)", "street"
+            )
+
+        res = [field for field in required_fields if not shipper[field]]
+        if not shipper.street and not shipper.street2:
+            res.append('street')
+        if res:
+            return _(
+                "The address of your company/warehouse is incomplete or wrong (Missing field(s):  \n %s)",
+                ", ".join(res).replace("_id", ""),
+            )
+        return ''
+
     def starshipit_send_shipping(self, pickings, is_return=False):
         """ For a given picking, this method will execute a few API calls in order to get the order to be sent to the carrier.
         The order of actions is:
-            - Create the order(s) on starshipit side. This will not send them, just register them and return the id(s)
-            - Get the labels for each picking, one at a time. This will return the tracking number(s) and url(s).
-                - The labels are attached to the picking as ir.attachment
-            - If return_label_on_delivery is set, generate the return label(s) for each picking too.
-            - Get the delivery order information from starshipit to fetch the final rate, and whether the order was manifested or not.
-            - Finally either manifest (send) the order(s) or archive them in test mode.
-              If sent, the manifest report is added to the picking as ir.attachment.
+
+        - Create the order(s) on starshipit side. This will not send them, just register them and return the id(s)
+        - Get the labels for each picking, one at a time. This will return the tracking number(s) and url(s).
+        - The labels are attached to the picking as ir.attachment
+        - If return_label_on_delivery is set, generate the return label(s) for each picking too.
+        - Get the delivery order information from starshipit to fetch the final rate, and whether the order was manifested or not.
+        - Finally either manifest (send) the order(s) or archive them in test mode.
+        If sent, the manifest report is added to the picking as ir.attachment.
         """
         starshipit = self._get_starshipit()
         unshipped_orders = starshipit._create_orders(self, pickings, is_return)['orders']
@@ -117,7 +165,7 @@ class DeliveryCarrier(models.Model):
             order_id = order['order_id']
             picking.starshipit_parcel_reference = order_id
 
-            label_data = self._create_label_for_order(order_id)
+            label_data = self._create_label_for_order(order_id, starshipit_order_number)
 
             tracking_number = ', '.join(tracking_number for tracking_number in label_data['tracking_numbers'] if tracking_number is not None)
             picking.carrier_tracking_ref = tracking_number
@@ -281,7 +329,20 @@ class DeliveryCarrier(models.Model):
         if self.delivery_type != 'starshipit':
             raise ValidationError(_('This action requires a Starshipit carrier.'))
         starshipit = self._get_starshipit()
-        available_services = starshipit._get_delivery_services(self.starshipit_origin_address)
+        order_vals = self.env.context.get('order_vals', {})
+        order = self.env['sale.order'].browse(order_vals.get('order_id'))
+        origin_partner = order.warehouse_id.partner_id or self.starshipit_origin_address
+
+        if order_vals.get('destination_partner_id'):
+            available_services = starshipit._get_delivery_services_with_destination(
+                origin_partner,
+                self.env['res.partner'].browse(order_vals.get('destination_partner_id')),
+                order_vals.get('total_weight', None),
+            )
+        else:
+            available_services = starshipit._get_delivery_services(
+                origin_partner
+            )
         if not available_services.get('services'):
             raise UserError(_("There are no shipping services available, please verify the shipping address or activate suitable carriers in your starshipit account."))
 
@@ -293,6 +354,8 @@ class DeliveryCarrier(models.Model):
             'res_model': 'starshipit.shipping.wizard',
             'target': 'new',
             'context': {
+                'create_new_carrier': self.env.context.get('create_new_carrier', False),
+                'order_vals': order_vals,
                 'default_carrier_id': self.id,
                 'default_available_services': available_services['services'],
                 'default_selected_service_code': self.starshipit_service_code,
@@ -311,7 +374,8 @@ class DeliveryCarrier(models.Model):
             order = starshipit._create_orders(self, picking, True)['orders'].get(starshipit_order_number)
 
         order_id = order['order_id']
-        label_data = self._create_label_for_order(order_id)
+        order_number = order['order_number']
+        label_data = self._create_label_for_order(order_id, order_number)
 
         # if picking is not a return means we are pre-generating the return label on delivery
         # thus we save the returned parcel id in a separate field
@@ -371,27 +435,26 @@ class DeliveryCarrier(models.Model):
             self.starshipit_cancel_shipment(picking)
             picking.message_post(body=_('Return order %s was archived.', picking.name))
 
-    def _create_label_for_order(self, order_id):
+    def _create_label_for_order(self, order_id, order_number=None):
         starshipit = self._get_starshipit()
-
-        label_creation_failed = False
-        label_data = False
-        label_creation_errors = []
         try:
-            label_data = starshipit._create_label(order_id)
-        except UserError as e:
-            label_creation_failed = True
-            label_creation_errors.append(_('The shipping label creation failed with the following error:\n%(error)s',
-                                           error=e))
+            return starshipit._create_label(order_id)
 
-        if label_creation_failed:
-            try:
-                starshipit._delete_order(order_id)
-            except UserError:
-                label_creation_errors.append(_('Please delete the order on Starshipit then try again.'))
-            finally:
-                raise UserError('\n'.join(label_creation_errors))
-        return label_data
+        except UserError as e:
+            if order_number:
+                order_info = _("The order '%(order_number)s' has been created!\n", order_number=order_number)
+            else:
+                order_info = _("The order has been created!\n")
+
+            error_message = _(
+                "%(order_info)s"
+                "However, the shipping label creation failed with the following error:\n%(error)s\n\n"
+                "Please either continue the configuration or delete the order in Starshipit "
+                "before trying again.",
+                order_info=order_info,
+                error=e,
+            )
+            raise UserError(error_message)
 
     # API HELPERS #
 

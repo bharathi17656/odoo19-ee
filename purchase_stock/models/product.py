@@ -107,12 +107,11 @@ class ProductProduct(models.Model):
     @api.depends_context('suggest_based_on', 'warehouse_id')
     def _compute_monthly_demand(self):
         based_on = self.env.context.get("suggest_based_on", "30_days")
-        warehouse_id = self.env.context.get('warehouse_id')
         start_date, limit_date = self._get_monthly_demand_range(based_on)
 
         move_domain = Domain([
             ('product_id', 'in', self.ids),
-            ('state', 'in', ['assigned', 'confirmed', 'partially_available', 'done']),
+            ('state', 'in', ['waiting', 'assigned', 'confirmed', 'partially_available', 'done']),
             ('date', '>=', start_date),
             ('date', '<', limit_date),
         ])
@@ -120,11 +119,7 @@ class ProductProduct(models.Model):
             move_domain,
             self._get_monthly_demand_moves_location_domain(),
         ])
-        if warehouse_id:
-            move_domain = Domain.AND([
-                move_domain,
-                [('location_id.warehouse_id', '=', warehouse_id)]
-            ])
+
         move_qty_by_products = self.env['stock.move']._read_group(move_domain, ['product_id'], ['product_qty:sum'])
         qty_by_product = {product.id: qty for product, qty in move_qty_by_products}
 
@@ -140,13 +135,32 @@ class ProductProduct(models.Model):
 
     @api.model
     def _get_monthly_demand_moves_location_domain(self):
-        return Domain.OR([
-            [('location_dest_usage', 'in', ['customer', 'production'])],
-            Domain.AND([
-                [('location_final_id.usage', '=', 'customer')],
-                [('move_dest_ids', '=', False)],
+        """ Returns a domain on stock moves coming from the selected warehouse that are:
+                - going to customer locations or used in production
+                - going to other warehouses (eg. central warehouse dispatching to stores)
+            (We don't include returns in demand estimation - they come back on hand)
+        """
+        warehouse_id = self.env.context.get('warehouse_id')
+        if not warehouse_id:
+            return Domain.OR([
+                [('location_dest_usage', 'in', ['customer', 'production', 'transit'])],
+                Domain.AND([
+                    [('location_final_id.usage', 'in', ['customer', 'production'])],
+                    [('move_dest_ids', '=', False)],
+                ]),
             ])
-        ])
+        else:
+            return Domain.AND([
+                [('location_id.warehouse_id', '=', warehouse_id)],
+                Domain.OR([
+                    [('location_dest_id.warehouse_id', '!=', warehouse_id)],
+                    Domain.AND([
+                        [('location_final_id.warehouse_id', '!=', warehouse_id)],
+                        [('move_dest_ids', '=', False)],
+                    ]),
+                ]),  # includes moves going to customer or production
+                [('location_dest_id.usage', 'not in', ['inventory', 'supplier'])]  # exclude scrap and vendor returns
+            ])
 
     def _get_quantity_in_progress(self, location_ids=False, warehouse_ids=False):
         if not location_ids:
@@ -206,7 +220,8 @@ class ProductProduct(models.Model):
         return rfq_domain & Domain.OR(domains or [Domain.TRUE])
 
     def _get_monthly_demand_range(self, based_on):
-        start_date = limit_date = datetime.now()
+        start_date = datetime.now()
+        limit_date = datetime.combine(start_date.date(), datetime.max.time())
 
         if not based_on or based_on == 'actual_demand' or based_on == '30_days':
             start_date = start_date - relativedelta(days=30)  # Default monthly demand

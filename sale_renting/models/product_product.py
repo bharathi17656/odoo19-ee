@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import ast
+from collections import defaultdict
 
 from odoo import api, fields, models
 from odoo.fields import Domain
@@ -34,10 +35,12 @@ class ProductProduct(models.Model):
         """
         active_rental_lines = self.env['sale.order.line']._read_group(
             domain=self._get_qty_in_rent_domain(),
-            groupby=['product_id'],
+            groupby=['product_id', 'product_uom_id'],
             aggregates=['qty_delivered:sum', 'qty_returned:sum'],
         )
-        res = {product.id: qty_delivered - qty_returned for product, qty_delivered, qty_returned in active_rental_lines}
+        res = defaultdict(float)
+        for product, uom, qty_delivered, qty_returned in active_rental_lines:
+            res[product.id] += uom._compute_quantity(qty_delivered - qty_returned, product.uom_id, round=False)
         for product in self:
             product.qty_in_rent = res.get(product.id, 0)
 
@@ -66,7 +69,8 @@ class ProductProduct(models.Model):
         context: dict = ast.literal_eval(action.get('context', '{}'))
 
         domain &= Domain('product_id', 'in', self.ids)
-        context['default_product_id'] = self.ids[0]
+        if first_product := self[:1]:
+            context['default_product_id'] = first_product.id
 
         action.update(domain=domain, context=context)
         return action

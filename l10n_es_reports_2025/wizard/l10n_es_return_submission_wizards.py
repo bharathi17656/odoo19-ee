@@ -1,48 +1,48 @@
+from markupsafe import Markup
 from odoo import models, fields
 from odoo.tools import LazyTranslate
 _lt = LazyTranslate(__name__)
+
+AGENCIA_URL = 'https://sede.agenciatributaria.gob.es/'
+LOGIN_PREFIX = _lt("Log in to the Spanish Tax Agency's portal:")
+AGENCIA_LABEL = _lt("Agencia Tributaria")
+IMPORT_INSTRUCTIONS = _lt("Choose the option to file by importing a file ('Importar') and upload the generated file when prompted.")
+INSTRUCTIONS_BY_MODELO = {
+    'l10n_es_reports_2025.mod111.submission.wizard': {
+        'navigate': _lt("Navigate to the appropriate section for tax returns and select 'Modelo 111'."),
+        'review': _lt("Review the imported data and submit the declaration using your digital certificate or Cl@ve PIN."),
+    },
+    'l10n_es_reports_2025.mod115.submission.wizard': {
+        'navigate': _lt("Navigate to 'Impuestos y tasas' → 'Declaraciones' and select 'Modelo 115'."),
+        'review': _lt("Review the imported data and submit with your digital certificate or Cl@ve PIN."),
+    },
+    'l10n_es_reports_2025.mod130.submission.wizard': {
+        'navigate': _lt("Navigate to 'Impuestos y tasas' → 'Declaraciones' and select 'Modelo 130'."),
+        'review': _lt("Review the imported data, complete the payment details if applicable, and submit with your digital certificate or Cl@ve PIN."),
+    },
+    'l10n_es_reports_2025.mod303.submission.wizard': {
+        'navigate': _lt("Navigate to 'IVA' and select 'Modelo 303'."),
+        'review': _lt("Review all the data, especially totals and bank details, then submit with your digital certificate or Cl@ve PIN."),
+    },
+    'l10n_es_reports_2025.mod347.submission.wizard': {
+        'navigate': _lt("Navigate to 'Declaraciones informativas' and select 'Modelo 347'."),
+        'review': _lt("Review the imported data for accuracy and submit with your digital certificate or Cl@ve PIN."),
+    },
+    'l10n_es_reports_2025.mod349.submission.wizard': {
+        'navigate': _lt("Navigate to the section for tax returns and find the form 'Modelo 349'."),
+        'review': _lt("Review and submit the declaration using your digital certificate or Cl@ve PIN."),
+    },
+    'l10n_es_reports_2025.mod390.submission.wizard': {
+        'navigate': _lt("Navigate to 'IVA' and select 'Modelo 390'."),
+        'review': _lt("Carefully review all fields, ensuring the annual totals match your records, then submit with your digital certificate or Cl@ve PIN."),
+    },
+}
 
 
 class L10nEsReportsModelosSubmissionWizard(models.TransientModel):
     _name = 'l10n_es_reports_2025.modelos.submission.wizard'
     _inherit = 'account.return.submission.wizard'
     _description = 'Generic BOE Submission Wizard'
-
-    agencia_url = 'https://sede.agenciatributaria.gob.es/'
-    login_prefix = _lt("Log in to the Spanish Tax Agency's portal:")
-    agencia_label = _lt("Agencia Tributaria")
-    import_instructions = _lt("Choose the option to file by importing a file ('Importar') and upload the generated file when prompted.")
-
-    instructions_by_modelo = {
-        'l10n_es_reports_2025.mod111.submission.wizard': {
-            'navigate': _lt("Navigate to the appropriate section for tax returns and select 'Modelo 111'."),
-            'review': _lt("Review the imported data and submit the declaration using your digital certificate or Cl@ve PIN."),
-        },
-        'l10n_es_reports_2025.mod115.submission.wizard': {
-            'navigate': _lt("Navigate to 'Impuestos y tasas' → 'Declaraciones' and select 'Modelo 115'."),
-            'review': _lt("Review the imported data and submit with your digital certificate or Cl@ve PIN."),
-        },
-        'l10n_es_reports_2025.mod130.submission.wizard': {
-            'navigate': _lt("Navigate to 'Impuestos y tasas' → 'Declaraciones' and select 'Modelo 130'."),
-            'review': _lt("Review the imported data, complete the payment details if applicable, and submit with your digital certificate or Cl@ve PIN."),
-        },
-        'l10n_es_reports_2025.mod303.submission.wizard': {
-            'navigate': _lt("Navigate to 'IVA' and select 'Modelo 303'."),
-            'review': _lt("Review all the data, especially totals and bank details, then submit with your digital certificate or Cl@ve PIN."),
-        },
-        'l10n_es_reports_2025.mod347.submission.wizard': {
-            'navigate': _lt("Navigate to 'Declaraciones informativas' and select 'Modelo 347'."),
-            'review': _lt("Review the imported data for accuracy and submit with your digital certificate or Cl@ve PIN."),
-        },
-        'l10n_es_reports_2025.mod349.submission.wizard': {
-            'navigate': _lt("Navigate to the section for tax returns and find the form 'Modelo 349'."),
-            'review': _lt("Review and submit the declaration using your digital certificate or Cl@ve PIN."),
-        },
-        'l10n_es_reports_2025.mod390.submission.wizard': {
-            'navigate': _lt("Navigate to 'IVA' and select 'Modelo 390'."),
-            'review': _lt("Carefully review all fields, ensuring the annual totals match your records, then submit with your digital certificate or Cl@ve PIN."),
-        },
-    }
 
     submission_instructions = fields.Html(
         string="Submission Instructions",
@@ -52,12 +52,12 @@ class L10nEsReportsModelosSubmissionWizard(models.TransientModel):
     def _compute_submission_instructions(self):
         for wizard in self:
             parts = []
-            parts.append('<li>%s <a href="%s" target="_blank">%s</a>.</li>' % (wizard.login_prefix, wizard.agencia_url, wizard.agencia_label))
-            specific_instructions = wizard.instructions_by_modelo.get(wizard._name, {})
+            parts.append(Markup('<li>%s <a href="%s" target="_blank">%s</a>.</li>') % (str(LOGIN_PREFIX), str(AGENCIA_URL), str(AGENCIA_LABEL)))
+            specific_instructions = INSTRUCTIONS_BY_MODELO.get(wizard._name, {})
             if specific_instructions:
-                parts.append('<li>%s</li>' % specific_instructions.get('navigate'))
-                parts.append('<li>%s</li>' % wizard.import_instructions)
-                parts.append('<li>%s</li>' % specific_instructions.get('review'))
+                parts.append(Markup('<li>%s</li>') % str(specific_instructions.get('navigate')))
+                parts.append(Markup('<li>%s</li>') % str(IMPORT_INSTRUCTIONS))
+                parts.append(Markup('<li>%s</li>') % str(specific_instructions.get('review')))
                 wizard.submission_instructions = ''.join(parts)
 
     def export_boe(self):

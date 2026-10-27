@@ -5,11 +5,14 @@ from unittest.mock import patch
 
 import requests
 
+from odoo import fields, Command
 from odoo.tests import Form, TransactionCase, tagged
+
+from ..models.fedex_request import FedexRequest
 
 
 @contextmanager
-def _mock_request_call():
+def _mock_request_call(specific_fedex_check=None):
     def _mock_request(*args, **kwargs):
         url = kwargs.get('url', args[2])
         responses = {
@@ -17,7 +20,10 @@ def _mock_request_call():
             'rate': {'output': {
                 "alerts": [{"code": "string", "message": "string"}],
                 'rateReplyDetails': [{
-                    'ratedShipmentDetails': [{'currency': 'USD', 'totalNetChargeWithDutiesAndTaxes': 5.5}]
+                    'ratedShipmentDetails': [
+                        {'currency': 'USD', 'totalNetChargeWithDutiesAndTaxes': 5.5},
+                        {'currency': 'EUR', 'totalNetChargeWithDutiesAndTaxes': 8.25},  # Test rate set to 1.5 EUR = 1 USD
+                    ]
                 }],
             }},
             'cancel': {'output': {'cancelledShipment': True}},
@@ -26,10 +32,15 @@ def _mock_request_call():
                     'transactionShipments': [{
                         'completedShipmentDetail': {
                             'shipmentRating': {
-                                'actualRateType': 'TEST',
+                                'actualRateType': 'PAYOR_ACCOUNT_SHIPMENT',
                                 'shipmentRateDetails': [{
-                                    'rateType': 'TEST',
-                                    "totalNetChargeWithDutiesAndTaxes": 5.5
+                                    'rateType': 'PAYOR_ACCOUNT_SHIPMENT',
+                                    "totalNetChargeWithDutiesAndTaxes": 5.5,
+                                    'currency': 'USD',
+                                }, {
+                                    'rateType': 'PREFERRED_ACCOUNT_SHIPMENT',  # Test rate set to 1.5 EUR = 1 USD
+                                    "totalNetChargeWithDutiesAndTaxes": 8.25,
+                                    'currency': 'EUR',
                                 }]
                             },
                             'completedPackageDetails': [{'trackingIds': [{'trackingNumber': 'TEST'}]}]
@@ -45,6 +56,8 @@ def _mock_request_call():
 
         for endpoint, content in responses.items():
             if endpoint in url:
+                if specific_fedex_check:
+                    specific_fedex_check(endpoint, kwargs['json'])
                 response = requests.Response()
                 response.request = requests.Request(kwargs.get('method'), url, kwargs.get('headers'))
                 response.request.body = str(kwargs.get('json')).encode('utf-8')
@@ -56,6 +69,23 @@ def _mock_request_call():
 
     with patch.object(requests.Session, 'request', _mock_request):
         yield
+
+
+def _check_request_format(check_list):
+    """
+    Performs all given checks before sending the request to the server.
+
+    :param check_list: A list of functions accepting both url and data as arguments eg. check(url, data).
+        Every check might raise an Exception
+    """
+    original_send_fedex_request = FedexRequest._send_fedex_request
+
+    def patched_send_fedex_request(self, url, data, method='POST'):
+        for check in check_list:
+            check(url, data)
+        return original_send_fedex_request(self, url, data, method)
+
+    return patch.object(FedexRequest, '_send_fedex_request', side_effect=patched_send_fedex_request, autospec=True)
 
 
 @tagged('post_install', '-at_install')
@@ -118,6 +148,18 @@ class TestDeliveryFedex(TransactionCase):
             'state_id': self.env.ref('base.state_hk_hk').id,
             'country_id': self.env.ref('base.hk').id,
         })
+        self.swiss_partner = self.env['res.partner'].create({
+            'name': "Watch Maker",
+            'phone': "+41123456789",
+            'street': "Patek Philippe Avenue 100",
+            'street2': "",
+            'city': "Genève",
+            'zip': "1204",
+            'state_id': self.env.ref('base.state_ch_ge_fr').id,
+            'country_id': self.env.ref('base.ch').id,
+            'is_company': True,
+            'vat': 'CHE-123.456.788 TVA',
+        })
         self.stock_location = self.env.ref('stock.stock_location_stock')
         self.customer_location = self.env.ref('stock.stock_location_customers')
 
@@ -151,7 +193,13 @@ class TestDeliveryFedex(TransactionCase):
             'default_carrier_id': self.env.ref('delivery_fedex_rest.delivery_carrier_fedex_us').id
         }))
         choose_delivery_carrier = delivery_wizard.save()
-        with _mock_request_call():
+
+        def check_presence_of_customer_reference(url, data):
+            if ('ship' in url and not 'cancel' in url):
+                if not any(ref.get('customerReferenceType') == 'CUSTOMER_REFERENCE' for ref in data['requestedShipment']['requestedPackageLineItems'][0]['customerReferences']):
+                    raise (Exception("Shipment is missing transfer reference"))
+
+        with _mock_request_call(), _check_request_format([check_presence_of_customer_reference]):
             choose_delivery_carrier.update_price()
             self.assertGreater(choose_delivery_carrier.delivery_price, 0.0, "FedEx delivery cost for this SO has not been correctly estimated.")
             choose_delivery_carrier.button_confirm()
@@ -291,3 +339,224 @@ class TestDeliveryFedex(TransactionCase):
         with _mock_request_call():
             delivery_order.button_validate()
             self.assertEqual(delivery_order.state, 'done', 'Shipment state should be done.')
+
+    def test_05_fedex_international_delivery_with_multi_currency(self):
+        '''
+        Create a SO in a different currency from the company's. Ensure prices
+        are computed and displayed to the user in the correct currency.
+        '''
+        currency_EUR = self.env.ref('base.EUR')
+        currency_EUR.active = True
+        currency_EUR.rate_ids = [Command.clear(), Command.create({
+            'name': fields.Date.today(),
+            'rate': 1.5,
+            'company_id': self.env.company.id,
+        })]
+        pricelist_EUR = self.env['product.pricelist'].create({
+            'name': 'pricelist_EUR',
+            'currency_id': currency_EUR.id,
+        })
+
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.hong_kong_partner.id,
+            'pricelist_id': pricelist_EUR.id,
+            'order_line':  [Command.create({
+                'product_id': self.iPadMini.id,
+                'name': "[A1232] iPad Mini",
+                'product_uom_qty': 1.0,
+            })],
+        })
+        self.assertRecordValues(sale_order, [{
+            'currency_id': currency_EUR.id,
+            'amount_untaxed': 1.5,
+        }])
+        delivery_wizard = Form(self.env['choose.delivery.carrier'].with_context({
+            'default_order_id': sale_order.id,
+            'default_carrier_id': self.env.ref('delivery_fedex_rest.delivery_carrier_fedex_inter').id
+        }))
+        choose_delivery_carrier = delivery_wizard.save()
+        with _mock_request_call():
+            choose_delivery_carrier.update_price()
+            self.assertEqual(choose_delivery_carrier.delivery_price, 8.25)
+            choose_delivery_carrier.button_confirm()
+
+            sale_order.action_confirm()
+            self.assertEqual(len(sale_order.picking_ids), 1)
+
+            picking = sale_order.picking_ids[0]
+            self.assertEqual(picking.carrier_id.id, sale_order.carrier_id.id)
+
+            picking._action_done()
+            self.assertIsNot(picking.carrier_tracking_ref, False)
+            self.assertEqual(picking.carrier_price, 8.25)
+
+    def test_06_fedex_address_special_characters(self):
+        '''
+        Ensure accents get removed when sending address to the Fedex API.
+        '''
+        def payload_contact_address_check(endpoint, payload):
+            if endpoint == "rate":
+                destination = payload['requestedShipment']['recipient']['address']
+                self.assertEqual(destination['city'], "Hong Kong")
+            if endpoint == "ship":
+                recipient = payload['requestedShipment']['recipients'][0]
+                self.assertEqual(recipient['address']['city'], "Hong Kong")
+                self.assertEqual(recipient['contact']['personName'], "HK Island Customer")
+
+        self.hong_kong_partner.name = "HK Isländ Cùstômér"
+        self.hong_kong_partner.city = "Höñg Kòńg"
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.hong_kong_partner.id,
+            'order_line':  [Command.create({
+                'product_id': self.iPadMini.id,
+                'name': "[A1232] iPad Mini",
+                'product_uom_qty': 1.0,
+            })],
+        })
+        delivery_wizard = Form(self.env['choose.delivery.carrier'].with_context({
+            'default_order_id': sale_order.id,
+            'default_carrier_id': self.env.ref('delivery_fedex_rest.delivery_carrier_fedex_inter').id
+        }))
+        choose_delivery_carrier = delivery_wizard.save()
+        with _mock_request_call(payload_contact_address_check):
+            choose_delivery_carrier.update_price()
+            choose_delivery_carrier.button_confirm()
+
+            sale_order.action_confirm()
+            self.assertEqual(len(sale_order.picking_ids), 1)
+
+            picking = sale_order.picking_ids[0]
+            self.assertEqual(picking.carrier_id.id, sale_order.carrier_id.id)
+
+            picking._action_done()
+
+    def test_07_fedex_delivery_partner_with_long_vat_number(self):
+        '''
+        Ensure long vat numbers are correctly sanitized before being sent to Fedex.
+        '''
+        def vat_length_check(endpoint, payload):
+            if endpoint == 'ship':
+                vat_number = payload['requestedShipment']['recipients'][0].get('tins', [{}])[0].get('number', '')
+                self.assertTrue(len(vat_number) > 0 and len(vat_number) <= 18)
+
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.swiss_partner.id,
+            'order_line':  [Command.create({
+                'product_id': self.iPadMini.id,
+                'name': "[A1232] iPad Mini",
+                'product_uom_qty': 1.0,
+            })],
+        })
+        delivery_wizard = Form(self.env['choose.delivery.carrier'].with_context({
+            'default_order_id': sale_order.id,
+            'default_carrier_id': self.env.ref('delivery_fedex_rest.delivery_carrier_fedex_inter').id
+        }))
+        choose_delivery_carrier = delivery_wizard.save()
+        with _mock_request_call(vat_length_check):
+            choose_delivery_carrier.update_price()
+            choose_delivery_carrier.button_confirm()
+
+            sale_order.action_confirm()
+            self.assertEqual(len(sale_order.picking_ids), 1)
+
+            picking = sale_order.picking_ids[0]
+            self.assertEqual(picking.carrier_id.id, sale_order.carrier_id.id)
+
+            picking._action_done()
+
+    def test_08_fedex_sell_to_partner_with_delivery_address(self):
+        '''
+        Test selling to a partner but delivering to its' delivery address.
+        '''
+        def payload_content_check(endpoint, payload):
+            if endpoint == 'ship':
+                recipient_contact = payload['requestedShipment']['recipients'][0]['contact']
+                sold_to_contact = payload['requestedShipment']['soldTo']['contact']
+                # Ensure 'soldTo' and 'recipient' are 2 different contacts
+                self.assertNotEqual(recipient_contact['personName'], sold_to_contact['personName'])
+                # Ensure phone number is correctly retrieved from the delivery address
+                self.assertEqual(sold_to_contact['phoneNumber'], "+41987654321")
+
+        swiss_delivery_address = self.env['res.partner'].create({
+            'name': "Swiss Delivery",
+            'phone': "+41987654321",
+            'street': "Longines Avenue 100",
+            'street2': "",
+            'city': "Genève",
+            'zip': "1204",
+            'state_id': self.env.ref('base.state_ch_ge_fr').id,
+            'country_id': self.env.ref('base.ch').id,
+            'type': "delivery",
+            'parent_id': self.swiss_partner.id,
+        })
+
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.swiss_partner.id,
+            'order_line':  [Command.create({
+                'product_id': self.iPadMini.id,
+                'name': "[A1232] iPad Mini",
+                'product_uom_qty': 1.0,
+            })],
+        })
+        delivery_wizard = Form(self.env['choose.delivery.carrier'].with_context({
+            'default_order_id': sale_order.id,
+            'default_carrier_id': self.env.ref('delivery_fedex_rest.delivery_carrier_fedex_inter').id
+        }))
+        choose_delivery_carrier = delivery_wizard.save()
+        with _mock_request_call(payload_content_check):
+            choose_delivery_carrier.update_price()
+            choose_delivery_carrier.button_confirm()
+
+            sale_order.action_confirm()
+            self.assertEqual(len(sale_order.picking_ids), 1)
+
+            picking = sale_order.picking_ids[0]
+            self.assertEqual(picking.carrier_id.id, sale_order.carrier_id.id)
+
+            picking.partner_id = swiss_delivery_address
+            # Make it so only the delivery address has a phone number
+            self.swiss_partner.phone = False
+            picking._action_done()
+
+    def test_09_fedex_long_street_line_string(self):
+        '''
+        Ensure long street lines get correctly split before being sent to Fedex as otherwise the
+        line will get truncated on the label which might make delivery impossible.
+        '''
+        def payload_contact_address_street_lines_check(endpoint, payload):
+            if endpoint == "ship":
+                street_lines = payload['requestedShipment']['recipients'][0]['address']['streetLines']
+                self.assertTrue(isinstance(street_lines, list))
+                self.assertEqual(len(street_lines), 5)
+                for line in street_lines:
+                    self.assertLessEqual(len(line), 35)
+
+        # This should be split into 2 to be sent in the payload
+        self.swiss_partner.street = "Some remote place far away in the Swiss mountains with a dirt road 15"
+        # This should be split into 3 to be sent in the payload
+        self.swiss_partner.street2 = "Some other remote place far away in the Swiss mountains with a dirt road 001A"
+        # In total, we expect 5 lines in the payload for streetLines
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.swiss_partner.id,
+            'order_line':  [Command.create({
+                'product_id': self.iPadMini.id,
+                'name': "[A1232] iPad Mini",
+                'product_uom_qty': 1.0,
+            })],
+        })
+        delivery_wizard = Form(self.env['choose.delivery.carrier'].with_context({
+            'default_order_id': sale_order.id,
+            'default_carrier_id': self.env.ref('delivery_fedex_rest.delivery_carrier_fedex_inter').id
+        }))
+        choose_delivery_carrier = delivery_wizard.save()
+        with _mock_request_call(payload_contact_address_street_lines_check):
+            choose_delivery_carrier.update_price()
+            choose_delivery_carrier.button_confirm()
+
+            sale_order.action_confirm()
+            self.assertEqual(len(sale_order.picking_ids), 1)
+
+            picking = sale_order.picking_ids[0]
+            self.assertEqual(picking.carrier_id.id, sale_order.carrier_id.id)
+
+            picking._action_done()

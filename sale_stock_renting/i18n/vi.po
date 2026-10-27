@@ -13,9 +13,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:49+0000\n"
-"PO-Revision-Date: 2025-11-16 17:58+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2025-12-30 18:47+0000\n"
+"PO-Revision-Date: 2025-12-06 09:55+0000\n"
+"Last-Translator: \"Thi Huong Nguyen (thng)\" <thng@odoo.com>\n"
 "Language-Team: Vietnamese <https://translate.odoo.com/projects/odoo-19/"
 "sale_stock_renting/vi/>\n"
 "Language: vi\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: sale_stock_renting
 #. odoo-python
@@ -148,6 +148,7 @@ msgstr "Thời gian bổ sung mặc định"
 #: model:ir.model.fields,field_description:sale_stock_renting.field_sale_rental_report__display_name
 #: model:ir.model.fields,field_description:sale_stock_renting.field_stock_lot__display_name
 #: model:ir.model.fields,field_description:sale_stock_renting.field_stock_move__display_name
+#: model:ir.model.fields,field_description:sale_stock_renting.field_stock_picking__display_name
 #: model:ir.model.fields,field_description:sale_stock_renting.field_stock_return_picking__display_name
 #: model:ir.model.fields,field_description:sale_stock_renting.field_stock_warehouse__display_name
 #: model:ir.model.fields,field_description:sale_stock_renting.field_stock_warehouse_orderpoint__display_name
@@ -185,6 +186,7 @@ msgstr "Có các dòng chứa sản phẩm được theo dõi"
 #: model:ir.model.fields,field_description:sale_stock_renting.field_sale_rental_report__id
 #: model:ir.model.fields,field_description:sale_stock_renting.field_stock_lot__id
 #: model:ir.model.fields,field_description:sale_stock_renting.field_stock_move__id
+#: model:ir.model.fields,field_description:sale_stock_renting.field_stock_picking__id
 #: model:ir.model.fields,field_description:sale_stock_renting.field_stock_return_picking__id
 #: model:ir.model.fields,field_description:sale_stock_renting.field_stock_warehouse__id
 #: model:ir.model.fields,field_description:sale_stock_renting.field_stock_warehouse_orderpoint__id
@@ -234,8 +236,8 @@ msgid ""
 "No valid quant has been found in location %(location)s for serial number %"
 "(serial_number)s!"
 msgstr ""
-"Không tìm thấy số lượng hợp lệ tại vị trí %(location)s cho số sê-ri "
-"%(serial_number)s!"
+"Không tìm thấy số lượng hợp lệ tại vị trí %(location)s cho số sê-ri %"
+"(serial_number)s!"
 
 #. module: sale_stock_renting
 #. odoo-python
@@ -314,6 +316,12 @@ msgstr "Vị trí cho thuê"
 #: model_terms:ir.ui.view,arch_db:sale_stock_renting.res_config_settings_inherit_view_form
 msgid "Rental Transfers"
 msgstr "Lệnh chuyển hàng cho thuê"
+
+#. module: sale_stock_renting
+#. odoo-python
+#: code:addons/sale_stock_renting/models/stock_move.py:0
+msgid "Rental move: %(order)s"
+msgstr ""
 
 #. module: sale_stock_renting
 #: model:ir.model.fields,field_description:sale_stock_renting.field_res_config_settings__group_rental_stock_picking
@@ -399,6 +407,8 @@ msgid ""
 "The number of reserved lots is less than the quantity required for this "
 "order line. Please allocate additional lots."
 msgstr ""
+"Số lô đã được đặt trước nhỏ hơn số lượng yêu cầu cho dòng đơn hàng này. Vui "
+"lòng phân bổ thêm lô."
 
 #. module: sale_stock_renting
 #: model:ir.model.fields,help:sale_stock_renting.field_res_company__rental_loc_id
@@ -425,6 +435,11 @@ msgid ""
 msgstr ""
 "Không hỗ trợ theo dõi theo lô cho các sản phẩm cho thuê.\n"
 "Bạn nên thay đổi chế độ theo dõi thành số sê-ri duy nhất."
+
+#. module: sale_stock_renting
+#: model:ir.model,name:sale_stock_renting.model_stock_picking
+msgid "Transfer"
+msgstr ""
 
 #. module: sale_stock_renting
 #: model:ir.model.fields,field_description:sale_stock_renting.field_sale_order_line__unavailable_lot_ids

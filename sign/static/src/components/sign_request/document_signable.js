@@ -37,6 +37,27 @@ export function datasetFromElements(elements) {
     });
 }
 
+/**
+ * Read the sign items rendered by the server. Long values (signatures, initials) are rendered
+ * once in a pool and referenced by index, they are put back on the items here.
+ */
+export function itemsFromElements(parentEl) {
+    const valuePool = datasetFromElements(
+        parentEl.querySelectorAll(".o_sign_value_pool_input_info")
+    ).map((pooled) => pooled.value);
+    return datasetFromElements(parentEl.querySelectorAll(".o_sign_item_input_info")).map((item) => {
+        if ("value_ref" in item) {
+            item.value = valuePool[item.value_ref];
+            delete item.value_ref;
+        }
+        if ("frame_value_ref" in item) {
+            item.frame_value = valuePool[item.frame_value_ref];
+            delete item.frame_value_ref;
+        }
+        return item;
+    });
+}
+
 export class Document extends Component {
     static template = xml`<t t-slot='default'/>`;
     static props = ["parent", "PDFIframeClass"];
@@ -270,7 +291,7 @@ export class Document extends Component {
         this.types = datasetFromElements(
             parentEl.querySelectorAll(".o_sign_field_type_input_info")
         );
-        const items = datasetFromElements(parentEl.querySelectorAll(".o_sign_item_input_info"));
+        const items = itemsFromElements(parentEl);
         this.documents.forEach((document) => document.items = items.filter(item => item.document_id === document.id));
         this.state.documentsWithUnsignedItems = new Set(
             this.documents

@@ -5,4 +5,5 @@ from . import l10n_caf
 from . import l10n_ch_caf_scale
 from . import l10n_ch_children
 from . import hr_contract
+from . import hr_employee
 from . import hr_payslip

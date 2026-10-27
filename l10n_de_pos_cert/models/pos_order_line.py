@@ -18,7 +18,9 @@ class PosOrderLine(models.Model):
         vat_id = self.tax_ids_after_fiscal_position[0].l10n_de_vat_definition_export_identifier if self.tax_ids_after_fiscal_position else 5  # no tax -> considered as non taxable
 
         # For settlement or deposit we will have qty 0 so won't get from the price_subtotal/price_subtotal_incl
-        settlement_products = [self.order_id.config_id.settle_due_product_id.id, self.order_id.config_id.settle_invoice_product_id.id, self.order_id.config_id.deposit_product_id.id]
+        settlement_products = []
+        if hasattr(self.order_id.config_id, "settle_due_product_id"):
+            settlement_products = [self.order_id.config_id.settle_due_product_id.id, self.order_id.config_id.settle_invoice_product_id.id, self.order_id.config_id.deposit_product_id.id]
         incl_vat = self.price_unit if self.product_id.id in settlement_products else self.price_subtotal_incl
         excl_vat = self.price_unit if self.product_id.id in settlement_products else self.price_subtotal
 
@@ -30,12 +32,11 @@ class PosOrderLine(models.Model):
             },
             "lineitem_export_id": str(line_export_id),  # It should be unique and start over for each order from 1
             "storno": False,
-            "text": self.full_product_name,
+            "text": self.full_product_name[:255],
             "item": {
                 "number": str(self.product_id.id),
                 "quantity": float_repr(self.qty or 1, precision),  # for settlement products qty comes 0
-                "price_per_unit": float_repr(self.price_unit, precision),
-                "base_amounts_per_vat_id": line_vat_details,
+                "price_per_unit": float_repr(self.price_subtotal_incl, precision),
             },
         }
 

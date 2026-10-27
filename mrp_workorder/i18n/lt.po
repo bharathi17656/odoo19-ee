@@ -20,13 +20,14 @@
 # Arunas V. <arunas@devoro.com>, 2023
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-16 17:54+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-09 17:45+0000\n"
+"PO-Revision-Date: 2026-10-12 12:39+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "mrp_workorder/lt/>\n"
 "Language: lt\n"
@@ -34,9 +35,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < "
-"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 :"
-" n % 1 != 0 ? 2: 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 "
+": n % 1 != 0 ? 2: 3);\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: mrp_workorder
 #. odoo-python
@@ -68,7 +69,7 @@ msgstr ""
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_workorder_view_form_tablet
 msgid "<span invisible=\"employee_name\">Log In </span>"
-msgstr ""
+msgstr "<span invisible=\"employee_name\">Prisijungti </span>"
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_workorder_view_gantt
@@ -161,7 +162,7 @@ msgstr "Pridėti žingsnį"
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/mrp_display/mrp_record_line/stock_move.js:0
 msgid "Add line: %(productName)s"
-msgstr ""
+msgstr "Pridėti eilutę: %(productName)s"
 
 #. module: mrp_workorder
 #. odoo-python
@@ -247,6 +248,12 @@ msgid "Back"
 msgstr "Grįžti"
 
 #. module: mrp_workorder
+#. odoo-javascript
+#: code:addons/mrp_workorder/static/src/components/product_catalog/kanban_controller.js:0
+msgid "Back to ShopFloor"
+msgstr "Grįžti į „ShopFloor“"
+
+#. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_check__component_barcode
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_move__product_barcode
 msgid "Barcode"
@@ -285,13 +292,13 @@ msgstr "Neleidžiamas"
 #. odoo-python
 #: code:addons/mrp_workorder/wizard/propose_change.py:0
 msgid "BoM feedback %(step)s (%(production)s - %(operation)s)"
-msgstr ""
+msgstr "„BoM“ atsiliepimai %(step)s (%(production)s - %(operation)s)"
 
 #. module: mrp_workorder
 #. odoo-python
 #: code:addons/mrp_workorder/models/quality.py:0
 msgid "BoM feedback (%(production)s - %(operation)s)"
-msgstr ""
+msgstr "„BoM“ atsiliepimai (%(production)s - %(operation)s)"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_point__bom_product_ids
@@ -302,6 +309,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/mrp_display/mrp_record_line/stock_move.js:0
 msgid "By-product: %(productName)s"
+msgstr "Šalutinis produktas: %(productName)s"
+
+#. module: mrp_workorder
+#. odoo-javascript
+#: code:addons/mrp_workorder/static/src/components/pin_popup.xml:0
+msgid "C"
 msgstr ""
 
 #. module: mrp_workorder
@@ -336,7 +349,7 @@ msgstr "Kvitai"
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/mrp_display/employees_panel.xml:0
 msgid "Choose Operator"
-msgstr ""
+msgstr "Pasirinkite operatorių"
 
 #. module: mrp_workorder
 #. odoo-javascript
@@ -430,7 +443,7 @@ msgstr "Savikaina"
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/viewer.js:0
 msgid "Could not display the selected %s"
-msgstr ""
+msgstr "Nepavyko parodyti pasirinktos %s"
 
 #. module: mrp_workorder
 #. odoo-javascript
@@ -541,6 +554,7 @@ msgstr "Atmesti"
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_move__display_name
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_move_line__display_name
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_picking_type__display_name
+#: model:ir.model.fields,field_description:mrp_workorder.field_stock_rule__display_name
 msgid "Display Name"
 msgstr "Rodomas pavadinimas"
 
@@ -568,6 +582,9 @@ msgid "Edit Operators"
 msgstr ""
 
 #. module: mrp_workorder
+#. odoo-python
+#: code:addons/mrp_workorder/report/mrp_report_mo_overview.py:0
+#: code:addons/mrp_workorder/tests/test_report_mo_overview.py:0
 #: model:ir.model,name:mrp_workorder.model_hr_employee
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_production_additional_workorder__employee_assigned_ids
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_workcenter_productivity__employee_id
@@ -624,7 +641,7 @@ msgstr "Klaida atsijungiant!"
 #. odoo-python
 #: code:addons/mrp_workorder/report/mrp_report_mo_overview.py:0
 msgid "Estimated employee cost: %(operation_name)s"
-msgstr ""
+msgstr "Numatomos darbuotojo išlaidos: %(operation_name)s"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_production_additional_workorder__duration_expected
@@ -635,7 +652,7 @@ msgstr "Planuojama trukmė"
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/mrp_display/mrp_display.xml:0
 msgid "Feedback Loop"
-msgstr ""
+msgstr "Atsiliepimų ciklas"
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_workorder_view_form_inherit_workorder
@@ -656,6 +673,11 @@ msgstr ""
 #: model:ir.model.fields,help:mrp_workorder.field_mrp_bom__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Font awesome piktograma, pvz., fa-tasks"
+
+#. module: mrp_workorder
+#: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_bom_filter_inherit_mrp_workorder
+msgid "Future Activities"
+msgstr ""
 
 #. module: mrp_workorder
 #. odoo-javascript
@@ -690,6 +712,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_move__id
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_move_line__id
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_picking_type__id
+#: model:ir.model.fields,field_description:mrp_workorder.field_stock_rule__id
 msgid "ID"
 msgstr "ID"
 
@@ -832,6 +855,11 @@ msgid "Last seen"
 msgstr ""
 
 #. module: mrp_workorder
+#: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_bom_filter_inherit_mrp_workorder
+msgid "Late Activities"
+msgstr ""
+
+#. module: mrp_workorder
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/mrp_display/mrp_display.xml:0
 msgid "Load All Manufacturing Orders"
@@ -965,6 +993,11 @@ msgstr "Perkelti į darbo centrą"
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_workorder__move_line_ids
 msgid "Moves to Track"
 msgstr "Sekami veiksmai"
+
+#. module: mrp_workorder
+#: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_bom_filter_inherit_mrp_workorder
+msgid "My Activities"
+msgstr "Mano veiklos"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_bom__my_activity_date_deadline
@@ -1183,7 +1216,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/mrp_workorder/models/quality.py:0
 msgid "Please upload a picture."
-msgstr "Prašome įkelti paveisliuką"
+msgstr "Prašome įkelti paveisliuką."
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_stock_move__picking_type_prefill_shop_floor_lots
@@ -1209,7 +1242,7 @@ msgstr "Produkto perkėlimai (atsargų perkėlimo eilutė)"
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_point__component_id
 msgid "Product To Register"
-msgstr ""
+msgstr "Registruotinas produktas"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_production_additional_workorder__production_id
@@ -1299,7 +1332,7 @@ msgstr "Kokybės punkto etapai"
 #. module: mrp_workorder
 #: model:ir.model.fields,help:mrp_workorder.field_quality_point__product_ids
 msgid "Quality Point will apply to every selected Products."
-msgstr ""
+msgstr "Kokybės balas bus taikomas kiekvienam pasirinktam produktui."
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_workorder__quality_state
@@ -1338,13 +1371,13 @@ msgstr "Registruoti šalutinį produktą"
 #. module: mrp_workorder
 #: model:quality.point.test_type,name:mrp_workorder.test_type_register_consumed_materials
 msgid "Register Consumed Materials"
-msgstr ""
+msgstr "Registruokite panaudotas medžiagas"
 
 #. module: mrp_workorder
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/mrp_display/mrp_display.xml:0
 msgid "Register Materials"
-msgstr ""
+msgstr "Registruokite medžiagą"
 
 #. module: mrp_workorder
 #. odoo-python
@@ -1357,7 +1390,7 @@ msgstr "Patvirtinti gamybą"
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/mrp_display/dialog/mrp_menu_dialog.xml:0
 msgid "Register Production / Serial"
-msgstr ""
+msgstr "Registras / Serija"
 
 #. module: mrp_workorder
 #. odoo-javascript
@@ -1427,7 +1460,7 @@ msgstr "Parinkite darbuotoją"
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/mrp_display/mrp_display.xml:0
 msgid "Select Operator"
-msgstr ""
+msgstr "Pasirinkite operatorių"
 
 #. module: mrp_workorder
 #. odoo-javascript
@@ -1460,6 +1493,7 @@ msgstr ""
 #. module: mrp_workorder
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/mrp_display/dialog/mrp_workcenter_dialog.js:0
+#: code:addons/mrp_workorder/static/src/mrp_display/mrp_display.js:0
 #: model:ir.actions.client,name:mrp_workorder.action_mrp_display
 #: model:ir.model.fields,field_description:mrp_workorder.field_res_config_settings__group_mrp_wo_shop_floor
 #: model:ir.ui.menu,name:mrp_workorder.menu_mrp_workorder_root
@@ -1479,6 +1513,11 @@ msgstr "Valmistusketjun hallintapaneeli"
 #. odoo-javascript
 #: code:addons/mrp_workorder/static/src/mrp_display/mrp_display.xml:0
 msgid "Shop Floor Onboarding Image"
+msgstr ""
+
+#. module: mrp_workorder
+#: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_bom_filter_inherit_mrp_workorder
+msgid "Show all records whose next activity date is past"
 msgstr ""
 
 #. module: mrp_workorder
@@ -1538,6 +1577,11 @@ msgid "Stock Move"
 msgstr "Atsargų perkėlimas"
 
 #. module: mrp_workorder
+#: model:ir.model,name:mrp_workorder.model_stock_rule
+msgid "Stock Rule"
+msgstr ""
+
+#. module: mrp_workorder
 #: model:product.template,name:mrp_workorder.product_template_stool
 msgid "Stool"
 msgstr ""
@@ -1589,6 +1633,18 @@ msgid ""
 "needed by default,\n"
 "            if it should show the customer."
 msgstr ""
+
+#. module: mrp_workorder
+#. odoo-javascript
+#: code:addons/mrp_workorder/static/src/mrp_display/dialog/mrp_menu_dialog.js:0
+msgid "The quality alert has been successfully created."
+msgstr ""
+
+#. module: mrp_workorder
+#. odoo-javascript
+#: code:addons/mrp_workorder/static/src/mrp_display/dialog/mrp_menu_dialog.js:0
+msgid "The scrap order has been successfully registered."
+msgstr "Užsakymas sėkmingai užregistruotas."
 
 #. module: mrp_workorder
 #. odoo-python
@@ -1650,6 +1706,11 @@ msgstr "Reikia atlikti"
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.stock_picking_type_view_kanban
 msgid "To Process"
 msgstr "Apdorojimui:"
+
+#. module: mrp_workorder
+#: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_bom_filter_inherit_mrp_workorder
+msgid "Today Activities"
+msgstr ""
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_production_tree_view_planning
@@ -1740,11 +1801,12 @@ msgid ""
 "to scrap products, track time,\n"
 "            launch a maintenance request, perform quality tests, etc."
 msgstr ""
-"Käytä työpisteen hallintapaneelia rekisteröidäksesi toimintoja suoraan "
-"valmistusketjussa.\n"
-"         Tabletti tarjoaa työkirjat työntekijöillesi ja sallii heidän "
-"romuttaa tuotteita, seurata ajankäyttöä,\n"
-"         käynnistää huoltopyyntöjä, suorittaa laatutestejä jne."
+"Naudokite planšetę darbo centrų valdymui, kad tiesiogiai užregistruotumėte "
+"operacijas Dirbtuvėse.\n"
+"         Planšetė atvaizduoja darbuotojams darbo užsakymo lapus, leidžia "
+"jiems inurašyti sugadintus produktus, sekti darbo laiką,\n"
+"         pateikti tech.priežiūros prašymus, atlikti kokybės kontrolės "
+"bandymus ir kt."
 
 #. module: mrp_workorder
 #. odoo-javascript
@@ -1790,6 +1852,7 @@ msgstr ""
 #: model:ir.model,name:mrp_workorder.model_mrp_production_backorder
 msgid "Wizard to mark as done or create back order"
 msgstr ""
+"Vedlys, skirtas pažymėti kaip atlikta arba sukurti užsakymą su atidėjimu"
 
 #. module: mrp_workorder
 #: model:ir.model,name:mrp_workorder.model_mrp_workcenter

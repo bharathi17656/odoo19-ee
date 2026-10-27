@@ -23,10 +23,15 @@
         </div>
         <div class="pb-1">
             <!-- hack: "data-value" is used to reflect input changes in the DOM, so it immediately triggers the "contains" test helper's MutationObserver, speeding up tests -->
-            <input type="text" class="o-voip-Keypad-input form-control border-0 border-bottom px-5 fw-bold text-center transition-none" t-att-placeholder="!props.dtmf and 'Type a name or number'" t-att-class="inputFontSizeClass" t-att-readonly="props.state.showMore or props.dtmf" t-ref="input-ref" t-model="props.state.input.value" t-att-data-value="props.state.input.value" t-on-keydown="onKeydown" t-on-input="onInputDebounced"/>
+            <input type="text" class="o-voip-Keypad-input form-control border-0 border-bottom px-5 fw-bold text-center transition-none" t-att-placeholder="!props.dtmf and 'Type a name or number'" t-att-class="inputFontSizeClass" t-att-readonly="props.state.showMore or props.dtmf" t-ref="input-ref" t-model="props.state.input.value" t-att-data-value="props.state.input.value" t-on-keydown="onKeydown" t-on-input="onInputDebounced" inputmode="none" t-on-mousedown="(ev) => ev.target.inputMode = 'text'"/>
         </div>
         <t t-if="props.state.input.value and !props.state.showMore and !props.dtmf">
-            <button class="btn btn-link position-absolute end-0 top-50 translate-middle-y d-flex p-1 text-reset opacity-75 opacity-100-hover" title="Backspace" t-on-touchend.prevent="onClickBackspace" t-on-click="onClickBackspace">
+            <!--
+            Notice that the touchend handler is to prevent "zoom on double-tap"
+            behaviors. TODO: there should be better ways to prevent that from
+            a general point of view on the whole softphone?
+            -->
+            <button class="o-voip-Keypad-backspace btn btn-link position-absolute end-0 top-50 translate-middle-y d-flex p-1 text-reset opacity-75 opacity-100-hover" title="Backspace" t-on-touchend.prevent="onClickBackspace" t-on-click="onClickBackspace">
                 <i class="oi oi-backspace-o fa-2x" aria-hidden="true"/>
             </button>
         </t>
@@ -48,7 +53,12 @@
     <div class="o-voip-Keypad-numpad grid px-3">
         <t t-foreach="keys" t-as="key" t-key="key.key">
             <!-- ⚠ align-items-stretch necessary for proper alignment on Safari -->
-            <button class="btn btn-light d-flex flex-column align-items-stretch g-col-4 gap-1 p-1" t-att-class="{ 'justify-content-center': key.icon }" t-on-click="() => this.onClickKey(key.key)" t-on-touchend.prevent="() => this.onClickKey(key.key)">
+            <!--
+            Notice that the touchend handler is to prevent "zoom on double-tap"
+            behaviors. TODO: there should be better ways to prevent that from
+            a general point of view on the whole softphone?
+            -->
+            <button class="o-voip-Keypad-digitBtn btn btn-light d-flex flex-column align-items-stretch g-col-4 gap-1 p-1" t-att-class="{ 'justify-content-center': key.icon }" t-on-click="() => this.onClickKey(key.key)" t-on-touchend.prevent="() => this.onClickKey(key.key)">
                 <i t-if="key.icon" t-attf-class="fa {{ key.icon }}"/>
                 <span t-else="" class="o-voip-Keypad-digit fw-bolder lh-1" t-esc="key.key"/>
                 <span t-if="key.letters" class="smaller fw-bold opacity-50" t-esc="key.letters"/>

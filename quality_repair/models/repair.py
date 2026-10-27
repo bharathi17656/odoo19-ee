@@ -37,18 +37,20 @@ class RepairOrder(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
-        if self.state in ('confirmed', 'under_repair'):
-            res._create_quality_checks_for_repair(["product", "operation"])
+        for repair in res:
+            if repair.state in ('confirmed', 'under_repair'):
+                repair._create_quality_checks_for_repair(["product", "operation"])
         return res
 
     def write(self, vals):
         res = super().write(vals)
-        if self.state in ('confirmed', 'under_repair'):
-            if "product_id" in vals:
-                self.quality_check_ids.filtered(lambda c: c.measure_on == "product").unlink()
-                self._create_quality_checks_for_repair(["product"])
-            elif "lot_id" in vals:
-                self.quality_check_ids.write({'lot_ids': [Command.set([vals['lot_id']])] if vals["lot_id"] else False})
+        for repair in self:
+            if repair.state in ('confirmed', 'under_repair'):
+                if "product_id" in vals:
+                    repair.quality_check_ids.filtered(lambda c: c.measure_on == "product").unlink()
+                    repair._create_quality_checks_for_repair(["product"])
+                elif "lot_id" in vals:
+                    repair.quality_check_ids.write({'lot_ids': [Command.set([vals['lot_id']])] if vals["lot_id"] else False})
         return res
 
     def _create_quality_checks_for_repair(self, measures):

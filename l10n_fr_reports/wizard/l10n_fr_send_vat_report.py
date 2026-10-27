@@ -1,4 +1,5 @@
 import base64
+import re
 
 from odoo import api, Command, fields, models, _
 from odoo.tools import cleanup_xml_node, float_repr, float_compare, format_date
@@ -123,6 +124,8 @@ LINES_CODE_NOT_FILLED_IF_0 = {
     'box_I6_base', 'box_22A', 'box_P1_base', 'box_P1_taxe', 'box_P2_base', 'box_P2_taxe',
 }
 
+BIC_REGEX = re.compile(r'[A-Z0-9]{8}|[A-Z0-9]{11}')
+
 
 class L10n_Fr_ReportsSendVatReportBankAccountLine(models.TransientModel):
     _name = 'l10n_fr_reports.send.vat.report.bank.account.line'
@@ -165,10 +168,29 @@ class L10n_Fr_ReportsSendVatReportBankAccountLine(models.TransientModel):
     )
     reimbursement_date = fields.Date(string="Date", default=fields.Date.today())
 
-    @api.depends('account_number', 'bank_bic')
+    @api.depends('account_number', 'bank_bic', 'bank_partner_id')
     def _compute_is_wrongly_configured(self):
         for line in self:
-            line.is_wrongly_configured = line.bank_partner_id and (not line.bank_bic or not line.account_number)
+            line.is_wrongly_configured = line.bank_partner_id and not line._check_bank_account_line()
+
+    def _check_bank_account_line(self):
+        self.ensure_one()
+
+        iban = (self.account_number or '').replace(' ', '')
+        bic = (self.bank_bic or '').replace(' ', '')
+        return self._validate_iban(iban) and BIC_REGEX.fullmatch(bic)
+
+    @api.model
+    def _validate_iban(self, iban):
+        # Move the four initial characters to the end of the string
+        temp_iban = iban[4:] + iban[:4]
+
+        # Replace each letter with two digit (A = 10, b = 11, ...)
+        replaced_iban = ""
+        for i in temp_iban:
+            replaced_iban += i if i.isnumeric() else str(ord(i.upper()) - 55)
+        # Take the whole and apply modulo 97, it should be 1
+        return int(replaced_iban) % 97 == 1
 
 
 class L10n_Fr_ReportsSendVatReport(models.TransientModel):
@@ -248,7 +270,7 @@ class L10n_Fr_ReportsSendVatReport(models.TransientModel):
     def _get_address_dict(self, company):
         return {
             'street': company.street[:30],
-            'complement': f"{company.street[30:]} {company.street2}"[:35],
+            'complement': f"{company.street[30:]} {company.street2 or ''}".strip()[:35],
             'postal_code': company.zip[:17],
             'city': company.city[:35],
             'country_code': company.country_id.code,
@@ -296,6 +318,10 @@ class L10n_Fr_ReportsSendVatReport(models.TransientModel):
 
     def _get_formatted_edi_values(self, lines):
         edi_values = []
+
+        self.express_mention_reason = (self.express_mention_reason or "").strip()
+        if self.express_mention_reason:
+            edi_values.extend(self._get_express_mention())
 
         report_lines_code_per_id = {line['id']: line['code'] for line in self.report_id.line_ids.read(['id', 'code'])}
         for line in lines:
@@ -350,7 +376,7 @@ class L10n_Fr_ReportsSendVatReport(models.TransientModel):
         return [
             {
                 'id': 'BA',
-                'value': self.express_mention_reason,
+                'ftx_1': self.express_mention_reason,
             },
             {
                 'id': 'BC',
@@ -363,15 +389,17 @@ class L10n_Fr_ReportsSendVatReport(models.TransientModel):
         # Assume Emitor = Writer -> omit the emitor
         writer = sender_company.account_representative_id or sender_company
         debtor = sender_company
+        writer_siret = writer.company_registry.replace(" ", "")
+        debtor_siret = debtor.company_registry.replace(" ", "")
         writer_vals = {
-            'siret': writer.company_registry,
+            'siret': writer_siret,
             'designation': "CEC_EDI_TVA",
             'designation_cont_1': writer.name[:35],  # "raison sociale"
             'designation_cont_2': writer.name[35:70],  # "raison sociale"
             'address': self._get_address_dict(writer),
         }
         debtor_vals = {
-            'identifier': debtor.company_registry and debtor.company_registry[:9],  # siren
+            'identifier': debtor_siret and debtor_siret[:9],  # siren
             'designation': debtor.name[:35],  # "raison sociale"
             'address': self._get_address_dict(debtor),
             'rof': "TVA1",  # "référence obligation fiscale"
@@ -393,7 +421,7 @@ class L10n_Fr_ReportsSendVatReport(models.TransientModel):
         identif_vals = [
             {
                 'id': 'AA',
-                'identifier': debtor.company_registry and debtor.company_registry[:9],
+                'identifier': debtor_siret and debtor_siret[:9],
                 'designation': debtor.display_name[:35],
                 'address': self._get_address_dict(debtor),
             },
@@ -410,9 +438,8 @@ class L10n_Fr_ReportsSendVatReport(models.TransientModel):
 
         writer_vals, debtor_vals, edi_partner_vals, identif_vals = self._get_common_edi_vals(options)
 
-        identif_vals.extend(self._get_formatted_payment_values())
-        if self.express_mention_reason:
-            identif_vals.extend(self._get_express_mention())
+        if self.is_vat_due:
+            identif_vals.extend(self._get_formatted_payment_values())
         is_neutralized = self.env['ir.config_parameter'].sudo().get_param('database.is_neutralized')
 
         return {
@@ -429,12 +456,12 @@ class L10n_Fr_ReportsSendVatReport(models.TransientModel):
                 'recipients': [{'designation': self.recipient}],
                 # T-IDENTIF form
                 'identif': {
-                    'millesime': "25",
+                    'millesime': "26",
                     'zones': identif_vals,
                 },
                 # 3310CA3
                 'form': {
-                    'millesime': "25",
+                    'millesime': "26",
                     'name': "3310CA3",
                     'zones': edi_values,
                 }
@@ -469,7 +496,7 @@ class L10n_Fr_ReportsSendVatReport(models.TransientModel):
             [('tax_receivable_account_id', '!=', False)]
         ).tax_receivable_account_id
         tax_carried_forward_line_ids = tax_closing_entry.line_ids.filtered(
-            lambda line: line.account_id in tax_receivable_account_ids
+            lambda line: line.account_id in tax_receivable_account_ids and line.name != _('Balance tax current account (receivable)')
         )
 
         lines = []
@@ -537,6 +564,9 @@ class L10n_Fr_ReportsSendVatReport(models.TransientModel):
                 _("The xml file generated contains an invalid character: '%s'", xml_content[e.start:e.end]))
 
         xml_content = etree.tostring(cleanup_xml_node(xml_content), encoding='ISO-8859-15', standalone='yes')
+
+        if self._check_duplicate_vat_declaration(self.date_from, self.date_to, self.recipient, xml_content):
+            raise UserError(self.env._("For the period %(date_from)s to %(date_to)s, a duplicate declaration exist.", date_from=self.date_from, date_to=self.date_to))
 
         if not self.is_vat_due and self.computed_vat_amount:
             if external_value_26 := self.env.ref('l10n_fr_account.tax_report_26_external_tag',
@@ -610,6 +640,8 @@ class L10n_Fr_ReportsSendVatReport(models.TransientModel):
                 'id': 'AA',
                 'iban': bank_account_line.account_number.replace(' ', ''),
                 'bic': bank_account_line.bank_bic.replace(' ', ''),
+                'holder_name': bank_account_line.bank_partner_id.acc_holder_name[:35],
+                'holder_name_2': bank_account_line.bank_partner_id.acc_holder_name[35:70],
             }, {
                 'id': 'FK',
                 'value': 'X',
@@ -632,7 +664,7 @@ class L10n_Fr_ReportsSendVatReport(models.TransientModel):
                     'value': bank_account_line.reimbursement_date.strftime("%Y%m%d"),
                 })
             if self.is_reimbursement_comment and self.reimbursement_comment:
-                zones.append({'id': 'FJ', 'value': self.reimbursement_comment})
+                zones.append({'id': 'FJ', 'ftx_1': self.reimbursement_comment})
 
             declarations = {
                 'type': 'RBT',
@@ -643,12 +675,12 @@ class L10n_Fr_ReportsSendVatReport(models.TransientModel):
                 'recipients': [{'designation': self.recipient}],
                 # T-IDENTIF form
                 'identif': {
-                    'millesime': "25",
+                    'millesime': "26",
                     'zones': identif_vals,
                 },
                 # 3519
                 'form': {
-                    'millesime': "25",
+                    'millesime': "26",
                     'name': "3519",
                     'zones': zones,
                 }
@@ -705,3 +737,17 @@ class L10n_Fr_ReportsSendVatReport(models.TransientModel):
         })
 
         self.report_async_document_ids = [Command.link(document.id)]
+
+    def _check_duplicate_vat_declaration(self, date_from, date_to, recipient, xml_content):
+        same_period_declarations = self.env['account.report.async.export'].search([
+            ('date_from', '=', date_from),
+            ('date_to', '=', date_to),
+            ('recipient', '=', recipient),
+        ])
+        decoded_xml_content = xml_content.decode('iso8859_15').strip()
+        for document in same_period_declarations.document_ids:
+            decoded_attachment_content = base64.b64decode(document.attachment).decode().strip()
+            if decoded_attachment_content == decoded_xml_content:
+                return True
+
+        return False

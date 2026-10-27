@@ -56,8 +56,25 @@
                         <i t-attf-class="fa fa-5x fa-{{info.icon}}"/>
                     </div>
                     <div name="barcode_messages" class="d-flex align-items-center justify-content-center w-100">
-                        <span t-if="!info.warning &amp;&amp; info.icon" t-attf-class="fa fa-lg fa-{{info.icon}} me-3"/>
-                        <span class="o_scan_message" t-attf-class="o_{{info.class}}" t-out="info.message"/>
+                        <t t-if="this.env.model.trackedQuantityBuffer">
+                            <t t-set="product" t-value="this.env.model.trackedQuantityBuffer.product.display_name"/>
+                            <t t-set="quantity" t-value="this.env.model._parseFloat(this.env.model.trackedQuantityBuffer.quantity)"/>
+                            <t t-set="uom" t-value="this.env.model.trackedQuantityBuffer.uom.name"/>
+                            <span class="fa fa-lg fa-tags mx-3"/>
+                            <span class="o_scan_message o_scan_product_or_lot">
+                                You scanned <b class="o_scanned_quantity"><t t-out="quantity"/> <t t-out="uom"/></b> of <b><t t-out="product"/></b>.<br/>
+                                Scan more quantities or scan a lot number to apply the scanned quantity to it.
+                            </span>
+                            <button t-if="this.env.model.trackedQuantityBuffer"
+                                class="mx-3 btn btn-secondary"
+                                t-on-click="() => this.env.model.dropBufferedQuantity()">
+                                <i class="fa fa-lg fa-trash" role="img"/>
+                            </button>
+                        </t>
+                        <t t-else="">
+                            <span t-if="!info.warning &amp;&amp; info.icon" t-attf-class="fa fa-lg fa-{{info.icon}} me-3"/>
+                            <span class="o_scan_message" t-attf-class="o_{{info.class}}" t-out="info.message"/>
+                        </t>
                     </div>
                 </div>
             </t>
@@ -98,7 +115,7 @@
         <div t-elif="state.view === 'packagePage'"> <!-- Quants (in package) Kanban View -->
             <View type="'kanban'"
                 viewId="packageKanbanViewId"
-                display="{ controlPanel: false }"
+                display="{ controlPanel: { layoutActions: false } }"
                 resModel="'stock.quant'"
                 domain="[['package_id', 'in', _inspectedPackageIds]]"/>
         </div>

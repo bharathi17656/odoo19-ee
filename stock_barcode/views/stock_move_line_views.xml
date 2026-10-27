@@ -156,7 +156,7 @@
     <field name="model">stock.quant</field>
     <field name="priority">1000</field>
     <field name="arch" type="xml">
-        <kanban draggable="0" can_open="0">
+        <kanban js_class="stock_barcode_package_kanban" draggable="0" can_open="0" create="0">
             <templates>
                 <t t-name="card">
                     <field name="product_id" class="fw-bold"/>
@@ -193,7 +193,7 @@
                         <field name="lot_id"/>
                     </div>
                     <div class="mb4" invisible="not package_id" groups="stock.group_tracking_lot">
-                        <i class="fa fa-lg fa-archive me-2" title="Package"/><field name="package_id"/>
+                        <i class="fa fa-lg fa-archive me-2" title="Package"/><field name="package_id" context="{'show_src_package': True}"/>
                     </div>
                     <div class="mb4" invisible="not owner_id" groups="stock.group_tracking_owner">
                         <i class="fa fa-lg fa-user-o me-2" title="Owner"/><field name="owner_id"/>

@@ -1,15 +1,17 @@
-import base64
+import logging
 from datetime import timedelta
-from tempfile import NamedTemporaryFile
 
+import requests
 from markupsafe import Markup
-from requests.exceptions import ConnectionError
 
-from odoo import _, fields, models
-from odoo.addons.l10n_nl_reports.wizard.l10n_nl_reports_sbr_tax_report_wizard import (
-    SoapClientWrapper,
-)
-from odoo.tools.zeep.exceptions import Fault
+from odoo import fields, models
+from odoo.exceptions import RedirectWarning, UserError
+
+from odoo.addons.l10n_nl_reports.tools.digipoort_envelope import prepare_signed_status_envelope
+from odoo.addons.l10n_nl_reports.tools.iap_tooling import get_iap_endpoint, is_test_mode
+
+
+_logger = logging.getLogger(__name__)
 
 
 class L10n_Nl_ReportsSbrStatusService(models.Model):
@@ -21,90 +23,195 @@ class L10n_Nl_ReportsSbrStatusService(models.Model):
     report_name = fields.Char('Name of the submitted report')
     is_done = fields.Boolean('Is the cycle finished?', default=False)
     closing_entry_id = fields.Many2one('account.move', string='Related closing entry')
-    is_test = fields.Boolean('Is it a test?')
+    is_test = fields.Boolean('Is it a test?', help="Technical field kept for stable compatibility. The SBR mode is now configured with the l10n_nl_reports.sbr_mode system parameter.")
+
+    def _get_iap_status_payload(self, kenmerk, access_token):
+        self.ensure_one()
+        payload = {
+            'kenmerk': kenmerk,
+            'access_token': access_token,
+        }
+        certificate, private_key = self.company_id._l10n_nl_get_certificate_and_key_bytes()
+        if certificate and private_key:
+            try:
+                server_root_certificate = self.company_id._l10n_nl_get_server_root_certificate_bytes()
+            except UserError as error:
+                raise requests.ConnectionError from error
+            payload.update(prepare_signed_status_envelope(
+                kenmerk=kenmerk,
+                certificate=certificate,
+                private_key=private_key,
+                server_root_certificate=server_root_certificate,
+                is_test=is_test_mode(self.env),
+            ))
+        return payload
 
     def _cron_process_submission_status(self):
         ongoing_processes = self.search([('is_done', '=', False)])
         if not ongoing_processes:
             return
-        serv_root_cert = ongoing_processes[0].company_id._l10n_nl_get_server_root_certificate_bytes()   # The root certificate is the same for all processes
-        with NamedTemporaryFile() as f:
-            f.write(serv_root_cert)
-            f.flush()
 
-            for process in ongoing_processes:
-                cert_sudo = process.company_id.l10n_nl_reports_sbr_cert_id.sudo()
-                cer_pem = base64.b64decode(cert_sudo.pem_certificate)
-                key_pem = base64.b64decode(cert_sudo.private_key_id.pem_key)
-                ongoing_processes_responses = {}
-                wsdl = 'https://' + ('preprod-' if process.is_test else '') + 'dgp2.procesinfrastructuur.nl/wus/2.0/statusinformatieservice/1.2?wsdl'
+        for process in ongoing_processes:
+            kenmerk, access_token = process.kenmerk.split(':', 1) if ':' in process.kenmerk else (process.kenmerk, False)
+            if access_token:
+                try:
+                    payload = process._get_iap_status_payload(kenmerk, access_token)
+                except requests.exceptions.SSLError as error:
+                    _logger.exception('The certificate was rejected while preparing the status request for kenmerk %s.', kenmerk)
+                    process._pause_status_retrieval(kenmerk, error.args[0] if error.args else str(error))
+                    continue
+                except requests.RequestException:
+                    _logger.warning('Digipoort is unreachable while preparing the status request for kenmerk %s; will retry.', kenmerk)
+                    continue
+                except (RedirectWarning, UserError, ValueError) as error:
+                    _logger.exception('Could not prepare the Digipoort status request for kenmerk %s.', kenmerk)
+                    process._pause_status_retrieval(kenmerk, error.args[0] if error.args else str(error))
+                    continue
 
                 try:
-                    delivery_client = SoapClientWrapper().create_soap_client(wsdl, f, cer_pem, key_pem)
-                    ongoing_processes_responses[process] = delivery_client.service.getStatussenProces(
-                        kenmerk=process.kenmerk,
-                        autorisatieAdres='http://geenausp.nl',
+                    iap_response = requests.post(
+                        get_iap_endpoint(self.env) + '/api/l10n_nl_reports/1/get_submission_status',
+                        params={'db_uuid': self.env['ir.config_parameter'].sudo().get_param('database.uuid')},
+                        json=payload,
+                        timeout=30,
                     )
-                except Fault as fault:
-                    detail_fault = fault.detail.getchildren()[0]
-                    error_description = detail_fault.find("fault:foutbeschrijving", namespaces={**fault.detail.nsmap, **detail_fault.nsmap}).text
-                    process.is_done = True
-                    if not process.is_test:
-                        subject = _("%(report_name)s status retrieval failed", report_name=process.report_nam)
-                        body = _(
-                            "The status retrieval for the %(report_name)s with discussion ID '%(id)s' failed with the error:%(newline)s%(newline)s"
-                            "%(italic_start)s%(error)s%(italic_end)s%(newline)s%(newline)s"
-                            "Try submitting your report again.",
-                            report_name=process.report_name,
-                            id=process.kenmerk,
-                            error=error_description,
-                            newline=Markup("<br>"),
-                            italic_start=Markup("<i>"),
-                            italic_end=Markup("</i>"),
-                        )
-                        process.closing_entry_id.message_post(subject=subject, body=body, author_id=self.env.ref('base.partner_root').id, subtype_id=self.env.ref('mail.mt_comment').id)
-                except ConnectionError:
-                    # In case the server or the connection is not accessible at the moment,
-                    # we'll just skip this process and trigger a new cron for later
-                    pass
+                    iap_response.raise_for_status()
+                    response = iap_response.json() or {}
+                except (requests.RequestException, ValueError):
+                    _logger.exception('Unexpected error while querying Digipoort submission status for kenmerk %s.', kenmerk)
+                    continue
 
-        for process, response in ongoing_processes_responses.items():
-            for status in response:
-                if status.statusFoutcode:
-                    process.is_done = True
-                    ongoing_processes -= process
-                    if not process.is_test:
-                        subject = _("%(report_name)s submission failed", report_name=process.report_name)
-                        body = _(
-                            "The submission for the %(report_name)s with discussion ID '%(id)s' failed with the error:%(newline)s%(newline)s"
-                            "%(italic_start)s%(error)s%(italic_end)s%(newline)s"
-                            "%(italic_start)s%(detailed_error)s%(italic_end)s%(newline)s%(newline)s"
-                            "Try submitting your report again.",
-                            report_name=process.report_name,
-                            id=process.kenmerk,
-                            error=status.statusomschrijving,
-                            detailed_error=status.statusFoutcode.foutbeschrijving,
-                            newline=Markup("<br>"),
-                            italic_start=Markup("<i>"),
-                            italic_end=Markup("</i>"),
-                        )
-                        process.closing_entry_id.message_post(subject=subject, body=body, author_id=self.env.ref('base.partner_root').id, subtype_id=self.env.ref('mail.mt_comment').id)
-                    break
-                if status.statuscode == '500':
-                    # See "Statussenflow - Aanleverproces Belastingdienst": https://aansluiten.procesinfrastructuur.nl/site/binaries/content/assets/documentatie/statussen-en-foutcodes/illustraties/statussenflow-sbr-bd-aanleveren-wus12.png
-                    process.is_done = True
-                    ongoing_processes -= process
-                    if not process.is_test:
-                        subject = _("%(report_name)s submission succeeded", report_name=process.report_name)
-                        body = _(
-                            "The submission for the %(report_name)s with discussion ID '%(id)s' was successfully received by Digipoort.",
-                            report_name=process.report_name,
-                            id=process.kenmerk,
-                        )
-                        process.closing_entry_id.message_post(subject=subject, body=body, author_id=self.env.ref('base.partner_root').id, subtype_id=self.env.ref('mail.mt_comment').id)
-                    break
+                if response.get('error'):
+                    _logger.warning(
+                        'The IAP proxy returned error %(error)s while checking kenmerk %(kenmerk)s: %(details)s',
+                        {'error': response['error'], 'kenmerk': kenmerk, 'details': response.get('error_additional_message', '')},
+                    )
+                    if response['error'] == 'personal_certificate_required':
+                        process._pause_status_retrieval(kenmerk, response.get('error_additional_message', ''))
+                    continue
+            else:
+                _logger.warning('Could not query Digipoort status for kenmerk %s because the IAP access token is missing.', kenmerk)
+                process._mark_status_retrieval_failed(
+                    kenmerk,
+                    self.env._("The IAP authentication information is unavailable."),
+                )
+                continue
 
-        if ongoing_processes:
+            if response.get('state') == 'pending':
+                continue
+
+            process.is_done = True
+
+            account_return = process.closing_entry_id.closing_return_id
+            if not account_return:
+                continue
+            if response.get('state') == 'failed':
+                if response.get('error_type') == 'status_retrieval_failed':
+                    subject = self.env._("%(report_name)s status retrieval failed", report_name=process.report_name)
+                    body = self.env._(
+                        "The status retrieval for the %(report_name)s with discussion ID '%(id)s' failed with the error:%(newline)s%(newline)s"
+                        "%(italic_start)s%(error)s%(italic_end)s%(newline)s%(newline)s"
+                        "Try submitting your report again.",
+                        report_name=process.report_name,
+                        id=kenmerk,
+                        error=response.get('error_description', ''),
+                        newline=Markup("<br>"),
+                        italic_start=Markup("<i>"),
+                        italic_end=Markup("</i>"),
+                    )
+                else:
+                    subject = self.env._("%(report_name)s submission failed", report_name=process.report_name)
+                    body = self.env._(
+                        "The submission for the %(report_name)s with discussion ID '%(id)s' failed with the error:%(newline)s%(newline)s"
+                        "%(italic_start)s%(error)s%(italic_end)s%(newline)s"
+                        "%(italic_start)s%(detailed_error)s%(italic_end)s%(newline)s%(newline)s"
+                        "Try submitting your report again.",
+                        report_name=process.report_name,
+                        id=kenmerk,
+                        error=response.get('status_description', ''),
+                        detailed_error=response.get('error_description', ''),
+                        newline=Markup("<br>"),
+                        italic_start=Markup("<i>"),
+                        italic_end=Markup("</i>"),
+                    )
+                process._process_messages_and_statuses(account_return, subject, body, status='error')
+                continue
+
+            if response.get('state') == 'success':
+                subject = self.env._("%(report_name)s submission succeeded", report_name=process.report_name)
+                body = self.env._(
+                    "The submission for the %(report_name)s with discussion ID '%(id)s' was successfully received by Digipoort.",
+                    report_name=process.report_name,
+                    id=kenmerk,
+                )
+                process._process_messages_and_statuses(account_return, subject, body, status='accepted')
+
+        if self.search_count([('is_done', '=', False)]):
             # If there are still unfinished processes, we trigger a cron to check the status again in one minute
             statusinformatieservice_cron = self.env.ref('l10n_nl_reports.cron_l10n_nl_reports_status_process')
             statusinformatieservice_cron._trigger(fields.Datetime.now() + timedelta(minutes=1))
+
+    def _pause_status_retrieval(self, kenmerk, error):
+        self.ensure_one()
+        self.is_done = True
+        account_return = self.closing_entry_id.closing_return_id
+        if not account_return:
+            return
+        subject = self.env._(
+            "%(report_name)s status retrieval requires the submission certificate (%(id)s)",
+            report_name=self.report_name,
+            id=kenmerk,
+        )
+        if account_return.message_ids.filtered(lambda message: message.subject == subject):
+            return
+        body = self.env._(
+            "The status could not be retrieved because of the following certificate error: %(error)s "
+            "Status retrieval requires the same personal certificate that was used to submit this report. "
+            "Restore it and click Refresh to try again. The report has already been submitted; do not submit it again.",
+            error=error,
+        )
+        self._process_messages_and_statuses(account_return, subject, body)
+
+    def _mark_status_retrieval_failed(self, kenmerk, error):
+        self.ensure_one()
+        self.is_done = True
+        account_return = self.closing_entry_id.closing_return_id
+        if not account_return:
+            return
+        subject = self.env._("%(report_name)s status retrieval failed", report_name=self.report_name)
+        body = self.env._(
+            "The status of the %(report_name)s submission with discussion ID '%(id)s' could not be retrieved "
+            "because of the following error: %(error)s "
+            "Correct the configuration and submit the report again.",
+            report_name=self.report_name,
+            id=kenmerk,
+            error=error,
+        )
+        self._process_messages_and_statuses(account_return, subject, body, status='error')
+
+    def _process_messages_and_statuses(self, account_return, subject, body, attachments=None, subscribe=False, status=None):
+        if not account_return:
+            return
+        if attachments:
+            previous_xbrl_attachments = self.env['ir.attachment'].search_fetch([
+                ('res_model', '=', account_return._name),
+                ('res_id', '=', account_return.id),
+                ('name', 'ilike', '.xbrl'),
+                ('name', 'not ilike', '(detached)'),  # Old files are renamed with "(detached)". We don't want to rename those again.
+            ], ['name'])
+            for attachment in previous_xbrl_attachments:
+                attachment_name, attachment_extension = attachment.name.rsplit('.', 1)
+                attachment.name = self.env._(
+                    '%(attachment_name)s (detached).%(attachment_extension)s',
+                    attachment_name=attachment_name,
+                    attachment_extension=attachment_extension,
+                )
+        account_return.message_post(
+            subject=subject,
+            body=body,
+            author_id=self.env.ref('base.partner_root').id,
+            subtype_id=self.env.ref('mail.mt_comment').id,
+            attachments=attachments or [],
+        )
+        if subscribe:
+            account_return.message_subscribe(partner_ids=[self.env.user.partner_id.id])

@@ -2,6 +2,7 @@
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools import ormcache
 
 
 class IrActionsServer(models.Model):
@@ -111,3 +112,65 @@ class IrActionsServer(models.Model):
         elif self.documents_account_create_model == 'account.bank.statement':
             return documents.account_create_account_bank_statement(journal_id=journal_id)
         raise NotImplementedError
+
+    def _run_action_multi(self, eval_context=None):
+        """Override to enforce visual execution order for specific accounting actions.
+
+        This is a stable-proof temporary solution to ensure that sub-actions
+        (e.g., 'Move to Folder' followed by 'Create Invoice') execute in the same
+        order as visually shown in the frontend.
+        """
+        account_actions = self._get_documents_account_actions_map()
+        if self.id not in account_actions:
+            return super()._run_action_multi(eval_context=eval_context)
+
+        res = False
+        # Order as viewed in action's form view, simplest contained change for stable.
+        for act in self.child_ids.sorted('sequence,id'):
+            res = act.run() or res
+
+        return res
+
+    @ormcache()
+    @api.model
+    def _get_documents_account_actions_map(self):
+        """Map actions that need custom handling to ensure correct syncing behaviour.
+
+        Returns a dictionary mapping Action IDs to their target Folder IDs.
+
+        - Keys: Actions that must execute in visual order.
+        - Values: The target folder for the move. (Note: These values were previously used
+          for temporary permission elevation but are currently unused as the security
+          logic has been relaxed).
+
+        It is cached because the mapping relies on global data (XML IDs) and is
+        independent of the current user.
+        """
+        taxes_folder = self.env.ref("documents.document_finance_taxes_folder", raise_if_not_found=False)
+        annual_closing_folder = self.env.ref("documents.document_finance_annual_closing_year_current_folder", raise_if_not_found=False)
+
+        allowed_actions_per_folder = {
+            taxes_folder: [
+                'create_vendor_bill',
+                'create_vendor_refund',
+                'create_customer_invoice',
+                'create_credit_note',
+            ],
+            annual_closing_folder: [
+                'create_misc_entry',
+                'bank_statement',
+            ],
+        }
+
+        return {
+            action.id: folder.id
+            for folder, actions_xml_ids in allowed_actions_per_folder.items()
+            for action_xmlid in actions_xml_ids
+            if folder
+            and (
+                action := self.env.ref(
+                    f"documents_account.ir_actions_server_{action_xmlid}",
+                    raise_if_not_found=False,
+                )
+            )
+        }

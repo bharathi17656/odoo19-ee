@@ -15,7 +15,6 @@
         <field name="filter_journals" eval="True"/>
         <field name="country_id" ref="base.zm"/>
         <field name="filter_multi_company">selector</field>
-        <field name="allow_account_audit_status_on_lines" eval="True"/>
         <field name="column_ids">
             <record id="balance_sheet_zm_balance_column" model="account.report.column">
                 <field name="name">Balance</field>
@@ -157,7 +156,7 @@
                                     <record id="balance_sheet_zm_equity_previous_year_unallocated_balance_domain" model="account.report.expression">
                                         <field name="label">balance_domain</field>
                                         <field name="engine">domain</field>
-                                        <field name="formula" eval="[('account_id.account_type', 'in', ('income', 'income_other', 'expense_direct_cost', 'expense', 'expense_depreciation'))]"/>
+                                        <field name="formula" eval="[('account_id.account_type', 'in', ('income', 'income_other', 'expense_direct_cost', 'expense', 'expense_depreciation', 'expense_other'))]"/>
                                         <field name="subformula">-sum</field>
                                         <field name="date_scope">from_beginning</field>
                                     </record>

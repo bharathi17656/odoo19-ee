@@ -137,6 +137,10 @@ export class SpreadsheetTemplate extends models.Model {
         };
     }
 
+    has_access(right) {
+        return true;
+    }
+
     _records = [
         { id: 1, name: "Template 1", spreadsheet_data: "" },
         { id: 2, name: "Template 2", spreadsheet_data: "" },
@@ -150,13 +154,19 @@ export class SpreadsheetTemplate extends models.Model {
 onRpc(
     "/spreadsheet/data/<string:res_model>/<int:res_id>",
     function (_request, { res_model, res_id }) {
-        const [record] = this.env[res_model].search_read([["id", "=", parseInt(res_id)]]);
+        const fields = this.env[res_model]._fields;
+        const domain = [["id", "=", parseInt(res_id)]];
+        if ("active" in fields) {
+            domain.push(["active", "in", [true, false]]);
+        }
+        const [record] = this.env[res_model].search_read(domain);
         return {
             data: JSON.parse(record.spreadsheet_data),
             name: record.name,
             revisions: [],
             isReadonly: false,
             is_favorited: record.is_favorited,
+            is_archived: !record.active,
             folder_id: record.folder_id?.[0],
         };
     }

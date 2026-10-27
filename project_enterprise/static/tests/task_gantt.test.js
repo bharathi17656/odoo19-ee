@@ -229,6 +229,22 @@ test("open a dialog to schedule task", async () => {
     expect.verifySteps(["schedule_tasks"]);
 });
 
+test("New button on day scale uses the working schedule", async () => {
+    Task._views = {
+        form: '<form><field name="name"/><field name="planned_date_begin"/><field name="date_deadline"/></form>',
+    };
+    onRpc("onchange", ({ kwargs }) => {
+        expect.step(`use_working_schedule: ${kwargs.context.use_working_schedule}`);
+    });
+    await mountGanttView({
+        ...ganttViewParams,
+        arch: '<gantt js_class="task_gantt" date_start="planned_date_begin" date_stop="date_deadline" default_scale="day"/>',
+    });
+    await contains(SELECTORS.addButton + ":visible").click();
+    expect(".modal").toHaveCount(1);
+    expect.verifySteps(["use_working_schedule: true"]);
+});
+
 test("Lines are displayed in alphabetic order, except for the first one", async () => {
     for (const user of [
         { id: 102, name: "Omega" },

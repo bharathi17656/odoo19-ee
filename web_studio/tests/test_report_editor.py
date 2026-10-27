@@ -532,6 +532,11 @@ class TestReportEditorUIUnit(HttpCase):
         self.start_tour(self.tour_url, "web_studio.test_report_reset_archs", login="admin")
         self.assertXMLEqual(self.main_view_document.arch, """<p>from file</p>""")
 
+    def test_report_reset_archs_in_preview(self):
+        self.main_view_document.arch_fs = "web_studio/tests/test_report_editor.xml"
+        self.start_tour(self.tour_url, "web_studio.test_report_reset_archs_in_preview", login="admin")
+        self.assertXMLEqual(self.main_view_document.arch, """<p>from file</p>""")
+
     def test_report_reset_archs_studio_view(self):
         self.authenticate("admin", "admin")
         studio_view = _get_and_write_studio_view(self.main_view_document, {"arch": "<data/>"})
@@ -707,6 +712,20 @@ class TestReportEditorUIUnit(HttpCase):
             </t>
         """)
 
+    def test_disable_fields_commands_when_unavailable(self):
+        self.main_view.arch = """
+            <t t-name="web_studio.test_report">
+                <t t-call="web.html_container">
+                    <t t-call="web.internal_layout">
+                        <t t-set='lines' t-value='docs'/>
+                        <t t-esc="lines.mapped('name')"/>
+                        <p class="some_p"><br/></p>
+                    </t>
+                </t>
+            </t>
+        """
+        self.start_tour(self.tour_url, "web_studio.test_disable_fields_commands_when_unavailable", login="admin")
+
     def test_edition_without_lang(self):
         self.env["res.lang"]._activate_lang("fr_FR")
         self.env["res.users"].browse(2).lang = "fr_FR"
@@ -841,7 +860,7 @@ class TestReportEditorUIUnit(HttpCase):
             "field_description": "New File filename",
             "name": "x_new_file_filename",
             "ttype": "char",
-            "model": "res.partner",
+            "model": "res.company",
             "model_id": self.env["ir.model"]._get('res.company').id,
             "state": "manual",
         })
@@ -984,7 +1003,7 @@ class TestReportEditorUIUnit(HttpCase):
          <t t-call="web_studio.test_report_document" ws-call-key="2" ws-view-id="{self.main_view.id}">
            <t t-name="web_studio.test_report_document" ws-view-id="{self.main_view_document.id}">
              <t oe-origin-t-out="0">
-                <t ws-view-id="{self.main_view.id}" ws-call-group-key="1" ws-call-key="2" ws-real-children="1">
+                <t ws-view-id="{self.main_view.id}" ws-call-group-key="1" ws-call-key="2" ws-view-name="{self.main_view.name}" ws-real-children="1">
                   <h1/>
                 </t>
              </t>
@@ -995,7 +1014,7 @@ class TestReportEditorUIUnit(HttpCase):
         <t t-call="web_studio.test_report_document" ws-call-key="3" ws-view-id="{self.main_view.id}">
            <t t-name="web_studio.test_report_document" ws-view-id="{self.main_view_document.id}">
              <t oe-origin-t-out="0">
-               <t ws-view-id="{self.main_view.id}" ws-call-group-key="1" ws-call-key="3" ws-real-children="1">
+               <t ws-view-id="{self.main_view.id}" ws-call-group-key="1" ws-call-key="3" ws-view-name="{self.main_view.name}" ws-real-children="1">
                  <h2/>
                </t>
              </t>
@@ -1058,10 +1077,10 @@ class TestReportEditorUIUnit(HttpCase):
         verification_tree = etree.fromstring(
         """<div id="wrapwrap" oe-context="{&quot;docs&quot;: {&quot;model&quot;: &quot;res.partner&quot;, &quot;name&quot;: &quot;Contact&quot;, &quot;in_foreach&quot;: false}, &quot;company&quot;: {&quot;model&quot;: &quot;res.company&quot;, &quot;name&quot;: &quot;Companies&quot;, &quot;in_foreach&quot;: false}}">
            <main>
-             <t ws-was-t-out="1">
-               <t ws-view-id="{html_container.id}" ws-call-group-key="1" ws-call-key="1" ws-real-children="1">
-                 <t ws-was-t-out="1">
-                   <t ws-view-id="{main_view.id}" ws-call-group-key="1" ws-call-key="1" ws-real-children="1">
+             <t oe-origin-t-out="0">
+               <t ws-view-id="{html_container.id}" ws-call-group-key="1" ws-call-key="1" ws-view-name="{html_container.key}" ws-real-children="1">
+                 <t oe-origin-t-out="0">
+                   <t ws-view-id="{main_view.id}" ws-call-group-key="1" ws-call-key="1" ws-view-name="{main_view.key}" ws-real-children="1">
                      <div>
                        <p>
                          <br/>
@@ -1074,16 +1093,16 @@ class TestReportEditorUIUnit(HttpCase):
                              <t t-call="web_studio.t_call_0" ws-call-key="1" ws-view-id="{main_view_document.id}">
                                <t t-name="web_studio.t_call_0" ws-view-id="{tcalled_0.id}" oe-context="{&quot;docs&quot;: {&quot;model&quot;: &quot;res.partner&quot;, &quot;name&quot;: &quot;Contact&quot;, &quot;in_foreach&quot;: false}, &quot;company&quot;: {&quot;model&quot;: &quot;res.company&quot;, &quot;name&quot;: &quot;Companies&quot;, &quot;in_foreach&quot;: false}, &quot;doc&quot;: {&quot;model&quot;: &quot;res.partner&quot;, &quot;name&quot;: &quot;Contact&quot;, &quot;in_foreach&quot;: true}}">
                                  <div class="call_0">
-                                   <t ws-was-t-out="1">
-                                     <t ws-view-id="{main_view_document.id}" ws-call-group-key="1" ws-call-key="1" ws-real-children="1">
+                                   <t oe-origin-t-out="0">
+                                     <t ws-view-id="{main_view_document.id}" ws-call-group-key="1" ws-call-key="1" ws-view-name="{main_view_document.key}" ws-real-children="1">
                                        <div>
                                          <p> call zero one </p>
                                          <t t-call="web_studio.t_call_1" ws-call-key="2" ws-view-id="{main_view_document.id}">
                                            <t t-name="web_studio.t_call_1" ws-view-id="{tcalled_1.id}" oe-context="{&quot;docs&quot;: {&quot;model&quot;: &quot;res.partner&quot;, &quot;name&quot;: &quot;Contact&quot;, &quot;in_foreach&quot;: false}, &quot;company&quot;: {&quot;model&quot;: &quot;res.company&quot;, &quot;name&quot;: &quot;Companies&quot;, &quot;in_foreach&quot;: false}, &quot;doc&quot;: {&quot;model&quot;: &quot;res.partner&quot;, &quot;name&quot;: &quot;Contact&quot;, &quot;in_foreach&quot;: true}}">
                                              <div class="call_1">
                                                <p> call one </p>
-                                               <t ws-was-t-out="1">
-                                                 <t ws-view-id="{main_view_document.id}" ws-call-group-key="1" ws-call-key="2" ws-real-children="1">
+                                               <t oe-origin-t-out="0">
+                                                 <t ws-view-id="{main_view_document.id}" ws-call-group-key="1" ws-call-key="2" ws-view-name="{main_view_document.key}" ws-real-children="1">
                                                    <p> call zero two </p>
                                                  </t>
                                                </t>
@@ -1110,7 +1129,7 @@ class TestReportEditorUIUnit(HttpCase):
 
         self.assertXMLEqual(
             etree.tostring(tree),
-            etree.tounicode(tree).format(
+            etree.tounicode(verification_tree).format(
                 main_view=self.main_view, main_view_document=self.main_view_document, tcalled_0=tcalled_0, tcalled_1=tcalled_1, html_container=html_container
             )
         )
@@ -1456,3 +1475,82 @@ class TestReportEditorUIUnit(HttpCase):
         self.assertNotEqual(report.report_name, "web_studio.test_no_view_report")
         views = self.env["ir.ui.view"].search([("key", "=", report.report_name)])
         self.assertEqual(len(views), 1)
+
+    def test_save_report_insignificant_diff(self):
+        self.authenticate("admin", "admin")
+        self.main_view.arch = """
+        <t t-name="web_studio.test_report_document">
+            <div id="wrapwrap">
+                <div x="a" y="b"></div>
+            </div>
+        </t>"""
+
+        params = {
+            "report_id": self.report.id,
+            "html_parts": {
+                self.main_view.id: [
+                    {
+                        "call_key": None,
+                        "call_group_key": None,
+                        "type": "full",
+                        "html": """
+                            <t t-name="web_studio.test_report_document" o-diff-key="0">
+                                 <div id="wrapwrap" o-diff-key="1">
+                                    <div x="a" y="b" o-diff-key="2"></div>
+                                 </div>
+                            </t>
+                        """
+                    }
+                ]
+            },
+        }
+        self.url_open(
+            "/web_studio/save_report",
+            data=json.dumps({"params": params}),
+            headers={"Content-Type": "application/json"}
+        )
+        arch, studio_arch = get_combined_and_studio_arch(self.main_view)
+        self.assertXMLEqual(arch, """
+            <t t-name="web_studio.test_report_document">
+                <div id="wrapwrap">
+                    <div x="a" y="b"></div>
+                </div>
+            </t>
+            """)
+        self.assertXMLEqual(studio_arch.strip(), "<data/>")
+
+    def test_xml_resource_with_empty_arch_view(self):
+        self.authenticate('admin', 'admin')
+        inherit = self.env["ir.ui.view"].create({
+            "inherit_id": self.main_view.id,
+            "type": "qweb",
+            "arch": "<data/>"
+        })
+
+        # Save inherited report with empty arch ''
+        save_report = self.url_open(
+            "/web_studio/save_report",
+            data=json.dumps({
+                "params": {
+                    "report_id": self.report.id,
+                    "context": {'allowed_company_ids': self.env.company.ids},
+                    "xml_verbatim": {str(inherit.id): ''}
+                }
+            }),
+            headers={"Content-Type": "application/json"}
+        )
+        self.assertEqual(save_report.status_code, 200)
+
+        xml_edit_resurces = self.url_open(
+            "/web_studio/get_xml_editor_resources",
+            data=json.dumps({
+                "params": {"key": self.main_view.key}
+            }),
+            headers={"Content-Type": "application/json"}
+        )
+        self.assertEqual(xml_edit_resurces.status_code, 200)
+
+        views = xml_edit_resurces.json()['result']['views']
+        view_ids = [view['id'] for view in views]
+
+        self.assertIn(inherit.id, view_ids)

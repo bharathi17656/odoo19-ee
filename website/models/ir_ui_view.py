@@ -76,6 +76,18 @@ class IrUiView(models.Model):
                     raise ValueError(f"Trying to create a view for website {new_website_id} from a website {website_id} environment")
         return super().create(vals_list)
 
+    def copy(self, default=None):
+        # `visibility_password` has "copy=False" because reading and writing
+        # it requires `base.group_system`, which the website designer may not
+        # have. Thus, the (hashed) password is copied here with sudo().
+        new_views = super().copy(default=default)
+        if default and 'visibility_password' in default:
+            return new_views
+        for view, new_view in zip(self, new_views):
+            if view.visibility == 'password':
+                new_view.sudo().visibility_password = view.sudo().visibility_password
+        return new_views
+
     @api.depends('website_id', 'key')
     @api.depends_context('display_key', 'display_website')
     def _compute_display_name(self):
@@ -275,10 +287,10 @@ class IrUiView(models.Model):
         # get_related_views can be called through website=False routes
         # (e.g. /website/get_assets_editor_resources), so website
         # dispatch_parameters may not be added. Manually set
-        # website_id. (It will then always fallback on a website, this
-        # method should never be called in a generic context, even for
-        # tests)
-        current_website = self.env['website'].get_current_website()
+        # website_id. (In the website environment, this method should
+        # never be called in a generic context, even for tests)
+        is_customization_code = self.env.context.get('is_customization_code', True)
+        current_website = self.env['website'].get_current_website(fallback=is_customization_code)
         return super(IrUiView, self.with_context(
             website_id=current_website.id
         )).get_related_views(key, bundles=bundles).with_context(
@@ -418,7 +430,11 @@ class IrUiView(models.Model):
             elif visibility == 'password' and \
                     (request.website.is_public_user() or self.id not in request.session.get('views_unlock', [])):
                 pwd = request.params.get('visibility_password')
-                if pwd and self.env.user._crypt_context().verify(
+                # Guard against a falsy visibility_password which would make
+                # crypt_context().verify() raise. Old databases can contain
+                # such views, because duplication of a password-protected
+                # page did not copy the password.
+                if pwd and self.visibility_password and self.env.user._crypt_context().verify(
                         pwd, self.visibility_password):
                     request.session.setdefault('views_unlock', list()).append(self.id)
                 else:
@@ -498,7 +514,15 @@ class IrUiView(models.Model):
             ], limit=1)
             if website_specific_view:
                 self = website_specific_view
+        if self.env.context.get('delay_translations'):
+            disable_delay_translations = self.env['ir.config_parameter'].sudo().get_param(
+                'website.disable_delay_translations'
+            ) not in ('False', '0', '', False)
+            self.env = self.with_context(delay_translations=not disable_delay_translations).env
         super().save(value, xpath=xpath)
+
+    def _get_written_view(self):
+        return self if self.website_id or 'website_id' not in self.env.context else self.env['website'].viewref(self.key)
 
     @api.model
     def _get_allowed_root_attrs(self):

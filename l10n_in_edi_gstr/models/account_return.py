@@ -1,4 +1,5 @@
 from odoo import fields, models
+from odoo.addons.account_reports.models.account_return import LIMIT_CHECK_ENTRIES
 
 
 class AccountReturn(models.Model):
@@ -52,7 +53,7 @@ class AccountReturn(models.Model):
                 ("line_ids.l10n_in_gstr_section", "like", 'sale_'),
                 ("line_ids.l10n_in_gstr_section", "not in", sale_section_exceptions + [False]),
             ]
-            moves = self.env['account.move'].search(domain)
+            moves = self.env['account.move'].search(domain, limit=LIMIT_CHECK_ENTRIES)
             checks.append({
                 'code': 'missing_einvoice',
                 'name': _("Missing E-Invoice"),
@@ -66,6 +67,7 @@ class AccountReturn(models.Model):
                         (self.env.ref('account.view_out_invoice_tree').id, 'list'),
                         (self.env.ref('account.view_move_form').id, 'form'),
                     ],
-                ),
+                    domain=domain,
+                ) if moves else None,
             })
         return checks

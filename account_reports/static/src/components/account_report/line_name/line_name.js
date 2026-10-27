@@ -93,8 +93,8 @@ export class AccountReportLineName extends Component {
 
     get accountStatusBadgeOptions() {
         return {
-            todo: { decoration: "muted" },
-            reviewed: { decoration: "info" },
+            todo: { decoration: "info" },
+            reviewed: { decoration: "success" },
             supervised: { decoration: "success" },
             anomaly: { decoration: "danger" },
         };
@@ -225,7 +225,9 @@ export class AccountReportLineName extends Component {
         return this.controller.chatterState.lineId === this.props.line.id;
     }
 
-    async openChatter() {
+    async openChatter(ev) {
+        ev.stopPropagation();
+
         if (!this.props.line.chatter) {
             return;
         }

@@ -5,13 +5,7 @@ import { isSyncStatusConnected } from "@point_of_sale/../tests/pos/tours/utils/c
 export function nbOrdersIs(nb) {
     return [
         {
-            trigger: `.ticket-screen`,
-            run: () => {
-                const orders = document.querySelectorAll(".ticket-screen .order-row");
-                if (orders.length !== nb) {
-                    throw new Error(`Expected ${nb} orders, but found ${orders.length}`);
-                }
-            },
+            trigger: `.ticket-screen .order-row:count(${nb})`,
         },
     ];
 }
@@ -44,7 +38,7 @@ export function selectOrderByPrice(price) {
 export function doubleClickOrder(orderName) {
     return [
         {
-            trigger: `.ticket-screen .order-row > .col:nth-child(2):contains("${orderName}")`,
+            trigger: `.ticket-screen .order-row:contains("${orderName}")`,
             run: "dblclick",
         },
     ];
@@ -102,11 +96,34 @@ export function search(field, searchWord) {
                     : "TSJ/" + new Date().getFullYear() + "/" + searchWord
             }`,
         },
+        suggestionIsOnTop(field),
         {
             trigger: `.pos-search-bar .search ul li:contains("${field}")`,
             run: "click",
         },
     ];
+}
+/**
+ * A tour clicks the element directly, so it would not notice a suggestion that is
+ * painted behind the order list. Assert it is the topmost element at its own center.
+ */
+export function suggestionIsOnTop(field) {
+    return {
+        content: `the "${field}" search suggestion must not be covered by another element`,
+        trigger: `.pos-search-bar .search ul li:contains("${field}")`,
+        run: function () {
+            const rect = this.anchor.getBoundingClientRect();
+            const topMost = document.elementFromPoint(
+                rect.left + rect.width / 2,
+                rect.top + rect.height / 2
+            );
+            if (topMost !== this.anchor && !this.anchor.contains(topMost)) {
+                throw new Error(
+                    `The "${field}" search suggestion is hidden behind <${topMost?.tagName} class="${topMost?.className}">`
+                );
+            }
+        },
+    };
 }
 export function settleTips() {
     return [
@@ -201,9 +218,20 @@ export function toRefundTextContains(text) {
         trigger: `.ticket-screen .to-refund-highlight:contains("${text}")`,
     });
 }
+export function toRefundLineContains(product, text) {
+    return inLeftSide({
+        trigger: `.ticket-screen div:has(.product-name:contains("${product}")):has(.to-refund-highlight:contains("${text}"))`,
+    });
+}
 export function refundedNoteContains(text) {
     return inLeftSide({
         trigger: `.ticket-screen .refund-note:contains("${text}")`,
+    });
+}
+export function noLinesToRefund() {
+    return inLeftSide({
+        content: "No lines are marked for to refund or refunding",
+        trigger: ".ticket-screen:not(:has(.to-refund-highlight))",
     });
 }
 export function tipContains(amount) {
@@ -246,4 +274,22 @@ export function noOrderIsThere() {
         content: "No orders should be visible on the Ticket Screen",
         trigger: ".ticket-screen:not(:has(.order-row))",
     };
+}
+
+export function isShown() {
+    return [
+        {
+            content: "ticket screen is shown",
+            trigger: ".pos .ticket-screen",
+        },
+    ];
+}
+
+export function checkCustomerAddress(addressText) {
+    return [
+        {
+            isActive: ["desktop"],
+            trigger: `.ticket-screen tbody tr > td:contains("${addressText}")`,
+        },
+    ];
 }

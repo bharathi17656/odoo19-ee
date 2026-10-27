@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import base64
+
 import requests
+from cryptography.hazmat.primitives import serialization
 from requests import HTTPError
 
 from odoo import fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import RedirectWarning, UserError
 
 
 class ResCompany(models.Model):
@@ -36,6 +38,34 @@ class ResCompany(models.Model):
         help="Stores the date of the end of the last period submitted to the Digipoort Services for ICP",
         readonly=True
     )
+
+    def _l10n_nl_get_certificate_and_key_bytes(self):
+        """Return personal SBR certificate/key PEM bytes, or ``(None, None)`` to use the IAP group certificate."""
+        self.ensure_one()
+
+        certificate = self.sudo().l10n_nl_reports_sbr_cert_id
+        if not certificate:
+            return (None, None)
+        if not certificate.pem_certificate or not certificate.private_key_id.pem_key:
+            raise RedirectWarning(
+                _("The certificate or the private key is missing. Please upload it in the Accounting Settings first."),
+                self.env.ref('account.action_account_config').id,
+                _("Go to the Accounting Settings"),
+            )
+        # The certificate.key stores the PEM key encrypted whenever it has a password,
+        # while the TLS handshake and the WSSE signature require it without a passphrase.
+        private_key = serialization.load_pem_private_key(
+            base64.b64decode(certificate.private_key_id.with_context(bin_size=False).pem_key),
+            certificate.private_key_id.password.encode() if certificate.private_key_id.password else None,
+        ).private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+        return (
+            base64.b64decode(certificate.with_context(bin_size=False).pem_certificate),
+            private_key,
+        )
 
     def _l10n_nl_get_server_root_certificate_bytes(self):
         """ Return the tax service server root certificate as PEM encoded bytes.

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.4+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
+"POT-Creation-Date: 2026-10-09 17:45+0000\n"
 "PO-Revision-Date: 2025-11-17 03:19+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/"
@@ -48,16 +48,16 @@ msgid ""
 "        "
 msgstr ""
 "<div>\n"
-"                <p>Sincronizarea comenzii Shopee cu referința <t t-out="
-"\"ctx.get('shopee_order_ref') or ''\">REF</t> a întâmpinat o eroare și nu a "
-"fost finalizată.</p>\n"
+"                <p>Sincronizarea comenzii Shopee cu referința <t t-"
+"out=\"ctx.get('shopee_order_ref') or ''\">REF</t> a întâmpinat o eroare și "
+"nu a fost finalizată.</p>\n"
 "                <p>Dacă comanda nu este anulată în Shopee, nu va fi "
 "încercată nicio altă sincronizare.</p>\n"
 "                <p>Pentru a programa o nouă încercare de sincronizare, "
 "urmați pașii de mai jos:\n"
 "                    </p><ol>\n"
-"                        <li>Accesați Instrumentele pentru Dezvoltatori.</li>"
-"\n"
+"                        <li>Accesați Instrumentele pentru Dezvoltatori.</"
+"li>\n"
 "                        <li>Deschideți formularul magazinului Shopee unde a "
 "fost plasată comanda.</li>\n"
 "                        <li>Navigați la fila Urmărire Comenzi.</li>\n"
@@ -68,8 +68,8 @@ msgstr ""
 "<em>SINCRONIZARE COMENZI</em>.</li>\n"
 "                    </ol>\n"
 "                \n"
-"                <p>Dacă problema persistă, contactați <a href="
-"\"https://www.odoo.com/help/\">suportul Odoo</a>.</p>\n"
+"                <p>Dacă problema persistă, contactați <a href=\"https://"
+"www.odoo.com/help/\">suportul Odoo</a>.</p>\n"
 "            </div>\n"
 "        "
 
@@ -204,13 +204,13 @@ msgstr ""
 "                        </tr>\n"
 "                    </thead>\n"
 "                    <tbody>\n"
-"                        <tr t-foreach=\"ctx.get('error_messages')\" t-as="
-"\"error\">\n"
-"                            <th><t t-out=\"error['batch_picking_refs']\""
-"/></th>\n"
+"                        <tr t-foreach=\"ctx.get('error_messages')\" t-"
+"as=\"error\">\n"
+"                            <th><t t-out=\"error['batch_picking_refs']\"/></"
+"th>\n"
 "                            <td>\n"
-"                                <t t-if=\"error['message']\" t-out="
-"\"error['message']\"/>\n"
+"                                <t t-if=\"error['message']\" t-"
+"out=\"error['message']\"/>\n"
 "                                <t t-else=\"\">A apărut o eroare necunoscută "
 "în timpul sincronizării cu Shopee.\n"
 "                                    Din păcate, trebuie să verificați manual "
@@ -321,8 +321,8 @@ msgstr ""
 "            </style>\n"
 "            <body><div>\n"
 "                <p>Sincronizarea stocului pentru magazinul Shopee\n"
-"                    <b><t t-out=\"ctx.get('shopee_shop') or ''\">REF</t></b>"
-"\n"
+"                    <b><t t-out=\"ctx.get('shopee_shop') or ''\">REF</t></"
+"b>\n"
 "                    a întâmpinat unele erori și nu a fost finalizată.</p>\n"
 "                <p>Aici sunt erorile trimise de Shopee: </p>\n"
 "                <table class=\"shopee_table\">\n"
@@ -333,13 +333,13 @@ msgstr ""
 "                        </tr>\n"
 "                    </thead>\n"
 "                    <tbody>\n"
-"                        <tr t-foreach=\"ctx.get('error_messages')\" t-as="
-"\"error\">\n"
-"                            <th><t t-out=\"error['item_identifier']\"/></th>"
-"\n"
+"                        <tr t-foreach=\"ctx.get('error_messages')\" t-"
+"as=\"error\">\n"
+"                            <th><t t-out=\"error['item_identifier']\"/></"
+"th>\n"
 "                            <td>\n"
-"                                <t t-if=\"error['message']\" t-out="
-"\"error['message']\"/>\n"
+"                                <t t-if=\"error['message']\" t-"
+"out=\"error['message']\"/>\n"
 "                                <t t-else=\"\">A apărut o eroare necunoscută "
 "în timpul sincronizării cu Shopee.\n"
 "                                    Din păcate, trebuie să verificați manual "
@@ -792,6 +792,12 @@ msgid "Order Count"
 msgstr "Numărul de Comenzi"
 
 #. module: sale_shopee
+#. odoo-python
+#: code:addons/sale_shopee/models/shopee_shop.py:0
+msgid "Order Discount"
+msgstr ""
+
+#. module: sale_shopee
 #: model_terms:ir.ui.view,arch_db:sale_shopee.shopee_shop_view_form
 msgid "Orders"
 msgstr "Comenzi"
@@ -832,6 +838,14 @@ msgstr "Promoție produs"
 #: model:ir.model,name:sale_shopee.model_product_product
 msgid "Product Variant"
 msgstr "Variantă de produs"
+
+#. module: sale_shopee
+#. odoo-python
+#: code:addons/sale_shopee/models/shopee_shop.py:0
+msgid ""
+"Promotion: %(promotion_type)s - id: %(promotion_id)d\n"
+"Original price: %(price)s"
+msgstr ""
 
 #. module: sale_shopee
 #: model:ir.model.fields.selection,name:sale_shopee.selection__stock_picking__shopee_label_status__ready
@@ -925,6 +939,12 @@ msgstr "Expediat prin Shopee"
 #: code:addons/sale_shopee/models/stock_picking.py:0
 msgid "Shipping Label Not Ready"
 msgstr "Eticheta de transport nu este pregătită"
+
+#. module: sale_shopee
+#. odoo-python
+#: code:addons/sale_shopee/models/shopee_shop.py:0
+msgid "Shipping: %(carrier)s"
+msgstr ""
 
 #. module: sale_shopee
 #: model:ir.model.fields,field_description:sale_shopee.field_shopee_item__shop_id
@@ -1063,11 +1083,9 @@ msgid "Shopee Order %(shopee_order_ref)s at %(shop_name)s"
 msgstr "Comandă Shopee %(shopee_order_ref)s la %(shop_name)s"
 
 #. module: sale_shopee
-#. odoo-python
-#: code:addons/sale_shopee/models/shopee_shop.py:0
-#: code:addons/sale_shopee/tests/test_shopee.py:0
-msgid "Shopee Pricelist %(currency)s"
-msgstr "Listă de prețuri Shopee %(currency)s"
+#: model:product.template,name:sale_shopee.default_discount_product_product_template
+msgid "Shopee Order Discount"
+msgstr ""
 
 #. module: sale_shopee
 #: model:ir.model.fields.selection,name:sale_shopee.selection__shopee_account__api_endpoint__production_brazil
@@ -1250,7 +1268,8 @@ msgstr "Sincronizarea stocului Shopee a eșuat"
 #: model:mail.template,subject:sale_shopee.order_sync_failure
 msgid ""
 "Synchronization of Shopee order {{ ctx.get('shopee_order_ref') }} has failed"
-msgstr "Sincronizarea comenzii Shopee {{ ctx.get('shopee_order_ref') }} a eșuat"
+msgstr ""
+"Sincronizarea comenzii Shopee {{ ctx.get('shopee_order_ref') }} a eșuat"
 
 #. module: sale_shopee
 #: model:mail.template,subject:sale_shopee.picking_sync_failure
@@ -1442,22 +1461,6 @@ msgid "You are not allowed to access this page."
 msgstr "Nu aveți permisiunea să accesați această pagină."
 
 #. module: sale_shopee
-#. odoo-python
-#: code:addons/sale_shopee/models/shopee_shop.py:0
-msgid "[%(sku)s] %(product_name)s"
-msgstr "[%(sku)s]%(product_name)s"
-
-#. module: sale_shopee
-#. odoo-python
-#: code:addons/sale_shopee/models/shopee_shop.py:0
-msgid ""
-"[%(sku)s] %(product_title)s\n"
-"Promotion: %(promotion_type)s - id: %(promotion_id)d"
-msgstr ""
-"[%(sku)s] %(product_title)s\n"
-"Promoție: %(promotion_type)s - id: %(promotion_id)d"
-
-#. module: sale_shopee
 #: model_terms:ir.ui.view,arch_db:sale_shopee.shopee_account_view_form
 msgid "e.g. American Market"
 msgstr "de exemplu. Piața americană"
@@ -1484,3 +1487,16 @@ msgstr ""
 #: code:addons/sale_shopee/models/shopee_shop.py:0
 msgid "shopee_shop_id"
 msgstr ""
+
+#~ msgid "Shopee Pricelist %(currency)s"
+#~ msgstr "Listă de prețuri Shopee %(currency)s"
+
+#~ msgid "[%(sku)s] %(product_name)s"
+#~ msgstr "[%(sku)s]%(product_name)s"
+
+#~ msgid ""
+#~ "[%(sku)s] %(product_title)s\n"
+#~ "Promotion: %(promotion_type)s - id: %(promotion_id)d"
+#~ msgstr ""
+#~ "[%(sku)s] %(product_title)s\n"
+#~ "Promoție: %(promotion_type)s - id: %(promotion_id)d"

@@ -6,15 +6,15 @@
 # Martin Trigaux, 2022
 # Sergio Zanchetta <primes2h@gmail.com>, 2023
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Marianna Ciofani (cima)" <cima@odoo.com>, 2025.
+# "Marianna Ciofani (cima)" <cima@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:40+0000\n"
-"PO-Revision-Date: 2025-11-08 19:32+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2026-10-15 13:08+0000\n"
+"Last-Translator: \"Marianna Ciofani (cima)\" <cima@odoo.com>\n"
 "Language-Team: Italian <https://translate.odoo.com/projects/odoo-19/"
 "approvals/it/>\n"
 "Language: it\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == "
 "0) ? 1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: approvals
 #. odoo-python
@@ -37,21 +37,6 @@ msgid "'Approval - %s' % object.name"
 msgstr "'Approvazione - %s' % object.name"
 
 #. module: approvals
-#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
-msgid "07/07/2023 10:00:00"
-msgstr "07/07/2023 10:00:00"
-
-#. module: approvals
-#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
-msgid "07/08/2023 10:00:00"
-msgstr "08/07/2023 10:00:00"
-
-#. module: approvals
-#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
-msgid "1200"
-msgstr "1200"
-
-#. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_kanban
 msgid "<i class=\"fa fa-check text-success me-1\"/>Approve"
 msgstr "<i class=\"fa fa-check text-success me-1\"/>Approva"
@@ -60,11 +45,6 @@ msgstr "<i class=\"fa fa-check text-success me-1\"/>Approva"
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_kanban
 msgid "<i class=\"fa fa-times text-danger me-1\"/>Refuse"
 msgstr "<i class=\"fa fa-times text-danger me-1\"/>Rifiuta"
-
-#. module: approvals
-#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
-msgid "<span class=\"col-2 fw-bold\">Description:</span>"
-msgstr "<span class=\"col-2 fw-bold\">Descrizione:</span>"
 
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_category_view_form
@@ -536,6 +516,11 @@ msgid "Description"
 msgstr "Descrizione"
 
 #. module: approvals
+#: model_terms:ir.ui.view,arch_db:approvals.report_aprroval_request_document
+msgid "Description:"
+msgstr "Descrizione:"
+
+#. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_approver__display_name
 #: model:ir.model.fields,field_description:approvals.field_approval_category__display_name
 #: model:ir.model.fields,field_description:approvals.field_approval_category_approver__display_name
@@ -622,7 +607,7 @@ msgstr "Da:"
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_search_view_search
 msgid "Future Activities"
-msgstr ""
+msgstr "Attività future"
 
 #. module: approvals
 #: model:approval.category,name:approvals.approval_category_data_general_approval
@@ -824,7 +809,7 @@ msgstr "Ultimo aggiornamento il"
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_search_view_search
 msgid "Late Activities"
-msgstr ""
+msgstr "Attività in ritardo"
 
 #. module: approvals
 #: model_terms:ir.actions.act_window,help:approvals.approval_request_action
@@ -1407,7 +1392,7 @@ msgstr "Da inviare"
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_search_view_search
 msgid "Today Activities"
-msgstr ""
+msgstr "Attività odierne"
 
 #. module: approvals
 #: model:ir.model.fields,help:approvals.field_approval_request__activity_exception_decoration
@@ -1489,6 +1474,12 @@ msgstr "Non puoi approvare prima dell'approvatore precedente."
 
 #. module: approvals
 #. odoo-python
+#: code:addons/approvals/models/approval_approver.py:0
+msgid "You cannot change approval request."
+msgstr "Non è possibile modificare richieste di approvazione."
+
+#. module: approvals
+#. odoo-python
 #: code:addons/approvals/models/ir_attachment.py:0
 msgid ""
 "You cannot unlink an attachment which is linked to a validated, refused or "
@@ -1565,6 +1556,18 @@ msgstr "nuova richiesta"
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_form
 msgid "to:"
 msgstr "a:"
+
+#~ msgid "<span class=\"col-2 fw-bold\">Description:</span>"
+#~ msgstr "<span class=\"col-2 fw-bold\">Descrizione:</span>"
+
+#~ msgid "07/07/2023 10:00:00"
+#~ msgstr "07/07/2023 10:00:00"
+
+#~ msgid "07/08/2023 10:00:00"
+#~ msgstr "08/07/2023 10:00:00"
+
+#~ msgid "1200"
+#~ msgstr "1200"
 
 #~ msgid "<span class=\"fw-bold\">Description:</span>"
 #~ msgstr "<span class=\"fw-bold\">Descrizione:</span>"

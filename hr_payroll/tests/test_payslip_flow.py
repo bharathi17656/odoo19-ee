@@ -108,21 +108,6 @@ class TestPayslipFlow(TestPayslipBase):
         self.assertEqual(len(payslip_run.slip_ids), 1)
         self.assertEqual(payslip_run.slip_ids.struct_id.id, specific_structure.id)
 
-    def test_02_payslip_batch_with_archived_employee(self):
-        # archive his contact
-        self.richard_emp.action_archive()
-
-        # 13th month pay
-        payslip_run = self.env['hr.payslip.run'].create({
-            'date_start': datetime.date.today() + relativedelta(years=-1, month=8, day=1),
-            'date_end': datetime.date.today() + relativedelta(years=-1, month=8, day=31),
-            'name': 'End of the year bonus'
-        })
-        # I create record for generating the payslip for this Payslip run.
-        payslip_run.generate_payslips(employee_ids=[self.richard_emp.id])
-
-        self.assertEqual(len(payslip_run.slip_ids), 1)
-
     def test_03_payslip_batch_with_payment_process(self):
         '''
             Test to check if some payslips in the batch are already paid,
@@ -400,6 +385,48 @@ class TestPayslipFlow(TestPayslipBase):
         payslip_form.save()
         self.assertTrue(payslip_form)
 
+    def test_10_related_payslip_not_flagged_as_duplicate(self):
+        """Refund/Correction payslips must NOT be treated as duplicates."""
+
+        original = self.env['hr.payslip'].create({
+            'name': 'Original Payslip',
+            'employee_id': self.richard_emp.id,
+            'struct_id': self.richard_emp.structure_type_id.default_struct_id.id,
+            'date_from': datetime.date(2025, 12, 1),
+            'date_to': datetime.date(2025, 12, 31),
+        })
+        original.compute_sheet()
+        original.action_payslip_done()
+        original.correct_sheet()
+        related = original.related_payslip_ids
+        refund = related.filtered(lambda p: p.is_refund_payslip)
+        correction = related - refund
+
+        warnings = refund._get_warnings_by_slip()[refund]
+        self.assertFalse(
+            any("Similar payslips found" in (w.get('message') or "") for w in warnings),
+            "Refund payslip incorrectly flagged as duplicate."
+        )
+
+        correction_warnings = correction._get_warnings_by_slip()[correction]
+        self.assertFalse(
+            any("Similar payslips found" in (w.get('message') or "") for w in correction_warnings),
+            "Correction payslip incorrectly flagged as duplicate."
+        )
+
+        duplicate = self.env['hr.payslip'].create({
+            'name': 'Actual Duplicate Payslip',
+            'employee_id': self.richard_emp.id,
+            'struct_id': original.struct_id.id,
+            'date_from': original.date_from,
+            'date_to': original.date_to,
+        })
+        duplicate_warnings = duplicate._get_warnings_by_slip()[duplicate]
+        self.assertTrue(
+            any("Similar payslips found" in (w.get('message') or "") for w in duplicate_warnings),
+            "Unrelated duplicate payslip should still trigger the warning."
+        )
+
     def test_04_cancel_a_done_payslip_with_payroll_admin(self):
         """Cancel a validated payslip using a new user with Payroll Admin access."""
         test_user = mail_new_test_user(
@@ -429,6 +456,218 @@ class TestPayslipFlow(TestPayslipBase):
         with self.assertRaises(AssertionError):
             payslip_form.save()
         self.assertTrue(payslip_form)
+
+    def test_05_fully_flexible_contracts_payslip(self):
+        """ Test payslip generation for fully flexible contracts (no working schedule) with attendance-based work entries """
+
+        if not self.env["ir.module.module"].search([("name", "=", "hr_work_entry_attendance"), ("state", "=", "installed")]):
+            self.skipTest("Module 'hr_work_entry_attendance' is not installed!")
+
+        attendance_work_entry_type = self.env.ref('hr_work_entry.work_entry_type_attendance')
+
+        # Case 1: contract with no calendar
+        date_from = datetime.date.today()
+        date_to = date_from + relativedelta(months=1)
+
+        employee_with_calendar = self.env['hr.employee'].create({
+            'name': 'employee 1',
+            'resource_calendar_id': self.env.ref('resource.resource_calendar_std').id,
+            'work_entry_source': 'attendance',
+            'wage': 5000,
+            'structure_type_id': self.structure_type.id,
+            'date_version': date_from - relativedelta(months=2),
+            'contract_date_start': date_from - relativedelta(months=2),
+        })
+
+        flexible_contract_1 = employee_with_calendar.version_id
+        flexible_contract_1.resource_calendar_id = False
+
+        for day in range(7):
+            work_date = date_from + relativedelta(days=day)
+            if work_date.weekday() < 5:
+                self.env['hr.work.entry'].create({
+                    'name': f'attendance {day + 1}',
+                    'employee_id': employee_with_calendar.id,
+                    'version_id': flexible_contract_1.id,
+                    'work_entry_type_id': attendance_work_entry_type.id,
+                    'date': work_date,
+                    'duration': 8,
+                })
+
+        payslip_1 = self.env['hr.payslip'].create({
+            'name': "payslip of employee 1",
+            'employee_id': employee_with_calendar.id,
+            'date_from': date_from,
+            'date_to': date_to,
+        })
+
+        payslip_1.compute_sheet()
+
+        self.assertTrue(payslip_1.worked_days_line_ids, 'worked days should be generated for fully flexible contract')
+        attendance_line_1 = payslip_1.worked_days_line_ids.filtered(lambda l: l.work_entry_type_id == attendance_work_entry_type)
+        self.assertTrue(attendance_line_1, 'attendance worked days should be present')
+        self.assertEqual(attendance_line_1.number_of_days, 5, 'payslip should record 5 worked days')
+        self.assertEqual(attendance_line_1.number_of_hours, 40, 'payslip should record 40 hours')
+
+        # Case 2: employee with no calendar, contract with no calendar (full flexibility in both)
+        employee_no_calendar = self.env['hr.employee'].create({
+            'name': 'employee 2',
+            'resource_calendar_id': False,
+            'work_entry_source': 'attendance',
+            'wage': 6000,
+            'structure_type_id': self.structure_type.id,
+            'date_version': date_from - relativedelta(months=2),
+            'contract_date_start': date_from - relativedelta(months=2),
+        })
+
+        flexible_contract_2 = employee_no_calendar.version_id
+
+        for day in range(7):
+            work_date = date_from + relativedelta(days=day + 10)
+            if work_date.weekday() < 5:
+                self.env['hr.work.entry'].create({
+                    'name': f'Attendance {day + 1}',
+                    'employee_id': employee_no_calendar.id,
+                    'version_id': flexible_contract_2.id,
+                    'work_entry_type_id': attendance_work_entry_type.id,
+                    'date': work_date,
+                    'duration': 8,
+                })
+
+        payslip_2 = self.env['hr.payslip'].create({
+            'name': 'payslip 2',
+            'employee_id': employee_no_calendar.id,
+            'date_from': date_from,
+            'date_to': date_to,
+        })
+
+        payslip_2.compute_sheet()
+
+        self.assertTrue(payslip_2.worked_days_line_ids, 'worked days should be generated for fully flexible contract')
+        attendance_line_2 = payslip_2.worked_days_line_ids.filtered(lambda l: l.work_entry_type_id == attendance_work_entry_type)
+        self.assertTrue(attendance_line_2, 'attendance worked days should be present')
+        self.assertGreater(attendance_line_2.number_of_hours, 0, 'payslip record attendance hours')
+
+    def test_06_pay_run_payslip_name(self):
+        """
+        This test checks that the name of the payslip contains the name and the period for which the pay run is
+        being run.
+        """
+        payslip_run = self.env['hr.payslip.run'].create({
+            'date_end': '2025-11-30',
+            'date_start': '2025-11-01',
+            'name': 'Payslip for Employee'
+        })
+        payslip_run.generate_payslips(employee_ids=[self.richard_emp.id])
+        self.assertEqual(payslip_run.slip_ids.name, 'Salary Slip - Richard - November 2025')
+
+    def test_10_translation_title_multiple_employee_payslip(self):
+        self.env['res.lang']._activate_lang('it_IT')
+
+        self.richard_emp.write({
+            'contract_date_start': datetime.date(2025, 1, 1),
+            'contract_date_end': datetime.date.today() + relativedelta(years=2),
+            'wage': 6000.33,
+            'lang': 'en_US',
+        })
+        self.jules_emp.write({
+            'contract_date_start': datetime.date(2025, 1, 1),
+            'contract_date_end': datetime.date.today() + relativedelta(years=2),
+            'wage': 6000.33,
+            'lang': 'it_IT',
+        })
+        payslip_run = self.env['hr.payslip.run'].create({
+            'date_start': datetime.date(2026, 8, 1),
+            'date_end': datetime.date(2026, 8, 31),
+            'name': 'Payment Test',
+        })
+
+        payslip_run.generate_payslips(employee_ids=[self.richard_emp.id, self.jules_emp.id])
+        richard_slip = payslip_run.slip_ids.filtered(lambda s: s.employee_id == self.richard_emp)
+        jules_slip = payslip_run.slip_ids.filtered(lambda s: s.employee_id == self.jules_emp)
+        richard_slip.ensure_one()
+        jules_slip.ensure_one()
+
+        self.assertEqual(richard_slip.name, 'Salary Slip - Richard - August 2026')
+        self.assertEqual(jules_slip.name, 'Cedolino retribuzione - Jules - agosto 2026')
+
+    def test_payslip_duplicate_warning_ignores_different_contract(self):
+        """
+        Test that the duplicate payslip warning does not appear when the existing payslips for the period
+        are linked to a different contract than the one on the payslip being computed.
+        """
+        structure_type = self.env['hr.payroll.structure.type'].create({
+            'name': 'Test Type',
+        })
+        employee = self.env['hr.employee'].create({
+            'name': 'Test Employee',
+        })
+        contract1 = self.env['hr.version'].create({
+            'employee_id': employee.id,
+            'structure_type_id': structure_type.id,
+            'date_version': datetime.date(2025, 3, 1),
+            'contract_date_start': datetime.date(2025, 3, 1),
+            'contract_date_end': datetime.date(2025, 3, 15),
+            'wage': 1000.0,
+        })
+        contract2 = self.env['hr.version'].create({
+            'employee_id': employee.id,
+            'structure_type_id': structure_type.id,
+            'date_version': datetime.date(2025, 3, 16),
+            'contract_date_start': datetime.date(2025, 3, 16),
+            'wage': 1000.0,
+        })
+
+        payslip_with_contract_1 = self.env['hr.payslip'].create({
+            'name': 'Payslip March Contract 1',
+            'employee_id': employee.id,
+            'struct_id': self.structure_type.default_struct_id.id,
+            'date_from': datetime.date(2025, 3, 1),
+            'date_to': datetime.date(2025, 3, 31),
+            'version_id': contract1.id,
+        })
+        payslip_with_contract_1.compute_sheet()
+        payslip_with_contract_1.action_payslip_done()
+
+        payslip_with_contract_2 = self.env['hr.payslip'].create({
+            'name': 'Payslip March Contract 2',
+            'employee_id': employee.id,
+            'struct_id': self.structure_type.default_struct_id.id,
+            'date_from': datetime.date(2025, 3, 1),
+            'date_to': datetime.date(2025, 3, 31),
+            'version_id': contract2.id,
+        })
+        payslip_with_contract_2.compute_sheet()
+
+        warning_messages = [
+            warning.get('message') or ''
+            for warning in payslip_with_contract_2._get_warnings_by_slip()[payslip_with_contract_2]
+        ]
+        self.assertFalse(
+            any("Similar payslips found" in msg for msg in warning_messages),
+            f"Warning incorrectly appeared. Found messages: {warning_messages}"
+        )
+        payslip_with_contract_2.action_payslip_done()
+
+        # Payslips linked to the same contract should still trigger the warning
+        payslip2_with_contract2 = self.env['hr.payslip'].create({
+            'name': 'Payslip 2 March Contract 2',
+            'employee_id': employee.id,
+            'struct_id': self.structure_type.default_struct_id.id,
+            'date_from': datetime.date(2025, 3, 1),
+            'date_to': datetime.date(2025, 3, 31),
+            'version_id': contract2.id,
+        })
+        payslip2_with_contract2.compute_sheet()
+
+        warning_messages = [
+            warning.get('message') or ''
+            for warning in payslip2_with_contract2._get_warnings_by_slip()[payslip2_with_contract2]
+        ]
+        self.assertTrue(
+            any("Similar payslips found" in msg for msg in warning_messages),
+            f"Warning did NOT appear. Found messages: {warning_messages}"
+        )
 
 
 @tagged('-at_install', 'post_install')

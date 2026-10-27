@@ -63,9 +63,9 @@ export const ExtractMixinFormRenderer = (T) => class extends T {
         });
 
         useExternalListener(window, "focusin", (event) => {
-            const fieldWidget = event.target.closest(".o_field_widget,.o_field_cell");
+            const fieldWidget = event.target.closest(".o_field_widget[name],.o_field_cell");
             if (fieldWidget){
-                this.onFocusFieldWidget(fieldWidget);
+                this.onFocusFieldWidget(fieldWidget, event.target);
             }
         });
 
@@ -86,14 +86,6 @@ export const ExtractMixinFormRenderer = (T) => class extends T {
                 this.isShiftPressed = false;
             }
         });
-
-        useExternalListener(window, "pointerdown", (event) => {
-            // For date fields, a calendar popup appear and listens on the pointerdown event to hide itself when a
-            // click occurs outside of it. This causes the loss of focus of the field and thus hides the boxes.
-            if (this.activeField && event.target.closest('.o-mail-Attachment')) {
-                event.stopImmediatePropagation();
-            }
-        }, { capture: true });
 
         onWillUnmount (() => {
             this.destroyBoxLayers();
@@ -353,8 +345,14 @@ export const ExtractMixinFormRenderer = (T) => class extends T {
         return { [field]: value };
     }
 
-    getFullFieldName(fieldEl) {
+    getFullFieldName(fieldEl, target) {
         let fullFieldName = fieldEl.getAttribute('name');
+        if (fieldEl.classList.contains("o_field_daterange")) {
+            const selectedDateRangeField = target.getAttribute("data-field");
+            if (selectedDateRangeField) {
+                fullFieldName = selectedDateRangeField;
+            }
+        }
 
         const parentField = fieldEl.parentElement.closest('.o_field_widget');
         if (parentField) {
@@ -386,7 +384,7 @@ export const ExtractMixinFormRenderer = (T) => class extends T {
             newValue = registry.category("parsers").get("date")(newValue.split(' ')[0]);
         }
         else if (type === 'number') {
-            newValue = registry.category("parsers").get("float")(newValue.split(' ')[0]);
+            newValue = Number(newValue);
         }
         return newValue;
     }
@@ -469,8 +467,8 @@ export const ExtractMixinFormRenderer = (T) => class extends T {
      * Called when a field widget gains focus.
      * It serves as the entry point to render the boxes of the focused field.
      */
-    onFocusFieldWidget(fieldWidget) {
-        const fullFieldName = this.getFullFieldName(fieldWidget);
+    onFocusFieldWidget(fieldWidget, target) {
+        const fullFieldName = this.getFullFieldName(fieldWidget, target);
         const fieldType = this.getBoxType(fullFieldName);
         if (!fieldType) {
             this.resetActiveField();
@@ -608,7 +606,12 @@ export const ExtractMixinFormRenderer = (T) => class extends T {
 
                 // Create a new record for each additional line
                 lines.slice(1, lines.length).forEach((line) => {
-                    this.props.record.data[parentField].addNewRecord({ mode: 'readonly', position: 'bottom' }).then(async (newRecord) => {
+                    const newRecordParams = {
+                        mode: 'readonly',
+                        position: 'bottom',
+                        context: this.props.record.context,
+                    };
+                    this.props.record.data[parentField].addNewRecord(newRecordParams).then(async (newRecord) => {
                         const recordValues = await this.getNewRecordValues(newRecord, line, fieldToUpdate, boxType);
                         newRecord.update(recordValues);
                         this.x2ManyLines[parentField].push({

@@ -6,7 +6,6 @@
                    "compatible with the older FedEx SOAP APIs (which have their own credentials).",
     'category': 'Shipping Connectors',
     'version': '1.0',
-    'application': True,
     'depends': ['stock_delivery', 'mail'],
     'data': [
         'data/delivery_fedex.xml',

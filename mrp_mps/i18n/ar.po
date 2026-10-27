@@ -7,15 +7,15 @@
 # Malaz Abuidris <msea@odoo.com>, 2023
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2025.
+# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-16 17:51+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-05-22 17:47+0000\n"
+"PO-Revision-Date: 2026-09-21 05:33+0000\n"
+"Last-Translator: \"Malaz Siddig Elsayed Abuidris (msea)\" <msea@odoo.com>\n"
 "Language-Team: Arabic <https://translate.odoo.com/projects/odoo-19/mrp_mps/"
 "ar/>\n"
 "Language: ar\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: mrp_mps
 #. odoo-python
@@ -36,13 +36,13 @@ msgstr "%(month)s %(day)s %(year)s"
 #. odoo-python
 #: code:addons/mrp_mps/wizard/mrp_mps_forecast_suggestion.py:0
 msgid "%(month)s %(year)s"
-msgstr ""
+msgstr "%(month)s %(year)s"
 
 #. module: mrp_mps
 #. odoo-python
 #: code:addons/mrp_mps/wizard/mrp_mps_forecast_suggestion.py:0
 msgid "%(year)s"
-msgstr ""
+msgstr "%(year)s"
 
 #. module: mrp_mps
 #: model_terms:ir.ui.view,arch_db:mrp_mps.mrp_bom_form_view_inherit_mps
@@ -111,6 +111,12 @@ msgid "Add a Product"
 msgstr "إضافة منتج"
 
 #. module: mrp_mps
+#. odoo-javascript
+#: code:addons/mrp_mps/static/src/components/mps_selection.js:0
+msgid "All Periods"
+msgstr "جميع الفترات"
+
+#. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_production_schedule__allowed_route_ids
 msgid "Allowed Route"
 msgstr "المسار المسموح به"
@@ -151,7 +157,7 @@ msgstr "متاح للوعد"
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_mps_forecast_suggestion__based_on_readonly
 msgid "Based On Readonly"
-msgstr ""
+msgstr "استنادًا إلى «للقراءة فقط»"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_mps_forecast_suggestion__based_on
@@ -298,7 +304,7 @@ msgstr "عرض توقعات الطلب"
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_res_company__mrp_mps_show_indirect_actual_demand
 msgid "Display Indirect Actual Demand"
-msgstr ""
+msgstr "عرض الطلب الفعلي غير المباشر"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_res_company__mrp_mps_show_indirect_demand
@@ -360,18 +366,18 @@ msgstr "تفاصيل الطلب المتوقع"
 #. module: mrp_mps
 #: model:ir.model,name:mrp_mps.model_mrp_mps_forecast_suggestion
 msgid "Forecast Demand Suggestion"
-msgstr ""
+msgstr "اقتراح توقعات الطلب"
 
 #. module: mrp_mps
 #: model_terms:ir.ui.view,arch_db:mrp_mps.mrp_mps_forecast_suggestion_form_view
 msgid "Forecast Quantity for"
-msgstr ""
+msgstr "كمية المخزون المتوقعة لـ"
 
 #. module: mrp_mps
 #: model:ir.model.fields.selection,name:mrp_mps.selection__mrp_production_schedule__replenish_state__low_forecast
 #: model_terms:ir.ui.view,arch_db:mrp_mps.mrp_mps_search_view
 msgid "Forecast Too Low"
-msgstr ""
+msgstr "المخزون المتوقع منخفض جدًّا"
 
 #. module: mrp_mps
 #. odoo-javascript
@@ -427,7 +433,7 @@ msgstr "استيراد قالب لجدول الإنتاج الرئيسي"
 #. odoo-javascript
 #: code:addons/mrp_mps/static/src/search/group_menu.xml:0
 msgid "Indirect Actual Demand"
-msgstr ""
+msgstr "الطلب الفعلي غير المباشر"
 
 #. module: mrp_mps
 #: model_terms:ir.ui.view,arch_db:mrp_mps.mrp_mps_production_schedule_form_view
@@ -492,7 +498,7 @@ msgstr "جدول التخطيط الرئيسي"
 #. odoo-javascript
 #: code:addons/mrp_mps/static/src/components/mps_selection.js:0
 msgid "MPS Period Selection"
-msgstr ""
+msgstr "تحديد فترة جدول الإنتاج الرئيسي"
 
 #. module: mrp_mps
 #: model:ir.actions.server,name:mrp_mps.ir_cron_replenish_automated_mps_ir_actions_server
@@ -592,7 +598,7 @@ msgstr "نَص الحركات"
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_mps_forecast_suggestion__mrp_mps_id
 msgid "Mrp Mps"
-msgstr ""
+msgstr "Mrp Mps"
 
 #. module: mrp_mps
 #: model:ir.model.fields.selection,name:mrp_mps.selection__mrp_production_schedule__replenish_trigger__never
@@ -680,7 +686,7 @@ msgstr "عامل النسبة المئوية"
 #. odoo-python
 #: code:addons/mrp_mps/wizard/mrp_mps_forecast_suggestion.py:0
 msgid "Percent factor cannot be less than zero."
-msgstr ""
+msgstr "لا يمكن أن تكون النسبة المئوية أقل من صفر."
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_mps_forecast_suggestion__period
@@ -762,7 +768,7 @@ msgstr "الكمية"
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_mps_forecast_suggestion__quantity_before_scale
 msgid "Quantity Before Scale"
-msgstr ""
+msgstr "الكمية قبل الوزن"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_mps_forecast_details__moves_qty
@@ -933,7 +939,7 @@ msgstr "قاعدة المخزون"
 #: code:addons/mrp_mps/static/src/components/line.xml:0
 #: code:addons/mrp_mps/wizard/mrp_mps_forecast_suggestion.py:0
 msgid "Suggest Forecasted Demand"
-msgstr ""
+msgstr "اقتراح الطلب المتوقع"
 
 #. module: mrp_mps
 #: model:ir.model.fields,help:mrp_mps.field_mrp_production_schedule__replenish_state
@@ -955,7 +961,7 @@ msgstr "الطلب المؤكد بناءً على أوامر البيع المؤ
 #. odoo-javascript
 #: code:addons/mrp_mps/static/src/components/line.xml:0
 msgid "The confirmed demand, based on the manufacturing orders."
-msgstr ""
+msgstr "الطلب المؤكّد استناداً إلى أوامر التصنيع."
 
 #. module: mrp_mps
 #. odoo-javascript
@@ -1016,6 +1022,10 @@ msgid ""
 "Color code: Green if to replenish now, Red if existing replenishment is too "
 "high for the period, Orange if current replenishment is too low."
 msgstr ""
+"الكمية المطلوب تجديدها من خلال أوامر الشراء أو أوامر التصنيع.\n"
+"رمز اللون: أخضر إذا كان التجديد مطلوبًا الآن، أحمر إذا كان مستوى المخزون "
+"الحالي مرتفعًا جدًا بالنسبة للفترة، برتقالي إذا كان مستوى المخزون الحالي "
+"منخفضًا جدًا."
 
 #. module: mrp_mps
 #: model:ir.model.fields,help:mrp_mps.field_mrp_production_schedule__forecast_target_qty
@@ -1073,7 +1083,7 @@ msgstr "الأسبوع"
 #. odoo-python
 #: code:addons/mrp_mps/wizard/mrp_mps_forecast_suggestion.py:0
 msgid "Week %(week)s (%(start_day)s-%(end_day)s/%(month)s) %(year)s"
-msgstr ""
+msgstr "الأسبوع %(week)s (%(start_day)s-%(end_day)s/%(month)s) %(year)s"
 
 #. module: mrp_mps
 #. odoo-python
@@ -1105,7 +1115,7 @@ msgstr "سنويًا"
 #. module: mrp_mps
 #: model_terms:ir.ui.view,arch_db:mrp_mps.mrp_mps_forecast_suggestion_form_view
 msgid "based on historical date or actual demand."
-msgstr ""
+msgstr "بناءً على التواريخ التاريخية أو الطلب الفعلي."
 
 #. module: mrp_mps
 #. odoo-javascript
@@ -1121,7 +1131,12 @@ msgstr "وحدات"
 #. module: mrp_mps
 #: model_terms:ir.ui.view,arch_db:mrp_mps.mrp_mps_forecast_suggestion_form_view
 msgid "units x"
-msgstr ""
+msgstr "الوحدات ×"
+
+#. module: mrp_mps
+#: model_terms:ir.ui.view,arch_db:mrp_mps.mrp_mps_forecast_suggestion_form_view
+msgid "x"
+msgstr "x"
 
 #~ msgid "- Indirect Demand Forecast"
 #~ msgstr "توقعات الطلبات غير المباشرة "

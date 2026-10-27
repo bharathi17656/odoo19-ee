@@ -78,11 +78,11 @@
         }
 
         thead {
-            background-color: var(--ListRenderer-thead-bg-color);
+            background-color: transparent;
 
             th {
                 padding-top: var(--ListRenderer-thead-padding-y);
-                background-color: transparent;
+                background-color: var(--ListRenderer-thead-bg-color);
                 color: $headings-color;
 
                 @include media-only(print) {
@@ -189,6 +189,8 @@
         }
 
         tfoot {
+            user-select: text;
+
             .o_list_group_input {
                 max-width: 300px;
             }
@@ -342,6 +344,7 @@
 
         span.o_resize {
             cursor: col-resize;
+            touch-action: none;
         }
 
         .o_list_open_form_view {

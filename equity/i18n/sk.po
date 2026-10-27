@@ -4,13 +4,14 @@
 #
 # Odoo Translation Bot <c3p@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Tomáš Píšek <Tomas.Pisek@seznam.cz>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:40+0000\n"
-"PO-Revision-Date: 2025-11-17 03:39+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2026-04-04 10:53+0000\n"
+"Last-Translator: Tomáš Píšek <Tomas.Pisek@seznam.cz>\n"
 "Language-Team: Slovak <https://translate.odoo.com/projects/odoo-19/equity/sk/"
 ">\n"
 "Language: sk\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__securities
@@ -118,12 +119,16 @@ msgstr ""
 msgid ""
 "<div>\n"
 "                    <p> Hello <t t-out=\"ctx.get('holder_name')\"/>,<br/>\n"
-"                        You will find your latest transaction and valuations in the following link: <br/>\n"
-"                        <a t-attf-href=\"/my/equity?access_token={{ctx.get('equity_access_token')}}\" class=\"btn btn-primary\">Show Equity</a> <br/> <br/>\n"
+"                        You will find your latest transaction and valuations "
+"in the following link: <br/>\n"
+"                        <a t-attf-href=\"/my/equity?"
+"access_token={{ctx.get('equity_access_token')}}\" class=\"btn btn-"
+"primary\">Show Equity</a> <br/> <br/>\n"
 "                        Best,\n"
 "                        <t t-if=\"user_id.signature\">\n"
 "                            <br/>--<br/>\n"
-"                            <t t-out=\"user_id.signature or ''\">Mitchell Admin</t>\n"
+"                            <t t-out=\"user_id.signature or ''\">Mitchell "
+"Admin</t>\n"
 "                        </t>\n"
 "                    </p>\n"
 "                </div>\n"
@@ -135,14 +140,19 @@ msgstr ""
 msgid ""
 "<div>\n"
 "                    <p> Hello <t t-out=\"object.name\"/>,<br/>\n"
-"                        Following our legal obligations to identify clients, we need to report natural persons who directly or indirectly\n"
-"                        hold or control at least 25% in the capital or voting rights of <b><t t-out=\"user_id.company_id.name\"/></b>. <br/> <br/>\n"
+"                        Following our legal obligations to identify clients, "
+"we need to report natural persons who directly or indirectly\n"
+"                        hold or control at least 25% in the capital or "
+"voting rights of <b><t t-out=\"user_id.company_id.name\"/></b>. <br/> <br/>\n"
 "                        Please fill in the UBO request:<br/>\n"
-"                        <a t-attf-href=\"/my/ubo?{{object._get_equity_url_params()}}\" class=\"btn btn-primary\">Fill UBO</a> <br/> <br/>\n"
+"                        <a t-attf-href=\"/my/ubo?"
+"{{object._get_equity_url_params()}}\" class=\"btn btn-primary\">Fill UBO</a> "
+"<br/> <br/>\n"
 "                        Thank you,\n"
 "                        <t t-if=\"user_id.signature\">\n"
 "                            <br/>--<br/>\n"
-"                            <t t-out=\"user_id.signature or ''\">Mitchell Admin</t>\n"
+"                            <t t-out=\"user_id.signature or ''\">Mitchell "
+"Admin</t>\n"
 "                        </t>\n"
 "                    </p>\n"
 "                </div>\n"
@@ -159,8 +169,8 @@ msgstr ""
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_help
 msgid ""
-"<i class=\"fa fa-phone ms-2 mt-1\" aria-label=\"Phone Number\" title=\"Phone"
-" Number\"/>"
+"<i class=\"fa fa-phone ms-2 mt-1\" aria-label=\"Phone Number\" title=\"Phone "
+"Number\"/>"
 msgstr ""
 
 #. module: equity
@@ -190,15 +200,15 @@ msgstr ""
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_dashboard_res_partner
 msgid ""
-"<span> Shareholder<span invisible=\"equity_shareholders_count == "
-"1\">s</span></span>"
+"<span> Shareholder<span invisible=\"equity_shareholders_count == 1\">s</"
+"span></span>"
 msgstr ""
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_dashboard_res_partner
 msgid ""
-"<span> Transaction<span invisible=\"equity_transaction_count == "
-"1\">s</span></span>"
+"<span> Transaction<span invisible=\"equity_transaction_count == 1\">s</"
+"span></span>"
 msgstr ""
 
 #. module: equity
@@ -235,29 +245,37 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/equity/static/src/components/valuation_chart/valuation_chart.xml:0
 msgid ""
-"= Your shares / Total number of shares (i.e., options not taken into "
-"account)"
+"= Your shares / Total number of shares (i.e., options not taken into account)"
 msgstr ""
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid ""
-"A credit or financial institution located in a country listed by the Royal Decree of 19 July 2013 drawing up a third\n"
-"                            country equivalence list for a simplified due diligence (article 37(2), subparagraph 1(2 and 5), of the AML law);"
+"A credit or financial institution located in a country listed by the Royal "
+"Decree of 19 July 2013 drawing up a third\n"
+"                            country equivalence list for a simplified due "
+"diligence (article 37(2), subparagraph 1(2 and 5), of the AML law);"
 msgstr ""
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid ""
-"A listed company: a company whose shares are traded on a regulated market a Member States of the European\n"
+"A listed company: a company whose shares are traded on a regulated market a "
+"Member States of the European\n"
 "                            Economic Area; or"
+msgstr ""
+
+#. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_transaction.py:0
+msgid "A partner cannot have transactions in different currencies."
 msgstr ""
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
 msgid ""
-"According to laws related to anti money laundering, the notary must identify"
-" the beneficial owners of their customer."
+"According to laws related to anti money laundering, the notary must identify "
+"the beneficial owners of their customer."
 msgstr ""
 
 #. module: equity
@@ -328,10 +346,14 @@ msgstr ""
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid ""
-"Beneficial owners are natural person(s) who ultimately own(s) or control(s) the customer or the natural person(s)\n"
-"                    for whose account or on whose behalf a transaction is being conducted or a business relationship is established. It\n"
-"                    includes those natural persons that do not have a controlling holding in the company or a formal mandate of any kind\n"
-"                    but who are de facto exercising similar control over the company."
+"Beneficial owners are natural person(s) who ultimately own(s) or control(s) "
+"the customer or the natural person(s)\n"
+"                    for whose account or on whose behalf a transaction is "
+"being conducted or a business relationship is established. It\n"
+"                    includes those natural persons that do not have a "
+"controlling holding in the company or a formal mandate of any kind\n"
+"                    but who are de facto exercising similar control over the "
+"company."
 msgstr ""
 
 #. module: equity
@@ -364,6 +386,11 @@ msgid "CEO"
 msgstr ""
 
 #. module: equity
+#: model:ir.model.fields,field_description:equity.field_equity_transaction__can_change_currency
+msgid "Can Change Currency"
+msgstr ""
+
+#. module: equity
 #. odoo-python
 #: code:addons/equity/models/equity_transaction.py:0
 msgid "Can only exercise options, please select an options class"
@@ -379,6 +406,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/equity/models/equity_security_class.py:0
 msgid "Cannot change security class type because it has linked transactions"
+msgstr ""
+
+#. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_ubo.py:0
+msgid "Cannot create new UBO for an existing holder"
 msgstr ""
 
 #. module: equity
@@ -416,6 +449,7 @@ msgid "Clear"
 msgstr "Zmazať"
 
 #. module: equity
+#: model:ir.model.fields,field_description:equity.field_equity_cap_table__company_id
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__partner_id
 #: model:ir.model.fields,field_description:equity.field_equity_ubo__partner_id
 #: model:ir.model.fields,field_description:equity.field_equity_valuation__partner_id
@@ -438,6 +472,13 @@ msgstr ""
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_ubo__control_method__co_3
 msgid "Company - Cat 3. Executive officer"
+msgstr ""
+
+#. module: equity
+#: model:ir.model.fields,help:equity.field_equity_transaction__company_id
+#: model:ir.model.fields,help:equity.field_equity_ubo__company_id
+#: model:ir.model.fields,help:equity.field_equity_valuation__company_id
+msgid "Company to which this record is visible"
 msgstr ""
 
 #. module: equity
@@ -484,8 +525,10 @@ msgstr ""
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid ""
-"Control is the legal or de facto right to exercise a decisive influence over the appointment of the majority of its\n"
-"                    directors or managers or over the direction of its operations."
+"Control is the legal or de facto right to exercise a decisive influence over "
+"the appointment of the majority of its\n"
+"                    directors or managers or over the direction of its "
+"operations."
 msgstr ""
 
 #. module: equity
@@ -618,7 +661,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:equity.portal_my_company_equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_my_home_equity
 msgid "Equity"
-msgstr "Vlastný kapitál"
+msgstr "Vlastné imanie"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_res_partner__equity_access_token
@@ -725,7 +768,8 @@ msgstr ""
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid ""
-"Family members: the spouse, any person considered as equivalent to the persons considered as equivalent to the\n"
+"Family members: the spouse, any person considered as equivalent to the "
+"persons considered as equivalent to the\n"
 "                        spouse; the parents;"
 msgstr ""
 
@@ -751,8 +795,10 @@ msgstr "Odberatelia (partneri)"
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid ""
-"Following out legal obligations to identify clients, please report natural persons who directly or indirectly\n"
-"                <b>hold or control at least 25% in the capital or voting rights</b> of"
+"Following out legal obligations to identify clients, please report natural "
+"persons who directly or indirectly\n"
+"                <b>hold or control at least 25% in the capital or voting "
+"rights</b> of"
 msgstr ""
 
 #. module: equity
@@ -776,8 +822,10 @@ msgstr ""
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid ""
-"Governing authorities of the European Union, bodies and agencies as defined by the Royal Decree of 19 July 2013\n"
-"                            drawing up a list of European governing authorities, bodies and specialized agencies for a simplified due diligence."
+"Governing authorities of the European Union, bodies and agencies as defined "
+"by the Royal Decree of 19 July 2013\n"
+"                            drawing up a list of European governing "
+"authorities, bodies and specialized agencies for a simplified due diligence."
 msgstr ""
 
 #. module: equity
@@ -800,12 +848,18 @@ msgstr ""
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid ""
-"Heads of State, heads of government, ministers and deputy or assistant ministers; members of parliaments;\n"
-"                        members of the governing bodies of political parties; members of supreme courts, of constitutional courts or of other\n"
-"                        high judicial bodies whose decisions are not subject to further appeal, except in exceptional circumstances; members\n"
-"                        of courts of auditors or of the boards of central banks; ambassadors, charges d'affaires and high armed forces;\n"
-"                        members of the administrative, management or supervisory bodies of State owned enterprises; directors, deputy\n"
-"                        directors and members of the board or equivalent function of an international"
+"Heads of State, heads of government, ministers and deputy or assistant "
+"ministers; members of parliaments;\n"
+"                        members of the governing bodies of political "
+"parties; members of supreme courts, of constitutional courts or of other\n"
+"                        high judicial bodies whose decisions are not subject "
+"to further appeal, except in exceptional circumstances; members\n"
+"                        of courts of auditors or of the boards of central "
+"banks; ambassadors, charges d'affaires and high armed forces;\n"
+"                        members of the administrative, management or "
+"supervisory bodies of State owned enterprises; directors, deputy\n"
+"                        directors and members of the board or equivalent "
+"function of an international"
 msgstr ""
 
 #. module: equity
@@ -865,7 +919,8 @@ msgstr "Ak označené, potom majú niektoré správy chybu dodania."
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid ""
-"If the future beneficiary(ies) have not yet been designated, the group of persons in the main interests of whom the\n"
+"If the future beneficiary(ies) have not yet been designated, the group of "
+"persons in the main interests of whom the\n"
 "                                    legal entity was formed or operates."
 msgstr ""
 
@@ -987,7 +1042,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:equity.field_equity_ubo__message_has_error
 #: model:ir.model.fields,field_description:equity.field_equity_valuation__message_has_error
 msgid "Message Delivery error"
-msgstr "Chyba zobrazovania správ"
+msgstr "Chyba doručenia správy"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__message_ids
@@ -1029,8 +1084,8 @@ msgstr ""
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_ubo__control_method__ngo_5
 msgid ""
-"NGO - Cat 5. Individuals or categories of individuals in whose main interest"
-" the association or foundation has been established or operates"
+"NGO - Cat 5. Individuals or categories of individuals in whose main interest "
+"the association or foundation has been established or operates"
 msgstr ""
 
 #. module: equity
@@ -1070,8 +1125,8 @@ msgid ""
 "Natural Persons who have a formal mandate within the Board of the company. "
 "These are for example the person(s) who are named (or equivalent of) Chief "
 "Executive Officer (CEO), Chief Financial Officer (CFO) or Treasurer. If a "
-"legal entity exercises a mandate in the Board of the company, it is required"
-" to list all Board level mandate holders including their function. <br/> "
+"legal entity exercises a mandate in the Board of the company, it is required "
+"to list all Board level mandate holders including their function. <br/> "
 "Natural persons that do not have a controlling holding in the company or a "
 "formal mandate of any kind but who are de facto exercising similar control "
 "over the company."
@@ -1242,6 +1297,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__partner_id
 msgid "Partner"
 msgstr "Partner"
+
+#. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_ubo.py:0
+msgid "Partner is not allowed to fill UBO form"
+msgstr ""
 
 #. module: equity
 #. odoo-javascript
@@ -1492,16 +1553,16 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:equity.portal_my_company_equity
 msgid ""
 "The \"# Securities\" total is not counting the \"Options Exercise\" "
-"transactions (because they are counted at the time of \"Options Issuance\")."
-" The \"Transaction Price\" total is not counting the prices of options "
+"transactions (because they are counted at the time of \"Options Issuance\"). "
+"The \"Transaction Price\" total is not counting the prices of options "
 "issuance transactions because that is a strike price."
 msgstr ""
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid ""
-"The declaration must be completed by the persons authorized to represent the"
-" company or entity according to its Articles of Association."
+"The declaration must be completed by the persons authorized to represent the "
+"company or entity according to its Articles of Association."
 msgstr ""
 
 #. module: equity
@@ -1510,8 +1571,8 @@ msgid ""
 "The natural person(s) who ultimately own(s) or control(s) this corporate "
 "entity through direct or indirect ownership or control over 25% of the "
 "shares or voting rights of that corporate entity. <br/> Example: Company B "
-"and Company C hold each have a 20-percent interest in Company A. The private"
-" individual Z holds 90 % of the shares of Company B and of the Company C. Z "
+"and Company C hold each have a 20-percent interest in Company A. The private "
+"individual Z holds 90 % of the shares of Company B and of the Company C. Z "
 "is considered as shareholder holding more than 25% of A, for Z holds - "
 "indirectly - 36 % of the shares in A."
 msgstr ""
@@ -1568,7 +1629,6 @@ msgstr "Celková hodnota"
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_valuation__event__transaction
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_form
-#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_form
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_search
 msgid "Transaction"
 msgstr "Transakcia"
@@ -1589,7 +1649,6 @@ msgstr "Typ transakcie"
 #: model:ir.actions.act_window,name:equity.action_equity_transaction
 #: model:ir.ui.menu,name:equity.menu_equity_ownership_transactions
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_list
-#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_list
 msgid "Transactions"
 msgstr "Transakcie"
 
@@ -1638,8 +1697,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/equity/models/res_partner.py:0
 msgid ""
-"UBO portal form will become unavailable once this activity will be marked as"
-" done"
+"UBO portal form will become unavailable once this activity will be marked as "
+"done"
 msgstr ""
 
 #. module: equity
@@ -1703,12 +1762,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__valuation
 #: model:ir.model.fields,field_description:equity.field_equity_valuation__valuation
 #: model:ir.ui.menu,name:equity.menu_equity_reporting_valuation
+#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_form
 msgid "Valuation"
 msgstr "Ocenenie"
 
 #. module: equity
 #: model:ir.actions.act_window,name:equity.action_equity_valuation
 #: model:ir.ui.menu,name:equity.menu_equity_ownership_valuations
+#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_list
 msgid "Valuations"
 msgstr ""
 
@@ -1721,6 +1782,13 @@ msgstr ""
 #: model:res.groups,name:equity.group_equity_viewer
 msgid "Viewer"
 msgstr "Prehliadač"
+
+#. module: equity
+#: model:ir.model.fields,field_description:equity.field_equity_transaction__company_id
+#: model:ir.model.fields,field_description:equity.field_equity_ubo__company_id
+#: model:ir.model.fields,field_description:equity.field_equity_valuation__company_id
+msgid "Visible to"
+msgstr ""
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__votes
@@ -1767,8 +1835,10 @@ msgstr ""
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid ""
-"Where the future beneficiaries have already been determined, the natural person(s) who is the beneficiary of 25% or\n"
-"                                    more of the property of a legal arrangement or entity or"
+"Where the future beneficiaries have already been determined, the natural "
+"person(s) who is the beneficiary of 25% or\n"
+"                                    more of the property of a legal "
+"arrangement or entity or"
 msgstr ""
 
 #. module: equity
@@ -1785,8 +1855,16 @@ msgstr "Áno"
 #. odoo-javascript
 #: code:addons/equity/static/src/components/ubo_form/ubo_form.xml:0
 msgid ""
-"You can remove any shareholder holding less than 25% of the shares or voting"
-" rights."
+"You can remove any shareholder holding less than 25% of the shares or voting "
+"rights."
+msgstr ""
+
+#. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_transaction.py:0
+msgid ""
+"You cannot change the equity currency because this partner already has "
+"existing transactions."
 msgstr ""
 
 #. module: equity
@@ -1821,14 +1899,16 @@ msgstr ""
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid ""
-"any natural person who has sole beneficial ownership of a legal entity or legal arrangement which is known to have\n"
+"any natural person who has sole beneficial ownership of a legal entity or "
+"legal arrangement which is known to have\n"
 "                        been set up for the benefit de facto of a PEP."
 msgstr ""
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid ""
-"any natural person who is known to have joint beneficial ownership of legal entities or legal arrangements, or any\n"
+"any natural person who is known to have joint beneficial ownership of legal "
+"entities or legal arrangements, or any\n"
 "                        other close business relations, with a PEP;"
 msgstr ""
 

@@ -305,6 +305,52 @@ class TestMailMail(MailCommon):
                     )
 
     @mute_logger('odoo.addons.mail.models.mail_mail')
+    def test_mail_mail_recipients_no_trailing_comma(self):
+        """ Test sending an email to a single contact with no followers
+        must not produce a trailing comma in the To header """
+        contact = self.env['res.partner'].create({
+            'name': 'Tony Customer',
+            'email': 'tony.customer@test.example.com',
+        })
+        contact.message_unsubscribe(contact.message_follower_ids.partner_id.ids)
+        self.assertFalse(
+            contact.message_follower_ids,
+            "Contact must have no followers to reproduce the bug."
+        )
+
+        mail = self.env['mail.mail'].sudo().create({
+            'body_html': '<p>Test</p>',
+            'recipient_ids': [(4, contact.id)],
+            'headers': {
+                'X-Msg-To-Add': 'tony.customer@test.example.com',
+            },
+        })
+
+        with self.mock_smtplib_connection():
+            mail.send()
+
+        self.assertEqual(len(self.emails), 1)
+
+        raw_eml = self.emails[0]['message']
+        parsed = message_from_string(raw_eml)
+        to_header = parsed['To']
+
+        self.assertIsNotNone(to_header, "To header must be present in the EML.")
+
+        self.assertFalse(
+            to_header.rstrip().endswith(','),
+            f"Raw EML To header must not end with a trailing comma.\n"
+            f"Got: {to_header!r}\n"
+            f"This trailing comma causes Reply-All to include an empty recipient."
+        )
+
+        self.assertEqual(
+            to_header.strip(),
+            formataddr(('Tony Customer', 'tony.customer@test.example.com')),
+            f"Unexpected To header value in raw EML: {to_header!r}"
+        )
+
+    @mute_logger('odoo.addons.mail.models.mail_mail')
     def test_mail_mail_return_path(self):
         # mail without thread-enabled record
         base_values = {
@@ -442,7 +488,7 @@ class TestMailMail(MailCommon):
             self._reset_data()
             with self.mock_mail_gateway(), mute_logger('odoo.addons.mail.models.mail_mail'):
                 mail.send(raise_exception=False)
-            self.assertFalse(self._mails[0]['email_from'])
+            self.assertEqual(len(self._mails), 0)  # email not send at all
             self.assertEqual(
                 mail.failure_reason,
                 'You must either provide a sender address explicitly or configure using the combination of `mail.catchall.domain` and `mail.default.from` ICPs, in the server configuration file or with the --email-from startup parameter.')

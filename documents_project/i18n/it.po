@@ -6,13 +6,13 @@
 # Martin Trigaux, 2023
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Marianna Ciofani (cima)" <cima@odoo.com>, 2025.
+# "Marianna Ciofani (cima)" <cima@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:46+0000\n"
-"PO-Revision-Date: 2025-10-20 08:49+0000\n"
+"POT-Creation-Date: 2026-04-17 18:48+0000\n"
+"PO-Revision-Date: 2026-04-20 09:04+0000\n"
 "Last-Translator: \"Marianna Ciofani (cima)\" <cima@odoo.com>\n"
 "Language-Team: Italian <https://translate.odoo.com/projects/odoo-19/"
 "documents_project/it/>\n"
@@ -20,9 +20,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == 0)"
-" ? 1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == "
+"0) ? 1 : 2);\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: documents_project
 #: model:ir.model,name:documents_project.model_ir_attachment
@@ -64,6 +64,11 @@ msgid "Default Project Folder"
 msgstr "Cartella progetto predefinita"
 
 #. module: documents_project
+#: model:ir.model.fields,field_description:documents_project.field_documents_operation__display_name
+msgid "Destination Display Name"
+msgstr "Nome destinazione visualizzato"
+
+#. module: documents_project
 #: model:ir.model.fields,field_description:documents_project.field_documents_document__display_name
 #: model:ir.model.fields,field_description:documents_project.field_documents_tag__display_name
 #: model:ir.model.fields,field_description:documents_project.field_ir_attachment__display_name
@@ -93,6 +98,11 @@ msgid "Documents Folder"
 msgstr "Cartella documenti"
 
 #. module: documents_project
+#: model:ir.model,name:documents_project.model_documents_operation
+msgid "Documents Operation"
+msgstr "Operazione documenti"
+
+#. module: documents_project
 #: model:documents.document,name:documents_project.project_1_document_3
 msgid "First Floor Plan"
 msgstr "Mappa primo piano"
@@ -116,6 +126,7 @@ msgstr "Cartella dove vengono creati nuovi progetti"
 
 #. module: documents_project
 #: model:ir.model.fields,field_description:documents_project.field_documents_document__id
+#: model:ir.model.fields,field_description:documents_project.field_documents_operation__id
 #: model:ir.model.fields,field_description:documents_project.field_documents_tag__id
 #: model:ir.model.fields,field_description:documents_project.field_ir_attachment__id
 #: model:ir.model.fields,field_description:documents_project.field_project_project__id
@@ -187,15 +198,21 @@ msgstr ""
 
 #. module: documents_project
 #. odoo-python
+#: code:addons/documents_project/wizard/documents_operation.py:0
+msgid "This document belongs to %(task)s."
+msgstr "Questo documento appartiene a %(task)s."
+
+#. module: documents_project
+#. odoo-python
 #: code:addons/documents_project/models/documents_document.py:0
 msgid ""
 "This folder should remain in the same company as the \"%(project)s\" project "
 "to which it is linked. Please update the company of the \"%(project)s\" "
 "project, or leave the company of this folder empty."
 msgstr ""
-"La cartella dovrebbe restare nella stessa azienda del progetto "
-"\"%(project)s\" al quale è collegata. Aggiorna l'azienda del progetto "
-"\"%(project)s\" o lascia il campo vuoto."
+"La cartella dovrebbe restare nella stessa azienda del progetto \"%"
+"(project)s\" al quale è collegata. Aggiorna l'azienda del progetto \"%"
+"(project)s\" o lascia il campo vuoto."
 
 #. module: documents_project
 #. odoo-python
@@ -242,13 +259,13 @@ msgid ""
 "blank."
 msgstr ""
 "Non è possibile modificare l'azienda di questo progetto perché la sua "
-"cartella è collegata ad altri progetti ancora assegnati all'azienda "
-"\"%(other_company)s\":\n"
+"cartella è collegata ad altri progetti ancora assegnati all'azienda \"%"
+"(other_company)s\":\n"
 "%(other_folders)s\n"
 "\n"
 "Aggiorna l'azienda di tutti i progetti così che abbiano la stessa azienda e "
-"la stessa cartella oppure non selezionare un'azienda per la cartella "
-"\"%(folder)s\"."
+"la stessa cartella oppure non selezionare un'azienda per la cartella \"%"
+"(folder)s\"."
 
 #. module: documents_project
 #. odoo-python

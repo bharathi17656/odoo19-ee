@@ -1,4 +1,4 @@
-import { ConversionError, deserializeDateTime, parseDate, parseDateTime, serializeDateTime } from "@web/core/l10n/dates";
+import { ConversionError, deserializeDateTime, formatDate, formatDateTime, parseDate, parseDateTime, serializeDateTime } from "@web/core/l10n/dates";
 import { _t } from "@web/core/l10n/translation";
 import { sprintf } from "@web/core/utils/strings";
 
@@ -63,6 +63,38 @@ export const RentingMixin = {
         } else {
             message = _t("Please select a rental period.");
         }
+        if (message || !startDate || !endDate || !this.rentingAvailabilities) {
+            return message;
+        }
+        if (!this.rentingAvailabilities[productId]) {
+            return message;
+        }
+        let end = luxon.DateTime.now();
+        for (const interval of this.rentingAvailabilities[productId]) {
+            if (interval.start < endDate) {
+                end = this._getExpectedEndDate(interval.end);
+                if (end > startDate) {
+                    if (interval.quantity_available <= 0) {
+                        if (!message) {
+                            message = _t("The product is not available for the following time period(s):\n");
+                        }
+                        message +=
+                            " " +
+                            _t("- From %(startPeriod)s to %(endPeriod)s.\n", {
+                                startPeriod: this._isDurationWithHours()
+                                    ? formatDateTime(interval.start)
+                                    : formatDate(interval.start),
+                                endPeriod: this._isDurationWithHours()
+                                    ? formatDateTime(end)
+                                    : formatDate(end),
+                            });
+                    }
+                }
+                end -= interval.end;
+            } else {
+                break;
+            }
+        }
         return message;
     },
 
@@ -102,6 +134,10 @@ export const RentingMixin = {
         const returnMinute = dateInWebsiteTzorUTC.minute;
 
         return [returnHour, returnMinute];
+    },
+
+    _getExpectedEndDate(endDate) {
+        return endDate;
     },
 
     /**

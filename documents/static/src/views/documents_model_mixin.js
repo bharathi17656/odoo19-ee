@@ -1,10 +1,10 @@
 import { browser } from "@web/core/browser/browser";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import { Domain } from "@web/core/domain";
 import { _t } from "@web/core/l10n/translation";
 import { user } from "@web/core/user";
 import { useService } from "@web/core/utils/hooks";
 import { getCommonEmbeddedActions } from "@documents/views/utils";
-
 
 export const DocumentsModelMixin = (component) =>
     class extends component {
@@ -15,6 +15,11 @@ export const DocumentsModelMixin = (component) =>
             }
             this.dialogService = useService("dialog");
             this.documentService = useService("document.document");
+            this.notification = useService("notification");
+
+            if (!this.defaultOrderBy?.length) {
+                this.defaultOrderBy = [{ name: "create_date", asc: false }, {name: "id", asc: false}];
+            }
         }
 
         exportSelection() {
@@ -25,7 +30,14 @@ export const DocumentsModelMixin = (component) =>
          * Also load the total file size
          * @override
          */
-        async load() {
+        async load(params = {}) {
+            // Empty order means "keep the previous order" for the web model
+            // If we don't have an order when we had one before, clear value set for Recent / Trash
+            const hasSearchOrderBy = !!params.orderBy?.length;
+            if (this.hadSearchOrderBy && !hasSearchOrderBy) {
+                params.orderBy = this.defaultOrderBy;
+            }
+            this.hadSearchOrderBy = hasSearchOrderBy;
             const selection = this.root?.selection;
             if (!this.originalSelection && selection && selection.length > 0) {
                 this.originalSelection = selection.map((rec) => rec.resId);
@@ -45,6 +57,9 @@ export const DocumentsModelMixin = (component) =>
             this.shortcutTargetRecords = this.orm.isSample
                 ? []
                 : await this._loadShortcutTargetRecords();
+            if (this.documentService.documentIdToRestore) {
+                this.documentService.documentIdToRestore = undefined;
+            }
             return res;
         }
 
@@ -115,6 +130,21 @@ export const DocumentsModelMixin = (component) =>
             await this.env.searchModel._reloadSearchModel(true);
             // The preview will be closed, just update the state for now
             this.documentService.setPreviewedDocument(null);
+        }
+
+        get isDomainSelected() {
+            return this.root.isDomainSelected && !this.documentService.rightPanelReactive.previewedDocument;
+        }
+
+        getResIds(extraDomain) {
+            if (extraDomain) {
+                const newDomain = Domain.and([this.root.domain, extraDomain]).toList();
+                return this.orm.search("documents.document", newDomain, {
+                    limit: this.activeIdsLimit,
+                    context: this.root.context,
+                });
+            }
+            return this.root.getResIds(true);
         }
 
         get targetRecords() {
@@ -204,14 +234,14 @@ export const DocumentsModelMixin = (component) =>
                     confirmLabel: _t("Unlock"),
                     confirm: async () => {
                         await this.orm.call("documents.document", "toggle_lock", [record.data.id]);
-                        await record.load();
+                        await this._notifyChange();
                     },
                     cancelLabel: _t("Discard"),
                     cancel: () => {},
                 });
             } else {
                 await this.orm.call("documents.document", "toggle_lock", [record.data.id]);
-                await record.load();
+                await this._notifyChange();
             }
         }
 
@@ -228,11 +258,12 @@ export const DocumentsModelMixin = (component) =>
         async onCreateShortcut() {
             const documents = this.targetRecords;
             await this.documentService.openOperationDialog({
-                documents: documents.map((d) => ({
-                    id: d.data.id,
-                    name: d.data.name,
-                    shortcut_document_id: d.data.shortcut_document_id,
-                })),
+                documents: this.isDomainSelected
+                    ? (await this.getResIds()).map((d) => ({ id: d }))
+                    : documents.map((d) => ({
+                          id: d.data.id,
+                          name: d.data.name,
+                      })),
                 operation: "shortcut",
                 onClose: async () => this._notifyChange(),
             });
@@ -242,9 +273,6 @@ export const DocumentsModelMixin = (component) =>
          * Unlink the selected documents if they are archived.
          */
         async onDelete() {
-            const records = !this.documentService.userIsInternal
-                ? this.targetRecords
-                : this.targetRecords.filter((r) => !r.data.active);
             const confirmed = await new Promise((resolve) => {
                 const dialogProps = {
                     title: _t("Delete permanently"),
@@ -266,7 +294,19 @@ export const DocumentsModelMixin = (component) =>
             if (!confirmed) {
                 return;
             }
-            await this.root.deleteRecords(records);
+            if (!this.isDomainSelected) {
+                const records = !this.documentService.userIsInternal
+                    ? this.targetRecords
+                    : this.targetRecords.filter((r) => !r.data.active);
+                await this.root.deleteRecords(records);
+            } else {
+                const resIds = !this.documentService.userIsInternal
+                    ? await this.getResIds()
+                    : await this.getResIds([["active", "=", false]]);
+                await this.orm.unlink("documents.document", resIds, {
+                    context: this.root.context,
+                });
+            }
             await this._notifyChange();
         }
 
@@ -275,7 +315,9 @@ export const DocumentsModelMixin = (component) =>
          */
         async onArchive() {
             const records = this.targetRecords.filter((r) => r.data.active && !r.data.lock_uid);
-            const recordIds = records.map((r) => r.data.id);
+            const recordIds = this.isDomainSelected
+                ? await this.getResIds([["lock_uid", "=", false]])
+                : records.map((rec) => rec.data.id);
             await this.documentService.moveToTrash(recordIds);
             await this._notifyChange();
         }
@@ -286,11 +328,12 @@ export const DocumentsModelMixin = (component) =>
         async onDuplicate() {
             const documents = this.targetRecords;
             await this.documentService.openOperationDialog({
-                documents: documents.map((d) => ({
-                    id: d.data.id,
-                    name: d.data.name,
-                    shortcut_document_id: d.data.shortcut_document_id,
-                })),
+                documents: this.isDomainSelected
+                    ? (await this.getResIds()).map((d) => ({ id: d }))
+                    : documents.map((d) => ({
+                          id: d.data.id,
+                          name: d.data.name,
+                      })),
                 operation: "copy",
                 onClose: async () => this.env.searchModel._reloadSearchModel(true),
             });
@@ -308,7 +351,9 @@ export const DocumentsModelMixin = (component) =>
          */
         async onRestore() {
             const records = this.targetRecords.filter((r) => !r.data.active);
-            const recordIds = records.map((r) => r.data.id);
+            const recordIds = this.isDomainSelected
+                ? await this.getResIds([["active", "=", false]])
+                : records.map((r) => r.data.id);
             await this.orm.call("documents.document", "action_unarchive", [recordIds]);
             await this.env.searchModel._reloadSearchModel(true);
         }
@@ -346,8 +391,10 @@ export const DocumentsModelMixin = (component) =>
          * Open the permission panel of the selected document.
          */
         async onShare() {
-            const documents = this.targetRecords;
-            await this.documentService.openSharingDialog(documents.map((d) => d.data.id));
+            const selectedIds = this.isDomainSelected
+                ? await this.getResIds()
+                : this.targetRecords.map((d) => d.data.id);
+            await this.documentService.openSharingDialog(selectedIds);
         }
 
         /**
@@ -356,11 +403,12 @@ export const DocumentsModelMixin = (component) =>
         async onMove() {
             const documents = this.targetRecords.filter((r) => r.data.user_can_move);
             await this.documentService.openOperationDialog({
-                documents: documents.map((d) => ({
-                    id: d.data.id,
-                    name: d.data.name,
-                    shortcut_document_id: d.data.shortcut_document_id,
-                })),
+                documents: this.isDomainSelected
+                    ? (await this.getResIds()).map((d) => ({ id: d }))
+                    : documents.map((d) => ({
+                          id: d.data.id,
+                          name: d.data.name,
+                      })),
                 operation: "move",
                 onClose: async () => this.env.searchModel._reloadSearchModel(true),
             });
@@ -400,6 +448,61 @@ export const DocumentsModelMixin = (component) =>
          * Download the selected documents.
          */
         async onDownload() {
-            this.documentService.downloadDocuments(this.targetRecords);
+            if (this.isDomainSelected) {
+                const domain = Domain.and([
+                    [["type", "!=", "url"]],
+                    Domain.or([
+                        [["type", "=", "folder"]],
+                        [["attachment_id", "!=", false]],
+                        [["shortcut_document_id.attachment_id", "!=", false]],
+                    ]),
+                ]);
+                const resIds = await this.getResIds(domain);
+                this.documentService.downloadDocuments(this.targetRecords, resIds);
+            } else {
+                this.documentService.downloadDocuments(this.targetRecords);
+            }
+        }
+        /**
+         * Make sure that when coming for a specific document, it is present as the first
+         * document on the first page. Notify the user if the requested document wasn't found.
+         */
+        async _loadDocumentToRestore(config, data) {
+            // This getter resets the DocumentIdToRestore, we'll restore it if we do have the record.
+            const documentIdToRestore = this.documentService.getOnceDocumentIdToRestore();
+            if (!documentIdToRestore) {
+                return data;
+            }
+            const idxToRestore = data.records.findIndex((r) => r.id === documentIdToRestore);
+            if (idxToRestore !== -1) {
+                const recordToRestore = data.records.splice(idxToRestore, 1)[0]; // take it out
+                data.records.splice(0, 0, recordToRestore); // put it at the top of the list
+                this.documentService.documentIdToRestore = documentIdToRestore;
+            } else {
+                const missingData = await super._loadData({
+                    ...config,
+                    domain: Domain.and([
+                        config.domain,
+                        [
+                            ["id", "=", documentIdToRestore],
+                            ["active", "in", [true, false]],
+                        ],
+                    ]).toList(),
+                    limit: 1,
+                });
+                if (missingData?.records?.length) {
+                    const addedRecord = missingData.records[0];
+                    data.records.splice(0, 0, addedRecord); // put it at the top of the list
+                    data.records.pop(); // Remove the last item to not overflow page
+                    if (!addedRecord.active) {
+                        this.documentService.archivedDocumentRestored = addedRecord;
+                    }
+                    this.documentService.documentIdToRestore = documentIdToRestore;
+                } else {
+                    this.notification.add(_t("Document not found or inaccessible."), {
+                        type: "danger",
+                    });
+                }
+            }
         }
     };

@@ -1,5 +1,7 @@
 from datetime import datetime
+from unittest import mock
 import pytz
+from requests.exceptions import RequestException
 
 from odoo.tests import tagged
 from .common import TestEcEdiCommon
@@ -56,3 +58,44 @@ class TestEcEdiFlow(TestEcEdiCommon):
         with self.mock_zeep_client(expected_operations):
             # Send the invoice
             out_invoice.button_process_edi_web_services()
+
+    def test_authorization_number(self):
+        line_vals1 = self.get_invoice_line_vals(vat_tax_xmlid='tax_vat_05_510_sup_01')
+        out_invoice1 = self.get_invoice(
+            {
+                'move_type': 'out_invoice',
+                'partner_id': self.partner_a.id,
+            },
+            invoice_line_args=line_vals1,
+        )
+        out_invoice1.action_post()
+        self.assertEqual(out_invoice1.l10n_ec_authorization_number, '2501202201179236683600110010010000000013121521410')
+
+        self.company_data['company'].partner_id.write({
+            'l10n_latam_identification_type_id': self.env.ref('l10n_latam_base.it_vat').id,
+            'vat': '1792060346',
+        })
+        line_vals2 = self.get_invoice_line_vals(vat_tax_xmlid='tax_vat_05_510_sup_01')
+        out_invoice2 = self.get_invoice(
+            {
+                'move_type': 'out_invoice',
+                'partner_id': self.partner_a.id,
+            },
+            invoice_line_args=line_vals2,
+        )
+        out_invoice2.l10n_latam_document_number = '001-001-0000002'
+        out_invoice2.action_post()
+        self.assertFalse(out_invoice2.l10n_ec_authorization_number)
+
+    def test_send_invoice_sri_unreachable(self):
+        expected_operations = (
+            ('validarComprobante', {'xml': mock.ANY}, {'estado': 'RECIBIDA', 'comprobantes': None}),
+            ('autorizacionComprobante', {'claveAccesoComprobante': mock.ANY}, RequestException()),
+        )
+        out_invoice = self.get_invoice({'move_type': 'out_invoice', 'partner_id': self.partner_a.id})
+        out_invoice.action_post()
+
+        with self.mock_zeep_client(expected_operations):
+            out_invoice.button_process_edi_web_services()
+
+        self.assertEqual(out_invoice.edi_document_ids.blocking_level, 'warning')

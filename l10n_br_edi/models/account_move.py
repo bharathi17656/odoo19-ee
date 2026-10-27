@@ -2,6 +2,7 @@
 import contextlib
 import json
 import logging
+import re
 
 from markupsafe import Markup
 from stdnum.br.cnpj import format as format_cnpj
@@ -323,6 +324,12 @@ class AccountMove(models.Model):
         )
         return super().button_draft()
 
+    def button_cancel(self):
+        # EXTENDS 'account'
+        res = super().button_cancel()
+        self.l10n_br_last_edi_status = "cancelled"
+        return res
+
     def _get_fields_to_detach(self):
         # EXTENDS account
         fields_list = super()._get_fields_to_detach()
@@ -509,12 +516,22 @@ class AccountMove(models.Model):
         else:
             return 1, "Normal"
 
+    def _l10n_br_edi_references_original_per_line(self):
+        """Returns whether Avalara expects the original NF-e on each line rather than in the header."""
+        return self.move_type == "out_refund" and not self.l10n_br_is_service_transaction
+
+    @api.model
+    def _l10n_br_edi_normalize_access_key(self, access_key):
+        """Removes non-numeric characters from the access key."""
+        return re.sub(r'\D', '', access_key or '') or None
+
     def _get_l10n_br_avatax_service_params(self):
         """ EXTENDS 'account.move'
         For credit and debit notes this returns the appropriate reference to the original invoice. For tax
         calculation we send these references as documentCode, which are Odoo references (e.g. account.move_31).
         For EDI the government requires these references as refNFe instead. They should contain the access key
-        assigned when the original invoice was e-invoiced. """
+        assigned when the original invoice was e-invoiced. Goods returns are the exception: Avalara wants them
+        referenced per line, so _l10n_br_prepare_invoice_payload drops this from the header again. """
         params = super()._get_l10n_br_avatax_service_params()
 
         params['invoice_refs_edi'] = {}
@@ -524,12 +541,27 @@ class AccountMove(models.Model):
                 'invoicesRefs': [
                     {
                         'type': 'refNFe',
-                        'refNFe': origin.l10n_br_access_key,
+                        'refNFe': self._l10n_br_edi_normalize_access_key(origin.l10n_br_access_key),
                     }
                 ]
             }
 
         return params
+
+    def _l10n_br_edi_add_referenced_access_key(self, tax_calculation_response):
+        """Sets the access key SEFAZ requires on each referenced line, replacing the calculate-time code."""
+        if not self._l10n_br_edi_references_original_per_line():
+            return
+
+        access_key = self._l10n_br_edi_normalize_access_key(self.reversed_entry_id.l10n_br_access_key)
+        if not access_key:
+            return
+
+        for line in tax_calculation_response.get("lines", []):
+            # Lines the response did not reference are left alone: there is nothing to key them to.
+            if referenced_item := line.get("referencedItem"):
+                referenced_item.pop("documentCode", None)
+                referenced_item["invoiceAccessKey"] = access_key
 
     def _l10n_br_edi_get_tax_data(self):
         """Due to Avalara bugs they're unable to resolve we have to change their tax calculation response before
@@ -544,6 +576,8 @@ class AccountMove(models.Model):
                 for key in keys_to_remove_when_null:
                     if key in detail and detail[key] is None:
                         del detail[key]
+
+        self._l10n_br_edi_add_referenced_access_key(tax_calculation_response)
 
         return tax_calculation_response, tax_calculation_response.pop("header")
 
@@ -668,6 +702,11 @@ class AccountMove(models.Model):
 
     def _l10n_br_get_additional_info(self):
         info = self.narration and html2plaintext(self.narration)  # html2plaintext turns False into "False"
+        tax_data, _ = self._l10n_br_edi_get_tax_data()  # TODO: Pass as a parameter in master
+        informative_taxes = tax_data.get('summary', {}).get('taxImpactHighlights', {}).get('informative', [])
+        approximate_taxes = {tax['taxType']: tax['tax'] for tax in informative_taxes if tax['taxType'] in ('aproxtribState', 'aproxtribFed', 'aproxtribCity')}
+        aprox_line = f"Trib. Aprox. R$ {approximate_taxes.get('aproxtribFed', 0.0)} Federal, R$ {approximate_taxes.get('aproxtribState', 0.0)} Estadual e R$ {approximate_taxes.get('aproxtribCity', 0.0)} Municipal. Fonte: IBPT"
+        info = "\n".join(line for line in (info, aprox_line) if line)  # skip the None line if there's no narration since we always want the approx line
         return {
             "additionalInfo": {"otherInfo" if self.l10n_br_is_service_transaction else "complementaryInfo": info}
         }
@@ -711,8 +750,8 @@ class AccountMove(models.Model):
         company_partner = self.company_id.partner_id
         transporter = self._l10n_br_get_transporter()
         partner_shipping_id = service_params['partner_shipping']
-        if rendered := payload['header']['locations'].get('rendered', {}):
-            rendered['address']['countryCode'] = partner_shipping_id.country_id.l10n_br_edi_code
+        if partner_shipping_location := (payload['header']['locations'].get('rendered', {}) or payload['header']['locations'].get('delivery', {})):
+            partner_shipping_location['address']['countryCode'] = partner_shipping_id.country_id.l10n_br_edi_code
 
         tax_data_to_include, tax_data_header = self._l10n_br_edi_get_tax_data()
         extra_payload = {
@@ -726,7 +765,6 @@ class AccountMove(models.Model):
                     company_partner,
                     transporter,
                     ),
-                    **rendered,
                 },
                 "payment": {
                     "paymentInfo": {
@@ -744,6 +782,10 @@ class AccountMove(models.Model):
         # Avatax return various errors: e.g. "Falha na estrutura enviada". This is to avoid having lots of if
         # statements.
         deep_update(payload, deep_clean(extra_payload))
+
+        if self._l10n_br_edi_references_original_per_line():
+            # The reference goes on the lines instead, see _l10n_br_edi_add_referenced_access_key.
+            payload.get("header", {}).pop("invoicesRefs", None)
 
         # This adds the "lines" and "summary" dicts received during tax calculation.
         payload.update(tax_data_to_include)
@@ -769,9 +811,11 @@ class AccountMove(models.Model):
             return None, str(e)
 
     def _cron_l10n_br_get_invoice_statuses(self, batch_size=10):
-        pending_invoices = self.search([("l10n_br_last_edi_status", "=", "pending")], limit=batch_size)
+        pending_invoices = self.search([("l10n_br_last_edi_status", "=", "pending")], limit=batch_size + 1)
         for invoice in pending_invoices[:batch_size]:
             invoice.button_l10n_br_edi_get_service_invoice()
+            if self._can_commit():
+                self.env.cr.commit()
 
         if len(pending_invoices) > batch_size:
             self.env.ref("l10n_br_edi.ir_cron_l10n_br_edi_check_status")._trigger()
@@ -925,7 +969,7 @@ class AccountMove(models.Model):
             'name': get_xml_text(tree, './/nfe:nNF'),
             'invoice_date': get_xml_text(tree, './/nfe:dhEmi'),  # ignore timezone offset, because this is a date field
             'delivery_date': get_xml_text(tree, './/nfe:dhSaiEnt'),  # ignore timezone offset, because this is a date field
-            'l10n_br_access_key': get_xml_attribute('.//nfe:infNFe', 'Id'),
+            'l10n_br_access_key': self._l10n_br_edi_normalize_access_key(get_xml_attribute('.//nfe:infNFe', 'Id')),
             'invoice_line_ids': [Command.create(line) for line in get_lines_vals(vendor)],
             'l10n_br_edi_payment_method': get_payment_method(),
             'l10n_br_edi_transporter_id': get_partner_id('.//nfe:transporta'),
@@ -936,7 +980,7 @@ class AccountMove(models.Model):
         """ Identify NFe files. """
         # EXTENDS 'account'
 
-        if b"<nfeProc " in file_data['raw'] and b"<NFe " in file_data['raw']:
+        if b"<nfeProc " in file_data['raw'] and b"<NFe" in file_data['raw']:
             return 'l10n_br.nfe'
 
         return super()._get_import_file_type(file_data)

@@ -14,6 +14,8 @@ class ResCompany(models.Model):
             ("AGE", "AGE: Agro-export Regime"),
             ("ECA", "ECA: Coffee Exporter"),
             ("EXI", "EXI: VAT Exempt (Entities or institutions legally exempt from VAT)"),
+            ("PRIM", "PRIM: Primary Regime"),
+            ("PECU", "PECU: Livestock Regime"),
         ],
         string="VAT Affiliation",
         compute="_compute_l10n_gt_edi_default_fields",
@@ -28,6 +30,8 @@ class ResCompany(models.Model):
         AGE - Electronic Agricultural Regime - Same as the agricultural regime, but for taxpayers who operate electronically, facilitating tax declaration and control processes.
         ECA - Exporter of Goods and Services - Explanation: For companies that export. It allows you to request tax credit refunds for exports and enjoy certain tax benefits.
         EXI - Exempt for Specific Income - Explanation: Applies to sectors or activities exempt from taxes according to special legislation, such as diplomatic services and certain exports of specific goods or services.
+        PRIM - Primary Regime.
+        PECU - Livestock Regime.
         """,
     )
     l10n_gt_edi_phrase_ids = fields.Many2many(
@@ -49,14 +53,17 @@ class ResCompany(models.Model):
     l10n_gt_edi_ws_prefix = fields.Char(
         string="Infile WS Username or Prefix",
         help="Username for webservices provided by Infile",
+        groups="base.group_system",
     )
     l10n_gt_edi_infile_token = fields.Char(
         string="Infile Token (LlaveFirma)",
         help="Token for Infile Webservice (provided by Infile)",
+        groups="base.group_system",
     )
     l10n_gt_edi_infile_key = fields.Char(
         string="Infile Key (LlaveAPI)",
         help="Key for Infile Webservice (provided by Infile)",
+        groups="base.group_system",
     )
     l10n_gt_edi_legal_name = fields.Char(
         string="Legal Name",
@@ -81,9 +88,9 @@ class ResCompany(models.Model):
         """
         if self.parent_id.country_code == 'GT':
             self.country_id = self.env.ref('base.gt')
-            self.vat = self.parent_id.vat
             self.l10n_gt_edi_vat_affiliation = self.parent_id.l10n_gt_edi_vat_affiliation
             self.l10n_gt_edi_phrase_ids = self.parent_id.l10n_gt_edi_phrase_ids
+            self.l10n_gt_edi_service_provider = self.parent_id.l10n_gt_edi_service_provider
 
     @api.depends('country_code')
     def _compute_l10n_gt_edi_default_fields(self):

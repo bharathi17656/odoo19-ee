@@ -4,6 +4,7 @@ import io
 
 from odoo import Command, fields, tools
 from odoo.addons.account_reports.tests.common import TestAccountReportsCommon
+from odoo.addons.account_reports.models.account_report import AccountReportFileDownloadException
 from odoo.tests import tagged, freeze_time
 from odoo.tests.common import test_xsd
 
@@ -24,6 +25,7 @@ class TestDKReportCommon(TestAccountReportsCommon):
             'acc_type': 'iban',
             'partner_id': cls.company_data['company'].partner_id.id,
             'acc_number': 'DK5000400440116243',
+            'allow_out_payment': True,
         })
         cls.env['res.partner'].create({
             'name': 'Mr Big CEO',
@@ -108,14 +110,97 @@ class TestDKReportCommon(TestAccountReportsCommon):
         options = cls._generate_options(report, fields.Date.from_string('2021-01-01'), fields.Date.from_string('2021-12-31'))
         return cls.env[report.custom_handler_model_name].l10n_dk_export_saft_to_xml(options)['file_content']
 
+    def _generate_2_0_xml(cls):
+        report = cls.env.ref('account_reports.general_ledger_report')
+        options = cls._generate_options(report, fields.Date.from_string('2021-01-01'), fields.Date.from_string('2021-12-31'))
+        return cls.env[report.custom_handler_model_name].l10n_dk_export_saft_2_0_to_xml(options)['file_content']
+
 
 @freeze_time('2022-01-01')
 @tagged('post_install_l10n', 'post_install', '-at_install')
 class TestDKReport(TestDKReportCommon):
 
     def test_validate_dk_saft_report_values(self):
+        payable_account = self.env['account.chart.template'].ref("dk_coa_7440")
+        liability_account = self.env['account.chart.template'].ref("dk_coa_7350")
+        # Create a move without a partner but with a receivable line
+        move = self.env['account.move'].create({
+                'move_type': 'entry',
+                'invoice_date': '2021-03-01',
+                'date': '2021-03-01',
+                'partner_id': None,
+                'invoice_line_ids': [
+                    Command.create({
+                        'credit': 67.0,
+                        'account_id': payable_account.id,
+                    }),
+                    Command.create({
+                        'debit': 67.0,
+                        'account_id': liability_account.id,
+                    })
+                ],
+            })
+        move._post()
+        self.env.flush_all()
+
         with tools.file_open("l10n_dk_reports/tests/xml/expected_test_saft_report.xml", "rb") as expected_xml:
             stringified_xml = self._generate_xml()
+            self.assertXmlTreeEqual(
+                self.get_xml_tree_from_string(stringified_xml),
+                self.get_xml_tree_from_string(expected_xml.read()),
+            )
+
+    def test_validate_dk_saft_2_0_report_values(self):
+        payable_account = self.env['account.chart.template'].ref("dk_coa_7440")
+        liability_account = self.env['account.chart.template'].ref("dk_coa_7350")
+        # Create a move without a partner but with a receivable line
+        move = self.env['account.move'].create({
+                'move_type': 'entry',
+                'invoice_date': '2021-03-01',
+                'date': '2021-03-01',
+                'partner_id': None,
+                'invoice_line_ids': [
+                    Command.create({
+                        'credit': 67.0,
+                        'account_id': payable_account.id,
+                    }),
+                    Command.create({
+                        'debit': 67.0,
+                        'account_id': liability_account.id,
+                    })
+                ],
+            })
+        move._post()
+
+        fixed_tax = self.env['account.tax'].create({
+            'name': 'DK fixed duty',
+            'amount_type': 'fixed',
+            'amount': 100.0,
+            'type_tax_use': 'sale',
+            'country_id': self.env.ref('base.dk').id,
+        })
+        fixed_tax_invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'invoice_date': '2021-05-01',
+            'date': '2021-05-01',
+            'partner_id': self.partner_a.id,
+            'invoice_line_ids': [
+                Command.create({
+                    'product_id': self.product_a.id,
+                    'quantity': 1.0,
+                    'price_unit': 500.0,
+                    'tax_ids': [Command.set(fixed_tax.ids)],
+                })
+            ],
+        })
+        fixed_tax_invoice.action_post()
+
+        self.env.flush_all()
+        report = self.env.ref('account_reports.general_ledger_report')
+        options = self._generate_options(report, fields.Date.from_string('2021-01-01'), fields.Date.from_string('2021-12-31'))
+
+        with tools.file_open("l10n_dk_reports/tests/xml/expected_test_saft_2_0_report.xml", "rb") as expected_xml:
+            stringified_xml = self.env[report.custom_handler_model_name].l10n_dk_export_saft_2_0_to_xml(options)['file_content']
             self.assertXmlTreeEqual(
                 self.get_xml_tree_from_string(stringified_xml),
                 self.get_xml_tree_from_string(expected_xml.read()),
@@ -127,7 +212,33 @@ class TestDKReport(TestDKReportCommon):
         for account_type in account_selection:
             self.env[report.custom_handler_model_name]._saft_get_account_type(account_type)
 
+    def test_l10n_dk_general_ledger_undistributed_csv_export(self):
+        report = self.env.ref('account_reports.general_ledger_report')
+        options = report.get_options({})
+        with self.assertRaises(AccountReportFileDownloadException) as error_catcher:
+            self.env[report.custom_handler_model_name].l10n_dk_export_general_ledger_csv(options)
+        self.assertEqual(set(error_catcher.exception.errors), {'undistributed_earnings'})
+
     def test_l10n_dk_general_ledger_csv_export(self):
+        reserve_acc = self.env['account.chart.template'].ref('dk_coa_6560')
+        self.env['account.move'].create({
+            'move_type': 'entry',
+            'date': '2021-12-31',
+            'line_ids': [
+                Command.create({
+                    'name': 'Distribute earnings',
+                    'account_id': reserve_acc.id,
+                    'debit': 3000.0,
+                    'credit': 0.0,
+                }),
+                Command.create({
+                    'name': 'Distribute earnings',
+                    'account_id': self.company_data['default_account_expense'].id,
+                    'debit': 0.0,
+                    'credit': 3000.0,
+                }),
+            ]
+        }).action_post()
         report = self.env.ref('account_reports.general_ledger_report')
         options = report.get_options({})
         csv_content = self.env[report.custom_handler_model_name].l10n_dk_export_general_ledger_csv(options)['file_content']
@@ -136,11 +247,11 @@ class TestDKReport(TestDKReportCommon):
         expected_values = (
             # _20230131 is not the export date, but rather the date at which the norm of this csv export was enforced
             ('KONTONUMMER_20230131', 'KONTONAVN_20230131', 'VAERDI_20230131'),
-            ('6190', 'Trade and other receivables', '6250'),
-            ('7441', 'Suppliers of goods and services (copy)', '-10000'),
-            ('7680', 'Sales tax', '-1250'),
-            ('7740', 'VAT on purchases', '2000'),
-            ('999999', 'Undistributed Profits/Losses', '3000'),
+            ('619000', 'Trade receivables', '6250'),
+            ('656000', 'Reserve for revaluations', '3000'),
+            ('744001', 'Trade payables (short-term) (copy)', '-10000'),
+            ('768000', 'Output VAT', '-1250'),
+            ('774000', 'Input VAT', '2000'),
         )
         for idx, content in enumerate(reader):
             self.assertSequenceEqual(expected_values[idx], content)
@@ -152,3 +263,7 @@ class TestDKReportXML(TestDKReportCommon):
     @test_xsd(url='https://erhvervsstyrelsen.dk/sites/default/files/2023-01/Danish_SAF-T_Financial_Schema_v_1_0_0.zip')
     def test_xml_validity(self):
         return self._generate_xml()
+
+    @test_xsd(url='https://git.erst.dk/standard-filformater/standard-filformater/-/raw/master/SAF-T/XSD/Danish_SAF-T_Financial_Schema_v_2_0.xml')
+    def test_xml_2_0_validity(self):
+        return self._generate_2_0_xml()

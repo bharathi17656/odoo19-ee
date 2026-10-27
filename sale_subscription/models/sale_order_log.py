@@ -134,7 +134,10 @@ class SaleOrderLog(models.Model):
         parent_churn = parent_order.order_log_ids.filtered(lambda log: log.event_type == '2_churn')
 
         # If at least 30 days between next invoice date and start_date, churn and creation instead of transfer
-        if parent_order.next_invoice_date + timedelta(days=30) < order.start_date:
+        if (
+            parent_order.next_invoice_date
+            and parent_order.next_invoice_date + timedelta(days=30) < order.start_date
+        ):
             if not parent_churn:
                 result += self._create_churn_log(parent_order, {})
             return result + self._create_creation_log(order, initial_values)

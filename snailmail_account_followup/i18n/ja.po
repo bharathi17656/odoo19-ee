@@ -7,13 +7,13 @@
 # Andy Yiu, 2023
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Junko Augias (juau)" <juau@odoo.com>, 2025.
+# "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:49+0000\n"
-"PO-Revision-Date: 2025-11-04 05:23+0000\n"
+"POT-Creation-Date: 2025-12-30 18:47+0000\n"
+"PO-Revision-Date: 2026-01-23 18:02+0000\n"
 "Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
 "Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/"
 "snailmail_account_followup/ja/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: snailmail_account_followup
 #: model_terms:ir.ui.view,arch_db:snailmail_account_followup.manual_reminder_view_form_inherit_snailmail
@@ -31,10 +31,9 @@ msgid ""
 "title=\"The letter will be sent using the IAP service from Odoo.&#10;Make "
 "sure you have enough credits on your account or proceed to a recharge.\"/>"
 msgstr ""
-"<i class=\"fa fa-info-circle\" role=\"img\" aria-label=\"警告\" title="
-"\"この手紙は Odoo の IAP "
-"サービスを通じて送信されます。&#10;アカウントに十分なクレジットがあることを確"
-"認するか、チャージを行ってください。\"/>"
+"<i class=\"fa fa-info-circle\" role=\"img\" aria-label=\"警告\" title=\"この"
+"手紙は Odoo の IAP サービスを通じて送信されます。&#10;アカウントに十分なクレ"
+"ジットがあることを確認するか、チャージを行ってください。\"/>"
 
 #. module: snailmail_account_followup
 #: model_terms:ir.ui.view,arch_db:snailmail_account_followup.manual_reminder_view_form_inherit_snailmail
@@ -56,24 +55,26 @@ msgstr "顧客を作成"
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_account_followup_manual_reminder__display_name
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_account_followup_report__display_name
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_res_partner__display_name
+#: model:ir.model.fields,field_description:snailmail_account_followup.field_snailmail_letter__display_name
 msgid "Display Name"
 msgstr "表示名"
 
 #. module: snailmail_account_followup
 #: model:ir.model,name:snailmail_account_followup.model_account_followup_followup_line
 msgid "Follow-up Criteria"
-msgstr "フォローアップ基準"
+msgstr "督促条件"
 
 #. module: snailmail_account_followup
 #: model:ir.model,name:snailmail_account_followup.model_account_followup_report
 msgid "Follow-up Report"
-msgstr "フォローアップレポート"
+msgstr "督促レポート"
 
 #. module: snailmail_account_followup
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_account_followup_followup_line__id
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_account_followup_manual_reminder__id
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_account_followup_report__id
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_res_partner__id
+#: model:ir.model.fields,field_description:snailmail_account_followup.field_snailmail_letter__id
 msgid "ID"
 msgstr "ID"
 
@@ -88,6 +89,11 @@ msgid "Snailmail"
 msgstr "Snailmail"
 
 #. module: snailmail_account_followup
+#: model:ir.model,name:snailmail_account_followup.model_snailmail_letter
+msgid "Snailmail Letter"
+msgstr "Snailmailレター"
+
+#. module: snailmail_account_followup
 #: model:ir.model.fields,field_description:snailmail_account_followup.field_account_followup_manual_reminder__snailmail_cost
 msgid "Stamps"
 msgstr "切手"
@@ -95,7 +101,7 @@ msgstr "切手"
 #. module: snailmail_account_followup
 #: model:ir.model,name:snailmail_account_followup.model_account_followup_manual_reminder
 msgid "Wizard for sending manual reminders to clients"
-msgstr "顧客に手動リマインダを送信するアシスタント"
+msgstr "顧客に手動で督促通知を送信するためのウィザード"
 
 #. module: snailmail_account_followup
 #. odoo-python
@@ -103,9 +109,7 @@ msgstr "顧客に手動リマインダを送信するアシスタント"
 msgid ""
 "You are trying to send a letter by post, but no follow-up contact has any "
 "address set"
-msgstr ""
-"手紙を郵送しようとしていますが、フォローアップ連絡先に住所が設定されていませ"
-"ん"
+msgstr "手紙を郵送しようとしていますが、督促用の連絡先に住所が設定されていません"
 
 #~ msgid "Send a Letter"
 #~ msgstr "レター送付"

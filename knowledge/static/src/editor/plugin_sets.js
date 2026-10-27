@@ -1,4 +1,5 @@
 import { MAIN_PLUGINS } from "@html_editor/plugin_sets";
+import { EmbeddedFilePlugin } from "@html_editor/others/embedded_components/plugins/embedded_file_plugin/embedded_file_plugin";
 import { AutofocusPlugin } from "@knowledge/editor/plugins/autofocus_plugin/autofocus_plugin";
 import { KnowledgeArticlePlugin } from "@knowledge/editor/plugins/article_plugin/article_plugin";
 import { KnowledgeCommentsPlugin } from "@knowledge/editor/plugins/comments_plugin/comments_plugin";
@@ -9,6 +10,7 @@ import { EmbeddedViewPlugin } from "@knowledge/editor/embedded_components/plugin
 import { FoldableSectionPlugin } from "@knowledge/editor/embedded_components/plugins/foldable_section_plugin/foldable_section_plugin";
 import { InsertPendingElementPlugin } from "@knowledge/editor/plugins/insert_pending_element_plugin/insert_pending_element_plugin";
 import { HeadingLinkPlugin } from "@knowledge/editor/plugins/heading_link_plugin/heading_link_plugin";
+import { KnowledgeTopEmbeddedViewPlugin } from "@knowledge/editor/plugins/top_embedded_view_plugin/top_embedded_view_plugin";
 
 MAIN_PLUGINS.push(KnowledgeArticlePlugin);
 
@@ -18,11 +20,13 @@ export const KNOWLEDGE_PLUGINS = [
     KnowledgeCommentsPlugin,
     KnowledgeDeleteFirstLinePlugin,
     HeadingLinkPlugin,
+    KnowledgeTopEmbeddedViewPlugin,
 ];
 
 export const KNOWLEDGE_EMBEDDED_COMPONENT_PLUGINS = [
     ArticleIndexPlugin,
     EmbeddedClipboardPlugin,
     EmbeddedViewPlugin,
+    EmbeddedFilePlugin,
     FoldableSectionPlugin,
 ];

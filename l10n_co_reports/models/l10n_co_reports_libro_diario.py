@@ -1,6 +1,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models
+from odoo.fields import Domain
 from odoo.tools import SQL
 
 
@@ -22,9 +23,17 @@ class LibroDiarioReportCustomHandler(models.AbstractModel):
         for key, value in processed_results.items():
             line_id = report._get_generic_line_id('account.move', key)
             columns = self._get_column_values(report, options, value)
+            columns_data = next(iter(value.values()))
+            parts = [
+                columns_data.get('move_name'),
+                columns_data.get('partner_name'),
+                columns_data.get('account_name'),
+                columns_data.get('line_label')
+            ]
+            line_name = " ".join(str(p) for p in parts if p).strip()
             lines.append((0, {
                 'id': line_id,
-                'name': '',
+                'name': line_name,
                 'level': 1,
                 'unfoldable': False,
                 'columns': columns
@@ -52,15 +61,14 @@ class LibroDiarioReportCustomHandler(models.AbstractModel):
                     %(account_id)s AS account_id,
                     %(account_name)s AS account_name,
                     res_partner.id AS partner_id,
-                    res_partner.name AS partner_name,
-                    account_move_line.name AS line_label,
+                    COALESCE(res_partner.name, '') AS partner_name,
+                    COALESCE(account_move_line.name, '') AS line_label,
                     account_move_line.debit AS line_debit,
                     account_move_line.credit AS line_credit
                 FROM %(table_references)s
                 JOIN account_move ON account_move_line.move_id = account_move.id
-                JOIN res_partner ON account_move_line.partner_id = res_partner.id
+                LEFT JOIN res_partner ON account_move_line.partner_id = res_partner.id
                 WHERE %(search_condition)s
-                ORDER BY account_move_line.date DESC
                 """,
                 column_group_key=column_group_key,
                 account_id=account_id,
@@ -69,12 +77,14 @@ class LibroDiarioReportCustomHandler(models.AbstractModel):
                 search_condition=query.where_clause,
             ))
 
-        self.env.cr.execute(SQL(' UNION ALL ').join(queries))
+        full_query = SQL('%s ORDER BY line_date DESC', SQL(' UNION ALL ').join(queries))
+        self.env.cr.execute(full_query)
         return self.env.cr.dictfetchall()
 
     def _get_domain(self, report, options, line_dict_id=None):
         domain = super()._get_domain(report, options, line_dict_id=line_dict_id)
-        domain = [('company_id', '=', self.env.company.id)]
+        domain = Domain.OR([domain, [('partner_id', '=', False)]])
+        domain = Domain.AND([domain, [('company_id', '=', self.env.company.id)]])
         return domain
 
     def print_pdf(self, options, action_param):

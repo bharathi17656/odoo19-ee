@@ -5,17 +5,17 @@
 # Translators:
 # Martin Trigaux, 2022
 # Andy Yiu, 2023
-# Ryoko Tsuda <ryoko@quartile.co>, 2023
+# Ryoko Tsuda <ryoko@quartile.co>, 2023, 2026.
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Junko Augias (juau)" <juau@odoo.com>, 2025.
+# "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-16 13:43+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-02 17:42+0000\n"
+"PO-Revision-Date: 2026-09-08 03:11+0000\n"
+"Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
 "Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/"
 "hr_appraisal/ja/>\n"
 "Language: ja\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -42,7 +42,7 @@ msgstr "%s (コピー)"
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 msgid "%s's Goals"
-msgstr "%sのゴール"
+msgstr "%sの目標"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal_campaign_wizard__manager
@@ -52,8 +52,8 @@ msgid ""
 "'Specific Person': All appraisals will be conducted by the specified "
 "employees"
 msgstr ""
-"「従業員のマネジャー」: 各査定は従業員直属のマネジャーが行います。\n"
-"「特定の従業員」: すべての査定は特定の従業員によって行われます。"
+"「従業員のマネジャー」: 各評価は従業員直属のマネジャーが行います。\n"
+"「特定の従業員」: すべての評価は特定の従業員によって行われます。"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -66,30 +66,10 @@ msgid ". Then, share it with appraisers."
 msgstr "そして評価者と共有してください。"
 
 #. module: hr_appraisal
-#: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__100
-msgid "100%"
-msgstr "100%"
-
-#. module: hr_appraisal
-#: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__025
-msgid "25%"
-msgstr "25%"
-
-#. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__module_hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "360 Feedback"
 msgstr "360フィードバック"
-
-#. module: hr_appraisal
-#: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__050
-msgid "50%"
-msgstr "50%"
-
-#. module: hr_appraisal
-#: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__075
-msgid "75%"
-msgstr "75%"
 
 #. module: hr_appraisal
 #: model:mail.template,body_html:hr_appraisal.mail_template_appraisal_confirm
@@ -119,22 +99,22 @@ msgid ""
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">"
-"\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;"
+"\">\n"
 "                        <t t-out=\"ctx.get('employee_to_name')\">従業員</t> "
-"の査定評価が確定されました。\n"
+"の評価評価が確定されました。\n"
 "                        <br/><br/>\n"
 "                        一緒に評価日を設定してください。\n"
 "                        <br/><br/>\n"
 "                        <t t-if=\"ctx.get('recipient_users')\">\n"
-"                            <p style="
-"\"margin: 16px 0px 16px 0px; text-align: center;\">\n"
-"                                <a t-att-href=\"ctx.get('url')\" t-attf-style"
-"=\"background-color: {{object.company_id.email_secondary_color or "
-"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: {{"
-"object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;\">"
-"\n"
-"                                    査定を見る\n"
+"                            <p style=\"margin: 16px 0px 16px 0px; text-"
+"align: center;\">\n"
+"                                <a t-att-href=\"ctx.get('url')\" t-attf-"
+"style=\"background-color: {{object.company_id.email_secondary_color or "
+"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;"
+"\">\n"
+"                                    評価を見る\n"
 "                                </a>\n"
 "                            </p>\n"
 "                        </t>\n"
@@ -179,31 +159,31 @@ msgid ""
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">"
-"\n"
-"                        <t t-out=\"ctx.get('employee_to_name')\">従業員</t>"
-"さん\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;"
+"\">\n"
+"                        <t t-out=\"ctx.get('employee_to_name')\">従業員</t>さ"
+"ん\n"
 "                        <br/>\n"
-"                        <t t-out=\"ctx.get('author_name', '')\""
-">アディソン・オルソン</t> (<t t-out=\"ctx.get('author_mail', '')\""
-">addison.olson28@example.com</t>)さんが査定を希望しています。\n"
+"                        <t t-out=\"ctx.get('author_name', '')\">アディソン・"
+"オルソン</t> (<t t-out=\"ctx.get('author_mail', '')"
+"\">addison.olson28@example.com</t>)さんが評価を希望しています。\n"
 "                        <t t-if=\"ctx.get('user_body')\">\n"
 "                            <div style=\"margin: 16px 0px 16px 0px; padding: "
 "8px 16px 8px 16px; background-color: #F1F1F1;\">\n"
-"                                <t t-out=\"ctx.get('user_body')\""
-">年次査定</t>\n"
+"                                <t t-out=\"ctx.get('user_body')\">年次評価</"
+"t>\n"
 "                            </div>\n"
 "                        </t>\n"
 "                        <t t-if=\"ctx.get('recipient_users')\">\n"
 "                            <p style=\"margin: 16px 0px 16px 0px; padding: "
 "8px 16px 8px 16px; text-align: center;\">\n"
 "                                <a t-att-href=\"ctx.get('url')\" t-attf-"
-"style=\" margin: auto; background-color: {{"
-"object.employee_id.company_id.email_secondary_color or '#875A7B'}}; padding: "
-"8px 16px 8px 16px; text-decoration: none; color: {{"
-"object.employee_id.company_id.email_primary_color or '#FFFFFF'}}; border-"
+"style=\" margin: auto; background-color: "
+"{{object.employee_id.company_id.email_secondary_color or '#875A7B'}}; "
+"padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"{{object.employee_id.company_id.email_primary_color or '#FFFFFF'}}; border-"
 "radius: 5px;\">\n"
-"                                    査定を表示する\n"
+"                                    評価を表示する\n"
 "                                </a>\n"
 "                            </p>\n"
 "                        </t>\n"
@@ -255,32 +235,32 @@ msgid ""
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">"
-"\n"
-"                        Hi <t t-out=\"ctx.get('employee_to_name')\">[従業員]"
-"</t>さん\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;"
+"\">\n"
+"                        Hi <t t-out=\"ctx.get('employee_to_name')\">[従業"
+"員]</t>さん\n"
 "                        <br/>\n"
-"                        次回の<t t-out=\"ctx.get('manager_names')\"> [査定者]"
-"</t>との査定ミーティング\n"
-"                        が <t t-out=\"ctx.get('date_close')\">[deadline]"
-"</t>に予定されています。\n"
+"                        次回の<t t-out=\"ctx.get('manager_names')\"> [評価"
+"者]</t>との評価ミーティング\n"
+"                        が <t t-out=\"ctx.get('date_close')\">[deadline]</t>"
+"に予定されています。\n"
 "                        <br/>\n"
 "                        <t t-if=\"ctx.get('user_body')\">\n"
 "                            <div class=\"my-3 py-2 px-3 bg-secondary\">\n"
-"                                <t t-out=\"ctx.get('user_body')\">"
-"[コメント(任意)]</t>\n"
+"                                <t t-out=\"ctx.get('user_body')\">[コメント"
+"(任意)]</t>\n"
 "                            </div>\n"
 "                        </t>\n"
 "                        <t t-if=\"ctx.get('recipient_users')\">\n"
-"                            以下より、査定内容をご確認いただけます。\n"
+"                            以下より、評価内容をご確認いただけます。\n"
 "                            <p class=\"text-center my-3 py-2 px-3\">\n"
 "                                <a t-att-href=\"ctx.get('url')\" t-attf-"
-"style=\" margin: auto; background-color: {{"
-"object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
-"8px 16px; text-decoration: none; color: {{"
-"object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;\">"
-"\n"
-"                                    査定内容を見る\n"
+"style=\" margin: auto; background-color: "
+"{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
+"8px 16px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;"
+"\">\n"
+"                                    評価内容を見る\n"
 "                                </a>\n"
 "                            </p>\n"
 "                        </t>\n"
@@ -331,8 +311,8 @@ msgid ""
 msgstr ""
 "<em>\n"
 "                        すべての仕事には、それぞれの魅力があります。  \n"
-"                        "
-"どの業務が最も楽しく、どの業務があまり好みではありませんか?\n"
+"                        どの業務が最も楽しく、どの業務があまり好みではありま"
+"せんか?\n"
 "                    </em>"
 
 #. module: hr_appraisal
@@ -344,9 +324,8 @@ msgid ""
 "                    </em>"
 msgstr ""
 "<em>\n"
-"                        "
-"マネジャーの視点から見て、彼らの弱点を克服するために、どのような支援ができま"
-"すか?\n"
+"                        マネジャーの視点から見て、彼らの弱点を克服するため"
+"に、どのような支援ができますか?\n"
 "                    </em>"
 
 #. module: hr_appraisal
@@ -359,8 +338,8 @@ msgid ""
 "                    </em>"
 msgstr ""
 "<em>\n"
-"                        "
-"会社があなたの目標達成やより良い協力関係の構築を支援するために、 \n"
+"                        会社があなたの目標達成やより良い協力関係の構築を支援"
+"するために、 \n"
 "                        どのようなサポートができると思いますか?\n"
 "                    </em>"
 
@@ -374,8 +353,8 @@ msgid ""
 "                    </em>"
 msgstr ""
 "<em>\n"
-"                        将来的にその従業員をどのように見ていますか？ "
-"あなたのビジョンは従業員の \n"
+"                        将来的にその従業員をどのように見ていますか？ あなたの"
+"ビジョンは従業員の \n"
 "                        目標と一致していますか?\n"
 "                    </em>"
 
@@ -466,13 +445,13 @@ msgid ""
 "                        </span>"
 msgstr ""
 "<span class=\"o_stat_text\">\n"
-"                            最終査定\n"
+"                            最終評価\n"
 "                        </span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "<span class=\"o_stat_text\">Appraisals</span>"
-msgstr "<span class=\"o_stat_text\">査定</span>"
+msgstr "<span class=\"o_stat_text\">評価</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_employee_view_form
@@ -598,10 +577,10 @@ msgid ""
 "                                            <span invisible=\"not "
 "employee_feedback_published\">Private</span>"
 msgstr ""
-"<strong class=\"text-info\" invisible=\"employee_feedback_published\""
-">非公開</strong>\n"
-"                                            <span invisible="
-"\"not employee_feedback_published\">非公開</span>"
+"<strong class=\"text-info\" invisible=\"employee_feedback_published\">非公開"
+"</strong>\n"
+"                                            <span invisible=\"not "
+"employee_feedback_published\">非公開</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -611,10 +590,10 @@ msgid ""
 "                                            <span invisible=\"not "
 "manager_feedback_published\">Private</span>"
 msgstr ""
-"<strong class=\"text-info\" invisible=\"manager_feedback_published\""
-">非公開</strong>\n"
-"                                            <span invisible="
-"\"not manager_feedback_published\">非公開</span>"
+"<strong class=\"text-info\" invisible=\"manager_feedback_published\">非公開</"
+"strong>\n"
+"                                            <span invisible=\"not "
+"manager_feedback_published\">非公開</span>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_probationary_period_template
@@ -662,8 +641,9 @@ msgstr "<strong>現在の職務に満足していますか?</strong>"
 msgid ""
 "<strong>Can the employee accurately recall and explain the key concepts from "
 "the training ?</strong>"
-msgstr "<strong>従業員は研修で学んだ重要な概念・内容を正確に記憶し、"
-"かつ説明することができますか ?</strong>"
+msgstr ""
+"<strong>従業員は研修で学んだ重要な概念・内容を正確に記憶し、かつ説明すること"
+"ができますか ?</strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_yearly_template
@@ -720,7 +700,8 @@ msgstr "<strong>チーム内管理の引継ぎ</strong>"
 msgid ""
 "<strong>Has the employee effectively integrated the new skills or knowledge "
 "into their daily work tasks ?</strong>"
-msgstr "<strong>従業員は新しいスキルや知識を日々の業務に効果的に取り入れていますか?</"
+msgstr ""
+"<strong>従業員は新しいスキルや知識を日々の業務に効果的に取り入れていますか?</"
 "strong>"
 
 #. module: hr_appraisal
@@ -728,15 +709,17 @@ msgstr "<strong>従業員は新しいスキルや知識を日々の業務に効�
 msgid ""
 "<strong>How actively did the employee participate during the training "
 "sessions (e.g., asking questions, contributing to discussions) ?</strong>"
-msgstr "<strong>研修セッション中に、従業員はどの程度積極的に参加しましたか? "
-"(例：質問、ディスカッションへの参加など) </strong>"
+msgstr ""
+"<strong>研修セッション中に、従業員はどの程度積極的に参加しましたか? (例：質"
+"問、ディスカッションへの参加など) </strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_post_training_template
 msgid ""
 "<strong>How confident do you feel in using the skills and knowledge gained "
 "from the training in your work ?</strong>"
-msgstr "<strong>研修で得たスキルや知識を業務で活用することにどの程度自信がありますか?"
+msgstr ""
+"<strong>研修で得たスキルや知識を業務で活用することにどの程度自信がありますか?"
 "</strong>"
 
 #. module: hr_appraisal
@@ -744,7 +727,8 @@ msgstr "<strong>研修で得たスキルや知識を業務で活用すること�
 msgid ""
 "<strong>How do you feel about the support and resources provided to you "
 "during this period ?</strong>"
-msgstr "<strong>この期間に提供されたサポートやリソースについて、どのように感じていま"
+msgstr ""
+"<strong>この期間に提供されたサポートやリソースについて、どのように感じていま"
 "すか?</strong>"
 
 #. module: hr_appraisal
@@ -767,7 +751,8 @@ msgstr "<strong>研修後の自分のレベルをどのように評価します�
 msgid ""
 "<strong>How would you rate the employee's proficiency in the skill on a "
 "scale from 1 to 10 ?</strong>"
-msgstr "<strong>その従業員のスキル習熟度を10段階で評価すると何点ですか?</strong>"
+msgstr ""
+"<strong>その従業員のスキル習熟度を10段階で評価すると何点ですか?</strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_manager_feedback_template:hr_appraisal.hr_appraisal_post_training_template
@@ -785,7 +770,8 @@ msgstr "<strong>モチベーション</strong>"
 msgid ""
 "<strong>On a scale of 1 to 10, how would you rate the employee’s overall "
 "improvement since the training ?</strong>"
-msgstr "<strong>トレーニング後の従業員の全体的な改善度を10段階で評価すると、どのくら"
+msgstr ""
+"<strong>トレーニング後の従業員の全体的な改善度を10段階で評価すると、どのくら"
 "いになりますか?</strong>"
 
 #. module: hr_appraisal
@@ -866,7 +852,8 @@ msgstr "<strong>研修評価</strong>"
 msgid ""
 "<strong>We wish you the best of success and sincerely thank you for your "
 "invaluable contribution to the company's achievements.</strong>"
-msgstr "<strong>貴社のさらなるご発展をお祈り申し上げますとともに、貴社の会社業績への"
+msgstr ""
+"<strong>貴社のさらなるご発展をお祈り申し上げますとともに、貴社の会社業績への"
 "多大な貢献に心より感謝申し上げます。</strong>"
 
 #. module: hr_appraisal
@@ -879,7 +866,8 @@ msgstr "<strong>弱み</strong>"
 msgid ""
 "<strong>What advice do you have for improving management's leadership and "
 "support for future employees ?</strong>"
-msgstr "<strong>マネジメントのリーダーシップや将来の従業員へのサポートを向上させるた"
+msgstr ""
+"<strong>マネジメントのリーダーシップや将来の従業員へのサポートを向上させるた"
 "めのアドバイスはありますか?</strong>"
 
 #. module: hr_appraisal
@@ -899,7 +887,8 @@ msgstr "<strong>その会社の社風や職場環境についてどう思いま�
 msgid ""
 "<strong>What are your thoughts on the recent changes in the company ? Were "
 "you able to adapt ?</strong>"
-msgstr "<strong>最近の会社の変化についてどう思いますか？ 適応できましたか?</strong>"
+msgstr ""
+"<strong>最近の会社の変化についてどう思いますか？ 適応できましたか?</strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_yearly_template
@@ -918,14 +907,16 @@ msgstr "<strong>試用期間中の全体的な経験について、どう思い�
 msgid ""
 "<strong>What aspects of management and leadership at the company were most "
 "effective in helping you succeed ?</strong>"
-msgstr "<strong>会社の管理およびリーダーシップのどの側面が、"
-"あなたの成功にとって最も有効でしたか ?</strong>"
+msgstr ""
+"<strong>会社の管理およびリーダーシップのどの側面が、あなたの成功にとって最も"
+"有効でしたか ?</strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_probationary_period_template
 msgid ""
 "<strong>What aspects of your role have you enjoyed the most/least ?</strong>"
-msgstr "<strong>あなたの職務の中で、最も良かったこと/悪かったことは何ですか?</strong>"
+msgstr ""
+"<strong>あなたの職務の中で、最も良かったこと/悪かったことは何ですか?</strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_probationary_period_template
@@ -937,7 +928,8 @@ msgstr "<strong>会社でどのような変化を望みますか?</strong>"
 msgid ""
 "<strong>What further actions (e.g., additional training, mentoring) do you "
 "recommend to support the employee’s continued development ?</strong>"
-msgstr "<strong>従業員の継続的な成長を支援するために、どのような対応(追加の研修、指導"
+msgstr ""
+"<strong>従業員の継続的な成長を支援するために、どのような対応(追加の研修、指導"
 "など)があると良いでしょうか?</strong>"
 
 #. module: hr_appraisal
@@ -950,7 +942,8 @@ msgstr "<strong>昨年を全体として振り返ってのご感想をお聞か�
 msgid ""
 "<strong>What key skills should the management team focus on for a smooth "
 "transition ?</strong>"
-msgstr "<strong>マネジメントは、円滑な移行を実現するために、どのスキルに重点を置くべ"
+msgstr ""
+"<strong>マネジメントは、円滑な移行を実現するために、どのスキルに重点を置くべ"
 "きだと考えますか?</strong>"
 
 #. module: hr_appraisal
@@ -958,7 +951,8 @@ msgstr "<strong>マネジメントは、円滑な移行を実現するために�
 msgid ""
 "<strong>What motivates you to continue working with us, and what are your "
 "career aspirations here ?</strong>"
-msgstr "<strong>当社で働き続けるモチベーションは何ですか?また、当社でのキャリア目標は"
+msgstr ""
+"<strong>当社で働き続けるモチベーションは何ですか?また、当社でのキャリア目標は"
 "何ですか?</strong>"
 
 #. module: hr_appraisal
@@ -976,15 +970,17 @@ msgstr "<strong>どのような感情を持つことが多くありましたか?
 msgid ""
 "<strong>Which skills do you possess that you feel the company is not "
 "utilizing ?</strong>"
-msgstr "<strong>あなたが会社で活かされていないと感じているスキルは何ですか？</strong>"
+msgstr ""
+"<strong>あなたが会社で活かされていないと感じているスキルは何ですか？</strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_yearly_template
 msgid ""
 "<strong>Which skills would you like to prioritize for training, and why ?</"
 "strong>"
-msgstr "<strong>どのようなスキルを優先的にトレーニングしたいですか? また、その理由は "
-"?</strong>"
+msgstr ""
+"<strong>どのようなスキルを優先的にトレーニングしたいですか? また、その理由"
+"は ?</strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_exit_interview_template
@@ -1027,7 +1023,7 @@ msgstr "要アクション"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__active
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__active
 msgid "Active"
-msgstr "アクティブ"
+msgstr "有効"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__activity_ids
@@ -1056,7 +1052,7 @@ msgstr "活動ステータス"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__activity_type_icon
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__activity_type_icon
 msgid "Activity Type Icon"
-msgstr "活動種別アイコン"
+msgstr "活動タイプアイコン"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
@@ -1112,7 +1108,7 @@ msgstr ""
 #. module: hr_appraisal
 #: model:mail.template,description:hr_appraisal.mail_template_appraisal_reminder
 msgid "An appraisal reminder sent manually to the employee by the manager"
-msgstr "マネジャーが従業員に手動で送る査定リマインダー"
+msgstr "マネジャーが従業員に手動で送る評価リマインダー"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -1128,18 +1124,18 @@ msgstr "同じ人たちによる別の評価がすでに進行中です。"
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_tree
 msgid "Appraisal"
-msgstr "査定"
+msgstr "評価"
 
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.open_view_hr_appraisal_graph
 #: model:ir.ui.menu,name:hr_appraisal.menu_appraisal_analysis_report
 msgid "Appraisal Analysis"
-msgstr "査定分析"
+msgstr "評価分析"
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_appraisal_note
 msgid "Appraisal Assessment Note"
-msgstr "評価査定メモ"
+msgstr "評価評価メモ"
 
 #. module: hr_appraisal
 #. odoo-javascript
@@ -1148,23 +1144,23 @@ msgstr "評価査定メモ"
 #: code:addons/hr_appraisal/static/src/views/helper/appraisal_helper_view/appraisal_helper_view.js:0
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_campaign_wizard_view_form
 msgid "Appraisal Campaign"
-msgstr "査定キャンペーン"
+msgstr "評価キャンペーン"
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_appraisal_campaign_wizard
 msgid "Appraisal Campaign Wizard"
-msgstr "査定キャンペーンウィザード"
+msgstr "評価キャンペーンウィザード"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__appraisal_confirm_mail_template
 msgid "Appraisal Confirm Mail Template"
-msgstr "査定確認メールテンプレート"
+msgstr "評価確認メールテンプレート"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__employee_appraisal_count
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__appraisal_count
 msgid "Appraisal Count"
-msgstr "査定数"
+msgstr "評価数"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__date_close
@@ -1172,55 +1168,55 @@ msgstr "査定数"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee_public__last_appraisal_date
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 msgid "Appraisal Date"
-msgstr "査定日"
+msgstr "評価日"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__employee_id
 msgid "Appraisal Employee"
-msgstr "査定従業員"
+msgstr "評価従業員"
 
 #. module: hr_appraisal
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 msgid "Appraisal Form to Fill"
-msgstr "査定フォーム未記入"
+msgstr "評価フォーム未記入"
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_appraisal_goal
 msgid "Appraisal Goal"
-msgstr "査定目標"
+msgstr "評価目標"
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_appraisal_goal_tag
 msgid "Appraisal Goal Tags"
-msgstr "査定目標タグ"
+msgstr "評価目標タグ"
 
 #. module: hr_appraisal
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 msgid "Appraisal Officer"
-msgstr "査定役員"
+msgstr "評価役員"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__appraisal_plan_posted
 msgid "Appraisal Plan Posted"
-msgstr "査定計画が投稿されました"
+msgstr "評価計画が投稿されました"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_department__appraisal_properties_definition
 msgid "Appraisal Properties"
-msgstr "査定プロパティ"
+msgstr "評価プロパティ"
 
 #. module: hr_appraisal
 #: model:mail.template,subject:hr_appraisal.mail_template_appraisal_reminder
 msgid "Appraisal Reminder"
-msgstr "査定リマインダー"
+msgstr "評価リマインダー"
 
 #. module: hr_appraisal
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 msgid "Appraisal Request"
-msgstr "査定要求"
+msgstr "評価要求"
 
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.hr_appraisal_config_templates_action
@@ -1229,13 +1225,13 @@ msgstr "査定要求"
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_template_view_tree
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_template_form
 msgid "Appraisal Template"
-msgstr "査定テンプレート"
+msgstr "評価テンプレート"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_department__appraisal_template_ids
 #: model:ir.ui.menu,name:hr_appraisal.hr_appraisal_template_menu
 msgid "Appraisal Templates"
-msgstr "査定テンプレート"
+msgstr "評価テンプレート"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -1244,8 +1240,8 @@ msgid ""
 "Appraisal for %(appraisal_title)s should be using template \"%"
 "(template_name)s\" instead of \"%(wrong_template_name)s\""
 msgstr ""
-"%(appraisal_title)s 用の評価は、テンプレート \"%(template_name)s\" を、"
-"\"%(wrong_template_name)s\" の代わりに使用して下さい"
+"%(appraisal_title)s 用の評価は、テンプレート \"%(template_name)s\" を、\"%"
+"(wrong_template_name)s\" の代わりに使用して下さい"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -1257,29 +1253,37 @@ msgstr "%(employee)sの評価、日付: %(date)s"
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 msgid "Appraisal for %s to fill"
-msgstr "%s用査定未記入"
+msgstr "%s用評価未記入"
 
 #. module: hr_appraisal
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 msgid "Appraisal of %s"
-msgstr "%sの査定"
+msgstr "%sの評価"
 
 #. module: hr_appraisal
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 msgid "Appraisal to fill"
-msgstr "査定未記入"
+msgstr "評価未記入"
 
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.hr_appraisal_action_from_department
 msgid "Appraisal to start"
-msgstr "査定開始"
+msgstr "評価開始"
+
+#. module: hr_appraisal
+#. odoo-python
+#: code:addons/hr_appraisal/wizard/hr_departure_wizard.py:0
+msgid ""
+"Appraisal's managers have been updated due to the end of collaboration with "
+"an employee."
+msgstr ""
 
 #. module: hr_appraisal
 #: model:ir.actions.server,name:hr_appraisal.ir_cron_scheduler_appraisal_ir_actions_server
 msgid "Appraisal: Run employee appraisal"
-msgstr "査定：従業員査定の実行"
+msgstr "評価：従業員評価の実行"
 
 #. module: hr_appraisal
 #. odoo-javascript
@@ -1300,17 +1304,17 @@ msgstr "評価"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Appraisals Automation"
-msgstr "査定自動化"
+msgstr "評価自動化"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "Appraisals Plans"
-msgstr "査定計画"
+msgstr "評価計画"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_department__appraisals_to_process_count
 msgid "Appraisals to Process"
-msgstr "処理待ちの査定"
+msgstr "処理待ちの評価"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -1318,12 +1322,13 @@ msgstr "処理待ちの査定"
 msgid ""
 "Appraisals won't be created for the following employees because they don't "
 "have a manager: %(employees)s"
-msgstr "以下の従業員にはマネジャーがいないため、査定は作成されません: %(employees)s"
+msgstr ""
+"以下の従業員にはマネジャーがいないため、評価は作成されません: %(employees)s"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Appraisers"
-msgstr "査定者"
+msgstr "評価者"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
@@ -1339,7 +1344,7 @@ msgstr "他の従業員に調査回答を依頼"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__assessment_note_ids
 msgid "Assessment Note"
-msgstr "査定メモ"
+msgstr "評価メモ"
 
 #. module: hr_appraisal
 #: model_terms:ir.actions.act_window,help:hr_appraisal.action_hr_appraisal_goal
@@ -1348,7 +1353,8 @@ msgstr "査定メモ"
 msgid ""
 "Assign Goals to motivate your Employees and keep track of their objectives "
 "between Appraisals."
-msgstr "従業員のモチベーションを高めるために目標を設定し、査定と査定の間に目標を追跡"
+msgstr ""
+"従業員のモチベーションを高めるために目標を設定し、評価と評価の間に目標を追跡"
 "します。"
 
 #. module: hr_appraisal
@@ -1360,20 +1366,20 @@ msgstr "添付数"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__author_id
 msgid "Author"
-msgstr "著作者"
+msgstr "作成者"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__appraisal_plan
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__appraisal_plan
 msgid "Automatically Generate Appraisals"
-msgstr "査定を自動的に生成"
+msgstr "評価を自動的に生成"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid ""
 "Automatically creates the confirmed appraisals when Next Appraisal Date is "
 "reached"
-msgstr "次回の査定日に達すると、確定済の査定を自動的に作成します"
+msgstr "次回の評価日に達すると、確定済の評価を自動的に作成します"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__avatar_1920
@@ -1453,7 +1459,7 @@ msgstr "クローズ"
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__date_close
 #: model:ir.model.fields,help:hr_appraisal.field_hr_employee_public__last_appraisal_date
 msgid "Closing date of the current appraisal"
-msgstr "現行の査定の終了日"
+msgstr "現行の評価の終了日"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal_tag__color
@@ -1517,7 +1523,7 @@ msgstr "続行"
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__duration_first_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__duration_first_appraisal
 msgid "Create a first Appraisal after"
-msgstr "以下以後、初回の査定を作成:"
+msgstr "以下以後、初回の評価を作成:"
 
 #. module: hr_appraisal
 #: model_terms:ir.actions.act_window,help:hr_appraisal.hr_appraisal_goal_tag_action
@@ -1528,13 +1534,13 @@ msgstr "タグを作成しましょう。"
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__duration_next_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__duration_next_appraisal
 msgid "Create a second Appraisal after"
-msgstr "以下以後、2回目の査定を作成:"
+msgstr "以下以後、2回目の評価を作成:"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_company__duration_after_recruitment
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__duration_after_recruitment
 msgid "Create an Appraisal after recruitment"
-msgstr "採用後に査定を作成"
+msgstr "採用後に評価を作成"
 
 #. module: hr_appraisal
 #: model_terms:ir.actions.act_window,help:hr_appraisal.action_hr_appraisal_goal
@@ -1545,7 +1551,7 @@ msgstr "新規目標を作成"
 #: model_terms:ir.actions.act_window,help:hr_appraisal.action_hr_appraisal_goal_template
 #: model_terms:ir.actions.act_window,help:hr_appraisal.action_hr_appraisal_goal_template_library
 msgid "Create new goals Template"
-msgstr ""
+msgstr "新しい目標を作成する テンプレート"
 
 #. module: hr_appraisal
 #: model_terms:ir.actions.act_window,help:hr_appraisal.hr_appraisal_goal_tag_action
@@ -1582,7 +1588,7 @@ msgstr "作成日"
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__next_appraisal_date
 msgid "Date where the new appraisal will be automatically created"
-msgstr "新規査定が自動的に作成される日"
+msgstr "新規評価が自動的に作成される日"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__deadline
@@ -1605,7 +1611,7 @@ msgstr "期日：%s"
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid ""
 "Define the next appraisal date automatically based on Appraisal's History"
-msgstr "査定履歴に基づき、次回の査定日を自動的に定義します。"
+msgstr "評価履歴に基づき、次回の評価日を自動的に定義します。"
 
 #. module: hr_appraisal
 #. odoo-javascript
@@ -1616,18 +1622,18 @@ msgstr "削除"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_departure_wizard__delete_appraisal
 msgid "Delete Future Appraisals"
-msgstr "今後の査定をキャンセル"
+msgstr "今後の評価をキャンセル"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_departure_wizard__delete_appraisal
 msgid "Delete all appraisal after contract end date."
-msgstr "契約終了日後の全ての査定をキャンセルします。"
+msgstr "契約終了日後の全ての評価をキャンセルします。"
 
 #. module: hr_appraisal
 #. odoo-javascript
 #: code:addons/hr_appraisal/static/src/components/goal_template_delete_confirmation_dialog/goal_template_delete_confirmation_dialog.js:0
 msgid "Delete with children"
-msgstr ""
+msgstr "子と一緒に削除"
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_department
@@ -1642,7 +1648,7 @@ msgstr "部門"
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.open_view_hr_appraisal_graph_department
 msgid "Department Appraisals"
-msgstr ""
+msgstr "部門評価"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_template__department_ids
@@ -1701,7 +1707,7 @@ msgstr "完了"
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal__state__1_new
 msgid "Draft"
-msgstr "ドラフト"
+msgstr "下書き"
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_mail_template
@@ -1720,12 +1726,12 @@ msgstr "従業員"
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_appraisal
 msgid "Employee Appraisal"
-msgstr "従業員の査定"
+msgstr "従業員の評価"
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_appraisal_template
 msgid "Employee Appraisal Template"
-msgstr "従業員査定テンプレート"
+msgstr "従業員評価テンプレート"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__employee_autocomplete_ids
@@ -1763,7 +1769,7 @@ msgstr "従業員ユーザ"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Employee to review"
-msgstr ""
+msgstr "レビュー対象従業員"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -1804,17 +1810,17 @@ msgstr "外部"
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 msgid "Fill appraisal for %s"
-msgstr "%s用の査定を記入"
+msgstr "%s用の評価を記入"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Fill in the employee's feedback section before"
-msgstr ""
+msgstr "従業員のフィードバック欄を記入してください"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Fill in the manager's feedback section before"
-msgstr ""
+msgstr "マネジャーのフィードバック欄を記入してください"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__assessment_note
@@ -1862,12 +1868,12 @@ msgstr "目標タグ"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__template_goal_id
 msgid "Goal Template"
-msgstr ""
+msgstr "目標テンプレート"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_search
 msgid "Goal or Employee"
-msgstr ""
+msgstr "目標または従業員"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -1888,27 +1894,27 @@ msgstr "目標数"
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.action_hr_appraisal_goal_template
 msgid "Goals Template"
-msgstr ""
+msgstr "目標テンプレート"
 
 #. module: hr_appraisal
 #: model:ir.actions.act_window,name:hr_appraisal.action_hr_appraisal_goal_template_library
 msgid "Goals Template Library"
-msgstr ""
+msgstr "目標テンプレートライブラリ"
 
 #. module: hr_appraisal
 #: model:mail.template,name:hr_appraisal.mail_template_appraisal_request_from_employee
 msgid "HR: Appraisal Request By Employee"
-msgstr ""
+msgstr "人事：従業員による評価申請"
 
 #. module: hr_appraisal
 #: model:mail.template,name:hr_appraisal.mail_template_appraisal_reminder
 msgid "HR: Appraisal reminder"
-msgstr ""
+msgstr "人事：評価のリマインダ"
 
 #. module: hr_appraisal
 #: model:mail.template,name:hr_appraisal.mail_template_appraisal_confirm
 msgid "HR: General Appraisal Confirmation"
-msgstr ""
+msgstr "人事：総合評価の確定"
 
 #. module: hr_appraisal
 #: model:hr.appraisal.goal.tag,name:hr_appraisal.hr_appraisal_goal_tag_hardskills
@@ -1918,7 +1924,7 @@ msgstr "ハードスキル"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__has_edit_right
 msgid "Has Edit Right"
-msgstr ""
+msgstr "編集権限あり"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__has_message
@@ -1934,12 +1940,12 @@ msgstr "従業員はどのように向上できるでしょうか？"
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_default_template
 msgid "How do I feel about my own role?"
-msgstr ""
+msgstr "自分の役割について、どのように感じていますか?"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_default_template
 msgid "How do I feel about the company?"
-msgstr ""
+msgstr "会社についてどう感じていますか?"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__id
@@ -1984,7 +1990,7 @@ msgstr "チェックした場合は、新しいメッセージに注意が必要
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal_goal__message_has_error
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal_goal__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr "選択されている場合、一部のメッセージで配信エラーが発生しています。"
+msgstr "有効にすると、一部のメッセージに配信エラーが発生します。"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__manager_feedback_published
@@ -2009,6 +2015,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "If you need, ask feedback to a selection of colleagues you work with."
 msgstr ""
+"必要であれば、一緒に仕事をしている同僚数人にフィードバックを求めてください。"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__image_1920
@@ -2044,13 +2051,13 @@ msgstr "フォロー中"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__is_last_appraisal_late
 msgid "Is Last Appraisal Late"
-msgstr ""
+msgstr "前回の評価の遅延"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__is_manager
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__is_manager
 msgid "Is Manager"
-msgstr "管理者"
+msgstr "マネジャー"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__job_id
@@ -2078,14 +2085,14 @@ msgstr "言語"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 msgid "Last 365 days"
-msgstr ""
+msgstr "直近365日"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__last_appraisal_id
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__last_appraisal_id
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee_public__last_appraisal_id
 msgid "Last Appraisal"
-msgstr "最終査定"
+msgstr "最終評価"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee_public__last_appraisal_state
@@ -2095,7 +2102,7 @@ msgstr "最終評価ステータス"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__last_ongoing_appraisal_date
 msgid "Last Ongoing Appraisal Date"
-msgstr ""
+msgstr "最新の進行中の評価日"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__write_uid
@@ -2128,7 +2135,7 @@ msgstr "遅延"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 msgid "Late Activities"
-msgstr "遅れた活動"
+msgstr "期限超過の活動"
 
 #. module: hr_appraisal
 #: model:ir.actions.server,name:hr_appraisal.action_open_appraisal_campaign_wizard
@@ -2141,18 +2148,18 @@ msgstr "キャンペーンを開始"
 #. module: hr_appraisal
 #: model:ir.ui.menu,name:hr_appraisal.menu_config_goal_template
 msgid "Library"
-msgstr "図書館"
+msgstr "ライブラリ"
 
 #. module: hr_appraisal
 #: model:ir.actions.server,name:hr_appraisal.action_load_appraisal_demo_data
 msgid "Load appraisal scenario"
-msgstr "査定シナリオをロード"
+msgstr "評価シナリオをロード"
 
 #. module: hr_appraisal
 #. odoo-javascript
 #: code:addons/hr_appraisal/static/src/views/helper/appraisal_helper_view/appraisal_helper_view.xml:0
 msgid "Load sample data"
-msgstr "サンプルデータをロードする"
+msgstr "サンプルデータを読込"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_manager_feedback_template:hr_appraisal.hr_appraisal_default_template
@@ -2160,6 +2167,9 @@ msgid ""
 "Long term (&gt; 6 months) career discussion: Where does the employee\n"
 "                    want to go, and how can you help them reach that goal?"
 msgstr ""
+"中長期(&gt;6か月以上)のキャリアに関する話し合い \n"
+"                    社員が目指す方向性は何か、その目標に到達するためにどのよ"
+"うな支援ができるかを検討します"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__template_id
@@ -2244,7 +2254,7 @@ msgstr "モード"
 #. odoo-javascript
 #: code:addons/hr_appraisal/static/src/components/cog_menu/multiple_appraisals_cog_menu.xml:0
 msgid "Multiple Appraisals"
-msgstr "複数査定"
+msgstr "複数評価"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
@@ -2260,7 +2270,7 @@ msgstr "活動期限"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 msgid "My Appraisals"
-msgstr "自分の査定"
+msgstr "自分の評価"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_search
@@ -2275,7 +2285,7 @@ msgstr "自分のチーム"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 msgid "My team"
-msgstr ""
+msgstr "自分のチーム"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__name
@@ -2295,7 +2305,7 @@ msgstr "要改善"
 #. odoo-javascript
 #: code:addons/hr_appraisal/static/src/views/helper/appraisal_helper_view/appraisal_helper_view.xml:0
 msgid "New Employee"
-msgstr ""
+msgstr "新規従業員"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -2330,20 +2340,20 @@ msgstr "次の活動タイプ"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_employee_view_search
 msgid "Next Appraisal"
-msgstr "次回査定"
+msgstr "次回評価"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__next_appraisal_date
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__next_appraisal_date
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee_public__next_appraisal_date
 msgid "Next Appraisal Date"
-msgstr "次の査定日"
+msgstr "次の評価日"
 
 #. module: hr_appraisal
 #. odoo-javascript
 #: code:addons/hr_appraisal/static/src/views/helper/appraisal_helper_view/appraisal_helper_view.xml:0
 msgid "No Appraisals found!"
-msgstr "査定が見つかりません!"
+msgstr "評価が見つかりません!"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -2355,7 +2365,7 @@ msgstr "%(category_name)sというタグが付いている従業員はいませ�
 #. odoo-javascript
 #: code:addons/hr_appraisal/static/src/views/helper/appraisal_helper_view/appraisal_helper_view.xml:0
 msgid "No employees to assess yet!"
-msgstr ""
+msgstr "まだ評価する従業員がいません!"
 
 #. module: hr_appraisal
 #. odoo-javascript
@@ -2372,12 +2382,12 @@ msgstr "メモ"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__number_of_completed_sibling_goals
 msgid "Number Of Completed Sibling Goals"
-msgstr ""
+msgstr "完了した同階層目標の数"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__number_of_sibling_goals
 msgid "Number Of Sibling Goals"
-msgstr ""
+msgstr "同階層目標の数"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_needaction_counter
@@ -2406,12 +2416,12 @@ msgstr "配信エラーが発生されたメッセージ数"
 #. module: hr_appraisal
 #: model:res.groups,name:hr_appraisal.group_hr_appraisal_user
 msgid "Officer: Access all appraisals"
-msgstr "役員: 全ての査定にアクセス"
+msgstr "役員: 全ての評価にアクセス"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "On demand"
-msgstr ""
+msgstr "オンデマンド"
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal__state__2_pending
@@ -2423,20 +2433,20 @@ msgstr "処理中"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__ongoing_appraisal_count
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee_public__ongoing_appraisal_count
 msgid "Ongoing Appraisal Count"
-msgstr "進行中の査定数"
+msgstr "進行中の評価数"
 
 #. module: hr_appraisal
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 msgid "Oops! You can only delete draft appraisals."
-msgstr "おっと!削除できるのはドラフトの評価のみです。"
+msgstr "おっと!削除できるのは下書きの評価のみです。"
 
 #. module: hr_appraisal
 #. odoo-javascript
 #: code:addons/hr_appraisal/static/src/views/kanban/goal_kanban/goal_kanban_view.xml:0
 #: code:addons/hr_appraisal/static/src/views/list/goal_list/goal_list_view.xml:0
 msgid "Open Library"
-msgstr ""
+msgstr "ライブラリを開く"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_yearly_template
@@ -2447,7 +2457,7 @@ msgstr "案件"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.request_appraisal_view_form
 msgid "Optional comment..."
-msgstr ""
+msgstr "任意のコメント..."
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_request_appraisal__lang
@@ -2458,8 +2468,8 @@ msgid ""
 "e.g. {{ object.partner_id.lang }}."
 msgstr ""
 "メール送信時に選択できる任意の翻訳言語(ISOコード)。未設定の場合は、関連する取"
-"引先の言語が使用されます。通常は、たとえば {{ object.partner_id.lang }} "
-"のような、適切な言語を指定するプレースホルダー式を使用します。"
+"引先の言語が使用されます。通常は、たとえば {{ object.partner_id.lang }} のよ"
+"うな、適切な言語を指定するプレースホルダー式を使用します。"
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_campaign_wizard__manager__person
@@ -2475,7 +2485,7 @@ msgstr "全体的な経験フィードバック"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__parent_id
 msgid "Parent Goal Template"
-msgstr ""
+msgstr "親目標テンプレート"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__parent_path
@@ -2491,7 +2501,7 @@ msgstr "親ユーザ"
 #. module: hr_appraisal
 #: model_terms:ir.actions.act_window,help:hr_appraisal.hr_appraisal_action_multiple_appraisals
 msgid "Plan appraisals with your colleagues, collect and discuss feedback."
-msgstr "同僚と査定を計画し、フィードバックを集めて話し合いましょう。"
+msgstr "同僚と評価を計画し、フィードバックを集めて話し合いましょう。"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -2500,12 +2510,14 @@ msgid ""
 "Please set a final rating to validate these appraisals:\n"
 "- %s"
 msgstr ""
+"これらの評価を確定するには最終評価を設定してください：\n"
+"-%s"
 
 #. module: hr_appraisal
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 msgid "Previous Appraisals"
-msgstr "前回の査定"
+msgstr "前回の評価"
 
 #. module: hr_appraisal
 #. odoo-javascript
@@ -2552,6 +2564,10 @@ msgid ""
 "employee can achieve it. Which benefit he will get from it. Maybe some "
 "process                             or steps to help her/him."
 msgstr ""
+"目標の内容や、従業員がそれをどのように達成できるか、\n"
+"                             達成することで得られるメリットを明確に示します。"
+"必要に応じて、達成に向けたプロセスやステップを                             記"
+"載してください。"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_form
@@ -2560,10 +2576,10 @@ msgid ""
 "Which benefit he will get from it.                             Maybe some "
 "process or steps to help her/him along the way."
 msgstr ""
-"目標の明確な情報を提供し、従業員がどのように達成できるかを示して下さい。また"
-"、その達成によって得られるメリットも伝えましょう。"
-"                            "
-"さらに、達成までのプロセスや具体的なステップを提示すると効果的です。"
+"目標の明確な情報を提供し、従業員がどのように達成できるかを示して下さい。ま"
+"た、その達成によって得られるメリットも伝えましょ"
+"う。                            さらに、達成までのプロセスや具体的なステップ"
+"を提示すると効果的です。"
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_hr_employee_public
@@ -2617,22 +2633,24 @@ msgstr "レポーティング"
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_employee_public_view_form
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_employee_view_form
 msgid "Request Appraisal"
-msgstr "査定を依頼"
-
-#. module: hr_appraisal
-#: model:ir.actions.server,name:hr_appraisal.action_create_multi_appraisals
-msgid "Request Appraisals"
-msgstr "査定を依頼"
+msgstr "評価を依頼"
 
 #. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_request_appraisal
 msgid "Request an Appraisal"
-msgstr "査定を依頼"
+msgstr "評価を依頼"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Reset"
 msgstr "リセット"
+
+#. module: hr_appraisal
+#: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
+msgid ""
+"Resetting the appraisal will erase all manually entered content in the "
+"Employee and Manager Feedback sections. Do you want to continue?"
+msgstr ""
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__activity_user_id
@@ -2644,7 +2662,7 @@ msgstr "担当ユーザ"
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__message_has_sms_error
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__message_has_sms_error
 msgid "SMS Delivery error"
-msgstr "SMS送信エラー"
+msgstr "SMS配信エラー"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_form
@@ -2666,22 +2684,22 @@ msgstr "スケジュール"
 #. odoo-javascript
 #: code:addons/hr_appraisal/static/src/views/helper/appraisal_helper_view/appraisal_helper_view.xml:0
 msgid "Schedule Appraisals"
-msgstr "査定を予定"
+msgstr "評価を予定"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Schedule Meeting"
-msgstr ""
+msgstr "ミーティングをスケジュール"
 
 #. module: hr_appraisal
 #: model_terms:ir.actions.act_window,help:hr_appraisal.hr_appraisal_action_multiple_appraisals
 msgid "Schedule an appraisal"
-msgstr "査定を予定"
+msgstr "評価を予定"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 msgid "Search Appraisal"
-msgstr "査定を検索する。"
+msgstr "評価を検索する。"
 
 #. module: hr_appraisal
 #. odoo-javascript
@@ -2720,7 +2738,7 @@ msgstr "評価が確定すると、従業員とマネジャーの双方に自動
 #: model:mail.template,description:hr_appraisal.mail_template_appraisal_request_from_employee
 msgid ""
 "Sent manually to the manager by the employee who wants to do an appraisal"
-msgstr ""
+msgstr "評価を希望する従業員が、マネジャーに手動で送信します"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_note__sequence
@@ -2757,7 +2775,7 @@ msgstr "マネジャーフィードバックをフル表示"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 msgid "Show all records which has been created during the last 365 days"
-msgstr ""
+msgstr "直近365日間に作成されたすべてのレコードを表示"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
@@ -2767,7 +2785,7 @@ msgstr "次回活動日が過去のすべてのレコードを表示"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__sibling_goals_ratio
 msgid "Sibling Goals Ratio"
-msgstr ""
+msgstr "同階層目標比率"
 
 #. module: hr_appraisal
 #: model:hr.appraisal.goal.tag,name:hr_appraisal.hr_appraisal_goal_tag_softskills
@@ -2790,7 +2808,7 @@ msgid ""
 "Planned: Future activities."
 msgstr ""
 "活動に基づくステータス\n"
-"遅延: 期限が既に過ぎています\n"
+"期限超過：期限日がすでに過ぎています\n"
 "今日: 活動日は今日です\n"
 "予定: 将来の活動。"
 
@@ -2809,17 +2827,17 @@ msgstr "期待を大きく上回る"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__child_ids
 msgid "Sub Goal Template"
-msgstr ""
+msgstr "サブ目標テンプレート"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_template_view_list
 msgid "Sub Goals"
-msgstr ""
+msgstr "サブ目標"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_template_view_form
 msgid "Sub-Goals"
-msgstr ""
+msgstr "サブ目標"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__subject
@@ -2851,8 +2869,9 @@ msgstr "テンプレート"
 msgid ""
 "Template %(template_name)s is necessary for appraisal requests and may not "
 "be removed."
-msgstr "テンプレート %(template_name)s "
-"は評価依頼のために必要で削除することはできません。"
+msgstr ""
+"テンプレート %(template_name)s は評価依頼のために必要で削除することはできませ"
+"ん。"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -2861,27 +2880,28 @@ msgid ""
 "Thanks to your Appraisal Plan, without any new manual Appraisal, the new "
 "Appraisal will be automatically created on %s."
 msgstr ""
-"あなたの査定計画により、新たに手動で査定することなく、新しい査定は以下の日に"
+"あなたの評価計画により、新たに手動で評価することなく、新しい評価は以下の日に"
 "自動的に作成されます: %s"
 
 #. module: hr_appraisal
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 msgid "The \"Manager Feedback Published\" cannot be changed by an employee."
-msgstr "公開されたマネジャーフィードバックは、従業員が変更することはできません。"
+msgstr ""
+"公開されたマネジャーフィードバックは、従業員が変更することはできません。"
 
 #. module: hr_appraisal
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 msgid "The appraisal's status has been set to Done by %s"
-msgstr "査定ステータスは%sにより設定されました。"
+msgstr "評価ステータスは%sにより設定されました。"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal_goal__usual_duration_month
 msgid ""
 "The average timing for the goals to be completed. It will populate the "
 "estimated end date when assigned"
-msgstr ""
+msgstr "目標達成までの平均所要時間。割り当て時に推定終了日が自動入力されます"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -2895,7 +2915,7 @@ msgid ""
 "The date of the next appraisal is computed by the appraisal plan's dates "
 "(first appraisal + periodicity)."
 msgstr ""
-"次の査定日は、査定計画の日付によって計算されます（最初の査定日＋査定周期）"
+"次の評価日は、評価計画の日付によって計算されます（最初の評価日＋評価周期）"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -2914,7 +2934,8 @@ msgstr "期間は1か月より大きいか同じである必要があります�
 msgid ""
 "The employee %(employee)s arrived %(months)s months ago. The appraisal is "
 "created and you can fill it here."
-msgstr "従業員%(employee)sは%(months)sか月前に入社しました。査定が作成され、ここで記"
+msgstr ""
+"従業員%(employee)sは%(months)sか月前に入社しました。評価が作成され、ここで記"
 "入できます。"
 
 #. module: hr_appraisal
@@ -2941,8 +2962,8 @@ msgid ""
 "(employees)s. The existing appraisals will be used instead of creating new "
 "ones."
 msgstr ""
-"次の従業員にはすでに査定が存在します%(appraisal_date)s: "
-"%(employees)s。既存の評価が使用されるため、新しい査定は作成されません。"
+"次の従業員にはすでに評価が存在します%(appraisal_date)s: %(employees)s。既存の"
+"評価が使用されるため、新しい評価は作成されません。"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -2950,7 +2971,8 @@ msgstr ""
 msgid ""
 "The last appraisal of %(employee)s was %(months)s months ago. The appraisal "
 "is created and you can fill it here."
-msgstr "前回の%(employee)sの査定は%(months)s月前でした。査定を作成し、ここに記入する"
+msgstr ""
+"前回の%(employee)sの評価は%(months)s月前でした。評価を作成し、ここに記入する"
 "ことができます。"
 
 #. module: hr_appraisal
@@ -2995,7 +3017,7 @@ msgstr "従業員の名前を入力"
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__activity_exception_decoration
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal_goal__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr "記録上の例外活動の種類。"
+msgstr "レコード上の例外の活動タイプ。"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__uncomplete_goals_count
@@ -3012,7 +3034,7 @@ msgstr "未公開"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_employee_view_search
 msgid "Upcoming Appraisals"
-msgstr "次回の査定"
+msgstr "次回の評価"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_template_form
@@ -3021,8 +3043,8 @@ msgid ""
 "Employee.                                         You can use a lot of "
 "options with the html editor, accessible by pressing / on the keyboard."
 msgstr ""
-"このエリアを使用して、従業員に表示される内容を入力します。キーボードの / "
-"を押してアクセスできるHTMLエディタでは、多くのオプションを使用できます。"
+"このエリアを使用して、従業員に表示される内容を入力します。キーボードの / を押"
+"してアクセスできるHTMLエディタでは、多くのオプションを使用できます。"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_template_form
@@ -3047,7 +3069,7 @@ msgstr "ユーザコンテンツ"
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__usual_duration_month
 msgid "Usual Timing"
-msgstr ""
+msgstr "通常のタイミング"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_template_form
@@ -3085,7 +3107,7 @@ msgstr "ウェブサイト通信履歴"
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_default_template
 msgid "What are my most important achievements since my last appraisal?"
-msgstr ""
+msgstr "前回の評価以降で、あなたの最も重要な成果は何ですか?"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_default_template
@@ -3093,11 +3115,13 @@ msgid ""
 "What are my short- and long-term goals within the company and for my\n"
 "                    career?"
 msgstr ""
+"会社の中での短期・長期の目標や、今後のキャリアについての\n"
+"                    目標は何ですか?"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_default_template
 msgid "What do I need to improve my work?"
-msgstr ""
+msgstr "仕事の質を高めるために、どのような点を改善したいですか?"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_default_template
@@ -3105,17 +3129,21 @@ msgid ""
 "What has been the most challenging aspect of my work this past year,\n"
 "                  and why?"
 msgstr ""
+"この 1 年で、仕事の中で特に難しかったことと、その理由を\n"
+"                  教えてください。"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_default_template
 msgid "Which parts of my job do I enjoy the most? Which do I enjoy the least?"
 msgstr ""
+"仕事の中で最もやりがいを感じる部分はどこですか?また、最もやりがいを感じにくい"
+"部分はどこですか?"
 
 #. module: hr_appraisal
 #. odoo-javascript
 #: code:addons/hr_appraisal/static/src/views/helper/appraisal_helper_view/appraisal_helper_view.xml:0
 msgid "Would you like to test with sample data or create your own employees?"
-msgstr ""
+msgstr "サンプルデータでテストしますか、それとも自分の従業員を作成しますか?"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -3123,20 +3151,22 @@ msgstr ""
 msgid ""
 "You arrived %s months ago. Your appraisal is created and you can fill it "
 "here."
-msgstr "あなたは%sか月前に入社しました。あなたの査定が作成され、ここで記入することが"
+msgstr ""
+"あなたは%sか月前に入社しました。あなたの評価が作成され、ここで記入することが"
 "できます。"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_template_view_form
 msgid "You can define this goal to be part of another one"
-msgstr ""
+msgstr "この目標を別の目標の一部として定義できます"
 
 #. module: hr_appraisal
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_employee.py:0
 msgid ""
 "You cannot delete an employee who is a goal's manager, archive it instead."
-msgstr "ゴールのマネジャーである従業員を削除することはできません。代わりにアーカイブ"
+msgstr ""
+"ゴールのマネジャーである従業員を削除することはできません。代わりにアーカイブ"
 "して下さい。"
 
 #. module: hr_appraisal
@@ -3146,18 +3176,20 @@ msgid ""
 "You cannot duplicate at the same time a goal and one of its children.\n"
 "Duplicating a goal will also duplicate its children."
 msgstr ""
+"目標とその子要素の1つを同時に複製することはできません。\n"
+"目標を複製すると、その子要素も複製されます。"
 
 #. module: hr_appraisal
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_employee.py:0
 msgid "You cannot set 'Next Appraisal Date' in the past."
-msgstr "'次回査定日'を過去に設定することはできません。"
+msgstr "'次回評価日'を過去に設定することはできません。"
 
 #. module: hr_appraisal
 #. odoo-python
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 msgid "Your Appraisal has been completed"
-msgstr "査定が終了しました"
+msgstr "評価が終了しました"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -3165,18 +3197,19 @@ msgstr "査定が終了しました"
 msgid ""
 "Your last appraisal was %s months ago. Your appraisal is created and you can "
 "fill it here."
-msgstr "あなたの最後の査定は%sか月前でした。あなたの査定が作成され、ここで記入するこ"
+msgstr ""
+"あなたの最後の評価は%sか月前でした。あなたの評価が作成され、ここで記入するこ"
 "とができます。"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_template_form
 msgid "e.g. Annual Appraisal"
-msgstr "例: 年度査定"
+msgstr "例: 年度評価"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_template_view_form
 msgid "e.g. Improve English"
-msgstr ""
+msgstr "例：英語力を向上させる"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_form
@@ -3186,7 +3219,7 @@ msgstr "例: 英語のレベルを向上させる"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "e.g. John Doe"
-msgstr "例: 鈴木 一郎"
+msgstr "例: John Doe"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_tag_view_tree
@@ -3218,12 +3251,27 @@ msgstr "公開されたら"
 msgid ""
 "{{ hasattr(object, 'name') and object.name or '' }} requests an Appraisal"
 msgstr ""
-"{{ hasattr(object, 'name') およびobject.name or '' }} が査定を要求しています"
+"{{ hasattr(object, 'name') およびobject.name or '' }} が評価を要求しています"
 
 #. module: hr_appraisal
 #: model:mail.template,subject:hr_appraisal.mail_template_appraisal_confirm
 msgid "{{ object.employee_id.name }}: Appraisal Confirmed"
-msgstr "{{ object.employee_id.name }}: 査定が確認されました"
+msgstr "{{ object.employee_id.name }}: 評価が確認されました"
+
+#~ msgid "Request Appraisals"
+#~ msgstr "評価を依頼"
+
+#~ msgid "100%"
+#~ msgstr "100%"
+
+#~ msgid "25%"
+#~ msgstr "25%"
+
+#~ msgid "50%"
+#~ msgstr "50%"
+
+#~ msgid "75%"
+#~ msgstr "75%"
 
 #~ msgid "%s Goals"
 #~ msgstr "%s 目標"

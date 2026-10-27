@@ -56,7 +56,6 @@ class TestWhitelistFromTemplate(TransactionCase):
             'transport_mode_train': False,
             'transport_mode_public': False,
             'transport_mode_private_car': False,
-            'transport_mode_bike': True,
             'distance_home_work': 25,
             'distance_home_work_unit': 'kilometers',
             'private_car_reimbursed_amount': 0.3,

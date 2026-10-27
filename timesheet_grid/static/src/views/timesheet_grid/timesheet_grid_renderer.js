@@ -104,15 +104,15 @@ export class TimesheetGridRenderer extends GridRenderer {
 
         const value = workingHours[column.value];
         const cellValue = section?.cells?.[column.id]?.value;
-        if (cellValue > value) {
+        const overtime = cellValue - value;
+        if (overtime > 0.00001) {
             return "text-warning";
-        } else if (cellValue < value) {
+        } else if (overtime < -0.00001) {
             return "text-danger";
-        } else if (cellValue === value) {
+        } else if (overtime >= -0.00001 && overtime <= 0.00001) {
             return "text-success";
         }
-
-        return res;
+        return res
     }
 
     isTextDanger(row, column) {
@@ -143,7 +143,7 @@ export class TimesheetGridRenderer extends GridRenderer {
         if (workingHours == null) {
             return null;
         }
-        if (workingHours.full_time_required_hours) {
+        if (workingHours.hours_per_week) {
             let isToday = false;
             let hoursWorked = 0;
             const isTodayColumn = this.props.columns.some((column) => column.isToday);
@@ -158,7 +158,7 @@ export class TimesheetGridRenderer extends GridRenderer {
                 }
                 hoursWorked += cell.value;
             }
-            return hoursWorked - workingHours.full_time_required_hours;
+            return hoursWorked - workingHours.hours_per_week;
         }
 
         return Object.values(section.cells).reduce((overtime, cell) => overtime + this.getSectionDailyOvertime(cell, workingHours), 0);
@@ -169,9 +169,9 @@ export class TimesheetGridRenderer extends GridRenderer {
         const res = super._getTotalCellBgColor(section);
         if (weeklyOvertime == null) {
             return res;
-        } else if (weeklyOvertime < 0) {
+        } else if (weeklyOvertime < -0.00001) {
             return 'text-bg-danger';
-        } else if (weeklyOvertime === 0) {
+        } else if (weeklyOvertime > -0.00001 && weeklyOvertime < 0.00001) {
             return 'text-bg-success';
         } else {
             return 'text-bg-warning';

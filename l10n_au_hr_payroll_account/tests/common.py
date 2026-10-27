@@ -138,6 +138,8 @@ class L10nPayrollAccountCommon(AccountTestInvoicingCommon):
             'address_id': cls.env['res.partner'].create({'name': "Fund A Partner"}).id,
             'usi': "112312312312"
         })
+        if 'is_valid' in super_fund._fields:
+            super_fund.is_valid = True
         cls.env['l10n_au.super.account'].create([
             {
                 "date_from": date(2023, 6, 1),
@@ -163,6 +165,19 @@ class L10nPayrollAccountCommon(AccountTestInvoicingCommon):
             "date_from": "2023-07-01",
             "parameter_value": {"claimable": 150},
         })
+
+    @classmethod
+    def _create_company(cls, **create_values):
+        company = super()._create_company(**create_values)
+        cls.env['ir.sequence'].create({
+            'name': 'STP Sequence',
+            'code': 'stp.transaction',
+            'prefix': 'PAYEVENT0004',
+            'padding': 10,
+            'number_next': 1,
+            'company_id': company.id,
+        })
+        return company
 
     def _register_payment(self, payslip_run):
         action = payslip_run.action_register_payment()

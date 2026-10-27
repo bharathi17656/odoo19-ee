@@ -45,6 +45,7 @@ class TestItalianTaxReport(TestAccountReportsCommon):
         In this case, we should put that value in line vp8.
         """
         self._test_line_report_carryover(
+            'in_invoice',
             '2015-03-10',
             1000,
             self.tax_4a,
@@ -60,12 +61,35 @@ class TestItalianTaxReport(TestAccountReportsCommon):
             'credit',
             40.0)
 
+    def test_tax_report_carryover_vp14_credit_period_rounding(self):
+        """
+        Test to have a non-integer value in line vp14 credit at a period inside the year.
+        In this case, we should put that value in line vp8.
+        """
+        self._test_line_report_carryover(
+            'in_invoice',
+            '2015-03-10',
+            10,
+            self.tax_4a,
+            self._generate_options(
+                self.report,
+                fields.Date.from_string('2015-03-01'),
+                fields.Date.from_string('2015-03-31')),
+            self._generate_options(
+                self.report,
+                fields.Date.from_string('2015-04-01'),
+                fields.Date.from_string('2015-04-30')),
+            'VP8',
+            'credit',
+            0.4)
+
     def test_tax_report_carryover_vp14_credit_year(self):
         """
         Test to have a value in line vp14 credit at the last period of the year.
         In this case, we should put that value in line vp9.
         """
         self._test_line_report_carryover(
+            'in_invoice',
             '2015-12-10',
             1000,
             self.tax_4a,
@@ -79,7 +103,31 @@ class TestItalianTaxReport(TestAccountReportsCommon):
                 fields.Date.from_string('2016-01-30')),
             'VP9',
             'credit',
-            40.0)
+            40.0,
+        )
+
+    def test_tax_report_carryover_vp14_debit_year(self):
+        """
+        Test to have a value in line vp14 debit at the last period of the year.
+        In this case, we should put that value in line vp7.
+        """
+        self._test_line_report_carryover(
+            'out_invoice',
+            '2015-12-10',
+            1000,
+            self.tax_4a,
+            self._generate_options(
+                self.report,
+                fields.Date.from_string('2015-12-01'),
+                fields.Date.from_string('2015-12-31')),
+            self._generate_options(
+                self.report,
+                fields.Date.from_string('2016-01-01'),
+                fields.Date.from_string('2016-01-30')),
+            'VP7',
+            'debit',
+            40.0,
+        )
 
     def test_tax_report_carryover_vp14_debit_valid(self):
         """
@@ -87,6 +135,7 @@ class TestItalianTaxReport(TestAccountReportsCommon):
         In this case, we should put that value in line vp7.
         """
         self._test_line_report_carryover(
+            'out_invoice',
             '2015-05-10',
             500,
             self.tax_4v,
@@ -100,7 +149,8 @@ class TestItalianTaxReport(TestAccountReportsCommon):
                 fields.Date.from_string('2015-06-30')),
             'VP7',
             'debit',
-            20.0)
+            20.0,
+        )
 
     def test_tax_report_carryover_vp14_debit_invalid(self):
         """
@@ -108,6 +158,7 @@ class TestItalianTaxReport(TestAccountReportsCommon):
         In this case, we should never put that value in line vp7.
         """
         self._test_line_report_carryover(
+            'out_invoice',
             '2015-05-10',
             10000,
             self.tax_4v,
@@ -121,7 +172,8 @@ class TestItalianTaxReport(TestAccountReportsCommon):
                 fields.Date.from_string('2015-06-30')),
             'VP7',
             'debit',
-            0.0)
+            0.0,
+        )
 
     def test_tax_report_carryover_vp14_debit_valid_reset(self):
         """
@@ -130,6 +182,7 @@ class TestItalianTaxReport(TestAccountReportsCommon):
         In this case, we should see the carryover back to 0 after the second month.
         """
         self._test_line_report_carryover(
+            'out_invoice',
             '2015-05-10',
             500,
             self.tax_4v,
@@ -143,8 +196,10 @@ class TestItalianTaxReport(TestAccountReportsCommon):
                 fields.Date.from_string('2015-06-30')),
             'VP7',
             'debit',
-            20.0)
+            20.0,
+        )
         self._test_line_report_carryover(
+            'out_invoice',
             '2015-06-10',
             5000,
             self.tax_4v,
@@ -158,16 +213,16 @@ class TestItalianTaxReport(TestAccountReportsCommon):
                 fields.Date.from_string('2015-07-30')),
             'VP7',
             'debit',
-            0.0)
+            0.0,
+        )
 
-    def _test_line_report_carryover(self, invoice_date, invoice_amount, tax_line,
+    def _test_line_report_carryover(self, move_type, invoice_date, invoice_amount, tax_line,
                                     first_month_options, second_month_options,
-                                    target_line_code, col_name, target_line_value):
-        def _get_attachment(*args, **kwargs):
-            return []
+                                    target_line_code, col_name, target_line_value,
+                                    ):
 
         invoice = self.env['account.move'].create({
-            'move_type': 'in_invoice',
+            'move_type': move_type,
             'partner_id': self.l10n_it_tax_report_partner.id,
             'date': invoice_date,
             'invoice_date': invoice_date,

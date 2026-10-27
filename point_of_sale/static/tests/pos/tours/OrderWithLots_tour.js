@@ -34,6 +34,23 @@ registry.category("web_tour.tours").add("test_03_pos_with_lots", {
             Numpad.click("⌫"),
             { ...ProductScreen.back(), isActive: ["mobile"] },
             ProductScreen.totalAmountIs("6.38"),
+            ProductScreen.clickReview(),
+            ProductScreen.clickLotIcon(),
+            Dialog.confirm(),
+            { ...ProductScreen.orderLineHas("Monitor Stand", "2")[0], isActive: ["desktop"] },
+            { ...ProductScreen.back(), isActive: ["mobile"] },
             ProductScreen.isShown(),
+        ].flat(),
+});
+
+registry.category("web_tour.tours").add("test_lot_tracking_without_lot_creation", {
+    steps: () =>
+        [
+            Chrome.startPoS(),
+            Dialog.confirm("Open Register"),
+            ProductScreen.clickDisplayedProduct("Monitor Stand"),
+            ProductScreen.totalAmountIs("3.19"),
+            ProductScreen.clickDisplayedProduct("Monitor Stand"),
+            ProductScreen.totalAmountIs("6.38"),
         ].flat(),
 });

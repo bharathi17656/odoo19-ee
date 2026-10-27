@@ -75,7 +75,8 @@ class AccountMove(models.Model):
         super()._compute_show_reset_to_draft_button()
         self.filtered(lambda m: m.l10n_ke_oscu_invoice_number).show_reset_to_draft_button = False
 
-    @api.depends('invoice_line_ids.product_id',
+    @api.depends('invoice_date',
+                 'invoice_line_ids.product_id',
                  'invoice_line_ids.product_uom_id',
                  'reversed_entry_id',
                  'l10n_ke_reason_code_id',
@@ -83,7 +84,7 @@ class AccountMove(models.Model):
     def _compute_l10n_ke_validation_message(self):
         """ Compute the series of messages to be displayed in the banner at the header of the invoice. """
         for move in self:
-            if not move.company_id.l10n_ke_oscu_is_active or not move.is_invoice(include_receipts=True):
+            if not move.is_invoice(include_receipts=True) or move.country_code != 'KE':
                 move.l10n_ke_validation_message = False
                 continue
 
@@ -92,6 +93,19 @@ class AccountMove(models.Model):
                 **product_lines.product_id._l10n_ke_get_validation_messages(for_invoice=True),
                 **product_lines.product_uom_id._l10n_ke_get_validation_messages(),
             }
+
+            if not move.company_id.l10n_ke_oscu_is_active:
+                messages['etims_configuration_warning'] = {
+                    'message': _(
+                        "eTIMS configuration is incomplete for company '%(company)s'. Please verify that the eTIMS Server Mode, "
+                        "OSCU Configuration, and the company's eTIMS Branch Code are correctly set up to proceed.",
+                        company=move.company_id.name
+                    ),
+                    'blocking': True,
+                }
+                move.l10n_ke_validation_message = messages
+                continue
+
             if move.l10n_ke_oscu_invoice_number and not move.l10n_ke_oscu_receipt_number and not move.l10n_ke_oscu_signature:
                 messages['timeout_warning'] = {
                     'message': _("The eTIMS connection timed out while sending the invoice, please try again later.")
@@ -115,6 +129,12 @@ class AccountMove(models.Model):
                         'blocking': True,
                     }
 
+                if move.reversed_entry_id and move.reversed_entry_id.invoice_date > move.invoice_date:
+                    messages['credit_date_error'] = {
+                        'message': _("eTims does not accept credit notes with a date earlier than the corresponding invoice."),
+                        'blocking': True,
+                    }
+
             if product_lines.filtered(lambda line: not line.product_id):
                 messages['no_product_warning'] = {
                     'message': _("Some lines are missing a product where one must be set. "),
@@ -133,7 +153,7 @@ class AccountMove(models.Model):
 
             if lines_not_single_tax:
                 messages['lines_not_single_vat_tax'] = {
-                    'message': _("All invoice lines must have Tax line and exactly one VAT tax (on which the KRA Tax Code is set)!"),
+                    'message': _("All invoice lines must include a tax line and exactly one VAT tax, with the KRA Tax Code properly set."),
                     'blocking': True,
                 }
 
@@ -198,6 +218,8 @@ class AccountMove(models.Model):
         tax_details = self._prepare_invoice_aggregated_taxes()
         line_items = self._l10n_ke_oscu_get_json_from_lines(tax_details)
         tax_codes, tax_rates, taxable_amounts, tax_amounts = self._get_taxes_data(line_items)
+        total_taxable_amount = sum(taxable_amounts.values())
+        total_tax_amount = sum(tax_amounts.values())
 
         content = {
             'invcNo':           '',                                        # KRA Invoice Number (set at the point of sending)
@@ -214,9 +236,9 @@ class AccountMove(models.Model):
             **taxable_amounts,
             **tax_amounts,
             **tax_rates,
-            'totTaxblAmt':      json_float_round(tax_details['base_amount'], 2),
-            'totTaxAmt':        json_float_round(tax_details['tax_amount'], 2),
-            'totAmt':           json_float_round(abs(self.amount_total_signed), 2),
+            'totTaxblAmt':      json_float_round(total_taxable_amount, 2),
+            'totTaxAmt':        json_float_round(total_tax_amount, 2),
+            'totAmt':           json_float_round(total_taxable_amount + total_tax_amount, 2),
             'totItemCnt':       len(line_items),                           # Total Item count
             'itemList':         line_items,
             **self.company_id._l10n_ke_get_user_dict(self.create_uid, self.write_uid),
@@ -267,7 +289,7 @@ class AccountMove(models.Model):
                 'itemSeq':   index + 1,                                             # Line number
                 'itemCd':    product.l10n_ke_item_code,                             # Item code as defined by us, of the form KE2BFTNE0000000000000039
                 'itemClsCd': product.unspsc_code_id.code,                           # Item classification code, in this case the UNSPSC code
-                'itemNm':    line.name,                                             # Item name
+                'itemNm':    (line.name or '')[:200],                               # Item name
                 'pkgUnitCd': product.l10n_ke_packaging_unit_id.code,                # Packaging code, describes the type of package used
                 'pkg':       product_uom_qty / product.l10n_ke_packaging_quantity,  # Number of packages used
                 'qtyUnitCd': line.product_uom_id.l10n_ke_quantity_unit_id.code,     # The UOMs as defined by the KRA, defined seperately from the UOMs on the line
@@ -487,6 +509,7 @@ class AccountMove(models.Model):
         if self.l10n_ke_oscu_invoice_number:
             error, data = self._l10n_ke_oscu_fetch_invoice_details()
             if not error:
+                data = data['receipt']
                 date_str = data['sdcDateTime'].split('.')[0]  # Remove microseconds
                 signing_date = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S').replace(tzinfo=ZoneInfo('Africa/Nairobi')).astimezone(ZoneInfo('UTC')).replace(tzinfo=None)
                 self.write({
@@ -500,25 +523,47 @@ class AccountMove(models.Model):
             elif error['code'] == 'TIM':
                 return data, error
 
+        if self.move_type == 'out_refund' and company.l10n_ke_server_mode != 'demo':
+            error, data = self.reversed_entry_id._l10n_ke_oscu_fetch_invoice_details()
+            if error:
+                return data, error
+            # Normalize None to False to avoid None != False when customer had no PIN on invoice
+            invoice_customer_pin = data['custTin'] or False
+            if invoice_customer_pin != self.partner_id.vat:
+                error = {
+                    'code': 'WRONG_PIN',
+                    'message': _(
+                        "The customer PIN on the credit note differs from the PIN on the original invoice submitted to the KRA.\n"
+                        "The KRA only accepts credit notes with matching PINs.\n"
+                        "Customer PIN on the invoice: %s", invoice_customer_pin or ''
+                    ),
+                }
+                return {}, error
+
         content = self._l10n_ke_oscu_json_from_move()
 
+        sequence = self._l10n_ke_get_invoice_sequence()
         try:
-            self.l10n_ke_oscu_invoice_number = content['invcNo'] = self.l10n_ke_oscu_invoice_number or self._l10n_ke_get_invoice_sequence().next_by_id()
+            content['invcNo'] = self.l10n_ke_oscu_invoice_number or sequence.next_by_id()
         except LockNotAvailable:
             raise UserError(_("Another user is already sending this invoice.")) from None
 
         error, data, _date = company._l10n_ke_call_etims('saveTrnsSalesOsdc', content)
         if not error:
             self.write({
+                'l10n_ke_oscu_invoice_number': content['invcNo'],
                 'l10n_ke_oscu_receipt_number': data['curRcptNo'],
                 'l10n_ke_oscu_signature': data['rcptSign'],
                 'l10n_ke_oscu_datetime': parse_etims_datetime(data['sdcDateTime']),
                 'l10n_ke_oscu_internal_data': data['intrlData'],
                 'l10n_ke_control_unit': company.l10n_ke_control_unit,
             })
-        elif error['code'] != 'TIM':
+        elif error['code'] == 'TIM':
+            self.l10n_ke_oscu_invoice_number = content['invcNo']
+        else:
             # In order not to rollback, but just to avoid consuming the invoice number
-            self._l10n_ke_get_invoice_sequence().number_next -= 1
+            if not self.l10n_ke_oscu_invoice_number:
+                sequence.number_next -= 1
             self.l10n_ke_oscu_invoice_number = False
         return content, error
 
@@ -582,7 +627,7 @@ class AccountMove(models.Model):
             else:
                 _logger.error("Error retrieving invoice details from the OSCU: %s: %s", error['code'], error['message'])
             return error, None
-        return [], data['salesList'][0]['receipt'] if data['salesList'] else None
+        return [], data['salesList'][0] if data['salesList'] else None
 
     # === Fetching from eTIMS: vendor bills === #
 
@@ -598,7 +643,7 @@ class AccountMove(models.Model):
         for company in companies:
             error, data, _date = company._l10n_ke_call_etims(
                 'selectTrnsPurchaseSalesList',
-                {'lastReqDt': format_etims_datetime(company.l10n_ke_oscu_last_fetch_purchase_date or datetime.datetime(2018, 1, 1))}
+                {'lastReqDt': format_etims_datetime(company.l10n_ke_oscu_last_fetch_purchase_date or datetime(2018, 1, 1))}
             )
             if error:
                 if error['code'] == '001':

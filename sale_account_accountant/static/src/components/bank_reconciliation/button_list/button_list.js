@@ -1,27 +1,50 @@
 import { BankRecButtonList } from "@account_accountant/components/bank_reconciliation/button_list/button_list";
 import { _t } from "@web/core/l10n/translation";
 import { patch } from "@web/core/utils/patch";
+import { floatIsZero } from "@web/core/utils/numbers";
+
+patch(BankRecButtonList, {
+    props: {
+        ...BankRecButtonList.props,
+        hasSaleOrders: { type: Boolean, optional: true },
+        actionOpenSaleOrders: { type: Function, optional: true },
+    },
+    defaultProps: {
+        ...BankRecButtonList.defaultProps,
+    },
+});
 
 patch(BankRecButtonList.prototype, {
-    actionOpenSaleOrders() {
-        this.action.doAction({
-            type: "ir.actions.act_window",
-            res_model: "sale.order",
-            target: "current",
-            views: [
-                [false, "list"],
-                [false, "form"],
-            ],
-            context: {
-                search_default_partner_id: this.statementLineData.partner_id.id,
-            },
-        });
+    async _setPartnerOnReconcileLine(partnerId) {
+        super._setPartnerOnReconcileLine(partnerId);
+        await this.bankReconciliation.updatePartnersWithSales(partnerId);
+    },
+
+    get availableSaleOrder() {
+        // No need to compute if the statement line has no partner
+        if (!this.statementLineData.partner_id) {
+            return [];
+        }
+
+        const statementLineAmount =
+            this.statementLineData.amount_currency || this.statementLineData.amount;
+        const decimalPlaces =
+            this.statementLineData.foreign_currency_id?.decimal_places ||
+            this.statementLineData.currency_id?.decimal_places;
+
+        return this.bankReconciliation.partnersWithSales[
+            this.statementLineData.partner_id.id
+        ]?.filter((saleOrderAmount) =>
+            floatIsZero(saleOrderAmount - statementLineAmount, decimalPlaces)
+        );
+    },
+
+    get displaySuggestionPill() {
+        return super.displaySuggestionPill || this.availableSaleOrder?.length;
     },
 
     get isSalesButtonShown() {
-        // This is a temporary solution
-        // Should be fixed later by task 5241035
-        return !!this.statementLineData.partner_id.id;
+        return this.props.hasSaleOrders;
     },
 
     get buttons() {
@@ -29,8 +52,9 @@ patch(BankRecButtonList.prototype, {
         if (this.isSalesButtonShown) {
             buttonsToDisplay.sale = {
                 label: _t("Sales"),
-                action: this.actionOpenSaleOrders.bind(this),
+                action: () => this.props.actionOpenSaleOrders(),
                 classes: "sales-btn",
+                suggestion: this.availableSaleOrder.length,
             };
         }
         return buttonsToDisplay;

@@ -164,7 +164,6 @@ class BelgiumPartnerVatListingTest(TestAccountReportsCommon):
         """
 
         # Following what export_file function does
-        options['export_mode'] = 'file'
         self.assertXmlTreeEqual(
             self.get_xml_tree_from_string(self.env[self.report._get_custom_handler_model()].partner_vat_listing_export_to_xml(options)['file_content']),
             self.get_xml_tree_from_string(expected_xml)
@@ -243,10 +242,36 @@ class BelgiumPartnerVatListingTest(TestAccountReportsCommon):
         """
 
         # Following what export_file function does
-        options['export_mode'] = 'file'
         self.assertXmlTreeEqual(
             self.get_xml_tree_from_string(self.env[self.report._get_custom_handler_model()].partner_vat_listing_export_to_xml(options)['file_content']),
             self.get_xml_tree_from_string(expected_xml)
+        )
+
+    def test_ignore_VAT_partners(self):
+        self.partner_ignore_be = self.env['res.partner'].create({
+            'name': 'Partner C (BE)',
+            'country_id': self.env.ref('base.be').id,
+            'vat': '/',
+        })
+
+        self.env = self.env(context=dict(self.env.context, allowed_company_ids=self.env.company.ids))
+        options = self._generate_options(self.report, '2022-06-01', '2022-06-30')
+
+        self.create_and_post_account_move('out_invoice', self.partner_ignore_be.id, '2022-06-01', product_quantity=10, product_price_unit=200)
+
+        self.create_and_post_account_move('out_invoice', self.partner_b_be.id, '2022-06-01', product_quantity=10, product_price_unit=200)
+        self.create_and_post_account_move('out_invoice', self.partner_a_be.id, '2022-06-01', product_quantity=10, product_price_unit=100)
+
+        self.assertLinesValues(
+            self.report._get_lines(options),
+            #   Name                        VAT number          Turnover            VAT amount
+            [   0,                          1,                  2,                  3],
+            [
+                ('Partner VAT Listing',     '',                 3000.0,             630.0),
+                ('Partner A (BE)',          'BE0246697724',     1000.0,             210.0),
+                ('Partner B (BE)',          'BE0766998497',     2000.0,             420.0),
+            ],
+            options,
         )
 
     def test_misc_operation(self):
@@ -379,6 +404,42 @@ class BelgiumPartnerVatListingTest(TestAccountReportsCommon):
             ],
             options,
         )
+
+    def test_audit_excludes_exempted_tax(self):
+        self.env = self.env(context=dict(self.env.context, allowed_company_ids=self.env.company.ids))
+        ChartTemplate = self.env['account.chart.template'].with_company(self.company)
+        tax_e = ChartTemplate.ref('attn_VAT-OUT-00-S')
+        tax_z = ChartTemplate.ref('attn_VAT-OUT-00-L')
+
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_a_be.id,
+            'invoice_date': '2022-06-29',
+            'invoice_line_ids': [
+                Command.create({'name': tax.name, 'price_unit': 1000.0, 'tax_ids': tax.ids})
+                for tax in (tax_e, tax_z, tax_z)
+            ],
+        })
+        invoice.action_post()
+        options = self._generate_options(self.report, '2022-06-01', '2022-06-30')
+        lines = self.report._get_lines(options)
+
+        self.assertLinesValues(
+            lines,
+            #   Name                        VAT number          Turnover            VAT amount
+            [   0,                          1,                  2,                  3],
+            [
+                ('Partner VAT Listing',     '',                 2000.0,             0.0),
+                ('Partner A (BE)',          'BE0246697724',     2000.0,             0.0),
+            ],
+            options,
+        )
+
+        partner_line_id = next(line['id'] for line in lines if line['name'] == 'Partner A (BE)')
+        action = self.env[self.report.custom_handler_model_name].partner_vat_listing_open_invoices(options, {'line_id': partner_line_id})
+        audited_lines = self.env['account.move.line'].search(action['domain'])
+        self.assertEqual(audited_lines, invoice.invoice_line_ids.filtered(lambda line: line.tax_ids == tax_z))
+        self.assertEqual(sum(audited_lines.mapped('balance')), -2000.0)
 
     def test_turnover_custom_groupby(self):
         def get_base_line_name(invoice):
@@ -591,6 +652,50 @@ class BelgiumPartnerVatListingTest(TestAccountReportsCommon):
                         <Street></Street>
                         <PostCode></PostCode>
                         <City></City>
+                        <CountryCode>BE</CountryCode>
+                        <EmailAddress>jsmith@mail.com</EmailAddress>
+                        <Phone>+32475123456</Phone>
+                    </ns2:Declarant>
+                    <ns2:Period>2018</ns2:Period>
+                    <ns2:Comment></ns2:Comment>
+                </ns2:ClientListing>
+            </ns2:ClientListingConsignment>
+        """ % ref
+
+        self.assertXmlTreeEqual(
+            self.get_xml_tree_from_string(self.env[self.report._get_custom_handler_model()].partner_vat_listing_export_to_xml(options)['file_content']),
+            self.get_xml_tree_from_string(expected_xml)
+        )
+
+    @freeze_time('2019-12-31')
+    def test_generate_xml_minimal_with_invoice_address(self):
+        options = self.report.get_options({})
+
+        # create an invoice address for the company without email and phone
+        self.env['res.partner'].create({
+            'type': 'invoice',
+            'country_id': self.env.ref('base.be').id,
+            'zip': 1000,
+            'city': 'Brussels',
+            'street': 'XYZ street',
+            'parent_id': self.env.company.partner_id.id,
+        })
+
+        # The sequence changes between execution of the test. To handle that, we increase by 1 more, so we can get its value here
+        sequence_number = self.env['ir.sequence'].next_by_code('declarantnum')
+        ref = f"0477472701{str(int(sequence_number) + 1).zfill(4)[-4:]}"
+
+        # This is the minimum expected from the belgian tax report xml.
+        # The address is coming from the invoice address with a fallback on the parent company for email and phone.
+        expected_xml = """
+            <ns2:ClientListingConsignment xmlns="http://www.minfin.fgov.be/InputCommon" xmlns:ns2="http://www.minfin.fgov.be/ClientListingConsignment" ClientListingsNbr="1">
+                <ns2:ClientListing SequenceNumber="1" ClientsNbr="0" DeclarantReference="%s" TurnOverSum="0.00" VATAmountSum="0.00">
+                    <ns2:Declarant>
+                        <VATNumber>0477472701</VATNumber>
+                        <Name>company_1_data</Name>
+                        <Street>XYZ street</Street>
+                        <PostCode>1000</PostCode>
+                        <City>Brussels</City>
                         <CountryCode>BE</CountryCode>
                         <EmailAddress>jsmith@mail.com</EmailAddress>
                         <Phone>+32475123456</Phone>

@@ -18,6 +18,8 @@ from odoo.tools.sql import create_index, make_index_name, SQL
 from odoo.tools.translate import html_translate
 from odoo.tools.urls import urljoin as url_join
 
+from .knowledge_article_member import SELF_MEMBER_CREATE_SENTINEL
+
 ARTICLE_PERMISSION_LEVEL = {'none': 0, 'read': 1, 'write': 2}
 
 
@@ -821,16 +823,12 @@ class KnowledgeArticle(models.Model):
           * automatically organize articles to be the last of their parent
             children, unless a specific sequence is given;
           * allow creation of private articles for him- or her-self. As creation
-            rights on member model are not granted, we detect private article
-            creation and sudo the creation of those. This requires some data
-            manipulation to sudo only those and keep requested ordering based
-            on vals_list;
+            rights on member model are not granted, the creator's membership is
+            created with sudo permissions;
         """
         defaults = self.default_get(['article_member_ids', 'internal_permission', 'parent_id'])
         vals_by_parent_id = {}
-        vals_as_sudo = []
         parent_ids = set()
-
         for vals in vals_list:
             # Set body to match title if any, or prepare a void header to ease
             # article onboarding.
@@ -838,12 +836,6 @@ class KnowledgeArticle(models.Model):
                 vals["body"] = Markup('<h1>%s</h1>') % vals["name"] if vals.get("name") \
                                else Markup('<h1 class="oe-hint"><br></h1>')
 
-            vals.update({
-                'last_edition_date': fields.Datetime.now(),
-                'last_edition_uid': self.env.user.id,
-            })
-
-            can_sudo = False
             # get values from vals or defaults
             member_ids = vals.get('article_member_ids') or defaults.get('article_member_ids') or False
             internal_permission = vals.get('internal_permission') or defaults.get('internal_permission') or False
@@ -852,6 +844,30 @@ class KnowledgeArticle(models.Model):
                 parent_ids.add(parent_id)
 
             if not self.env.user._is_internal() and not self.env.su:
+                allowed_fields = self._get_portal_write_fields_allowlist() | {'active', 'to_delete', 'parent_id'}
+                write_fields = {
+                    key[len("default_"):] for key in self.env.context if key.startswith("default_")
+                } | set(vals)
+                forbidden_fields = write_fields - allowed_fields
+                if forbidden_fields and (
+                    # A private root requires both its private permission and a membership granting
+                    # its portal creator write access, so allow these two otherwise forbidden fields.
+                    forbidden_fields - {'internal_permission', 'article_member_ids'}
+                    or not (
+                        # Restrict the exception to a new private root with one exact self-membership command.
+                        not parent_id
+                        and internal_permission == 'none'
+                        and member_ids
+                        and len(member_ids) == 1
+                        and member_ids[0][0] == Command.CREATE
+                        and member_ids[0][2] == {
+                            'partner_id': self.env.user.partner_id.id,
+                            'permission': 'write',
+                        }
+                    )
+                ):
+                    raise AccessError(_('Only internal users are allowed to modify this information.'))
+
                 if not parent_id and internal_permission != 'none':
                     raise AccessError(_('Only internal users are allowed to create workspace root articles.'))
 
@@ -859,40 +875,27 @@ class KnowledgeArticle(models.Model):
                     # do not let portal specify the visibility, it will inherit from the root article
                     del vals['is_article_visible_by_everyone']
 
+            vals.update({
+                'last_edition_date': fields.Datetime.now(),
+                'last_edition_uid': self.env.user.id,
+            })
+
             # force write permission for workspace articles
             if not parent_id and not internal_permission:
                 vals.update({'internal_permission': 'write',
                              'parent_id': False,  # just be sure we don't grant privileges
                 })
 
-            # We need to check if the article creation needs to be done with sudo permissions and that
-            # it is authorized.
-            # This is authorized if :
-            #   * The user is not the superuser
-            #   * We do not try to create any favorite records or children articles in the same call
-            #   * We do not try to create a child article
-            #   * We want to create a single member that is the user creating the article
-
-            # The reason why we would want to add the creator as a member for all articles is that
-            # with the new visibility logic, when a user creates a new article in the workspace it is
-            # set to only be visible to members.
-            # This means that in order for him to see the article he just created, we add him to the
-            # members, which needs sudo access.
-
-            check_for_sudo = not self.env.su and \
-                             not self.env.user._is_system() and \
-                             not any(fname in vals for fname in ['favorite_ids', 'child_ids']) and \
-                             not parent_id and member_ids and len(member_ids) == 1
-            if check_for_sudo:
-                self_member = member_ids[0][0] == Command.CREATE and \
-                              member_ids[0][2].get('partner_id') == self.env.user.partner_id.id
-                if self_member:
-                    can_sudo = True
+            # Mark the exact self-membership that the member create override is allowed to create with sudo.
+            if not parent_id and member_ids and member_ids[0][0] == Command.CREATE and member_ids[0][2] == {
+                'partner_id': self.env.user.partner_id.id,
+                'permission': 'write',
+            }:
+                member_ids[0][2]['_knowledge_self_member_create'] = SELF_MEMBER_CREATE_SENTINEL
 
             # if no sequence, parent will have to be checked
             if not vals.get('sequence'):
                 vals_by_parent_id.setdefault(parent_id, []).append(vals)
-            vals_as_sudo.append(can_sudo)
 
         # check access to parents
         if parent_ids:
@@ -918,21 +921,7 @@ class KnowledgeArticle(models.Model):
                     vals['sequence'] = current_sequence
                     current_sequence += 1
 
-        # sort by sudo / not sudo
-        notsudo_articles = iter(super().create([
-            vals for vals, can_sudo in zip(vals_list, vals_as_sudo)
-            if not can_sudo
-        ]))
-        sudo_articles = iter(super(KnowledgeArticle, self.sudo()).create([
-            vals for vals, can_sudo in zip(vals_list, vals_as_sudo)
-            if can_sudo
-        ]).with_env(self.env))
-        articles = self.env['knowledge.article']
-        for is_sudo in vals_as_sudo:
-            if is_sudo:
-                articles += next(sudo_articles)
-            else:
-                articles += next(notsudo_articles)
+        articles = super().create(vals_list)
 
         if any(articles.mapped('is_template')) and not self.env.user.has_group('base.group_system'):
             raise ValidationError(_('You are not allowed to create a new template.'))
@@ -1054,6 +1043,11 @@ class KnowledgeArticle(models.Model):
 
     @api.autovacuum
     def _gc_trashed_articles(self):
+        return self.with_context(active_test=False).search(
+            self._get_gc_trashed_articles_domain(), limit=100
+        ).unlink()
+
+    def _get_gc_trashed_articles_domain(self):
         limit_days = self.env["ir.config_parameter"].sudo().get_param(
             "knowledge.knowledge_article_trash_limit_days"
         )
@@ -1062,8 +1056,10 @@ class KnowledgeArticle(models.Model):
         except ValueError:
             limit_days = self.DEFAULT_ARTICLE_TRASH_LIMIT_DAYS
         timeout_ago = datetime.utcnow() - timedelta(days=limit_days)
-        domain = [("write_date", "<", timeout_ago), ("to_delete", "=", True)]
-        return self.with_context(active_test=False).search(domain, limit=100).unlink()
+        return [
+            ("write_date", "<", timeout_ago),
+            ("to_delete", "=", True),
+        ]
 
     def action_archive(self):
         self._action_archive_articles()
@@ -1170,7 +1166,7 @@ class KnowledgeArticle(models.Model):
                 context.update({"active_id": self.id, "default_parent_id": self.id})
                 element.set("data-embedded-props", json.dumps(embedded_props))
 
-        return html.tostring(fragment, encoding="unicode")
+        return "".join(html.tostring(node, encoding="unicode") for node in fragment)
 
     # ------------------------------------------------------------
     # ACTIONS
@@ -1187,7 +1183,7 @@ class KnowledgeArticle(models.Model):
             if not preserve_name and self.name else self.name
 
         # Copy the article and make it private:
-        article = self.create({
+        article = self.env['knowledge.article'].create({
             'article_member_ids': [(0, 0, {
                 'partner_id': self.env.user.partner_id.id,
                 'permission': 'write'
@@ -1214,7 +1210,7 @@ class KnowledgeArticle(models.Model):
 
         # Copy the related article items and link them to their corresponding stage:
         article_items = self.child_ids.filtered(lambda article: article.is_article_item)
-        self.create([{
+        self.env['knowledge.article'].create([{
             'article_properties': article_item.article_properties,
             'body': article_item.body,
             'cover_image_id': article_item.cover_image_id.id,
@@ -1855,6 +1851,8 @@ class KnowledgeArticle(models.Model):
 
     def get_permission_panel_members(self):
         self.ensure_one()
+        if not self.user_has_access:
+            return []
         res_partner_fields_list = [('name', 'name'), ('partner_share', 'partner_share'), ('id', 'partner_id')]
         if self.env.user._is_internal():
             res_partner_fields_list.append(('email', 'email'))
@@ -1909,9 +1907,10 @@ class KnowledgeArticle(models.Model):
         access is straightforward (just set permission). Inviting with rights
         requires to check for privilege escalation in descendants.
 
-        :param partners recordset of invited partners;
+        :param partners: recordset of invited partners;
         :param str permission: permission of newly invited members, one of
-          'none', 'read' or 'write';
+            'none', 'read' or 'write';
+
         :param message: the message relayed to :meth:`~_send_invite_mail`.
         """
         self.ensure_one()
@@ -1976,19 +1975,20 @@ class KnowledgeArticle(models.Model):
         """ Sets the given permission to the given member.
 
         If the member has rights based on membership: simply update it.
-
         If the member has rights based on a parent article (inherited rights)
-          If the new permission is downgrading the member's access
-            the article is desynchronized form its parent;
-          Else we add a new member with the higher permission;
+        If the new permission is downgrading the member's access
+        the article is desynchronized form its parent;
+        Else we add a new member with the higher permission;
 
         Security notes:
+
         - this method checks for write access on current article,
           considering it as sufficient to modify members permissions.
         - portal users cannot alter memberships in any way.
 
         :param int member_id: member_id whose permission is to be updated.
-          Can be a member of 'self' or one of its ancestors;
+            Can be a member of 'self' or one of its ancestors;
+
         :param str permission: new permission, one of 'none', 'read' or 'write';
         """
         member = self.env['knowledge.article.member'].browse(member_id)
@@ -2850,16 +2850,20 @@ class KnowledgeArticle(models.Model):
 
     def apply_template(self, template_id, skip_body_update=False):
         """Applies the given template on the current article
+
         :param int template_id: Template id
         :param boolean skip_body_update: Whether the method should skip writing
-          the body and return it for further management by the caller. Note that
-          this does to apply to child articles as they are not managed the same
-          way and are side records. Typically
-          - False: when creating a template based article from scratch;
-          - True: in other cases to avoid collaborative issues (write on
-            body should be done at client side);
+            the body and return it for further management by the caller. Note that
+            this does to apply to child articles as they are not managed the same
+            way and are side records. Typically:
+
+            - False: when creating a template based article from scratch;
+            - True: in other cases to avoid collaborative issues (write on
+              body should be done at client side);
+
         :returns: body of the article, used notably client side for
-          collaborative mode
+            collaborative mode
+
         :rtype: str
         """
         self.ensure_one()
@@ -2899,8 +2903,9 @@ class KnowledgeArticle(models.Model):
 
             # Create the child articles:
             child_templates = parent_template.child_ids
-            child_templates = child_templates.filtered(
-                lambda template: template.template_child_default_create)
+            if parent_article._should_load_all_annexes():
+                child_templates = child_templates.filtered(
+                    lambda template: template.template_child_default_create)
             child_templates = child_templates.sorted(
                 lambda template: (template.write_date, template.id))
 
@@ -3146,6 +3151,14 @@ class KnowledgeArticle(models.Model):
                 (_("New"), 0, False), (_("Ongoing"), 1, False), (_("Done"), 2, True)]
             ])
 
+    def _should_load_all_annexes(self):
+        """
+        Return whether all child templates should be loaded when applying a template.
+        If True, the template_child_default_create flag is ignored.
+        """
+        self.ensure_one()
+        return True
+
     # ------------------------------------------------------------
     # TOOLS
     # ------------------------------------------------------------
@@ -3291,14 +3304,15 @@ class KnowledgeArticle(models.Model):
         """ Get the data used by the sidebar on load in the form view.
         It returns some information from every article that is accessible by
         the user and that is either:
-            - a visible root article
-            - a favorite article or a favorite item (for the current user)
-            - the current article (except if it is a descendant of a hidden
-              root article or of an non accessible article - but even if it is
-              a hidden root article)
-            - an ancestor of the current article, if the current article is
-              shown
-            - a child article of any unfolded article that is shown
+
+        - a visible root article.
+        - a favorite article or a favorite item (for the current user).
+        - the current article (except if it is a descendant of a hidden
+          root article or of an non accessible article - but even if it is
+          a hidden root article).
+        - an ancestor of the current article, if the current article is
+          shown.
+        - a child article of any unfolded article that is shown.
         """
 
         root_articles_domain = [

@@ -75,6 +75,26 @@ class TestHrAppraisalGoal(HttpCase):
             manager inputs should have been created",
         )
 
+    def test_appraisal_list_goal_mark_done(self):
+        """
+        Multiple goals can be marked as done from the goals list view
+        """
+        self.env["hr.appraisal.goal"].create(
+            [
+                {"name": "Goal 1", "employee_ids": self.employee.ids},
+                {"name": "Goal 2", "employee_ids": self.employee.ids},
+            ]
+        )
+        self.start_tour(
+            f"/odoo/employees/{self.employee.id}",
+            "appraisal_goal_multi_mark_done",
+            login="admin",
+        )
+        completed_goals_count = self.env["hr.appraisal.goal"].search_count(
+            [("employee_ids", "=", self.employee.id), ("progression", "=", 100)]
+        )
+        self.assertEqual(completed_goals_count, 2, "Two Goals should be Marked as Done")
+
     def test_security_rule_goal(self):
         user1, user2, user3 = self.env['res.users'].create([
             {

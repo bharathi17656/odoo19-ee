@@ -1,10 +1,12 @@
 from collections import defaultdict
+from contextlib import contextmanager
 import re
 from requests.exceptions import ConnectionError
+from socket import AF_INET, IPPROTO_TCP, SOCK_STREAM
 from unittest.mock import MagicMock, patch
-import urllib.parse
+from urllib3.util import parse_url
 
-from odoo import api
+from odoo import api, http
 from odoo.fields import Domain
 from odoo.tests import new_test_user
 from odoo.tests.common import TransactionCase
@@ -32,46 +34,75 @@ class TestDatabasesCommon(TransactionCase):
         cls.user_proj_manager = new_test_user(cls.env, login='project_manager@company.tld', groups="project.group_project_manager")
 
         # Tell the database how to connect
-        ICP = cls.env['ir.config_parameter']
-        ICP.set_param('databases.odoocom_apiuser', 'someuser@odoo.com')
-        ICP.set_param('databases.odoocom_apikey', 'privateKey')
+        cls.env['ir.config_parameter'].set_param('databases.odoocom_apikey', 'odoocom_privateKey')
+
+        cls.startClassPatcher(patch('odoo.addons.databases.wizard.databases_synchronization_wizard.getaddrinfo',
+                                    return_value=[(AF_INET, SOCK_STREAM, IPPROTO_TCP, '', ('127.0.0.1', 0))]))
 
     def setUp(self):
         super().setUp()
 
         self.json2_mocked_calls = defaultdict(lambda: defaultdict(dict))
+        self.kpi_summary_return_value = None
 
         def mock_requests_request(method, uri, *args, **kwargs):
-            parsed_url = urllib.parse.urlparse(uri)
+            parsed_url = parse_url(uri)
 
-            if parsed_url.hostname not in self.json2_mocked_calls:
-                raise ConnectionError()
-            hostname_calls = self.json2_mocked_calls[parsed_url.hostname]
+            if method == 'post' and parsed_url.path.endswith('/kpi/summary'):
+                if self.kpi_summary_return_value is None:
+                    return MagicMock(status_code=http.HTTPStatus.NOT_FOUND)
+
+                return MagicMock(**{
+                    'status_code': http.HTTPStatus.OK,
+                    'json.return_value': self.kpi_summary_return_value,
+                })
+
+            if parsed_url.host not in self.json2_mocked_calls:
+                raise ConnectionError(f'Could not connect to {parsed_url.host}')
+            hostname_calls = self.json2_mocked_calls[parsed_url.host]
 
             # To handle /json/version, add a line like this in your test:
             # json2_mocked_calls[hostname]['version'] = '19.0+e'
-            if parsed_url.path == '/json/version':
+            if parsed_url.path.endswith('/json/version'):
                 self.assertEqual(method, 'get')
                 if 'version' not in hostname_calls:
-                    return MagicMock(status_code=303)
+                    return MagicMock(status_code=http.HTTPStatus.SEE_OTHER)
                 value = {
                     'version': hostname_calls['version'],
                     # 'version_info': ...,  # We should not rely on this field
                 }
-                return MagicMock(status_code=200, **{'json.return_value': value})
-            m = re.match(r'^/json/2/(?P<model>[^/]*)/(?P<method>[^/]*)$', parsed_url.path)
+                return MagicMock(status_code=http.HTTPStatus.OK, **{'json.return_value': value})
+            m = re.search(r'/json/2/(?P<model>[^/]*)/(?P<method>[^/]*)$', parsed_url.path)
             self.assertTrue(m, f'{uri!r} is not a valid /json/2 route')
             self.assertEqual(method, 'post')
 
             model_name = m.group('model')
-            self.assertIn(model_name, hostname_calls, f'No json2_mocked_calls defined for {parsed_url.hostname!r}/{model_name!r}')
+            self.assertIn(model_name, hostname_calls, f'No json2_mocked_calls defined for {parsed_url.host!r}/{model_name!r}')
             model = hostname_calls[model_name]
 
             method_name = m.group('method')
             self.assertIn(method_name, model)
             value = model[method_name]
 
-            return MagicMock(status_code=200, **{'json.return_value': value})
+            if isinstance(value, Exception):
+                return MagicMock(status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR, **{
+                    'json.return_value': http.serialize_exception(value),
+                })
+
+            return MagicMock(status_code=http.HTTPStatus.OK, **{'json.return_value': value})
 
         self.mock_requests_request = self.startPatcher(
             patch("requests.api.request", side_effect=mock_requests_request))
+
+    @contextmanager
+    def capture_wizard(self):
+        WizardType = self.env.registry['databases.synchronization.wizard']
+        original_do_sync = WizardType._do_synchronize
+        captured = {'wizards': []}
+
+        def side_effect(self):
+            captured['wizards'].append(self)
+            return original_do_sync(self)
+
+        with patch.object(WizardType, '_do_synchronize', side_effect=side_effect, autospec=True):
+            yield captured

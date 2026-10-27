@@ -78,6 +78,7 @@ class FiskalyClient:
         self.base_url = f"https://rksv.fiskaly.com/api/v{version}/"
         # Company is here just in case there is a need to refresh the token
         self.company = company
+        self.env = company.env
         self.api_key = api_key
         self.api_secret = api_secret
 
@@ -90,7 +91,7 @@ class FiskalyClient:
         })
         retry = requests.adapters.HTTPAdapter(max_retries=requests.adapters.Retry(
             total=3,
-            status_forcelist=[400, 403, 404],  # Exclude 401 as we handle it specially
+            status_forcelist=range(500, 600),  # Retry on all server errors per Fiskaly docs
         ))
         session.mount('https://', retry)
 
@@ -115,8 +116,15 @@ class FiskalyClient:
                 resp.raise_for_status()
                 _logger.info('Successfully responded %s %s', method, url)
                 return resp.json()
-            except requests.exceptions.RequestException:
-                raise ValidationError(_("Fiskaly API request failed, %s", resp.text))
+            except requests.exceptions.RequestException as error:
+                detail = ""
+                if error.response is not None:
+                    try:
+                        body = error.response.json()
+                        detail = f" ({body.get('code')}: {body.get('message')})"
+                    except ValueError:
+                        pass
+                raise ValidationError(_("Fiskaly API request failed, %(error)s%(detail)s", error=error, detail=detail))
         with session:
             yield request
 
@@ -131,10 +139,10 @@ class FiskalyClient:
             access_token = resp.json().get('access_token')
             # Update the company record with the new token
             if self.company:
-                self.company.l10n_at_fiskaly_access_token = access_token
+                self.company.sudo().l10n_at_fiskaly_access_token = access_token
             return access_token
-        except requests.exceptions.RequestException:
-            raise ValidationError(_("Fiskaly authentication failed: %s", resp.text))
+        except requests.exceptions.RequestException as error:
+            raise ValidationError(_("Fiskaly authentication failed: %s", error))
 
     def fon_auth(self, bearer_token, data):
         _is_valid, error = fon_schema(data)
@@ -147,11 +155,21 @@ class FiskalyClient:
         _is_valid, error = scu_schema(data)
         if error:
             raise ValidationError(_("Fiskaly schema validation error, %s", error))
-        scuid = str(uuid.uuid4())
         with self._make_session(bearer_token) as req:
-            req("PUT", endpoint=f'signature-creation-unit/{scuid}', data=data)
-            req("PATCH", endpoint=f'signature-creation-unit/{scuid}', data={"state": "INITIALIZED"})
-        return scuid
+            # Only one SCU per organization: reuse it, preferring a usable one over one whose initialization failed
+            states = ["INITIALIZED", "OUTAGE", "CREATED", "PENDING"]
+            existing = req("GET", endpoint='signature-creation-unit', params={"states[]": states})
+            scu = min((s for s in existing.get('data', []) if s['state'] in states), key=lambda s: states.index(s['state']), default=None)
+            if not scu:
+                scu = req("PUT", endpoint=f'signature-creation-unit/{uuid.uuid4()}', data=data)
+            if scu['state'] not in ('INITIALIZED', 'OUTAGE'):
+                scu = req("PATCH", endpoint=f"signature-creation-unit/{scu['_id']}", data={"state": "INITIALIZED"})
+                if scu['state'] != 'INITIALIZED':
+                    raise ValidationError(_(
+                        "The Fiskaly signature creation unit is still being created (state %(state)s). Please try again in a few minutes.",
+                        state=scu['state'],
+                    ))
+        return scu['_id']
 
     def setup_cash_reg(self, bearer_token):
         reg_id = str(uuid.uuid4())
@@ -180,6 +198,7 @@ class FiskalyClient:
         params = {
             "receipt_types[]": receipt_type,
             "offset": offset,
+            "order": "DESC",
             "limit": 1
         }
 

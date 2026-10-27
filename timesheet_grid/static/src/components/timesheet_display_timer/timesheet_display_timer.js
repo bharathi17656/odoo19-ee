@@ -44,7 +44,9 @@ export class TimesheetDisplayTimer extends Component {
         displayRed: { type: Boolean, optional: true },
     };
 
-    static defaultProps = { displayRed: true };
+    static defaultProps = {
+        displayRed: true,
+    };
 
     static fieldDependencies = {
         timer_pause: { type: "datetime" },

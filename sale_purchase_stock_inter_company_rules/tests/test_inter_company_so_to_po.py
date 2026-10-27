@@ -1,5 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.fields import Command
 from odoo.tests import Form, tagged
 from .common import TestInterCompanyRulesCommonStock
 
@@ -61,3 +62,181 @@ class TestInterCompanySaleToPurchaseWithStock(TestInterCompanyRulesCommonStock):
             'lot_ids': serial.ids,
             'location_id': interco_location.id,
         }])
+
+    def test_02_inter_company_multiple_lines_with_same_product(self):
+        """Checks receipt assignment for two inter-company lines with the same product.
+        Ensures each incoming move gets its own reserved qty (1 and 1), not a merged 2 and 0 split.
+        Prevents regression where reservation was assigned only to the first move.
+        """
+        self.company_b.write({
+            'intercompany_generate_purchase_orders': True,
+            'intercompany_sync_delivery_receipt': True,
+            'intercompany_document_state': 'posted',
+        })
+        product = self.env['product.product'].create({
+            'is_storable': True,
+            'name': 'Product',
+            'company_id': False,
+        })
+        warehouse_a = self.env['stock.warehouse'].search([('company_id', '=', self.company_a.id)], limit=1)
+        self.env['stock.quant']._update_available_quantity(product, warehouse_a.lot_stock_id, quantity=2)
+
+        # Create a sale order from Company A to Company B
+        sale_to_b = self.env["sale.order"].create({
+            "partner_id": self.company_b.partner_id.id,
+            "order_line": [
+                Command.create({"product_id": product.id, "product_uom_qty": 1}),
+                Command.create({"product_id": product.id, "product_uom_qty": 1}),
+            ]
+        })
+
+        sale_to_b.with_company(self.company_a).action_confirm()
+        purchase_from_a = self.env['purchase.order'].with_company(self.company_b).search([('partner_ref', '=', sale_to_b.name)])
+
+        self.assertEqual(len(sale_to_b.picking_ids), 1)
+        self.assertEqual(len(sale_to_b.order_line), 2)
+        self.assertEqual(len(sale_to_b.picking_ids.move_ids), 2)
+
+        self.assertEqual(len(purchase_from_a.picking_ids), 1)
+        self.assertEqual(len(purchase_from_a.order_line), 2)
+        self.assertEqual(len(purchase_from_a.picking_ids.move_ids), 2)
+
+        # Do the delivery of Company A
+        for move in sale_to_b.picking_ids.move_ids:
+            move.quantity = 1
+            move.picked = True
+        sale_to_b.picking_ids.with_company(self.company_a).button_validate()
+
+        # Ensure the quantity have been reserved correctly in the receipt:
+        self.assertRecordValues(purchase_from_a.picking_ids.move_ids, [
+            {"product_uom_qty": 1, "quantity": 1},
+            {"product_uom_qty": 1, "quantity": 1},
+        ])
+        # Ensure validating the delivery of the SO doesn't mark the ML on the PO side as picked so
+        # they can still be processed in the barcode app.
+        self.assertFalse(purchase_from_a.picking_ids.move_ids.move_line_ids.filtered(lambda ml: ml.picked))
+
+    def test_03_inter_company_multiple_lines_match_on_price(self):
+        self.company_b.write({
+            'intercompany_generate_purchase_orders': True,
+            'intercompany_sync_delivery_receipt': True,
+            'intercompany_document_state': 'posted',
+        })
+        product = self.env['product.product'].create({
+            'is_storable': True,
+            'name': 'Product Different Price',
+            'company_id': False,
+        })
+        warehouse_a = self.env['stock.warehouse'].search([('company_id', '=', self.company_a.id)], limit=1)
+        self.env['stock.quant']._update_available_quantity(product, warehouse_a.lot_stock_id, quantity=2)
+
+        sale_to_b = self.env['sale.order'].with_company(self.company_a).create({
+            'partner_id': self.company_b.partner_id.id,
+            'order_line': [
+                Command.create({'product_id': product.id, 'product_uom_qty': 1, 'price_unit': 1}),
+                Command.create({'product_id': product.id, 'product_uom_qty': 1, 'price_unit': 2}),
+            ],
+        })
+        sale_to_b.with_company(self.company_a).action_confirm()
+        purchase_from_a = self.env['purchase.order'].with_company(self.company_b).search([('partner_ref', '=', sale_to_b.name)])
+
+        # Validate delivery last move only
+        delivery = sale_to_b.picking_ids
+        delivery.move_ids.picked = False
+        target_move = delivery.move_ids[-1]
+        target_move.quantity = target_move.product_uom_qty
+        target_move.picked = True
+        delivery.with_context(skip_backorder=True).button_validate()
+
+        # Ensure the quantity have been reserved correctly in the receipt:
+        self.assertRecordValues(purchase_from_a.picking_ids.move_ids, [
+            {"product_uom_qty": 1, "quantity": 0, "price_unit": 1},
+            {"product_uom_qty": 1, "quantity": 1, "price_unit": 2},
+        ])
+
+        # Now we try to validate the first move, but with the price in the PO updated
+        purchase_from_a.order_line[0].write({"price_unit": 3})
+
+        # Validate delivery last move only
+        delivery = sale_to_b.picking_ids[1]
+        self.assertTrue(delivery.state != "done")
+        # delivery.move_ids.picked = False
+        move = delivery.move_ids
+        self.assertEqual(len(move), 1)
+        move.quantity = move.product_uom_qty
+        move.picked = True
+        delivery.with_context(skip_backorder=True).button_validate()
+
+        self.assertRecordValues(purchase_from_a.picking_ids.move_ids, [
+            {"product_uom_qty": 1, "quantity": 1, "price_unit": 3},
+            {"product_uom_qty": 1, "quantity": 1, "price_unit": 2},
+        ])
+
+    def test_04_inter_company_kit_never_attribute_component_selection(self):
+        """ A kit sold to another company through the Inter-Company flow, whose BoM lines
+        are filtered with 'Apply on Variants: Never', must not drop the component tied to
+        the attribute value chosen on the sale order line,
+        once the automatically generated purchase order's receipt explodes the kit.
+        """
+        mrp_module = self.env['ir.module.module']._get('mrp')
+        if mrp_module.state != 'installed':
+            self.skipTest("`mrp` is not installed")
+
+        self.company_b.write({
+            'intercompany_generate_purchase_orders': True,
+            'intercompany_sync_delivery_receipt': True,
+            'intercompany_document_state': 'posted',
+        })
+
+        size_attribute = self.env['product.attribute'].create({
+            'name': 'Size',
+            'create_variant': 'no_variant',
+        })
+        size_value = self.env['product.attribute.value'].create({
+            'name': 'Special',
+            'attribute_id': size_attribute.id,
+        })
+        base_component, special_component = self.env['product.product'].create([
+            {'name': 'Base Component', 'is_storable': True, 'company_id': False},
+            {'name': 'Special Component', 'is_storable': True, 'company_id': False},
+        ])
+        kit_tmpl = self.env['product.template'].create({
+            'name': 'Kit',
+            'is_storable': True,
+            'company_id': False,
+            'attribute_line_ids': [Command.create({
+                'attribute_id': size_attribute.id,
+                'value_ids': [Command.set(size_value.ids)],
+            })],
+        })
+        size_template_value = kit_tmpl.attribute_line_ids.product_template_value_ids
+        kit = kit_tmpl.product_variant_ids
+
+        self.env['mrp.bom'].create({  # noqa: OLS03001
+            'product_tmpl_id': kit_tmpl.id,
+            'company_id': False,
+            'product_qty': 1,
+            'type': 'phantom',
+            'bom_line_ids': [
+                Command.create({'product_id': base_component.id, 'product_qty': 1}),
+                Command.create({
+                    'product_id': special_component.id,
+                    'product_qty': 1,
+                    'bom_product_template_attribute_value_ids': [Command.set(size_template_value.ids)],
+                }),
+            ],
+        })
+
+        sale_to_b = self.env['sale.order'].with_company(self.company_a).create({
+            'partner_id': self.company_b.partner_id.id,
+            'order_line': [Command.create({
+                'product_id': kit.id,
+                'product_uom_qty': 1,
+                'product_no_variant_attribute_value_ids': [Command.set(size_template_value.ids)],
+            })],
+        })
+        sale_to_b.with_company(self.company_a).action_confirm()
+
+        purchase_from_a = self.env['purchase.order'].with_company(self.company_b).search([('partner_ref', '=', sale_to_b.name)])
+        self.assertEqual(purchase_from_a.state, 'purchase')
+        self.assertEqual(purchase_from_a.picking_ids.move_ids.product_id, base_component + special_component)

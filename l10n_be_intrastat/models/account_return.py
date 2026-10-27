@@ -28,9 +28,9 @@ class AccountReturnType(models.Model):
                 'tax_unit': 'company_only' if not tax_unit else tax_unit.id,
             }
             company_ids = self.env['account.return'].sudo()._get_company_ids(main_company, tax_unit, intrastat_return_type.report_id)
-            options = intrastat_return_type.report_id.with_context(allowed_company_ids=company_ids.ids).get_options(previous_options=options)
+            options = intrastat_return_type.report_id.sudo().with_context(allowed_company_ids=company_ids.ids).get_options(previous_options=options)
 
-            expression_totals_per_col_group = self.env.ref('l10n_be_reports.be_vat_return_type').report_id._compute_expression_totals_for_each_column_group(
+            expression_totals_per_col_group = self.env.ref('l10n_be_reports.be_vat_return_type').sudo().report_id._compute_expression_totals_for_each_column_group(
                 expression,
                 options,
                 warnings={}
@@ -56,8 +56,8 @@ class AccountReturn(models.Model):
 
         return super().action_submit()
 
-    def _generate_submission_attachments(self, options):
-        super()._generate_submission_attachments(options)
+    def _generate_locking_attachments(self, options):
+        super()._generate_locking_attachments(options)
         if self.type_external_id == 'l10n_be_intrastat.be_intrastat_goods_return_type':
             self._add_attachment(self.type_id.report_id.dispatch_report_action(options, 'be_intrastat_export_to_xml'))
             self._add_attachment(self.type_id.report_id.dispatch_report_action(options, 'be_intrastat_export_to_csv'))

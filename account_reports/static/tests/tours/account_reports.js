@@ -11,7 +11,7 @@ registry.category("web_tour.tours").add("account_reports", {
             content: "Initial foldable",
             trigger: "table",
             run: async () => {
-                Asserts.DOMContainsNumber("tbody > tr:not(.d-none):not(.empty)", 28);
+                Asserts.DOMContainsNumber("tbody > tr:not(.d-none):not(.empty)", 25);
 
                 // Since the total line is not displayed (folded), the amount should be on the line
                 Asserts.isEqual(
@@ -29,7 +29,7 @@ registry.category("web_tour.tours").add("account_reports", {
             content: "Line is unfolded",
             trigger: "tr:nth-child(5) .name:contains('101401')",
             run: () => {
-                Asserts.DOMContainsNumber("tbody > tr:not(.d-none):not(.empty)", 30);
+                Asserts.DOMContainsNumber("tbody > tr:not(.d-none):not(.empty)", 27);
 
                 // Since the total line is displayed (unfolded), the amount should not be on the line
                 Asserts.isEqual(
@@ -47,7 +47,7 @@ registry.category("web_tour.tours").add("account_reports", {
             content: "Line is folded",
             trigger: "tr:nth-child(4) td:nth-child(2):text(75.00)",
             run: () => {
-                Asserts.DOMContainsNumber("tbody > tr:not(.d-none):not(.empty)", 28);
+                Asserts.DOMContainsNumber("tbody > tr:not(.d-none):not(.empty)", 25);
             },
         },
         //--------------------------------------------------------------------------------------------------------------
@@ -59,9 +59,17 @@ registry.category("web_tour.tours").add("account_reports", {
             run: "click",
         },
         {
+            content: "First line is unfolded",
+            trigger: "tr:nth-child(5) .name:contains('101401')",
+        },
+        {
             content: "Unfold second line",
             trigger: "tr:nth-child(7) td:first()",
             run: "click",
+        },
+        {
+            content: "Second line is unfolded",
+            trigger: "tr:nth-child(8) .name:contains('121000')",
         },
         {
             content: "Unfold third line",
@@ -69,7 +77,7 @@ registry.category("web_tour.tours").add("account_reports", {
             run: "click",
         },
         {
-            content: "Extra Trigger step",
+            content: "Third line is unfolded",
             trigger: "tr:nth-child(12):not(.d-none) .name:contains('101404')",
         },
         {

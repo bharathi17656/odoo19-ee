@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <Invoice xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:sts="dian:gov:co:facturaelectronica:Structures-2-1" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" xmlns:xades141="http://uri.etsi.org/01903/v1.4.1#" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xsi:schemaLocation="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2     http://docs.oasis-open.org/ubl/os-UBL-2.1/xsd/maindoc/UBL-Invoice-2.1.xsd">
+  <ext:UBLExtensions>___ignore___</ext:UBLExtensions>
   <cbc:UBLVersionID>UBL 2.1</cbc:UBLVersionID>
   <cbc:CustomizationID>10</cbc:CustomizationID>
   <cbc:ProfileID>DIAN 2.1: Factura Electrónica de Venta</cbc:ProfileID>
@@ -10,7 +11,6 @@
   <cbc:IssueTime>19:00:00-05:00</cbc:IssueTime>
   <cbc:DueDate>2024-01-30</cbc:DueDate>
   <cbc:InvoiceTypeCode>01</cbc:InvoiceTypeCode>
-  <cbc:Note>SETP/2024/000012024-01-2919:00:00-05:00200.000157.00040.00030.00257.00101841900890010828dummy_journal_technical_key2</cbc:Note>
   <cbc:DocumentCurrencyCode listAgencyID="6" listAgencyName="United Nations Economic Commission for Europe" listID="ISO 4217 Alpha">COP</cbc:DocumentCurrencyCode>
   <cbc:LineCountNumeric>2</cbc:LineCountNumeric>
   <cac:OrderReference>
@@ -65,6 +65,10 @@
       <cac:PartyLegalEntity>
         <cbc:RegistrationName>CO Company Test</cbc:RegistrationName>
         <cbc:CompanyID schemeName="31" schemeAgencyName="CO, DIAN (Dirección de Impuestos y Aduanas Nacionales)" schemeAgencyID="195" schemeID="5">1018419008</cbc:CompanyID>
+        <cac:CorporateRegistrationScheme>
+          <cbc:ID>SETP</cbc:ID>
+          <cbc:Name>1018419008</cbc:Name>
+        </cac:CorporateRegistrationScheme>
       </cac:PartyLegalEntity>
       <cac:Contact>
         <cbc:Name>CO Company Test</cbc:Name>

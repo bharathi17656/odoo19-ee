@@ -9,12 +9,11 @@ class AccountBankStatementLine(models.Model):
         self.ensure_one()
         batch_payment = self.env['account.batch.payment'].browse(batch_payment_id)
 
-        amls_domain = self._get_default_amls_matching_domain()
-        # Thanks to a constraint, we cannot have a batch that have payment with and without entries.
-        # Batch of payment with entries means that reconciled_lines and amls_to_create will have the same length
-        # otherwise reconciled_lines is empty
-        reconciled_lines, amls_to_create = batch_payment._get_amls_from_batch_payments(amls_domain)
-        self._reconcile_payments(batch_payment.payment_ids, amls_to_create, reconciled_lines)
+        amls_to_create, has_exchange_diff = batch_payment._get_amls_for_reconciliation(self)
+
+        self.with_context(no_exchange_difference_no_recursive=not has_exchange_diff)._add_move_line_to_statement_line_move(amls_to_create)
+        if payments_to_validate := batch_payment.payment_ids.filtered(lambda p: not p.move_id and p.state in self.env['account.payment']._valid_payment_states()):
+            payments_to_validate.action_validate()
 
     def delete_reconciled_line(self, move_line_ids):
         """ Deletes the specified move lines from the bank statement line after unreconciling them.
@@ -23,15 +22,17 @@ class AccountBankStatementLine(models.Model):
         """
         self.ensure_one()
         move_lines_to_remove = self.env['account.move.line'].browse(move_line_ids)
-        if payments := move_lines_to_remove.payment_lines_ids:
+        payments = move_lines_to_remove.payment_lines_ids
+        super().delete_reconciled_line(move_line_ids)
+        if payments:
             # Put the payment back to in_process, we don't touch the batch payment itself since it's just an envelope of
             # payments, it could even be removed from the accounting it would be ok
-            payments.action_draft()
-            payments.action_post()
+            payments.with_context(bypass_batch_payment_online_status_protection=True).action_draft()
+            payments.sudo().action_post()
             # When an invoice is linked to the payment, the move must be put back to draft so that the amount residual
-            # is reset and that the payment state of the move is back to in_payment
+            # is reset and that the payment state of the move is back to in_payment.
+            # sudo() bypasses studio approval rules: this draft+repost is an internal mechanism of the unreconcile
+            # flow, not a business action — the user already approved the move when it was originally posted.
             if move_linked := payments.invoice_ids:
                 move_linked.button_draft()
-                move_linked.action_post()
-
-        super().delete_reconciled_line(move_line_ids)
+                move_linked.with_context(skip_recurring_copy=True).sudo().action_post()

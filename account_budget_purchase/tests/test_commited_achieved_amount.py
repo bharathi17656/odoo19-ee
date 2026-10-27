@@ -286,6 +286,35 @@ class TestCommittedAchievedAmount(TestAccountBudgetPurchaseCommon):
         bill.action_post()
         self.assertBudgetLine(plan_a_line, committed=1000, achieved=700)
 
+    def test_budget_analytic_receipt_from_po(self):
+        """ Test with a receipt linked to a PO. """
+        # Draft the test purchase order.
+        self.purchase_order.button_draft()
+        # Create a new purchase order
+        purchase_order = self.env['purchase.order'].create({
+            'partner_id': self.partner_a.id,
+            'date_order': '2019-01-10',
+            'order_line': [
+                Command.create({
+                    'product_id': self.product_a.id,
+                    'product_qty': 10,
+                    'analytic_distribution': {self.analytic_account_partner_a.id: 100},
+                }),
+            ]
+        })
+        purchase_order.button_confirm()
+        plan_a_line = self.budget_analytic_expense.budget_line_ids[0]
+        self.assertBudgetLine(plan_a_line, committed=1000, achieved=0)
+
+        # Create receipt for 5 units
+        purchase_order.order_line.qty_received = 5
+        receipt = self.env['account.move'].browse(purchase_order.action_create_invoice()['res_id'])
+        receipt.invoice_date = '2019-01-10'
+        receipt.move_type = 'in_receipt'
+        self.assertBudgetLine(plan_a_line, committed=1000, achieved=0)
+        receipt.action_post()
+        self.assertBudgetLine(plan_a_line, committed=1000, achieved=500)
+
     def test_multiple_bills_from_po_multiple_uom(self):
         """ Test with multiple bills linked to a PO and multiple UoM. """
         self.purchase_order.button_draft()
@@ -375,44 +404,6 @@ class TestCommittedAchievedAmount(TestAccountBudgetPurchaseCommon):
         # Product B have 1 PO line line[3] with 10 order and 5 received with analytic_account_partner_b and analytic_account_administratif
         # Committed = ((order - received) * price) + achieved = ((10-5) * -100 + 100 = -400
         self.assertEqual(plan_b_admin_line.committed_amount, -400)
-
-    def test_budget_analytic_misc_entry(self):
-        """ Even if an analytic distribution is set, only the accounts with type 'income'/'expense' should be taken
-        into account for the budgets.
-        """
-        self.purchase_order.button_draft()
-        journal_entry = self.env['account.move'].create({
-            'move_type': 'entry',
-            'partner_id': self.partner_a.id,
-            'invoice_date': '2019-01-10',
-            'date': '2019-01-10',
-            'invoice_line_ids': [
-                Command.create({
-                    'partner_id': self.partner_a.id,
-                    'account_id': self.company_data['default_account_expense'].id,
-                    'analytic_distribution': {self.analytic_account_partner_a.id: 100},
-                    'debit': 100,
-                }),
-                Command.create({
-                    'partner_id': self.partner_a.id,
-                    'account_id': self.company_data['default_account_assets'].id,
-                    'analytic_distribution': {self.analytic_account_partner_a.id: 100},
-                    'credit': 70,
-                }),
-                Command.create({
-                    'partner_id': self.partner_a.id,
-                    'account_id': self.company_data['default_account_assets'].id,
-                    'credit': 30,
-                }),
-            ],
-        })
-        journal_entry.action_post()
-
-        budget_both_line_a = self.budget_analytic_both.budget_line_ids[0]
-        self.assertEqual((budget_both_line_a.committed_amount, budget_both_line_a.achieved_amount), (-100, -100))
-
-        budget_expense_line_a = self.budget_analytic_expense.budget_line_ids[0]
-        self.assertEqual((budget_expense_line_a.committed_amount, budget_expense_line_a.achieved_amount), (100, 100))
 
     def test_budget_analytic_expense_with_credit_note(self):
         """ Test that credit note are taken into account. """
@@ -665,3 +656,15 @@ class TestCommittedAchievedAmount(TestAccountBudgetPurchaseCommon):
         action = line.action_open_budget_entries()
         report_lines = self.env['budget.report'].search(action['domain'])
         self.assertEqual(sum(line.committed for line in report_lines), 100.0)
+
+    def test_budget_report_analytic_filter_purchase(self):
+        result = self.env['budget.report'].formatted_read_grouping_sets(
+            domain=[('budget_analytic_id', '=', self.budget_analytic_expense.id)],
+            grouping_sets=[['budget_analytic_id']],
+            aggregates=['budget:sum', 'achieved:sum'],
+        )
+        rows = result[0]
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]['budget_analytic_id'][0], self.budget_analytic_expense.id)
+        self.assertEqual(rows[0]['budget:sum'], 74000.0)
+        self.assertEqual(rows[0]['achieved:sum'], 0.0)

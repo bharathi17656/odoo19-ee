@@ -259,10 +259,18 @@ class AccountReconcileModel(models.Model):
                 st_line=statement_line,
             )
         )
+        # Get the original base lines and tax lines before the creation of new lines
+        if any(aml.get('tax_ids') for aml in amls_to_create):
+            original_base_lines, original_tax_lines = statement_line._prepare_for_tax_lines_recomputation()
 
         statement_line._set_move_line_to_statement_line_move(liquidity_line + other_lines, amls_to_create)
+
+        # Now that the new lines have been added, we can recompute the taxes
         if any(aml.get('tax_ids') for aml in amls_to_create):
-            statement_line._recompute_tax_lines()
+            _new_liquidity_line, new_suspense_line, _new_other_lines = statement_line._seek_for_lines()
+            new_lines = statement_line.line_ids - (liquidity_line + other_lines + new_suspense_line)
+            statement_line._create_tax_lines(original_base_lines, original_tax_lines, new_lines)
+
         if self.next_activity_type_id:
             statement_line.move_id.activity_schedule(
                 activity_type_id=self.next_activity_type_id.id,
@@ -270,21 +278,28 @@ class AccountReconcileModel(models.Model):
             )
 
     def trigger_reconciliation_model(self, statement_line_id):
+        # statement_line_id could have multiple statement lines, the name is incorrect due to stable changes
         self.ensure_one()
 
-        statement_line = self.env['account.bank.statement.line'].browse(statement_line_id).exists()
-        self._trigger_reconciliation_model(statement_line)
+        statement_lines = self.env['account.bank.statement.line'].browse(statement_line_id).exists()
+        for statement_line in statement_lines:
+            self._trigger_reconciliation_model(statement_line)
 
     def write(self, vals):
         res = super().write(vals)
-        unreconciled_statement_lines = self.env['account.bank.statement.line'].search([
+        unreconciled_domain = [
             *self._check_company_domain(self.env.company),
             ('is_reconciled', '=', False),
-        ])
+        ]
+        unreconciled_statement_lines = self.env['account.bank.statement.line'].search(unreconciled_domain)
         if unreconciled_statement_lines:
-            unreconciled_statement_lines.line_ids.filtered(
+            move_lines = self.env['account.move.line'].search([
+                ('reconcile_model_id', 'in', self.ids),
+                ('move_id.statement_line_id', 'any', unreconciled_domain)
+            ])
+            move_lines.filtered(
                 lambda line:
-                line.account_id == line.move_id.journal_id.suspense_account_id and line.reconcile_model_id in self
+                line.account_id == line.move_id.journal_id.suspense_account_id
             ).reconcile_model_id = False
             self._apply_reconcile_models(unreconciled_statement_lines)
 

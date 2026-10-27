@@ -132,7 +132,7 @@ class PosOrder(models.Model):
         for order in eligible_orders:
             try:
                 order._set_external_taxes(order._get_external_taxes())
-            except (UserError, ValidationError) as e:  # Don't block the POS
+            except (UserError, ValidationError, InsufficientCreditError) as e:  # Don't block the POS
                 order.l10n_br_last_avatax_status = "error"
                 order.l10n_br_avatax_error = str(e)
             else:
@@ -533,11 +533,13 @@ class PosOrder(models.Model):
         return self.id
 
     def _l10n_br_generate_access_key(self):
+        # If the database has been updated from pre 18.4, their vat may not be in the compacted mode.
+        compacted_vat = "".join(c for c in (self.company_id.partner_id.vat or '') if c.isdigit())
         access_key = "".join(
             [
                 f"{self._l10n_br_get_cuf(self.company_id.state_id):2.2}",
-                f"{self.date_order.strftime('%y%m'):4.4}",  # dhEmi
-                f"{self.company_id.partner_id.vat:14.14}",  # Emitter CNPJ
+                f"{fields.Datetime.context_timestamp(self, fields.Datetime.now()).strftime('%y%m'):4.4}",  # dhEmi
+                f"{compacted_vat:14.14}",  # Emitter CNPJ
                 f"{self.env.ref('l10n_br.dt_65').code:>02.2}",  # mod (NFC-e)
                 f"{self.config_id.l10n_br_invoice_serial:>03.3}",  # serie
                 self.l10n_br_edi_number,  # nNF (9 characters)
@@ -778,9 +780,10 @@ class PosOrder(models.Model):
                     ("l10n_br_avatax_code", "=", l10n_br_avatax_code),
                     ("price_include_override", "=", "tax_included"),
                     ("company_id", "=", self.company_id.id),
+                    ("type_tax_use", "=", "sale"),
                 ],
                 limit=1,
-                order="create_date desc",
+                order="create_date desc, id desc",
             )
         )
 
@@ -914,3 +917,8 @@ class PosOrder(models.Model):
             'url': f'/l10n_br_edi_pos/download_nfce_attachments/{",".join(map(str, attachments.ids))}',
             'target': 'self',
         }
+
+    def get_reference_last_part(self):
+        if self.config_id.company_id.account_fiscal_country_id == self.env.ref('base.br') and self.config_id.l10n_br_is_nfce:
+            return self.sequence_number
+        return super().get_reference_last_part()

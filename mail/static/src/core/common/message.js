@@ -41,6 +41,12 @@ import { useLongPress } from "@mail/utils/common/hooks";
 import { ActionList } from "@mail/core/common/action_list";
 import { loadCssFromBundle } from "@mail/utils/common/misc";
 
+class MessageDropdown extends Dropdown {
+    get isBottomSheet() {
+        return hasTouch() && this.props.bottomSheet;
+    }
+}
+
 /**
  * @typedef {Object} Props
  * @property {boolean} [hasActions=true]
@@ -63,7 +69,7 @@ export class Message extends Component {
         ActionSwiper,
         AttachmentList,
         Composer,
-        Dropdown,
+        Dropdown: MessageDropdown,
         ImStatus,
         MessageInReply,
         MessageLinkPreviewList,
@@ -144,8 +150,10 @@ export class Message extends Component {
                 const shadowStyle = document.createElement("style");
                 shadowStyle.textContent = `
                     * {
-                        background-color: transparent !important;
                         color: ${color} !important;
+                    }
+                    *:not(.o-mail-ellipsis) {
+                        background-color: transparent !important;
                     }
                     a, a * {
                         color: ${this.constructor.SHADOW_LINK_COLOR} !important;
@@ -264,7 +272,7 @@ export class Message extends Component {
             "pt-1": !this.props.asCard && !this.props.squashed,
             "o-pt-0_5": !this.props.asCard && this.props.squashed,
             "o-selfAuthored": this.message.isSelfAuthored && !this.env.messageCard,
-            "o-selected": this.props.thread?.composer.replyToMessage?.eq(this.props.message),
+            "o-selected": this.props.message.composerAsReplyToMessage?.thread.eq(this.props.thread),
             "o-squashed": this.props.squashed,
             "mt-1":
                 !this.props.squashed &&
@@ -272,7 +280,6 @@ export class Message extends Component {
                 !this.env.messageCard &&
                 !this.props.asCard,
             "px-1": this.props.isInChatWindow,
-            "opacity-50": this.props.thread?.composer.replyToMessage?.notEq(this.props.message),
             "o-actionMenuMobileOpen": this.ui.isSmall && this.optionsDropdown.isOpen,
             "o-editing": this.isEditing,
         };

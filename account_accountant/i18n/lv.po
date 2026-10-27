@@ -12,14 +12,15 @@
 # Arnis Putniņš <arnis@allegro.lv>, 2023
 # Armīns Jeltajevs <armins.jeltajevs@gmail.com>, 2023
 # Martin Trigaux, 2023
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Aleksejs Ivanovs <ai@myacc.pro>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:40+0000\n"
-"PO-Revision-Date: 2025-11-17 07:03+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-16 17:46+0000\n"
+"PO-Revision-Date: 2026-08-31 10:09+0000\n"
+"Last-Translator: Aleksejs Ivanovs <ai@myacc.pro>\n"
 "Language-Team: Latvian <https://translate.odoo.com/projects/odoo-19/"
 "account_accountant/lv/>\n"
 "Language: lv\n"
@@ -27,7 +28,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: account_accountant
 #. odoo-python
@@ -81,8 +82,9 @@ msgstr ""
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_change_lock_date
+#, fuzzy
 msgid "<i>Lock transactions up to specific dates, inclusive</i>"
-msgstr ""
+msgstr "<i>Aizslēgt darījumus līdz konkrētiem datumiem, ieskaitot</i>"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_move_form_inherit
@@ -96,20 +98,27 @@ msgstr "<span class=\"o_stat_text\">Bankas izraksts</span>"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_reconcile_wizard
+#, fuzzy
 msgid ""
 "<span class=\"oe_inline o_form_label mx-3\" invisible=\"reco_currency_id == "
 "company_currency_id\"> in </span>"
 msgstr ""
+"<span class=\"oe_inline o_form_label mx-3\" invisible=\"reco_currency_id == "
+"company_currency_id\"> iekš</span>"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_reconcile_wizard
+#, fuzzy
 msgid ""
 "<span class=\"oe_inline o_form_label mx-3\" "
 "invisible=\"single_currency_mode\"> in </span>"
 msgstr ""
+"<span class=\"oe_inline o_form_label mx-3\" "
+"invisible=\"single_currency_mode\"> iekš</span>"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_change_lock_date
+#, fuzzy
 msgid ""
 "<span class=\"text-danger o_form_label\" invisible=\"hard_lock_date == "
 "current_hard_lock_date\">\n"
@@ -117,9 +126,15 @@ msgid ""
 "i>\n"
 "                                        </span>"
 msgstr ""
+"<span class=\"text-danger o_form_label\" invisible=\"hard_lock_date == "
+"current_hard_lock_date\">\n"
+"                                            <i>Šīs izmaiņas ir "
+"neatgriezeniskas</i>\n"
+"                                        </span>"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_change_lock_date
+#, fuzzy
 msgid ""
 "<span class=\"text-muted o_form_label\" invisible=\"not "
 "min_fiscalyear_lock_date_exception_for_me_id                                                  "
@@ -128,9 +143,16 @@ msgid ""
 "span>\n"
 "                                </span>"
 msgstr ""
+"<span class=\"text-muted o_form_label\" invisible=\"not "
+"min_fiscalyear_lock_date_exception_for_me_id                                                  "
+"or not min_fiscalyear_lock_date_exception_for_everyone_id\">\n"
+"                                      <span style=\"white-space: pre\">; </"
+"span>\n"
+"                                </span>"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_change_lock_date
+#, fuzzy
 msgid ""
 "<span class=\"text-muted o_form_label\" invisible=\"not "
 "min_purchase_lock_date_exception_for_me_id                                                  "
@@ -139,9 +161,16 @@ msgid ""
 "span>\n"
 "                                </span>"
 msgstr ""
+"<span class=\"text-muted o_form_label\" invisible=\"not "
+"min_purchase_lock_date_exception_for_me_id                                                  "
+"or not min_purchase_lock_date_exception_for_everyone_id\">\n"
+"                                      <span style=\"white-space: pre\">; </"
+"span>\n"
+"                                </span>"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_change_lock_date
+#, fuzzy
 msgid ""
 "<span class=\"text-muted o_form_label\" invisible=\"not "
 "min_sale_lock_date_exception_for_me_id                                                  "
@@ -150,9 +179,16 @@ msgid ""
 "span>\n"
 "                                </span>"
 msgstr ""
+"<span class=\"text-muted o_form_label\" invisible=\"not "
+"min_sale_lock_date_exception_for_me_id                                                  "
+"or not min_sale_lock_date_exception_for_everyone_id\">\n"
+"                                      <span style=\"white-space: pre\">; </"
+"span>\n"
+"                                </span>"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_change_lock_date
+#, fuzzy
 msgid ""
 "<span class=\"text-muted o_form_label\" invisible=\"not "
 "min_tax_lock_date_exception_for_me_id                                                  "
@@ -161,6 +197,12 @@ msgid ""
 "span>\n"
 "                                </span>"
 msgstr ""
+"<span class=\"text-muted o_form_label\" invisible=\"not "
+"min_tax_lock_date_exception_for_me_id                                                  "
+"or not min_tax_lock_date_exception_for_everyone_id\">\n"
+"                                      <span style=\"white-space: pre\">; </"
+"span>\n"
+"                                </span>"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_change_lock_date
@@ -196,8 +238,9 @@ msgstr ""
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_reconcile_wizard
+#, fuzzy
 msgid "<span> (</span>"
-msgstr ""
+msgstr "<span> (</span>"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_reconcile_wizard
@@ -206,6 +249,7 @@ msgstr "<span>)</span>"
 
 #. module: account_accountant
 #: model_terms:web_tour.tour,rainbow_man_message:account_accountant.account_accountant_tour
+#, fuzzy
 msgid ""
 "<span><strong><b>Good job!</b> You went through all steps of this tour.</"
 "strong>\n"
@@ -213,10 +257,33 @@ msgid ""
 "Invoices</b> menu\n"
 "        </span>"
 msgstr ""
+"<span><strong><b>Labs darbs!</b> Jūs izgājāt cauri visiem šīs ekskursijas "
+"soļiem.</strong>\n"
+"            <br>Uzziniet, kā pārvaldīt klientu rēķinus <b>Klienti/Rēķini</b> "
+"izvēlnē\n"
+"        </span>"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_change_lock_date
+#, fuzzy
 msgid "<span>Exception</span>"
+msgstr "<span>Izņēmums</span>"
+
+#. module: account_accountant
+#. odoo-python
+#: code:addons/account_accountant/models/account_payment.py:0
+msgid ""
+"A payment with entry was created for an invoice previously linked to this "
+"payment: %(link)s.\n"
+"Its amount was deducted from this payment."
+msgstr ""
+
+#. module: account_accountant
+#. odoo-python
+#: code:addons/account_accountant/models/account_payment.py:0
+msgid ""
+"A payment with entry was created for the related invoice during its "
+"reconciliation, replacing this one: %(link)s."
 msgstr ""
 
 #. module: account_accountant
@@ -227,6 +294,8 @@ msgid ""
 msgstr ""
 
 #. module: account_accountant
+#. odoo-javascript
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/button_list/button_list.js:0
 #: model:ir.model,name:account_accountant.model_account_account
 #: model:ir.model.fields,field_description:account_accountant.field_account_reconcile_wizard__account_id
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_list_bank_rec_widget
@@ -296,14 +365,16 @@ msgstr "Aktivitātes"
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/bank_reconciliation/quick_create/quick_create.xml:0
+#, fuzzy
 msgid "Add & Close"
-msgstr ""
+msgstr "Pievienot & Aizvērt"
 
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/bank_reconciliation/quick_create/quick_create.xml:0
+#, fuzzy
 msgid "Add & New"
-msgstr ""
+msgstr "Pievienot & Jauns"
 
 #. module: account_accountant
 #: model_terms:ir.actions.act_window,help:account_accountant.account_tag_action
@@ -319,6 +390,13 @@ msgid ""
 msgstr ""
 "Pēc datu ieguves, pārbaudiet un apstipriniet rēķinu. Ja netiek atrasts "
 "pārdevējs, pievienojiet to pirms apstiprināšanas."
+
+#. module: account_accountant
+#: model_terms:ir.ui.view,arch_db:account_accountant.res_config_settings_view_form
+msgid ""
+"All entries created by Invoicing before that date will be ignored in "
+"Accounting."
+msgstr ""
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_reconcile_wizard__reco_model_autocomplete_ids
@@ -392,11 +470,15 @@ msgstr ""
 
 #. module: account_accountant
 #: model:ir.model.fields,help:account_accountant.field_account_change_lock_date__tax_lock_date
+#, fuzzy
 msgid ""
 "Any entry with taxes up to and including that date will be postponed to a "
 "later time, in accordance with its journal's sequence. The tax lock date is "
 "automatically set when the tax closing entry is posted."
 msgstr ""
+"Jebkurš ieraksts ar nodokļiem līdz šim datumam ieskaitot tiks atlikts uz "
+"vēlāku laiku saskaņā ar žurnāla secību. Nodokļu bloķēšanas datums tiek "
+"iestatīts automātiski, apstiprinot nodokļu slēguma ierakstu."
 
 #. module: account_accountant
 #: model:ir.model.fields,help:account_accountant.field_account_change_lock_date__purchase_lock_date
@@ -441,13 +523,15 @@ msgstr "Pielikumi"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__sign_invoice
+#, fuzzy
 msgid "Authorized Signatory on invoice"
-msgstr ""
+msgstr "Paraksttiesīgā persona uz rēķina"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.report_invoice_document
+#, fuzzy
 msgid "Authorized signatory"
-msgstr ""
+msgstr "Paraksttiesīgā persona"
 
 #. module: account_accountant
 #. odoo-javascript
@@ -463,7 +547,8 @@ msgstr "Automātiski saskaņotie ieraksti"
 
 #. module: account_accountant
 #. odoo-javascript
-#: code:addons/account_accountant/static/src/components/bank_reconciliation/search_dialog/search_dialog.xml:0
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/search_dialog/search_dialog_kanban.xml:0
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/search_dialog/search_dialog_list.xml:0
 msgid "Balance:"
 msgstr "Bilance:"
 
@@ -532,6 +617,12 @@ msgid "Cancel"
 msgstr "Atcelt"
 
 #. module: account_accountant
+#. odoo-python
+#: code:addons/account_accountant/models/account_payment.py:0
+msgid "Canceled payment during reconciliation"
+msgstr ""
+
+#. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/journal_create_wizard/journal_create_wizard.js:0
 msgid "Card"
@@ -556,8 +647,10 @@ msgstr ""
 
 #. module: account_accountant
 #: model:ir.model.fields,help:account_accountant.field_account_reconcile_wizard__to_check
+#, fuzzy
 msgid "Check if you are not certain of all the information of the counterpart."
 msgstr ""
+"Pārbaudiet, ja neesat pārliecināti par visiem darījuma partnera datiem."
 
 #. module: account_accountant
 #. odoo-javascript
@@ -567,8 +660,9 @@ msgstr "Izvēlieties rindu, lai priekšskatīt tās pielikumus."
 
 #. module: account_accountant
 #: model:ir.model.fields.selection,name:account_accountant.selection__account_auto_reconcile_wizard__search_mode__zero_balance
+#, fuzzy
 msgid "Clear Account"
-msgstr ""
+msgstr "Attīrīt kontu"
 
 #. module: account_accountant
 #: model_terms:ir.actions.act_window,help:account_accountant.actions_account_fiscal_year
@@ -588,6 +682,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/js/tours/account_accountant.js:0
 msgid "Click on the statement to unfold it."
+msgstr ""
+
+#. module: account_accountant
+#. odoo-javascript
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/statement_line/statement_line.xml:0
+msgid "Click to select"
 msgstr ""
 
 #. module: account_accountant
@@ -616,8 +716,9 @@ msgstr "Konfigurācijas uzstādījumi"
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/js/tours/account_accountant.js:0
+#, fuzzy
 msgid "Confirm the transaction."
-msgstr ""
+msgstr "Apstipriniet darījumu."
 
 #. module: account_accountant
 #. odoo-javascript
@@ -652,8 +753,9 @@ msgstr "Izveidot jaunu kontu grupu"
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/js/tours/account_accountant.js:0
+#, fuzzy
 msgid "Create a new transaction."
-msgstr ""
+msgstr "Izveidot jaunu darījumu."
 
 #. module: account_accountant
 #. odoo-javascript
@@ -732,8 +834,9 @@ msgstr "Pašreizējā bilance"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__current_hard_lock_date
+#, fuzzy
 msgid "Current Hard Lock"
-msgstr ""
+msgstr "Pašreizējais stingrais bloķēšanas datums"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_reconcile_wizard__date
@@ -760,6 +863,11 @@ msgid "Days"
 msgstr "Dienas"
 
 #. module: account_accountant
+#: model_terms:ir.ui.view,arch_db:account_accountant.view_move_form_inherit
+msgid "Deferral Entries"
+msgstr ""
+
+#. module: account_accountant
 #. odoo-python
 #: code:addons/account_accountant/models/account_move.py:0
 msgid "Deferral of %s"
@@ -776,7 +884,6 @@ msgstr ""
 #: code:addons/account_accountant/models/account_move.py:0
 #: model:ir.model.fields,field_description:account_accountant.field_account_bank_statement_line__deferred_move_ids
 #: model:ir.model.fields,field_description:account_accountant.field_account_move__deferred_move_ids
-#: model_terms:ir.ui.view,arch_db:account_accountant.view_move_form_inherit
 msgid "Deferred Entries"
 msgstr "Atliktie ieraksti"
 
@@ -794,19 +901,27 @@ msgstr "Atliktie izdevumi"
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_company__deferred_expense_account_id
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__deferred_expense_account_id
+#, fuzzy
 msgid "Deferred Expense Account"
-msgstr ""
+msgstr "Atlikto izdevumu konts"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_company__deferred_expense_amount_computation_method
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__deferred_expense_amount_computation_method
+#, fuzzy
 msgid "Deferred Expense Based on"
-msgstr ""
+msgstr "Atliktie izdevumi, pamatojoties uz"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_company__deferred_expense_journal_id
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__deferred_expense_journal_id
+#, fuzzy
 msgid "Deferred Expense Journal"
+msgstr "Atlikto izdevumu žurnāls"
+
+#. module: account_accountant
+#: model:ir.model.fields.selection,name:account_accountant.selection__account_move__deferred_entry_type__misc
+msgid "Deferred Miscellaneous"
 msgstr ""
 
 #. module: account_accountant
@@ -817,40 +932,47 @@ msgstr "Atliktie ieņēmumi"
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_company__deferred_revenue_account_id
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__deferred_revenue_account_id
+#, fuzzy
 msgid "Deferred Revenue Account"
-msgstr ""
+msgstr "Atlikto ieņēmumu konts"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_company__deferred_revenue_amount_computation_method
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__deferred_revenue_amount_computation_method
+#, fuzzy
 msgid "Deferred Revenue Based on"
-msgstr ""
+msgstr "Atliktie ieņēmumi, pamatojoties uz"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_company__deferred_revenue_journal_id
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__deferred_revenue_journal_id
+#, fuzzy
 msgid "Deferred Revenue Journal"
-msgstr ""
+msgstr "Atlikto ieņēmumu žurnāls"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.res_config_settings_view_form
+#, fuzzy
 msgid "Deferred expense"
-msgstr ""
+msgstr "Atliktie izdevumi"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.res_config_settings_view_form
+#, fuzzy
 msgid "Deferred expense entries:"
-msgstr ""
+msgstr "Atlikto izdevumu ieraksti:"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.res_config_settings_view_form
+#, fuzzy
 msgid "Deferred revenue"
-msgstr ""
+msgstr "Atliktie ieņēmumi"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.res_config_settings_view_form
+#, fuzzy
 msgid "Deferred revenue entries:"
-msgstr ""
+msgstr "Atlikto ieņēmum ieraksti:"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.res_config_settings_view_form
@@ -916,6 +1038,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_accountant.field_analytic_mixin__display_name
 #: model:ir.model.fields,field_description:account_accountant.field_digest_digest__display_name
 #: model:ir.model.fields,field_description:account_accountant.field_ir_ui_menu__display_name
+#: model:ir.model.fields,field_description:account_accountant.field_product_product__display_name
 #: model:ir.model.fields,field_description:account_accountant.field_res_company__display_name
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__display_name
 msgid "Display Name"
@@ -923,8 +1046,9 @@ msgstr "Parādīt vārdu"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_company__sign_invoice
+#, fuzzy
 msgid "Display signing field on invoices"
-msgstr ""
+msgstr "Rādīt parakstīšanas laukus rēķinos"
 
 #. module: account_accountant
 #. odoo-python
@@ -951,23 +1075,27 @@ msgstr ""
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_reconcile_wizard__edit_mode
+#, fuzzy
 msgid "Edit Mode"
-msgstr ""
+msgstr "Rediģēšanas režīms"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_reconcile_wizard__edit_mode_amount
+#, fuzzy
 msgid "Edit Mode Amount"
-msgstr ""
+msgstr "Rediģēšanas režīma summa"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_reconcile_wizard__edit_mode_reco_currency_id
+#, fuzzy
 msgid "Edit Mode Reco Currency"
-msgstr ""
+msgstr "Rediģēšanas režīma saskaņošanas valūta"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_reconcile_wizard__edit_mode_amount_currency
+#, fuzzy
 msgid "Edit mode amount"
-msgstr ""
+msgstr "Rediģēšanas režīma summa"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__module_account_auto_transfer
@@ -1007,23 +1135,27 @@ msgstr ""
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__exception_duration
+#, fuzzy
 msgid "Exception Duration"
-msgstr ""
+msgstr "Izņēmuma ilgums"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__exception_needed_fields
+#, fuzzy
 msgid "Exception Needed Fields"
-msgstr ""
+msgstr "Izņēmumam nepieciešamie lauki"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__exception_reason
+#, fuzzy
 msgid "Exception Reason"
-msgstr ""
+msgstr "Izņēmuma iemesls"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__exception_applies_to
+#, fuzzy
 msgid "Exception applies"
-msgstr ""
+msgstr "Izņēmuma piemērošana"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_search_bank_rec_widget
@@ -1073,13 +1205,15 @@ msgstr "Sekotāji (Partneri)"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_change_lock_date
+#, fuzzy
 msgid "For everyone:"
-msgstr ""
+msgstr "Visiem:"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_change_lock_date
+#, fuzzy
 msgid "For me:"
-msgstr ""
+msgstr "Man:"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_reconcile_wizard__force_partials
@@ -1124,14 +1258,16 @@ msgstr "Pilni mēneši"
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_company__generate_deferred_expense_entries_method
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__generate_deferred_expense_entries_method
+#, fuzzy
 msgid "Generate Deferred Expense Entries"
-msgstr ""
+msgstr "Ģenerēt atlikto izdevumu ierakstus"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_company__generate_deferred_revenue_entries_method
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__generate_deferred_revenue_entries_method
+#, fuzzy
 msgid "Generate Deferred Revenue Entries"
-msgstr ""
+msgstr "Ģenerēt atlikto ieņēmum ierakstus"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.res_config_settings_view_form
@@ -1149,15 +1285,34 @@ msgid "Has Abnormal Deferred Dates"
 msgstr "Ir nenormāli atliktie datumi"
 
 #. module: account_accountant
+#: model:ir.model.fields,field_description:account_accountant.field_account_bank_statement_line__has_attachments
+msgid "Has Attachments"
+msgstr ""
+
+#. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_move_line__has_deferred_moves
 msgid "Has Deferred Moves"
 msgstr "Ir atliktas kustības"
+
+#. module: account_accountant
+#: model:ir.model.fields,field_description:account_accountant.field_account_bank_statement_line__has_invalid_analytics
+msgid "Has Invalid Analytics"
+msgstr ""
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_bank_statement__has_message
 #: model:ir.model.fields,field_description:account_accountant.field_account_bank_statement_line__has_message
 msgid "Has Message"
 msgstr "ir ziņojums"
+
+#. module: account_accountant
+#. odoo-python
+#: code:addons/account_accountant/models/account_move.py:0
+msgid ""
+"Having different deferred entries generation methods for expenses and "
+"revenues is not supported on journal entries involving both expense and "
+"revenue accounts. You can split this entry into two entries instead."
+msgstr ""
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_account__id
@@ -1178,6 +1333,7 @@ msgstr "ir ziņojums"
 #: model:ir.model.fields,field_description:account_accountant.field_analytic_mixin__id
 #: model:ir.model.fields,field_description:account_accountant.field_digest_digest__id
 #: model:ir.model.fields,field_description:account_accountant.field_ir_ui_menu__id
+#: model:ir.model.fields,field_description:account_accountant.field_product_product__id
 #: model:ir.model.fields,field_description:account_accountant.field_res_company__id
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__id
 msgid "ID"
@@ -1253,6 +1409,11 @@ msgstr "Nederīgs izraksts"
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_move_line_reconcile_tree
 msgid "Invoice Date"
 msgstr "Rēķina datums"
+
+#. module: account_accountant
+#: model:res.groups,name:account_accountant.group_account_basic
+msgid "Invoicing & Banks"
+msgstr ""
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_company__invoicing_switch_threshold
@@ -1404,8 +1565,9 @@ msgstr "Jaunākais izraksts"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.res_config_settings_view_form
+#, fuzzy
 msgid "Legal signatory"
-msgstr ""
+msgstr "Juridiskais parakstītājs"
 
 #. module: account_accountant
 #. odoo-javascript
@@ -1425,8 +1587,9 @@ msgstr ""
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__fiscalyear_lock_date
+#, fuzzy
 msgid "Lock Everything"
-msgstr ""
+msgstr "Slēgt visu"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__fiscalyear_lock_date_for_everyone
@@ -1440,53 +1603,63 @@ msgstr ""
 
 #. module: account_accountant
 #: model:ir.actions.act_window,name:account_accountant.action_view_account_change_lock_date
+#, fuzzy
 msgid "Lock Journal Entries"
-msgstr ""
+msgstr "Slēgt žurnālu ierakstus"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__purchase_lock_date
+#, fuzzy
 msgid "Lock Purchases"
-msgstr ""
+msgstr "Slēgt pirkumus"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__purchase_lock_date_for_everyone
+#, fuzzy
 msgid "Lock Purchases For Everyone"
-msgstr ""
+msgstr "Slēgt pirkumus visiem"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__purchase_lock_date_for_me
+#, fuzzy
 msgid "Lock Purchases For Me"
-msgstr ""
+msgstr "Slēgt pirkumus man"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__sale_lock_date
+#, fuzzy
 msgid "Lock Sales"
-msgstr ""
+msgstr "Slēgt pārdošanu"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__sale_lock_date_for_everyone
+#, fuzzy
 msgid "Lock Sales For Everyone"
-msgstr ""
+msgstr "Slēgt pārdošanu visiem"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__sale_lock_date_for_me
+#, fuzzy
 msgid "Lock Sales For Me"
-msgstr ""
+msgstr "Slēgt pārdošanu man"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__tax_lock_date
+#, fuzzy
 msgid "Lock Tax Return"
-msgstr ""
+msgstr "Slēgt nodokļu deklarāciju"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__tax_lock_date_for_everyone
+#, fuzzy
 msgid "Lock Tax Return For Everyone"
-msgstr ""
+msgstr "Slēgt nodokļu deklarāciju visiem"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__tax_lock_date_for_me
+#, fuzzy
 msgid "Lock Tax Return For Me"
-msgstr ""
+msgstr "Slēgt nodokļu deklarāciju man"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_bank_statement__message_main_attachment_id
@@ -1560,18 +1733,21 @@ msgstr "Metode, ko izmanto, lai aprēķinātu atlikto ierakstu skaitu"
 #. module: account_accountant
 #: model:ir.model.fields,help:account_accountant.field_res_config_settings__generate_deferred_expense_entries_method
 #: model:ir.model.fields,help:account_accountant.field_res_config_settings__generate_deferred_revenue_entries_method
+#, fuzzy
 msgid "Method used to generate deferred entries"
-msgstr ""
+msgstr "Metode, ko izmanto, lai ģenerētu atliktos ierakstus"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__min_fiscalyear_lock_date_exception_for_everyone_id
+#, fuzzy
 msgid "Min Fiscalyear Lock Date Exception For Everyone"
-msgstr ""
+msgstr "Min finanšu gada slēgšanas datuma izņēmums visiem"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__min_fiscalyear_lock_date_exception_for_me_id
+#, fuzzy
 msgid "Min Fiscalyear Lock Date Exception For Me"
-msgstr ""
+msgstr "Min finanšu gada slēgšanas datuma izņēmums man"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__min_purchase_lock_date_exception_for_everyone_id
@@ -1607,6 +1783,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/journal_create_wizard/journal_create_wizard.js:0
 msgid "Miscellaneous Journal"
+msgstr ""
+
+#. module: account_accountant
+#. odoo-python
+#: code:addons/account_accountant/models/account_payment.py:0
+msgid "Modified amount during reconciliation"
 msgstr ""
 
 #. module: account_accountant
@@ -1672,8 +1854,9 @@ msgstr "Nav saskaņots"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_change_lock_date
+#, fuzzy
 msgid "Not locked"
-msgstr ""
+msgstr "Nav slēgts"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_bank_statement_line_search_bank_rec_widget
@@ -1696,8 +1879,9 @@ msgstr ""
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/js/tours/account_accountant.js:0
+#, fuzzy
 msgid "Now, we'll create your first invoice (accountant)"
-msgstr ""
+msgstr "Tagad mēs izveidosim jūsu pirmo rēķinu (grāmatvedis)"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_bank_statement__message_needaction_counter
@@ -1747,8 +1931,9 @@ msgstr ""
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/attachment_preview_list_view/attachment_preview_list_view.xml:0
+#, fuzzy
 msgid "Open attachment in pop out"
-msgstr ""
+msgstr "Atvērt pielikumu uznirstošajā logā"
 
 #. module: account_accountant
 #. odoo-javascript
@@ -1798,6 +1983,8 @@ msgid "Outstanding debits"
 msgstr "Nenokārtotie debeta maksājumi"
 
 #. module: account_accountant
+#. odoo-javascript
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/button_list/button_list.js:0
 #: model:ir.model.fields,field_description:account_accountant.field_account_reconcile_wizard__to_partner_id
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_move_line_reconcile_search
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_bank_statement_line_quick_create_form_bank_rec_widget
@@ -1812,6 +1999,7 @@ msgstr "Partneri"
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/bank_reconciliation/button_list/button_list.js:0
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/control_action/control_action.js:0
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_move_line_reconcile_search
 msgid "Payable"
 msgstr "Izdevumu"
@@ -1846,8 +2034,9 @@ msgstr ""
 
 #. module: account_accountant
 #: model:ir.model.fields.selection,name:account_accountant.selection__account_auto_reconcile_wizard__search_mode__one_to_one
+#, fuzzy
 msgid "Perfect Match"
-msgstr ""
+msgstr "Perfekta atbilstība"
 
 #. module: account_accountant
 #. odoo-python
@@ -1887,6 +2076,11 @@ msgstr ""
 "saskaņošanas laikā"
 
 #. module: account_accountant
+#: model:ir.model,name:account_accountant.model_product_product
+msgid "Product Variant"
+msgstr ""
+
+#. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/journal_create_wizard/journal_create_wizard.js:0
 msgid "Purchases Journal"
@@ -1900,15 +2094,17 @@ msgstr "Reitingi"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_change_lock_date
+#, fuzzy
 msgid "Reason..."
-msgstr ""
+msgstr "Iemesls…"
 
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/bank_reconciliation/button_list/button_list.js:0
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/control_action/control_action.js:0
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_move_line_reconcile_search
 msgid "Receivable"
-msgstr "Ieņēmumu"
+msgstr "Debitoru parādi"
 
 #. module: account_accountant
 #. odoo-javascript
@@ -1937,21 +2133,36 @@ msgstr "Saskaņot kontu"
 #. module: account_accountant
 #: model:ir.actions.act_window,name:account_accountant.action_open_auto_reconcile_wizard
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_auto_reconcile_wizard
+#, fuzzy
 msgid "Reconcile automatically"
-msgstr ""
+msgstr "Saskaņot automātiski"
 
 #. module: account_accountant
 #: model:ir.model.fields,help:account_accountant.field_account_auto_reconcile_wizard__search_mode
+#, fuzzy
 msgid ""
 "Reconcile journal items with opposite balance or clear accounts with a zero "
 "balance"
 msgstr ""
+"Žurnāla vienumu saskaņošana ar pretējo bilanci vai tīro kontu saskaņošana ar "
+"nulles bilanci"
 
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/bank_reconciliation/statement_line/statement_line.xml:0
 msgid "Reconciled"
 msgstr "Sasaistīts"
+
+#. module: account_accountant
+#: model:ir.model.fields,field_description:account_accountant.field_account_bank_statement_line__reconciled_lines_name
+msgid "Reconciled Lines Name"
+msgstr ""
+
+#. module: account_accountant
+#. odoo-javascript
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/button_list/button_list.js:0
+msgid "Reconciliation Models"
+msgstr ""
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_reconcile_wizard__reco_model_id
@@ -1962,6 +2173,11 @@ msgstr "Saskaņošanas modelis"
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/journal_create_wizard/journal_create_wizard.js:0
 msgid "Record your cash movements and transfers"
+msgstr ""
+
+#. module: account_accountant
+#: model_terms:ir.ui.view,arch_db:account_accountant.view_move_form_inherit
+msgid "Related Entries"
 msgstr ""
 
 #. module: account_accountant
@@ -2050,6 +2266,7 @@ msgstr "Meklēt žurnāla ierakstus saskaņošanai"
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/bank_reconciliation/button_list/button_list.js:0
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/control_action/control_action.js:0
 msgid "Search: Account"
 msgstr ""
 
@@ -2062,44 +2279,53 @@ msgstr ""
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/bank_reconciliation/button_list/button_list.js:0
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/control_action/control_action.js:0
 msgid "Search: Partner"
 msgstr ""
 
 #. module: account_accountant
 #: model:ir.model.fields,help:account_accountant.field_res_config_settings__signing_user
+#, fuzzy
 msgid ""
 "Select a user here to override every signature on invoice by this user's "
 "signature"
 msgstr ""
+"Šeit atlasiet lietotāju, lai ar šī lietotāja parakstu ignorētu katru rēķina "
+"parakstu"
 
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/bank_reconciliation/button_list/button_list.js:0
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/control_action/control_action.js:0
 msgid "Set Account"
 msgstr ""
 
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/components/bank_reconciliation/button_list/button_list.js:0
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/control_action/control_action.js:0
 msgid "Set Partner"
 msgstr ""
 
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/js/tours/account_accountant.js:0
+#, fuzzy
 msgid "Set an amount."
-msgstr ""
+msgstr "Iestatiet summu."
 
 #. module: account_accountant
 #. odoo-javascript
 #: code:addons/account_accountant/static/src/js/tours/account_accountant.js:0
+#, fuzzy
 msgid "Set the payment reference."
-msgstr ""
+msgstr "Iestatiet maksājuma referenci."
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__show_draft_entries_warning
+#, fuzzy
 msgid "Show Draft Entries Warning"
-msgstr ""
+msgstr "Rādīt melnrakstu ierakstu brīdinājumu"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_change_lock_date__show_posted_tax_closing_warning
@@ -2109,8 +2335,9 @@ msgstr ""
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_bank_statement_line__show_signature_area
 #: model:ir.model.fields,field_description:account_accountant.field_account_move__show_signature_area
+#, fuzzy
 msgid "Show Signature Area"
-msgstr ""
+msgstr "Rādīt paraksta apgabalu"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__module_sign
@@ -2125,8 +2352,9 @@ msgstr "Signature"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_config_settings__signing_user
+#, fuzzy
 msgid "Signature used to sign all the invoice"
-msgstr ""
+msgstr "Paraksts, ko izmanto, lai parakstītu visu rēķinu"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_bank_statement_line__signing_user
@@ -2136,13 +2364,21 @@ msgstr "Parakstītājs"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_res_company__signing_user
+#, fuzzy
 msgid "Signing User"
-msgstr ""
+msgstr "Parakstītāja lietotājs"
 
 #. module: account_accountant
 #: model:ir.model.fields,field_description:account_accountant.field_account_reconcile_wizard__single_currency_mode
 msgid "Single Currency Mode"
 msgstr "Vienotās valūtas režīms"
+
+#. module: account_accountant
+#. odoo-javascript
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/control_action/control_action.js:0
+msgid ""
+"Some lines cannot be processed because they have already been reconciled."
+msgstr ""
 
 #. module: account_accountant
 #. odoo-javascript
@@ -2186,6 +2422,19 @@ msgid "Subscription 12 months"
 msgstr ""
 
 #. module: account_accountant
+#. odoo-javascript
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/button_list/button_list.xml:0
+#, fuzzy
+msgid "Suggestions"
+msgstr "Ieteikumi"
+
+#. module: account_accountant
+#. odoo-javascript
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/actions/switch_partner_account_action.js:0
+msgid "Switch"
+msgstr ""
+
+#. module: account_accountant
 #: model:ir.model,name:account_accountant.model_account_tax
 #: model:ir.model.fields,field_description:account_accountant.field_account_reconcile_wizard__tax_id
 msgid "Tax"
@@ -2199,23 +2448,35 @@ msgstr "Nodokļu režģi"
 #. module: account_accountant
 #. odoo-python
 #: code:addons/account_accountant/wizard/account_reconcile_wizard.py:0
+#, fuzzy
 msgid ""
 "The amount of the write-off of a single credit line should be strictly "
 "negative."
-msgstr ""
+msgstr "Vienas kredītlīnijas norakstīšanas summai jābūt stingri negatīvai."
 
 #. module: account_accountant
 #. odoo-python
 #: code:addons/account_accountant/wizard/account_reconcile_wizard.py:0
+#, fuzzy
 msgid ""
 "The amount of the write-off of a single debit line should be strictly "
 "positive."
-msgstr ""
+msgstr "Vienas debeta līnijas norakstīšanas summai jābūt stingri pozitīvai."
 
 #. module: account_accountant
 #. odoo-python
 #: code:addons/account_accountant/wizard/account_reconcile_wizard.py:0
+#, fuzzy
 msgid "The amount of the write-off of a single line cannot be 0."
+msgstr "Vienas rindas norakstīšanas summa nevar būt 0."
+
+#. module: account_accountant
+#. odoo-javascript
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/actions/switch_partner_account_action.js:0
+msgid ""
+"The bank account %(account_number)s is actually set to partner %"
+"(current_partner_name)s, click here to move it to partner %"
+"(potential_partner_name)s"
 msgstr ""
 
 #. module: account_accountant
@@ -2239,13 +2500,6 @@ msgstr "Atliktie ieraksti, ko izveido šis rēķins"
 #: code:addons/account_accountant/models/account_fiscal_year.py:0
 msgid "The ending date must not be prior to the starting date."
 msgstr "Beigu datums nevar būt pirms sākuma datuma."
-
-#. module: account_accountant
-#: model_terms:ir.ui.view,arch_db:account_accountant.res_config_settings_view_form
-msgid ""
-"The invoices before this date will not be taken into account as accounting "
-"entries"
-msgstr ""
 
 #. module: account_accountant
 #: model:ir.model.fields,help:account_accountant.field_account_bank_statement_line__deferred_original_move_ids
@@ -2305,10 +2559,13 @@ msgstr ""
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_change_lock_date
+#, fuzzy
 msgid ""
 "There are still draft entries in the period you want to lock.\n"
 "                                You should either post or delete them."
 msgstr ""
+"Periodā, kuru vēlaties slēgt, joprojām ir ierakstu melnraksti.\n"
+"                                Jums vajadzētu vai publicēt vai izdzēst tos."
 
 #. module: account_accountant
 #. odoo-python
@@ -2368,8 +2625,9 @@ msgstr ""
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.res_config_settings_view_form
+#, fuzzy
 msgid "To enhance authenticity, add a signature to your invoices"
-msgstr ""
+msgstr "Lai uzlabotu autentiskumu, pievienojiet saviem rēķiniem parakstu"
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_move_line_reconcile_tree
@@ -2425,6 +2683,12 @@ msgstr "Pārskaitīt uz %s"
 #: model:ir.actions.server,name:account_accountant.auto_reconcile_bank_statement_line_ir_actions_server
 msgid "Try to reconcile automatically your statement lines"
 msgstr "Mēģināt automātiski saskaņot Jūsu izraksta rindas"
+
+#. module: account_accountant
+#. odoo-javascript
+#: code:addons/account_accountant/static/src/components/bank_reconciliation/statement_line/statement_line.xml:0
+msgid "Undo reconciliation"
+msgstr ""
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.view_account_move_line_reconcile_search
@@ -2608,34 +2872,45 @@ msgid "You need to select who the exception applies to."
 msgstr ""
 
 #. module: account_accountant
-#: model:ir.model.fields.selection,name:account_accountant.selection__account_change_lock_date__exception_duration__1h
-msgid "for 1 hour"
+#: model:res.groups,comment:account_accountant.group_account_basic
+msgid "adds the accounting dashboard, bank management and follow-up reports."
 msgstr ""
+
+#. module: account_accountant
+#: model:ir.model.fields.selection,name:account_accountant.selection__account_change_lock_date__exception_duration__1h
+#, fuzzy
+msgid "for 1 hour"
+msgstr "1 stundu"
 
 #. module: account_accountant
 #: model:ir.model.fields.selection,name:account_accountant.selection__account_change_lock_date__exception_duration__15min
+#, fuzzy
 msgid "for 15 minutes"
-msgstr ""
+msgstr "15 minūtes"
 
 #. module: account_accountant
 #: model:ir.model.fields.selection,name:account_accountant.selection__account_change_lock_date__exception_duration__24h
+#, fuzzy
 msgid "for 24 hours"
-msgstr ""
+msgstr "24 stundas"
 
 #. module: account_accountant
 #: model:ir.model.fields.selection,name:account_accountant.selection__account_change_lock_date__exception_duration__5min
+#, fuzzy
 msgid "for 5 minutes"
-msgstr ""
+msgstr "5 minūtes"
 
 #. module: account_accountant
 #: model:ir.model.fields.selection,name:account_accountant.selection__account_change_lock_date__exception_applies_to__everyone
+#, fuzzy
 msgid "for everyone"
-msgstr ""
+msgstr "visiem"
 
 #. module: account_accountant
 #: model:ir.model.fields.selection,name:account_accountant.selection__account_change_lock_date__exception_applies_to__me
+#, fuzzy
 msgid "for me"
-msgstr ""
+msgstr "man"
 
 #. module: account_accountant
 #: model:ir.model.fields.selection,name:account_accountant.selection__account_change_lock_date__exception_duration__forever
@@ -2662,8 +2937,9 @@ msgstr ""
 
 #. module: account_accountant
 #: model_terms:ir.ui.view,arch_db:account_accountant.account_journal_dashboard_kanban_view
+#, fuzzy
 msgid "to reconcile"
-msgstr ""
+msgstr "lai saskaņot"
 
 #~ msgid "Models"
 #~ msgstr "Models"

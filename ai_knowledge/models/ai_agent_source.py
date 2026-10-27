@@ -1,4 +1,4 @@
-from odoo import _, api, fields, models
+from odoo import api, fields, models
 
 from odoo.addons.ai.utils.html_extractor import HTMLExtractor
 
@@ -38,7 +38,8 @@ class AIAgentSource(models.Model):
         """
         article_sources = self.filtered(lambda s: s.type == 'knowledge_article')
         for source in article_sources:
-            source.user_has_access = source.article_id.user_has_access
+            # evaluate access with the current user without elevating to sudo (used in LLM response flow)
+            source.user_has_access = source.article_id.with_user(self.env.user).user_can_read
         super(AIAgentSource, self - article_sources)._compute_user_has_access()
 
     def _update_name(self):
@@ -96,7 +97,15 @@ class AIAgentSource(models.Model):
         if source.type != 'knowledge_article':
             return super()._fetch_content(source)
 
-        extractor = HTMLExtractor()
+        """
+        Add the agent creator's language explicitly to self environment
+        because it is missing inside cron jobs and thus translations
+        are not possible
+        """
+        lang = source.agent_id.create_uid.lang or 'en_US'
+        env = self.with_context(lang=lang).env
+        extractor = HTMLExtractor(env)
+
         parent_article = source.article_id
         article_descendants = parent_article._get_descendants()
         all_articles = article_descendants | parent_article
@@ -106,5 +115,5 @@ class AIAgentSource(models.Model):
             if result and result['content']:
                 content += result['content'] + '\n'
             else:
-                return {"content": None, "error": result.get('error', _("Failed to extract content from the articles."))}
+                return {"content": None, "error": result.get('error', env._("Failed to extract content from the articles."))}
         return {"content": content, "error": None}

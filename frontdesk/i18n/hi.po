@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
+"POT-Creation-Date: 2026-05-01 17:40+0000\n"
 "PO-Revision-Date: 2025-11-12 13:03+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Hindi <https://translate.odoo.com/projects/odoo-19/frontdesk/"
@@ -83,8 +83,8 @@ msgid ""
 "proceed to check out their login."
 msgstr ""
 ".\n"
-"                    <br/>कृपया हमें बताएं कि क्या आप चाहते हैं कि हम उन्हें किसी मीटिंग रू"
-"म में भेज दें या क्या आपको कोई और सहायता चाहिए.\n"
+"                    <br/>कृपया हमें बताएं कि क्या आप चाहते हैं कि हम उन्हें किसी मीटिंग "
+"रूम में भेज दें या क्या आपको कोई और सहायता चाहिए.\n"
 "                    <br/>विज़िटर के साथ सफ़ल मीटिंग के बाद, कृपया उनका चेक आउट पूरा "
 "करें।"
 
@@ -532,9 +532,9 @@ msgid ""
 "know you'll be there shortly."
 msgstr ""
 "नमस्ते, आपका विज़िटर {{ object.name }} {{ '(%s)' % object.phone if object.phone "
-"else '' }} {{ '(%s)' % object.company if object.company else '' }} आपसे {{ "
-"object.station_id.name }} पर मिलना चाहता है. कृपया उन्हें बता दें कि आप जल्द ही वहां "
-"पहुंच रहे हैं।"
+"else '' }} {{ '(%s)' % object.company if object.company else '' }} आपसे "
+"{{ object.station_id.name }} पर मिलना चाहता है. कृपया उन्हें बता दें कि आप जल्द ही "
+"वहां पहुंच रहे हैं।"
 
 #. module: frontdesk
 #: model_terms:ir.ui.view,arch_db:frontdesk.print_visitor_badge
@@ -607,6 +607,14 @@ msgstr "इमेज"
 #: model_terms:ir.ui.view,arch_db:frontdesk.frontdesk_frontdesk_view_kanban
 msgid "Install"
 msgstr "इंस्टॉल करें"
+
+#. module: frontdesk
+#. odoo-python
+#: code:addons/frontdesk/controllers/main.py:0
+msgid ""
+"Invalid domain. Allowed filters are: department_id with '=' and display_name "
+"with 'ilike'."
+msgstr ""
 
 #. module: frontdesk
 #: model:ir.model.fields,field_description:frontdesk.field_frontdesk_frontdesk__is_favorite
@@ -808,8 +816,7 @@ msgstr "डिलीवरी में गड़बड़ी वाले म�
 #: model_terms:ir.actions.act_window,help:frontdesk.action_open_planned_visitor
 #: model_terms:ir.actions.act_window,help:frontdesk.action_open_station_visitor
 msgid "Odoo helps you to track all information related to your visitors."
-msgstr ""
-"Odoo आपके विज़िटर से जुड़ी सभी जानकारी को ट्रैक करने में आपकी मदद करता है।"
+msgstr "Odoo आपके विज़िटर से जुड़ी सभी जानकारी को ट्रैक करने में आपकी मदद करता है।"
 
 #. module: frontdesk
 #: model:ir.model.fields,field_description:frontdesk.field_frontdesk_frontdesk__drink_offer
@@ -1048,8 +1055,7 @@ msgstr "मोबाइल से चेक-इन करने के लिए
 msgid ""
 "Shows a QR code in the interface, for guests to check in from their mobile "
 "phone."
-msgstr ""
-"इंटरफ़ेस में क्यूआर कोड दिखाता है, ताकि मेहमान अपने मोबाइल फ़ोन से चेक-इन कर सकें।"
+msgstr "इंटरफ़ेस में क्यूआर कोड दिखाता है, ताकि मेहमान अपने मोबाइल फ़ोन से चेक-इन कर सकें।"
 
 #. module: frontdesk
 #: model_terms:ir.ui.view,arch_db:frontdesk.frontdesk_frontdesk_view_form

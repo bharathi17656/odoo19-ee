@@ -6,7 +6,11 @@ import { patch } from "@web/core/utils/patch";
 patch(ChatWindow.prototype, {
     get showForwardOperatorButton() {
         const thread = this.props.chatWindow.thread;
-        return thread.channel_type === 'livechat' && thread.ai_agent_id;
+        return (
+            thread.channel_type === "livechat" &&
+            thread.ai_agent_id &&
+            thread.livechat_channel_has_agents
+        );
     },
 
     async forwardOperator(ev) {
@@ -30,9 +34,6 @@ patch(ChatWindow.prototype, {
         if (result['notification']){
             this.store.env.services.notification.add(result['notification'], { type: result['notification_type']});
         }
-        if (result['success'] === true){
-            thread.readyToSwapDeferred.resolve();
-        }
-    }
+        thread.readyToSwapDeferred.resolve();
+    },
 });
-

@@ -32,7 +32,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
+"POT-Creation-Date: 2026-08-21 17:44+0000\n"
 "PO-Revision-Date: 2025-11-20 13:21+0000\n"
 "Last-Translator: Odoo Turkish Import <dyki+tr@odoo.com>\n"
 "Language-Team: Turkish <https://translate.odoo.com/projects/odoo-19/"
@@ -159,9 +159,9 @@ msgid ""
 "A second entry will neutralize the original income and post the  outcome of "
 "this sale on account <b>%(account)s</b>."
 msgstr ""
-"Amortisman kaydı %(date)s tarihinde (bu tarih dahil) "
-"muhasebeleştirilecektir.<br/> İkinci bir kayıt orijinal geliri dengeleyecek "
-"ve satışın sonucunu <b>%(account)s</b> hesabına yansıtacaktır."
+"Amortisman kaydı %(date)s tarihinde (bu tarih dahil) muhasebeleştirilecektir."
+"<br/> İkinci bir kayıt orijinal geliri dengeleyecek ve satışın sonucunu <b>%"
+"(account)s</b> hesabına yansıtacaktır."
 
 #. module: account_asset
 #. odoo-python
@@ -514,8 +514,8 @@ msgstr "Faturadan oluşturulan varlık: %s"
 #. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
-msgid "Asset disposed. %s"
-msgstr "Varlık elden çıkarıldı. %s"
+msgid "Asset disposed. %(message)s"
+msgstr ""
 
 #. module: account_asset
 #: model:account.return.check.template,name:account_asset.account_return_check_template_asset_movement_and_accounting_treatment
@@ -531,8 +531,14 @@ msgstr "Varlık durduruldu. %s"
 #. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
-msgid "Asset sold. %s"
-msgstr "Varlık satıldı. %s"
+msgid "Asset sold. %(message)s See %(invoice_links)s"
+msgstr ""
+
+#. module: account_asset
+#. odoo-python
+#: code:addons/account_asset/models/account_asset.py:0
+msgid "Asset sold: %s"
+msgstr ""
 
 #. module: account_asset
 #. odoo-python
@@ -1028,6 +1034,15 @@ msgstr ""
 "belirtir."
 
 #. module: account_asset
+#: model:account.return.check.template,description:account_asset.account_return_check_template_monitoring_of_depreciation
+msgid ""
+"Ensure compliance with local tax rules on depreciation.\n"
+"Verify that the depreciation methods, depreciation period, and start dates "
+"align with tax requirements (e.g. linear depreciation, pro rata temporis "
+"application, no double declining for tax purposes)."
+msgstr ""
+
+#. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/controller/asset_template_controller.py:0
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__account_depreciation_expense_id
@@ -1370,6 +1385,11 @@ msgid "Modify Depreciation"
 msgstr "Amortismanı Düzenle"
 
 #. module: account_asset
+#: model:account.return.check.template,name:account_asset.account_return_check_template_monitoring_of_depreciation
+msgid "Monitoring of Depreciation "
+msgstr ""
+
+#. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__method_period__1
 #: model:ir.model.fields.selection,name:account_asset.selection__asset_modify__method_period__1
 msgid "Months"
@@ -1581,8 +1601,8 @@ msgid ""
 "Only applicable for Declining Balance method (e.g., 2 for double declining). "
 "Ignored for Straight Line."
 msgstr ""
-"Yalnızca Azalan Bakiye yöntemi için geçerlidir (örneğin, çift azalan için 2)"
-". Düz Çizgi için dikkate alınmaz."
+"Yalnızca Azalan Bakiye yöntemi için geçerlidir (örneğin, çift azalan için "
+"2). Düz Çizgi için dikkate alınmaz."
 
 #. module: account_asset
 #. odoo-python
@@ -1860,8 +1880,8 @@ msgid ""
 "(move_count)s cancelled %(word)s:"
 msgstr ""
 "%(exp_acc)s hesabına %(exp_delta)s alacak kaydı yapılırken, %(dep_acc)s "
-"hesabına %(dep_delta)s borç kaydı yapılmıştır. Bu, iptal edilen %(move_count)"
-"s adet %(word)s işlemiyle ilgilidir:"
+"hesabına %(dep_delta)s borç kaydı yapılmıştır. Bu, iptal edilen %"
+"(move_count)s adet %(word)s işlemiyle ilgilidir:"
 
 #. module: account_asset
 #. odoo-python
@@ -1893,8 +1913,8 @@ msgid ""
 "Purchase's value (%(purchase_value)s). Please make sure this is what you "
 "want."
 msgstr ""
-"Girdiğiniz tutar (%(entered_amount)s) İlişkili Satın Alım'ın değeriyle "
-"(%(purchase_value)s) eşleşmiyor. Lütfen bunun istediğiniz sonuç olduğundan "
+"Girdiğiniz tutar (%(entered_amount)s) İlişkili Satın Alım'ın değeriyle (%"
+"(purchase_value)s) eşleşmiyor. Lütfen bunun istediğiniz sonuç olduğundan "
 "emin olun."
 
 #. module: account_asset
@@ -1962,6 +1982,12 @@ msgstr ""
 "Periyodik amortisman girişlerinin gönderileceği gider hesabı (örneğin, "
 "\"630000 Amortisman Giderleri\"). Odoo'da mevcut olmalı ve \"Amortisman\" "
 "veya \"Gider\" türünde olmalıdır."
+
+#. module: account_asset
+#. odoo-javascript
+#: code:addons/account_asset/static/src/components/depreciation_schedule/warnings.xml:0
+msgid "The fixed asset account differs from the account on the bill. Click"
+msgstr ""
 
 #. module: account_asset
 #: model:ir.model.fields,help:account_asset.field_account_asset__method_number
@@ -2343,6 +2369,12 @@ msgid "gain/loss"
 msgstr "kazanç/zarar"
 
 #. module: account_asset
+#. odoo-javascript
+#: code:addons/account_asset/static/src/components/depreciation_schedule/warnings.xml:0
+msgid "here"
+msgstr ""
+
+#. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/controller/asset_template_controller.py:0
 msgid "journal_id"
@@ -2419,6 +2451,12 @@ msgstr "salvage_value"
 #: code:addons/account_asset/wizard/asset_modify.py:0
 msgid "sell"
 msgstr "sat"
+
+#~ msgid "Asset disposed. %s"
+#~ msgstr "Varlık elden çıkarıldı. %s"
+
+#~ msgid "Asset sold. %s"
+#~ msgstr "Varlık satıldı. %s"
 
 #~ msgid " (copy)"
 #~ msgstr " (kopya)"

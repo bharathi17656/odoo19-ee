@@ -2,13 +2,14 @@
 # This file contains the translation of the following modules:
 # * delivery_starshipit
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# Odoo Translation Bot <c3p@odoo.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.4+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:41+0000\n"
-"PO-Revision-Date: 2025-11-08 19:55+0000\n"
+"POT-Creation-Date: 2026-09-25 17:42+0000\n"
+"PO-Revision-Date: 2026-06-13 10:38+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/"
 "delivery_starshipit/ro/>\n"
@@ -18,7 +19,19 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
+
+#. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid ""
+"%(order_info)sHowever, the shipping label creation failed with the following "
+"error:\n"
+"%(error)s\n"
+"\n"
+"Please either continue the configuration or delete the order in Starshipit "
+"before trying again."
+msgstr ""
 
 #. module: delivery_starshipit
 #: model_terms:ir.ui.view,arch_db:delivery_starshipit.view_delivery_carrier_form
@@ -52,6 +65,18 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-info-circle\"/> Serviciile de livrare disponibile depind de "
 "transportatorii activați în contul dvs. Starshipit."
+
+#. module: delivery_starshipit
+#: model_terms:ir.ui.view,arch_db:delivery_starshipit.choose_delivery_carrier_view_form
+msgid "<i class=\"oi oi-arrow-right me-1\"/>Get more delivery methods"
+msgstr ""
+
+#. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/wizard/starshipit_shipping_wizard.py:0
+#, fuzzy
+msgid "Add a shipping method"
+msgstr "Adăugați o metodă de expediere"
 
 #. module: delivery_starshipit
 #: model_terms:ir.ui.view,arch_db:delivery_starshipit.view_shipping_method_starshipit
@@ -114,11 +139,18 @@ msgid "Delivery"
 msgstr "Livrare"
 
 #. module: delivery_starshipit
+#: model:ir.model,name:delivery_starshipit.model_choose_delivery_carrier
+#, fuzzy
+msgid "Delivery Carrier Selection Wizard"
+msgstr "Expert de selecție a operatorului de livrare"
+
+#. module: delivery_starshipit
 #: model_terms:ir.ui.view,arch_db:delivery_starshipit.view_shipping_method_starshipit
 msgid "Delivery Service"
 msgstr "Serviciu de livrare"
 
 #. module: delivery_starshipit
+#: model:ir.model.fields,field_description:delivery_starshipit.field_choose_delivery_carrier__display_name
 #: model:ir.model.fields,field_description:delivery_starshipit.field_delivery_carrier__display_name
 #: model:ir.model.fields,field_description:delivery_starshipit.field_starshipit_shipping_wizard__display_name
 #: model:ir.model.fields,field_description:delivery_starshipit.field_stock_package_type__display_name
@@ -133,8 +165,8 @@ msgstr "Nume afișat"
 msgid ""
 "Error: %(file_name)s file could not be obtained for order %(order_name)s."
 msgstr ""
-"Eroare: fișierul %(file_name)s nu a putut fi obținut pentru comanda "
-"%(order_name)s."
+"Eroare: fișierul %(file_name)s nu a putut fi obținut pentru comanda %"
+"(order_name)s."
 
 #. module: delivery_starshipit
 #. odoo-python
@@ -144,6 +176,7 @@ msgstr ""
 "Eroare: această metodă de livrare nu este disponibilă pentru această comandă."
 
 #. module: delivery_starshipit
+#: model:ir.model.fields,field_description:delivery_starshipit.field_choose_delivery_carrier__id
 #: model:ir.model.fields,field_description:delivery_starshipit.field_delivery_carrier__id
 #: model:ir.model.fields,field_description:delivery_starshipit.field_starshipit_shipping_wizard__id
 #: model:ir.model.fields,field_description:delivery_starshipit.field_stock_package_type__id
@@ -234,12 +267,6 @@ msgid ""
 msgstr ""
 "Dimensiunile pachetului sunt necesare pentru a obține tarife mai precise. Le "
 "puteți defini într-un tip de pachet pe care îl setați ca implicit."
-
-#. module: delivery_starshipit
-#. odoo-python
-#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
-msgid "Please delete the order on Starshipit then try again."
-msgstr "Vă rugăm să ștergeți comanda din Starshipit și să încercați din nou."
 
 #. module: delivery_starshipit
 #. odoo-python
@@ -339,7 +366,7 @@ msgstr ""
 #. module: delivery_starshipit
 #: model:ir.model,name:delivery_starshipit.model_delivery_carrier
 msgid "Shipping Methods"
-msgstr "Shipping Methods"
+msgstr "Metode de livrare"
 
 #. module: delivery_starshipit
 #: model_terms:ir.ui.view,arch_db:delivery_starshipit.view_shipping_method_starshipit
@@ -426,20 +453,14 @@ msgstr ""
 
 #. module: delivery_starshipit
 #. odoo-python
-#: code:addons/delivery_starshipit/models/starshipit_service.py:0
-msgid "Starshipit returned an error: %(message)s"
-msgstr "Starshipit a returnat o eroare: %(message)s"
-
-#. module: delivery_starshipit
-#. odoo-python
 #: code:addons/delivery_starshipit/models/delivery_carrier.py:0
 msgid ""
 "Starshipit: Delivery cost re-evaluated on Sales Order based on updated exact "
 "price (%(final_carrier_price)s) from transfer %(picking_name)s."
 msgstr ""
 "Starshipit: Costul de livrare a fost reevaluat pe comanda de vânzare pe baza "
-"prețului exact actualizat (%(final_carrier_price)s) din transferul "
-"%(picking_name)s."
+"prețului exact actualizat (%(final_carrier_price)s) din transferul %"
+"(picking_name)s."
 
 #. module: delivery_starshipit
 #. odoo-python
@@ -488,6 +509,15 @@ msgid "The Shipping Cost is being fetched in the background."
 msgstr "Costul de livrare este preluat în fundal."
 
 #. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid ""
+"The address of your company/warehouse is incomplete or wrong (Missing "
+"field(s):  \n"
+" %s)"
+msgstr ""
+
+#. module: delivery_starshipit
 #: model:ir.model.fields,help:delivery_starshipit.field_delivery_carrier__starshipit_carrier_code
 msgid ""
 "The carrier on starshipit used by this carrier. The service code belongs to "
@@ -508,6 +538,18 @@ msgstr ""
 
 #. module: delivery_starshipit
 #. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid "The order '%(order_number)s' has been created!\n"
+msgstr ""
+
+#. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid "The order has been created!\n"
+msgstr ""
+
+#. module: delivery_starshipit
+#. odoo-python
 #: code:addons/delivery_starshipit/models/starshipit_service.py:0
 msgid ""
 "The picking %(picking_name)s sequence is too long for Starshipit. Please "
@@ -515,6 +557,14 @@ msgid ""
 msgstr ""
 "Secvența %(picking_name)s este prea lungă pentru Starshipit. Vă rugăm să "
 "actualizați secvența pentru a folosi maximum 50 de caractere."
+
+#. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid ""
+"The recipient address is incomplete or wrong (Missing field(s):  \n"
+" %s)"
+msgstr ""
 
 #. module: delivery_starshipit
 #. odoo-python
@@ -543,16 +593,6 @@ msgid ""
 msgstr ""
 "Serviciul care va fi folosit pentru acest transportator. Acesta este setat "
 "când selectați un transportator din asistent."
-
-#. module: delivery_starshipit
-#. odoo-python
-#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
-msgid ""
-"The shipping label creation failed with the following error:\n"
-"%(error)s"
-msgstr ""
-"Crearea etichetei de livrare a eșuat cu următoarea eroare:\n"
-"%(error)s"
 
 #. module: delivery_starshipit
 #. odoo-python
@@ -589,3 +629,17 @@ msgstr "Transfer"
 #: code:addons/delivery_starshipit/controllers/download_starshipit_labels.py:0
 msgid "starshipit_labels"
 msgstr ""
+
+#~ msgid "Please delete the order on Starshipit then try again."
+#~ msgstr ""
+#~ "Vă rugăm să ștergeți comanda din Starshipit și să încercați din nou."
+
+#~ msgid "Starshipit returned an error: %(message)s"
+#~ msgstr "Starshipit a returnat o eroare: %(message)s"
+
+#~ msgid ""
+#~ "The shipping label creation failed with the following error:\n"
+#~ "%(error)s"
+#~ msgstr ""
+#~ "Crearea etichetei de livrare a eșuat cu următoarea eroare:\n"
+#~ "%(error)s"

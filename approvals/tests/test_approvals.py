@@ -29,52 +29,69 @@ class TestRequest(common.TransactionCase):
             'status': 'new'})
         record.approver_ids = (first_approver | second_approver)
 
-        self.assertEqual(record.request_status, 'new')
+        def assert_record_request_status_equals(expected_request_status):
+            """
+            This helper function will be used to test 2 things:
+            1. The real record's expected request_status value
+            2. A virtual record's expected request_status, as it would be
+               computed in an `onchange` request with a fresh environment
+            """
+            self.assertEqual(record.request_status, expected_request_status)
+            # Because we are simulating the virtual record behavior as it
+            # exists in the context of an `onchange` request, we should make
+            # sure that our environment represents that, i.e. we need a clean
+            # cache.
+            self.env.invalidate_all()
+            self.assertEqual(
+                record.new(origin=record).request_status,
+                expected_request_status)
+
+        assert_record_request_status_equals('new')
 
         record.action_confirm()
 
         # Test case 1: Min approval = 1
-        self.assertEqual(record.request_status, 'pending')
+        assert_record_request_status_equals('pending')
         record.action_approve(first_approver)
-        self.assertEqual(record.request_status, 'approved')
+        assert_record_request_status_equals('approved')
         record.action_approve(second_approver)
-        self.assertEqual(record.request_status, 'approved')
+        assert_record_request_status_equals('approved')
         record.action_withdraw(first_approver)
-        self.assertEqual(record.request_status, 'approved')
+        assert_record_request_status_equals('approved')
         record.action_refuse(first_approver)
-        self.assertEqual(record.request_status, 'refused')
+        assert_record_request_status_equals('refused')
 
         # Test case 2: Min approval = 1
         category_test.approval_minimum = 2
         record.action_withdraw(first_approver)
         record.action_withdraw(second_approver)
-        self.assertEqual(record.request_status, 'pending')
+        assert_record_request_status_equals('pending')
         record.action_approve(first_approver)
-        self.assertEqual(record.request_status, 'pending')
+        assert_record_request_status_equals('pending')
         record.action_approve(second_approver)
-        self.assertEqual(record.request_status, 'approved')
+        assert_record_request_status_equals('approved')
         record.action_withdraw(second_approver)
-        self.assertEqual(record.request_status, 'pending')
+        assert_record_request_status_equals('pending')
         record.action_refuse(second_approver)
-        self.assertEqual(record.request_status, 'refused')
+        assert_record_request_status_equals('refused')
 
         # Test case 3: Check that cancel is erasing the old validations
         record.action_cancel()
         self.assertEqual(first_approver.status, 'cancel')
         self.assertEqual(second_approver.status, 'cancel')
-        self.assertEqual(record.request_status, 'cancel')
+        assert_record_request_status_equals('cancel')
 
         # Test case 4: Set the approval request to draft
         record.action_draft()
         self.assertEqual(first_approver.status, 'new')
         self.assertEqual(second_approver.status, 'new')
-        self.assertEqual(record.request_status, 'new')
+        assert_record_request_status_equals('new')
 
         # Test case 5: Set min approval to an impossible value to reach
         category_test.approval_minimum = 3
         with self.assertRaises(UserError):
             record.action_confirm()
-        self.assertEqual(record.request_status, 'new')
+        assert_record_request_status_equals('new')
 
     def test_compute_request_status_with_required(self):
         category_test = self.env.ref('approvals.approval_category_data_business_trip')
@@ -333,7 +350,7 @@ class TestRequest(common.TransactionCase):
         approver3.with_user(user3).unlink()
         self.assertEqual(approval.approver_ids.user_id.id, user2.id)
 
-    def test_user_access_to_admin_approval(self):
+    def test_consistency_between_request_and_approver(self):
         user = new_test_user(self.env, login='user1', groups='base.group_user')
         admin = new_test_user(self.env, login='admin1', groups='approvals.group_approval_manager')
         admin_env = self.env(user=admin)
@@ -369,3 +386,110 @@ class TestRequest(common.TransactionCase):
 
         with self.assertRaises(AccessError):
             user_approver.with_user(user).request_id = private_approval
+
+        # As admin, create an approver for your own approval with user
+        user_approver_for_admin = admin_env['approval.approver'].create({
+            'user_id': user.id,
+            'request_id': private_approval.id
+        })
+        user_approval = admin_env['approval.request'].create({
+            'name': 'Test request',
+            'request_owner_id': user.id,
+            'category_id': category1.id,
+            'date_start': fields.Datetime.now(),
+            'date_end': fields.Datetime.now(),
+            'location': 'testland'
+        })
+
+        # As user, try to move your own approver on your own request
+        with self.assertRaises(AccessError):
+            user_approver_for_admin.with_user(user).request_id = user_approval
+        # As user, move your own approver on the same request
+        user_approver_for_admin.with_user(user).request_id = private_approval.id
+
+        # Create an approver without request
+        user_approver = self.env['approval.approver'].create({
+            'user_id': user.id,
+        })
+        # Move it to a request
+        user_approver.request_id = approval.id
+
+    def test_employee_in_user_company(self):
+        '''Ensure that the correct manager is added as an approver.
+        '''
+        user = new_test_user(self.env, login='user1', groups='base.group_user')
+        manager1 = new_test_user(self.env, login='manager1', groups='approvals.group_approval_manager')
+        manager2 = new_test_user(self.env, login='manager2', groups='approvals.group_approval_manager')
+        admin = new_test_user(self.env, login='admin1', groups='approvals.group_approval_manager')
+        admin_env = self.env(user=admin)
+        company2 = self.env['res.company'].create({'name': 'Wrong Company'})
+
+        # When incorrect employee is added first, it is selected first.
+        employee_manager1 = self.env['hr.employee'].create({
+            'user_id': manager1.id,
+        })
+        employee_manager2 = self.env['hr.employee'].create({
+            'user_id': manager2.id,
+        })
+        employee_user_wrong_company = self.env['hr.employee'].create({
+            'user_id': user.id,
+            'parent_id': employee_manager2.id,
+            'company_id': company2.id,
+        })
+        employee_user_correct_company = self.env['hr.employee'].create({
+            'user_id': user.id,
+            'parent_id': employee_manager1.id,
+            'company_id': user.company_id.id,
+        })
+
+        category1 = self.env['approval.category'].create({
+            'name': 'Test category 1',
+            'approver_ids': [
+                Command.create({'user_id': admin.id}),
+            ],
+            'manager_approval': 'approver',
+        })
+        approval = admin_env['approval.request'].create({
+            'name': 'Test request',
+            'request_owner_id': user.id,
+            'category_id': category1.id,
+            'date_start': fields.Datetime.now(),
+            'date_end': fields.Datetime.now(),
+            'location': 'testland'
+        })
+
+        self.assertTrue(employee_user_correct_company.parent_id.user_id in approval.approver_ids.user_id)
+        self.assertTrue(employee_user_wrong_company.parent_id.user_id not in approval.approver_ids.user_id)
+
+    def test_cancel_approver_status_as_non_privileged_user(self):
+        """
+        Ensure action_cancel does not raise an AccessError when called by a
+        non-privileged user. Previously, writing 'cancel' on approver_ids without
+        sudo caused an AccessError.
+        """
+        user_1 = new_test_user(self.env, login='user1', groups='base.group_user')
+        user_2 = new_test_user(self.env, login='admin1', groups='approvals.group_approval_manager')
+        category_test = self.env.ref('approvals.approval_category_data_business_trip')
+        record = self.env['approval.request'].create({
+            'name': 'test cancel request',
+            'request_owner_id': user_1.id,
+            'category_id': category_test.id,
+            'date_start': fields.Datetime.now(),
+            'date_end': fields.Datetime.now(),
+            'location': 'testland',
+        })
+        first_approver = self.env['approval.approver'].create({
+            'user_id': user_2.id,
+            'request_id': record.id,
+            'status': 'new',
+        })
+        record.approver_ids = first_approver
+        record.action_confirm()
+        self.assertEqual(record.request_status, 'pending')
+        # The approval owner (a plain internal user) cancels the request.
+        # Before the fix this raised AccessError because writing on approver_ids
+        # was done without sudo. The fix uses sudo() so this must not raise.
+        record.with_user(user_1).action_cancel()
+        # Approver status must be 'cancel' after the sudo write
+        self.assertEqual(first_approver.status, 'cancel')
+        self.assertEqual(record.request_status, 'cancel')

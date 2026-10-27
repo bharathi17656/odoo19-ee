@@ -66,6 +66,7 @@ export class TicketScreen extends Component {
         this.doPrint = useTrackedAsync((_selectedSyncedOrder) => this.print(_selectedSyncedOrder));
         this.numberBuffer.use({
             triggerAtInput: (event) => this._onUpdateSelectedOrderline(event),
+            useWithBarcode: true,
         });
 
         this.state = useState({
@@ -131,7 +132,7 @@ export class TicketScreen extends Component {
         }
     }
     async print(order) {
-        await this.pos.printReceipt({ order: order });
+        this.pos.printReceipt({ order: order });
     }
     async onFilterSelected(selectedFilter) {
         this.state.filter = selectedFilter;
@@ -181,6 +182,8 @@ export class TicketScreen extends Component {
         }
     }
     onClickOrder(clickedOrder) {
+        // Pending keystrokes belong to the line they were typed for.
+        this.numberBuffer.capture();
         this.setSelectedOrder(clickedOrder);
         this.numberBuffer.reset();
         if ((!clickedOrder || clickedOrder.finalized) && !this.getSelectedOrderlineId()) {
@@ -189,6 +192,11 @@ export class TicketScreen extends Component {
             if (firstLine) {
                 this.state.selectedOrderlineIds[clickedOrder.id] = firstLine.id;
             }
+        }
+    }
+    onDblClickOrder(order) {
+        if (!order.finalized) {
+            this.setOrder(order);
         }
     }
     async onClickReprintAll(order) {
@@ -220,6 +228,7 @@ export class TicketScreen extends Component {
     onClickOrderline(orderline) {
         if (this.getSelectedOrder()?.finalized) {
             const order = this.getSelectedOrder();
+            this.numberBuffer.capture();
             this.state.selectedOrderlineIds[order.id] = orderline.id;
             this.numberBuffer.reset();
         }
@@ -231,6 +240,38 @@ export class TicketScreen extends Component {
             this.setOrder(refundOrder);
         }
     }
+    _setToRefundDetail(toRefundDetail, buffer) {
+        // When already linked to an order, do not modify the to refund quantity.
+        if (toRefundDetail.destionation_order_id) {
+            return this.numberBuffer.reset();
+        }
+
+        toRefundDetail.refundableQty = toRefundDetail.line.qty - toRefundDetail.line.refundedQty;
+        if (toRefundDetail.refundableQty <= 0) {
+            return this.numberBuffer.reset();
+        }
+
+        if (buffer == null || buffer == "") {
+            toRefundDetail.qty = 0;
+        } else {
+            const quantity = Math.abs(parseFloat(buffer));
+            if (quantity > toRefundDetail.refundableQty) {
+                this.numberBuffer.reset();
+                if (!toRefundDetail.line.combo_parent_id) {
+                    this.dialog.add(AlertDialog, {
+                        title: _t("Maximum Exceeded"),
+                        body: _t(
+                            "The requested quantity to be refunded is higher than the ordered quantity. %s is requested while only %s can be refunded.",
+                            quantity,
+                            toRefundDetail.refundableQty
+                        ),
+                    });
+                }
+            } else {
+                toRefundDetail.qty = quantity;
+            }
+        }
+    }
     _onUpdateSelectedOrderline({ key, buffer }) {
         const order = this.getSelectedOrder();
         if (!order) {
@@ -238,45 +279,27 @@ export class TicketScreen extends Component {
         }
 
         const selectedOrderlineId = this.getSelectedOrderlineId();
-        const orderline = order.lines.find((line) => line.id == selectedOrderlineId);
+        let orderline = order.lines.find((line) => line.id == selectedOrderlineId);
         if (!orderline) {
             return this.numberBuffer.reset();
         }
 
-        const toRefundDetails = orderline
-            .getAllLinesInCombo()
-            .map((line) => this.getToRefundDetail(line));
-        for (const toRefundDetail of toRefundDetails) {
-            // When already linked to an order, do not modify the to refund quantity.
-            if (toRefundDetail.destionation_order_id) {
-                return this.numberBuffer.reset();
-            }
+        if (!orderline.isPartOfCombo()) {
+            const toRefundDetail = this.getToRefundDetail(orderline);
+            this._setToRefundDetail(toRefundDetail, buffer);
+            return;
+        }
 
-            const refundableQty = toRefundDetail.line.qty - toRefundDetail.line.refundedQty;
-            if (refundableQty <= 0) {
-                return this.numberBuffer.reset();
-            }
+        if (orderline.combo_parent_id) {
+            orderline = orderline.combo_parent_id;
+        }
 
-            if (buffer == null || buffer == "") {
-                toRefundDetail.qty = 0;
-            } else {
-                const quantity = Math.abs(parseFloat(buffer));
-                if (quantity > refundableQty) {
-                    this.numberBuffer.reset();
-                    if (!toRefundDetail.line.combo_parent_id) {
-                        this.dialog.add(AlertDialog, {
-                            title: _t("Maximum Exceeded"),
-                            body: _t(
-                                "The requested quantity to be refunded is higher than the ordered quantity. %s is requested while only %s can be refunded.",
-                                quantity,
-                                refundableQty
-                            ),
-                        });
-                    }
-                } else {
-                    toRefundDetail.qty = quantity;
-                }
-            }
+        const parentToRefundDetail = this.getToRefundDetail(orderline);
+        this._setToRefundDetail(parentToRefundDetail, buffer);
+
+        for (const comboLine of orderline.combo_line_ids) {
+            const toRefundDetail = this.getToRefundDetail(comboLine);
+            toRefundDetail.qty = (comboLine.qty / orderline.qty) * parentToRefundDetail.qty;
         }
     }
     async addAdditionalRefundInfo(order, destinationOrder) {
@@ -286,6 +309,11 @@ export class TicketScreen extends Component {
     // Used to override inside `pos_blackbox_be` and `pos_urban_piper`
     async _doneOrder(order) {
         return;
+    }
+    async onClickRefund() {
+        // Flush pending keystrokes so the refund uses the quantities shown on screen.
+        this.numberBuffer.capture();
+        await this.onDoRefund();
     }
     async onDoRefund() {
         const order = this.getSelectedOrder();
@@ -322,6 +350,7 @@ export class TicketScreen extends Component {
             const line = this.pos.models["pos.order.line"].create({
                 qty: -refundDetail.qty,
                 price_unit: refundLine.price_unit,
+                price_subtotal_incl: refundLine.price_subtotal_incl,
                 product_id: refundLine.product_id,
                 order_id: destinationOrder,
                 discount: refundLine.discount,
@@ -332,6 +361,7 @@ export class TicketScreen extends Component {
                     .slice(0, refundDetail.qty)
                     .map((lotName) => ["create", { lot_name: lotName }]),
                 price_type: "automatic",
+                attribute_value_ids: refundLine.attribute_value_ids.map((attr) => ["link", attr]),
             });
             lines.push(line);
             refundDetail.destination_order_uuid = destinationOrder.uuid;
@@ -358,9 +388,8 @@ export class TicketScreen extends Component {
             return;
         }
 
-        if (order.fiscal_position_id) {
-            destinationOrder.fiscal_position_id = order.fiscal_position_id;
-        }
+        // A refund is taxed like the order it refunds, even when that order has no fiscal position.
+        destinationOrder.fiscal_position_id = order.fiscal_position_id || false;
         // Set the partner to the destinationOrder.
         this.setPartnerToRefundOrder(partner, destinationOrder);
         destinationOrder.refunded_order_id = order;
@@ -651,11 +680,14 @@ export class TicketScreen extends Component {
                 !this.pos.isProductQtyZero(refund.qty) &&
                 refund.line.order_id.uuid === order.uuid &&
                 (partner ? refund.line.order_id.partner_id?.id === partner.id : true) &&
-                !refund.destination_order_id
+                !refund.destinationOrder
         );
     }
 
     async setOrder(order) {
+        if (this.pos.isOrderSyncing(order)) {
+            return;
+        }
         if (this.pos.config.isShareable) {
             await this.pos.syncAllOrders();
         }

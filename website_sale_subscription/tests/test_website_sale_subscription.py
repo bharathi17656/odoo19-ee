@@ -1,9 +1,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from datetime import datetime
 
+from odoo.fields import Command
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
-from odoo.addons.website_sale.controllers.cart import Cart
+from odoo.addons.website_sale_subscription.controllers.cart import Cart
 from odoo.addons.website_sale.tests.common import MockRequest
 
 from .common import WebsiteSaleSubscriptionCommon
@@ -169,6 +171,32 @@ class TestWebsiteSaleSubscription(WebsiteSaleSubscriptionCommon):
         self.assertEqual(monthly['discounted_price'], 88)  # Monthly 88% discount vs one-time
         self.assertEqual(yearly['discounted_price'], 33)  # Yearly 33% discount vs one-time
 
+    def test_subscription_plan_discount_percentage_tax_included(self):
+        """Check that the plan discount badges match the tax-included prices shown on the shop."""
+        self.website.show_line_subtotals_tax_selection = 'tax_included'
+        tax_20 = self.env['account.tax'].create({'name': "20%", 'amount': 20})
+        plan_5_years = self.env['sale.subscription.plan'].create({
+            'name': "5 Years", 'billing_period_value': 5, 'billing_period_unit': 'year', 'sequence': 1,
+        })
+        product = self.env['product.template'].create({
+            'name': "Taxed Subscription",
+            'recurring_invoice': True,
+            'type': 'service',
+            'taxes_id': [Command.set(tax_20.ids)],
+        })
+        self.env['product.pricelist.item'].create([
+            {'plan_id': self.plan_year.id, 'fixed_price': 236.67, 'product_tmpl_id': product.id},
+            {'plan_id': plan_5_years.id, 'fixed_price': 961.67, 'product_tmpl_id': product.id},
+        ])
+
+        with MockRequest(self.env, website=self.website):
+            pricings = product._get_combination_info().get('pricings', [])
+
+        yearly = next(p for p in pricings if p['plan_id'] == self.plan_year.id)
+        five_years = next(p for p in pricings if p['plan_id'] == plan_5_years.id)
+        self.assertEqual(yearly['discounted_price'], 0.0)
+        self.assertEqual(five_years['discounted_price'], 18)
+
     def test_cart_add_one_time_then_recurring_not_allowed(self):
         """
         Test that a cart cannot mix one-time and subscription products.
@@ -200,3 +228,195 @@ class TestWebsiteSaleSubscription(WebsiteSaleSubscriptionCommon):
 
             so._cart_add(product_id=self.sub_product.product_variant_ids.id, quantity=1)
             self.assertEqual(so.plan_id, self.plan_week)
+
+    def test_combination_info_skips_archived_plan(self):
+        # Archive the weekly subscription plan so the product has no active plan
+        self.plan_week.action_archive()
+        product = self.sub_product.with_context(website_id=self.website.id)
+
+        with MockRequest(self.env, website=self.website):
+            combination_info = product._get_combination_info()
+            self.assertTrue(combination_info['is_subscription'])
+            self.assertEqual(combination_info['pricings'], [])
+
+    def test_subscription_recompute_taxes_on_address_change(self):
+        self.env.company.country_id = self.env.ref('base.us')
+        fpos_be = self.env['account.fiscal.position'].create({
+            'name': "Fiscal Position BE",
+            'auto_apply': True,
+            'country_id': self.country_be.id,
+        })
+        tax_15_excl, tax_0 = self.env['account.tax'].create([
+            {
+                'name': "15% excl",
+                'amount': 15,
+                'price_include_override': 'tax_excluded',
+                'fiscal_position_ids': fpos_be.ids,
+            },
+            {
+                'name': "0%",
+                'amount': 0,
+                'fiscal_position_ids': fpos_be.ids,
+            },
+        ])
+        tax_0.original_tax_ids = tax_15_excl
+        self.sub_product.taxes_id = [Command.set(tax_15_excl.ids)]
+        self.partner.country_id = self.country_be
+
+        cart = self.empty_cart
+        cart.pricelist_id = self.pricelist
+        cart._cart_add(product_id=self.sub_product.product_variant_ids.id, quantity=1)
+        amount_untaxed = cart.amount_untaxed
+        self.assertEqual(cart.fiscal_position_id, fpos_be)
+        self.assertEqual(cart.order_line.tax_ids, tax_0)
+
+        cart.action_confirm()
+        self.assertEqual(cart.subscription_state, '3_progress')
+        self.partner.country_id = self.env.company.country_id
+        self.assertNotEqual(cart.fiscal_position_id, fpos_be)
+        self.assertEqual(
+            cart.order_line.tax_ids, tax_15_excl,
+            "Tax should have been updated on running subscriptions",
+        )
+        self.assertEqual(cart.amount_untaxed, amount_untaxed, "Untaxed amount should not change")
+
+        cart.set_close()
+        self.partner.country_id = self.country_be
+        self.assertNotEqual(cart.fiscal_position_id, fpos_be)
+        self.assertEqual(
+            cart.order_line.tax_ids, tax_15_excl,
+            "Tax should not have been updated on churned subscriptions",
+        )
+
+        cart.set_open()
+        self.assertEqual(cart.fiscal_position_id, fpos_be)
+        self.assertEqual(
+            cart.order_line.tax_ids, tax_0,
+            "Tax should have been updated when reopening a subscription",
+        )
+
+    def test_zero_price_subscription_with_pricelist(self):
+        """
+        Enable the `prevent_zero_price_sale` setting.
+        Create a subscription product with a price of 0, except for a specific pricelist where it is
+        priced at 20.0.
+        Add the subscription product to the cart from the website as a user using that pricelist
+        The product should be added and the sale order's monthly recurring revenue should be 20.0.
+        """
+        self.website.prevent_zero_price_sale = True
+        subscription = (
+            self.env["product.product"]
+            .with_context(website_id=self.website.id)
+            .create(
+                {
+                    "name": "subscription",
+                    "recurring_invoice": True,
+                    "lst_price": 0,
+                    "is_published": True,
+                    "subscription_rule_ids": [
+                        Command.create(
+                            {
+                                "plan_id": self.plan_month.id,
+                                "fixed_price": 20,
+                                "pricelist_id": self.pricelist.id,
+                            }
+                        )
+                    ],
+                }
+            )
+        )
+
+        website = self.website.with_user(self.public_user)
+        with MockRequest(website.env, website=website) as request:
+            Cart().add_to_cart(
+                product_template_id=subscription.product_tmpl_id.id,
+                product_id=subscription.id,
+                quantity=1,
+                plan_id=self.plan_month.id,
+            )
+            sale_order = request.cart
+        self.assertEqual(len(sale_order.order_line), 1)
+        self.assertEqual(sale_order.order_line.product_id, subscription)
+        self.assertEqual(sale_order.recurring_monthly, 20.0)
+
+    def test_discount_percentage_when_no_unit_base_plan(self):
+        """
+        Test discounted price value when not having a unit base plan.
+        (e.g. the minimum plan is 3 months)
+        """
+
+        subscription_product = self._create_product(
+            type='service',
+            subscription_rule_ids=[
+                Command.create({'plan_id': self.plan_3_month.id, 'fixed_price': 30}),
+                Command.create({'plan_id': self.plan_6_month.id, 'fixed_price': 55}),
+                Command.create({'plan_id': self.plan_year.id, 'fixed_price': 100}),
+            ],
+        )
+        with MockRequest(self.env, website=self.website):
+            info = subscription_product.product_tmpl_id._get_additionnal_combination_info(
+                subscription_product,
+                quantity=1,
+                date=datetime(2000, 1, 1),
+                uom=self.uom_unit,
+                website=self.website
+            )
+        pricing_data = info['pricings']
+        self.assertEqual(pricing_data[0]['discounted_price'], 0, "The base plan should not be discounted")
+        self.assertEqual(pricing_data[1]['discounted_price'], 8, "It should be the result of comparing this plan's unit price with\n"
+                                                                 "10 -the base plan unit price- not 30 -the fixed price of the base plan")
+        self.assertEqual(pricing_data[2]['discounted_price'], 16, "It should be the result of comparing this plan's unit price with\n"
+                                                                 "10 -the base plan unit price- not 30 -the fixed price of the base plan")
+
+    def test_shop_price_recurring_with_pricelist_discount(self):
+        """On /shop, the pricelist discount must apply to the recurring price.
+
+        The shop tile is rendered while the cart has no plan yet, so the
+        recurring price used to be computed with `plan_id=False`. The
+        percentage rule then fell back on the product's one-time `list_price`
+        (5 -> 4.5) instead of the recurring price (10 -> 9).
+        """
+        product = self.env['product.template'].create({
+            'name': 'One-time + Monthly',
+            'recurring_invoice': True,
+            'allow_one_time_sale': True,
+            'type': 'consu',
+            'list_price': 5.0,  # one-time sales price
+            'taxes_id': False,
+        })
+        self.env['product.pricelist.item'].create({
+            'plan_id': self.plan_month.id,
+            'fixed_price': 10.0,  # recurring price: 10/month (global, no pricelist)
+            'product_tmpl_id': product.id,
+            'applied_on': '1_product',
+            'pricelist_id': False,
+        })
+        # Advanced pricelist rule: 10% off the monthly recurring price.
+        self.pricelist.item_ids = [Command.create({
+            'plan_id': self.plan_month.id,
+            'applied_on': '1_product',
+            'product_tmpl_id': product.id,
+            'compute_price': 'percentage',
+            'percent_price': 10.0,
+        })]
+
+        with MockRequest(self.env, website=self.website) as request:
+            self.assertEqual(request.pricelist, self.pricelist)
+            self.assertFalse(request.cart.plan_id)
+            prices = product._get_sales_prices(self.website)
+
+        self.assertEqual(prices[product.id]['price_reduce'], 9.0)
+
+    def test_cart_update_keeps_delivery_rate(self):
+        carrier = self._prepare_carrier(
+            self._prepare_carrier_product(list_price=5.0),
+            delivery_type='base_on_rule',
+            price_rule_ids=[Command.create({'variable': 'weight', 'operator': '>=', 'max_value': 0})],
+        )
+        with MockRequest(self.env, website=self.website) as request:
+            cart = request.website._create_cart()
+            cart._cart_add(product_id=self.product.id)
+            cart._set_delivery_method(carrier)
+            cart.with_context(skip_cart_verification=True)._cart_add(product_id=self.product.id)
+            cart._verify_cart_after_update()
+            self.assertEqual(cart.order_line.filtered('is_delivery').price_unit, 0)

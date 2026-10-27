@@ -10,7 +10,7 @@
         <t t-set="is_any_total_discount_line" t-value="False"/>
         <t t-set="hide_price" t-value="doc.project_id.hide_price"/>
         <t t-foreach="order.order_line" t-as="line">
-            <t t-set="is_task" t-value="line == doc.sale_line_id"/>
+            <t t-set="is_task" t-value="line == doc.sale_line_id or line.product_id.service_policy == 'delivered_timesheet'"/>
             <t t-set="use_qty_delivered" t-value="is_task and line.product_id.service_policy != 'ordered_prepaid'"/>
             <t t-if="use_qty_delivered">
                 <t t-set="final_subtotal" t-value="final_subtotal + line.delivered_price_subtotal"/>
@@ -28,7 +28,7 @@
         <t t-set="display_discount" t-value="any(line.discount for line in order.order_line)"/>
         <t t-if="doc.allow_billable and order and (final_subtotal != 0 or is_any_total_discount_line)">
             <div>
-                <table class="table table-sm o_main_table">
+                <table class="table table-sm table-borderless o_main_table">
                     <thead>
                         <tr>
                             <th class="text-start">Product</th>
@@ -48,7 +48,7 @@
                         <t t-set="current_subtotal" t-value="0"/>
 
                         <t t-foreach="order.order_line" t-as="line">
-                            <t t-set="is_task" t-value="line == doc.sale_line_id"/>
+                            <t t-set="is_task" t-value="line == doc.sale_line_id or line.product_id.service_policy == 'delivered_timesheet'"/>
                             <t t-set="use_qty_delivered" t-value="is_task and line.product_id.service_policy != 'ordered_prepaid'"/>
                             <t t-if="use_qty_delivered">
                                 <t t-set="is_total_discount" t-value="line.discount and line.price_unit != 0 and line.delivered_price_total == 0"/>
@@ -123,7 +123,7 @@
             <div class="container_subtotal" name="so_total_summary" t-if="not hide_price">
                 <div id="total" class="row justify-content-end" name="total">
                     <div t-attf-class="#{'col-6' if report_type == 'pdf' else 'col-auto'}">
-                        <table t-if="final_subtotal != 0 or is_any_total_discount_line" class="table table-sm">
+                        <table t-if="final_subtotal != 0 or is_any_total_discount_line" class="table table-sm table-borderless">
                             <tr t-if="final_tax" class="o_subtotal" style="">
                                 <td><strong>Untaxed amount</strong></td>
                                 <td class="text-end">

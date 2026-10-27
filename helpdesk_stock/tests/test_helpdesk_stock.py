@@ -213,8 +213,8 @@ class TestHelpdeskStock(common.HelpdeskCommon):
         It is possible to return some products from a ticket. To do so, the user
         clicks on the Return button. That button will only be displayed in a
         condition strongly based on the field `has_partner_picking` (tldr: the
-        client must have an outgoing done picking). This test ensures the field
-        value is correct in several cases.
+        client must have an outgoing done picking OR a confirmed sale order line).
+        This test ensures the field value is correct in several cases.
         """
         product, service = self.env['product.product'].create([
             {'name': 'Amazing Product', 'type': 'consu'},
@@ -256,11 +256,14 @@ class TestHelpdeskStock(common.HelpdeskCommon):
             'partner_id': partner.id,
         } for partner in partners])
 
-        done_so_ticket = tickets.filtered(lambda t: t.partner_id == done_so.partner_id)
-        other_tickets = tickets - done_so_ticket
+        ticket_by_partner = {t.partner_id.id: t for t in tickets}
 
-        self.assertTrue(done_so_ticket.has_partner_picking)
-        self.assertEqual(other_tickets.mapped('has_partner_picking'), [False] * 5)
+        self.assertFalse(ticket_by_partner[partners[0].id].has_partner_picking, "Partner with 'No SO' should not have return picking.")
+        self.assertTrue(ticket_by_partner[partners[1].id].has_partner_picking, "Partner with 'SO with service' should have return picking.")
+        self.assertFalse(ticket_by_partner[partners[2].id].has_partner_picking, "Partner with 'Draft SO' should not have return picking.")
+        self.assertTrue(ticket_by_partner[partners[3].id].has_partner_picking, "Partner with 'Confirmed SO' should have return picking.")
+        self.assertFalse(ticket_by_partner[partners[4].id].has_partner_picking, "Partner with 'Cancelled SO' should not have return picking.")
+        self.assertTrue(ticket_by_partner[partners[5].id].has_partner_picking, "Partner with 'Done SO' should have return picking.")
 
     def test_set_picking_to_false_in_wizard(self):
         """ This test ensure that when the picking field of the wizard is set to False, no traceback is triggered during
@@ -339,3 +342,73 @@ class TestHelpdeskStock(common.HelpdeskCommon):
         self.assertEqual(res_picking.product_id.id, product.id, 'the product id should match the product selected in the wizard')
         self.assertEqual(res_picking.picking_type_code, 'incoming', 'the picking type code should be incoming in the return')
         self.assertEqual(res_picking.return_id.id, wizard.picking_id.id, 'the return id should match the wizard picking id')
+
+    def test_return_picking_default_multistep_delivery(self):
+        """
+        Tests that when returning a product from a helpdesk ticket, the correct
+        delivery order is selected by default in multi-step delivery scenarios.
+        The default should always be the final customer-facing operation (Ship/Out).
+        """
+
+        warehouse = self.env['stock.warehouse'].create({
+            'name': 'Multi-Step Test WH',
+            'code': 'MSWH',
+        })
+        product_multi_step = self.env['product.product'].create({
+            'name': 'Multi-Step Test Product',
+            'is_storable': True,
+        })
+
+        routes = ['pick_ship', 'pick_pack_ship']
+        for steps in routes:
+            with self.subTest(delivery_steps=steps):
+                warehouse.write({'delivery_steps': steps})
+
+                so = self.env['sale.order'].create({
+                    'partner_id': self.partner.id,
+                    'warehouse_id': warehouse.id,
+                    'order_line': [Command.create({'product_id': product_multi_step.id, 'product_uom_qty': 1})],
+                })
+                so.action_confirm()
+
+                final_picking = self.env['stock.picking']
+                current_picking = so.picking_ids
+                while current_picking:
+                    current_picking.move_ids.quantity = 1
+                    current_picking.button_validate()
+                    final_picking = current_picking
+                    current_picking = current_picking.move_ids.move_dest_ids.picking_id
+
+                self.assertEqual(final_picking.state, 'done')
+
+                ticket = self.env['helpdesk.ticket'].create({
+                    'name': f'Return for {steps}',
+                    'partner_id': self.partner.id,
+                    'team_id': self.test_team.id,
+                    'sale_order_id': so.id,
+                })
+                return_wizard_form = Form(self.env['stock.return.picking'].with_context({
+                    'active_model': 'helpdesk.ticket',
+                    'default_ticket_id': ticket.id,
+                }))
+
+                self.assertEqual(
+                    return_wizard_form.picking_id,
+                    final_picking,
+                    f"For {steps} delivery, the final OUT operation should be defaulted."
+                )
+
+    def test_copy_ticket_without_stock_user(self):
+        service_product = self.env['product.product'].create({
+            'name': "Service product",
+            'type': 'service',
+        })
+        ticket_1 = self.env['helpdesk.ticket'].create({
+            'name': 'Ticket 1',
+            'team_id': self.test_team.id,
+            'partner_id': self.partner.id,
+            'product_id': service_product.id
+        })
+        # should not raise an access error
+        copied_ticket = ticket_1.with_user(self.helpdesk_user).copy()
+        self.assertTrue(copied_ticket)

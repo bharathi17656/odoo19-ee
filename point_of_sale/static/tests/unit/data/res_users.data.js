@@ -1,25 +1,23 @@
-import { ResUsers as MailResUsers } from "@mail/../tests/mock_server/mock_models/res_users";
+import { mailModels } from "@mail/../tests/mail_test_helpers";
 
-export class ResUsers extends MailResUsers {
-    _name = "res.users";
-
-    _load_pos_data_fields() {
-        return ["id", "name", "partner_id", "all_group_ids"];
-    }
-
+export class ResUsers extends mailModels.ResUsers {
     _records = [
-        ...MailResUsers.prototype.constructor._records,
+        ...mailModels.ResUsers._records,
         {
             id: 2,
             name: "Administrator",
             partner_id: 3,
-            role: "manager",
+            role: "group_system",
         },
         {
             id: 3,
             name: "User1",
             partner_id: 4,
-            role: "cashier",
+            role: "group_user",
         },
     ];
+
+    _load_pos_data_fields() {
+        return ["id", "name", "partner_id", "all_group_ids"];
+    }
 }

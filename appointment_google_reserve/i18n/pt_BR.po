@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:45+0000\n"
-"PO-Revision-Date: 2025-11-27 16:39+0000\n"
+"POT-Creation-Date: 2025-12-30 18:44+0000\n"
+"PO-Revision-Date: 2025-12-22 18:59+0000\n"
 "Last-Translator: \"Maitê Dietze (madi)\" <madi@odoo.com>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.odoo.com/projects/"
 "odoo-19/appointment_google_reserve/pt_BR/>\n"
@@ -153,6 +153,11 @@ msgstr "Criado em"
 #: model_terms:ir.ui.view,arch_db:appointment_google_reserve.appointment_type_view_form
 msgid "Disable Google Reserve"
 msgstr "Desativar o Google Reserve"
+
+#. module: appointment_google_reserve
+#: model_terms:ir.ui.view,arch_db:appointment_google_reserve.appointment_type_view_form
+msgid "Disable Synchronization"
+msgstr "Desativar sincronização"
 
 #. module: appointment_google_reserve
 #: model_terms:ir.ui.view,arch_db:appointment_google_reserve.appointment_type_view_form
@@ -331,7 +336,7 @@ msgstr "Mensagens"
 #. module: appointment_google_reserve
 #: model_terms:ir.ui.view,arch_db:appointment_google_reserve.appointment_type_view_form
 msgid "Not yet"
-msgstr ""
+msgstr "Ainda não"
 
 #. module: appointment_google_reserve
 #: model:ir.model.fields,field_description:appointment_google_reserve.field_google_reserve_merchant__message_needaction_counter
@@ -360,12 +365,16 @@ msgid ""
 "Only Appointment Managers can enable or disable the Google Reserve "
 "Integration"
 msgstr ""
+"Somente os gerentes de agendamentos podem ativar ou desativar a integração "
+"com o Google Reserve"
 
 #. module: appointment_google_reserve
 #. odoo-python
 #: code:addons/appointment_google_reserve/models/appointment_type.py:0
 msgid "Only Appointment Managers can enable the Google Reserve Integration"
 msgstr ""
+"Apenas os gerentes de agendamentos podem ativar a integração com o Google "
+"Reserve"
 
 #. module: appointment_google_reserve
 #: model:ir.model.fields,field_description:appointment_google_reserve.field_google_reserve_merchant__phone
@@ -393,6 +402,9 @@ msgid ""
 "Ready to synchronize your Appointment Type with Google Reserve? Make sure "
 "your setup is complete — changes may take up to 24 hours to appear once live."
 msgstr ""
+"Pronto para sincronizar seu tipo de compromisso com o Google Reserve? "
+"Certifique-se de que sua configuração esteja completa — as alterações podem "
+"levar até 24 horas para aparecerem após serem feitas."
 
 #. module: appointment_google_reserve
 #: model:ir.model,name:appointment_google_reserve.model_resource_calendar_leaves
@@ -402,7 +414,7 @@ msgstr "Informações de folga do recurso"
 #. module: appointment_google_reserve
 #: model:appointment.type,name:appointment_google_reserve.appointment_type_restaurant
 msgid "Rest'Odoo"
-msgstr ""
+msgstr "Rest'Odoo"
 
 #. module: appointment_google_reserve
 #: model:ir.model.fields,field_description:appointment_google_reserve.field_google_reserve_merchant__message_has_sms_error
@@ -417,24 +429,28 @@ msgstr "Número uniformizado"
 #. module: appointment_google_reserve
 #: model_terms:ir.ui.view,arch_db:appointment_google_reserve.appointment_type_view_form
 msgid "Stop syncing"
-msgstr ""
+msgstr "Parar a sincronização"
 
 #. module: appointment_google_reserve
 #: model_terms:ir.ui.view,arch_db:appointment_google_reserve.appointment_type_view_form
 msgid "Synchronize with Google Reserve"
-msgstr ""
+msgstr "Sincronizar com o Google Reserve"
 
 #. module: appointment_google_reserve
 #: model:ir.model.fields,help:appointment_google_reserve.field_google_reserve_merchant__phone
 #: model:ir.model.fields,help:appointment_google_reserve.field_google_reserve_merchant__website_url
 msgid "Used by Google to properly match merchants and partners, recommended."
 msgstr ""
+"Usado pelo Google para correspondência adequada de comerciantes e parceiros; "
+"recomendado."
 
 #. module: appointment_google_reserve
 #: model:ir.model.fields,help:appointment_google_reserve.field_google_reserve_merchant__business_category
 #: model:ir.model.fields,help:appointment_google_reserve.field_google_reserve_merchant__location_id
 msgid "Used by Google to try to match your physical address to your business."
 msgstr ""
+"Utilizado pelo Google para tentar associar o seu endereço físico à sua "
+"empresa."
 
 #. module: appointment_google_reserve
 #: model:ir.model.fields,field_description:appointment_google_reserve.field_google_reserve_merchant__website_message_ids
@@ -454,4 +470,4 @@ msgstr "Histórico de comunicação do site"
 #. module: appointment_google_reserve
 #: model_terms:ir.ui.view,arch_db:appointment_google_reserve.google_reserve_merchant_view_form
 msgid "e.g Restaurant"
-msgstr ""
+msgstr "ex.: Restaurante"

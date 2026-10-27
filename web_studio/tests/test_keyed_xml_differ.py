@@ -963,3 +963,121 @@ class TestXmlDiffer(BaseCase):
         </data>
         """
         self._assertXpathDiffAndReapply(xml_old, xml_new, expected_arch)
+
+    def test_remove_text_after(self):
+        xml_old = """
+        <form o-diff-key="1">
+            <div o-diff-key="2">
+                <br o-diff-key="3" /> A <br o-diff-key="4"/> C
+            </div>
+        </form>
+        """
+        xml_new = """
+        <form o-diff-key="1">
+            <div o-diff-key="2">
+                <br o-diff-key="3" />
+            </div>
+        </form>
+        """
+
+        expected_arch = """<data>
+        <data>
+            <xpath expr="/form/div" position="inside">
+                <div o-diff-key="2"/>
+            </xpath>
+            <xpath expr="/form/div/div" position="inside">
+                <xpath expr="/form/div/br" position="move"/>
+            </xpath>
+            <xpath expr="/form/div" position="replace">
+                <xpath expr="/form/div/div" position="move"/>
+            </xpath>
+        </data>
+        </data>
+        """
+        self._assertXpathDiffAndReapply(xml_old, xml_new, expected_arch)
+
+    def test_replace_text_after(self):
+        xml_old = """
+        <form o-diff-key="1">
+            <div o-diff-key="2">
+                <br o-diff-key="3" /> A <br o-diff-key="4"/> C
+            </div>
+        </form>
+        """
+        xml_new = """
+        <form o-diff-key="1">
+            <div o-diff-key="2">
+                <br o-diff-key="3" />A C
+            </div>
+        </form>
+        """
+
+        expected_arch = """
+        <data>
+        <data>
+            <xpath expr="/form/div" position="inside">
+                <div o-diff-key="2"/>
+            </xpath>
+            <xpath expr="/form/div/div" position="inside">
+                <xpath expr="/form/div/br" position="move"/>
+                A C
+            </xpath>
+            <xpath expr="/form/div" position="replace">
+                <xpath expr="/form/div/div" position="move"/>
+            </xpath>
+        </data>
+        </data>
+        """
+        self._assertXpathDiffAndReapply(xml_old, xml_new, expected_arch)
+
+    def test_remove_text_before(self):
+        xml_old = """
+        <form o-diff-key="1">
+            <div o-diff-key="2">
+                <br o-diff-key="3" /> A <br o-diff-key="4"/>
+            </div>
+        </form>
+        """
+        xml_new = """
+        <form o-diff-key="1">
+            <div o-diff-key="2">
+               A <br o-diff-key="4" />
+            </div>
+        </form>
+        """
+
+        expected_arch = """<data>
+        <data>
+            <xpath expr="/form/div/br" position="replace"/>
+            <xpath expr="/form/div/br" position="before">A </xpath>
+        </data>
+        </data>
+        """
+        self._assertXpathDiffAndReapply(xml_old, xml_new, expected_arch)
+
+    def test_add_comment(self):
+        xml_old = """
+        <form o-diff-key="1">
+            <div o-diff-key="2">
+                <br o-diff-key="3" />
+            </div>
+        </form>
+        """
+        xml_new = """
+        <form o-diff-key="1">
+            <div o-diff-key="2">
+               <!-- Added Comment -->
+               <br o-diff-key="3" />
+            </div>
+        </form>
+        """
+
+        expected_arch = """<data>
+        <data>
+            <xpath expr="/form/div/br" position="before">
+                <!-- Added Comment -->
+            </xpath>
+        </data>
+        </data>
+        """
+        self._assertXpathDiffAndReapply(xml_old, xml_new, expected_arch)

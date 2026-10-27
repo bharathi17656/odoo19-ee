@@ -206,6 +206,29 @@ class HelpdeskSLA(TransactionCase):
             ticket._message_track(['stage_id'], initial_values)
             self.assertEqual(status.deadline, datetime(2019, 1, 16, 15, 17), 'We have waiting time: deadline = old_deadline +  7.5 hours (waiting)')
 
+    def test_sla_freeze_from_excluded_creation_stage(self):
+        sla = self.env['helpdesk.sla'].create({
+            'name': 'SLA excluding creation stage',
+            'team_id': self.test_team_reached.id,
+            'time': 3,
+            'tag_ids': [(4, self.tag_freeze.id)],
+            'exclude_stage_ids': self.stage_new.ids,
+            'stage_id': self.stage_done.id,
+            'priority': '1',
+        })
+        with self._ticket_patch_now(NOW2):
+            ticket = self.create_ticket(tag_ids=self.tag_freeze, team=self.test_team_reached)
+            status = ticket.sla_status_ids.filtered(lambda s: s.sla_id == sla)
+            self.assertFalse(status.deadline, "In the excluded creation stage: no deadline yet")
+            # finalize the creation's tracking so the move is tracked separately
+            self.cr.flush()
+
+        with self._ticket_patch_now(datetime(2019, 1, 8, 11, 0)):
+            ticket.write({'stage_id': self.stage_progress.id})
+            # deadline = creation + 3h (SLA) + 2h spent in the excluded 'New' stage
+            self.assertEqual(status.deadline, datetime(2019, 1, 8, 15, 0),
+                "Time spent in the excluded creation stage must be added to the deadline")
+
     def test_failed_tickets(self):
         with self._ticket_patch_now(NOW):
             self.sla.time = 3
@@ -293,6 +316,46 @@ class HelpdeskSLA(TransactionCase):
                 "Team with no tickets closed in the past 7 days should have a -1 success rate"
             )
 
+    def test_hours_open_in_analysis_reports(self):
+        with self._ticket_patch_now(NOW):
+            ticket = self.create_ticket(team=self.test_team_reached)
+
+        with self._ticket_patch_now(NOW + relativedelta(hours=2)):
+            ticket.user_id = self.helpdesk_user
+
+        with self._ticket_patch_now(NOW + relativedelta(hours=9)):
+            ticket.stage_id = self.stage_done
+
+        for report in ('helpdesk.ticket.report.analysis', 'helpdesk.sla.report.analysis'):
+            self.assertEqual(
+                self.env[report].search([('ticket_id', '=', ticket.id)]).ticket_open_hours, 9,
+                f"{report} should count the 9 hours the ticket stayed open, from its creation to its closing")
+
+    def test_sla_success_in_analysis_reports(self):
+        """ The SLA Success filter of the analysis reports should only match SLAs reached
+        on time, even once their deadline is in the past. """
+        with self._ticket_patch_now(NOW):
+            ticket_reached = self.create_ticket(team=self.test_team_reached)
+            ticket_late = self.create_ticket(team=self.test_team_late)
+            ticket_ongoing = self.create_ticket(team=self.test_team_reached)
+
+        with self._ticket_patch_now(NOW + relativedelta(days=5)):
+            tickets = ticket_reached + ticket_late
+            tickets.write({'stage_id': self.stage_progress.id})
+            initial_values = {ticket.id: {'stage_id': self.stage_new} for ticket in tickets}
+            tickets._message_track(['stage_id'], initial_values)
+
+        # Keep the ongoing SLA deadline in the future
+        ticket_ongoing.sla_status_ids.deadline = fields.Datetime.now() + relativedelta(days=1)
+        self.env.flush_all()
+
+        all_tickets = ticket_reached + ticket_late + ticket_ongoing
+        for report in ('helpdesk.ticket.report.analysis', 'helpdesk.sla.report.analysis'):
+            self.assertEqual(
+                self.env[report].search([('ticket_id', 'in', all_tickets.ids), ('sla_success', '=', True)]).ticket_id,
+                ticket_reached,
+                f"{report} should only consider the SLA reached on time as a success")
+
     def test_move_ticket_to_done_and_cancel_with_disabled_sla_and_no_calendar(self):
         """ Test moving a ticket does not cause an exception when SLAs are disabled when the calendar is empty. """
         # Create a ticket on a team with SLAs enabled
@@ -313,3 +376,61 @@ class HelpdeskSLA(TransactionCase):
         with Form(ticket) as ticket_form:
             ticket_form.stage_id = self.stage_cancel
         self.assertEqual(ticket.stage_id, self.stage_cancel)
+
+    def test_sla_reached_target_stage_unlinked_from_team(self):
+        """ The target stage of an SLA policy is honoured even once the team no longer handles it """
+        with self._ticket_patch_now(NOW):
+            ticket = self.create_ticket(team=self.test_team_reached)
+            status = ticket.sla_status_ids.filtered(lambda status: status.sla_id == self.sla)
+
+            ticket.write({'stage_id': self.stage_progress.id})
+            self.assertTrue(status.reached_datetime, "The SLA policy should be reached on its target stage")
+
+            self.stage_progress.team_ids = [Command.unlink(self.test_team_reached.id)]
+
+            ticket.write({'stage_id': self.stage_done.id})
+            self.assertTrue(
+                status.reached_datetime,
+                "A reached SLA policy should stay reached once its target stage is no longer handled by the team")
+
+        with self._ticket_patch_now(NOW):
+            late_ticket = self.create_ticket(team=self.test_team_reached)
+            late_status = late_ticket.sla_status_ids.filtered(lambda status: status.sla_id == self.sla)
+
+            late_ticket.write({'stage_id': self.stage_done.id})
+            self.assertTrue(
+                late_status.reached_datetime,
+                "An SLA policy whose target stage is no longer handled by the team should still be reachable")
+
+    def test_sla_reached_kept_after_transfer(self):
+        """ The status reached under the previous team of a ticket is a fact, it survives the transfer """
+        with self._ticket_patch_now(NOW):
+            ticket = self.create_ticket(team=self.test_team_reached)
+            status = ticket.sla_status_ids.filtered(lambda status: status.sla_id == self.sla)
+
+            ticket.write({'stage_id': self.stage_progress.id})
+            reached_datetime = status.reached_datetime
+            self.assertTrue(reached_datetime, "The SLA policy should be reached on its target stage")
+
+            ticket.write({'team_id': self.test_team_late.id, 'stage_id': self.stage_new.id})
+            self.assertEqual(
+                status.reached_datetime, reached_datetime,
+                "Transferring the ticket should not unreach a policy of its previous team")
+
+            ticket.write({'stage_id': self.stage_done.id})
+            self.assertEqual(
+                status.reached_datetime, reached_datetime,
+                "Moving the transferred ticket should not unreach a policy of its previous team either")
+
+    def test_sla_reached(self):
+        """ Ensure sla_reached is computed corectly"""
+        with self._ticket_patch_now(NOW):
+            ticket = self.create_ticket(team=self.test_team_reached, user_id=self.env.user.id)
+            self.assertFalse(ticket.sla_reached, "Newly created ticket should not be sla_reached")
+
+        with self._ticket_patch_now(NOW + relativedelta(days=10)):
+            ticket.write({'stage_id': self.stage_progress.id})
+            initial_values = {ticket.id: {'stage_id': self.stage_new}}
+            ticket._message_track(['stage_id'], initial_values)
+            self.assertTrue(ticket.sla_reached, "Ticket that reached target stage late should still be sla_reached")
+            self.assertTrue(ticket.sla_reached_late, "Should also be flagged late")

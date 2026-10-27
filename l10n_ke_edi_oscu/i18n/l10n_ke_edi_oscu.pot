@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 20:04+0000\n"
-"PO-Revision-Date: 2025-11-13 20:04+0000\n"
+"POT-Creation-Date: 2026-04-10 19:17+0000\n"
+"PO-Revision-Date: 2026-04-10 19:17+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -71,26 +71,6 @@ msgstr ""
 
 #. module: l10n_ke_edi_oscu
 #: model_terms:ir.ui.view,arch_db:l10n_ke_edi_oscu.report_invoice_document
-msgid "11.05"
-msgstr ""
-
-#. module: l10n_ke_edi_oscu
-#: model_terms:ir.ui.view,arch_db:l10n_ke_edi_oscu.report_invoice_document
-msgid "20.00"
-msgstr ""
-
-#. module: l10n_ke_edi_oscu
-#: model_terms:ir.ui.view,arch_db:l10n_ke_edi_oscu.report_invoice_document
-msgid "2021-09-19"
-msgstr ""
-
-#. module: l10n_ke_edi_oscu
-#: model_terms:ir.ui.view,arch_db:l10n_ke_edi_oscu.report_invoice_document
-msgid "27.00"
-msgstr ""
-
-#. module: l10n_ke_edi_oscu
-#: model_terms:ir.ui.view,arch_db:l10n_ke_edi_oscu.report_invoice_document
 msgid "<b>Date: </b>"
 msgstr ""
 
@@ -141,17 +121,12 @@ msgstr ""
 
 #. module: l10n_ke_edi_oscu
 #: model_terms:ir.ui.view,arch_db:l10n_ke_edi_oscu.report_invoice_document
-msgid "<span>Tax Amount (KSh)</span>"
+msgid "<span>Tax<br/>Amount<br/>(KSh)</span>"
 msgstr ""
 
 #. module: l10n_ke_edi_oscu
 #: model_terms:ir.ui.view,arch_db:l10n_ke_edi_oscu.report_invoice_document
-msgid "<span>Tax Rate</span>"
-msgstr ""
-
-#. module: l10n_ke_edi_oscu
-#: model_terms:ir.ui.view,arch_db:l10n_ke_edi_oscu.report_invoice_document
-msgid "<span>Taxable Amount (KSh)</span>"
+msgid "<span>Tax<br/>Rate</span>"
 msgstr ""
 
 #. module: l10n_ke_edi_oscu
@@ -161,7 +136,7 @@ msgstr ""
 
 #. module: l10n_ke_edi_oscu
 #: model_terms:ir.ui.view,arch_db:l10n_ke_edi_oscu.report_invoice_document
-msgid "<span>Total Amount (KSh)</span>"
+msgid "<span>Taxable<br/>Amount<br/>(KSh)</span>"
 msgstr ""
 
 #. module: l10n_ke_edi_oscu
@@ -172,6 +147,11 @@ msgstr ""
 #. module: l10n_ke_edi_oscu
 #: model_terms:ir.ui.view,arch_db:l10n_ke_edi_oscu.report_invoice_document
 msgid "<span>Total</span>"
+msgstr ""
+
+#. module: l10n_ke_edi_oscu
+#: model_terms:ir.ui.view,arch_db:l10n_ke_edi_oscu.report_invoice_document
+msgid "<span>Total<br/>Amount<br/>(KSh)</span>"
 msgstr ""
 
 #. module: l10n_ke_edi_oscu
@@ -226,8 +206,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_ke_edi_oscu/models/account_move.py:0
 msgid ""
-"All invoice lines must have Tax line and exactly one VAT tax (on which the "
-"KRA Tax Code is set)!"
+"All invoice lines must include a tax line and exactly one VAT tax, with the "
+"KRA Tax Code properly set."
 msgstr ""
 
 #. module: l10n_ke_edi_oscu
@@ -1087,6 +1067,15 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_ke_edi_oscu/models/account_move.py:0
 msgid ""
+"The customer PIN on the credit note differs from the PIN on the original invoice submitted to the KRA.\n"
+"The KRA only accepts credit notes with matching PINs.\n"
+"Customer PIN on the invoice: %s"
+msgstr ""
+
+#. module: l10n_ke_edi_oscu
+#. odoo-python
+#: code:addons/l10n_ke_edi_oscu/models/account_move.py:0
+msgid ""
 "The eTIMS connection timed out while sending the invoice, please try again "
 "later."
 msgstr ""
@@ -1395,6 +1384,23 @@ msgstr ""
 #. module: l10n_ke_edi_oscu
 #: model:ir.model,name:l10n_ke_edi_oscu.model_l10n_ke_edi_oscu_code
 msgid "eTIMS Technical Codes"
+msgstr ""
+
+#. module: l10n_ke_edi_oscu
+#. odoo-python
+#: code:addons/l10n_ke_edi_oscu/models/account_move.py:0
+msgid ""
+"eTIMS configuration is incomplete for company '%(company)s'. Please verify "
+"that the eTIMS Server Mode, OSCU Configuration, and the company's eTIMS "
+"Branch Code are correctly set up to proceed."
+msgstr ""
+
+#. module: l10n_ke_edi_oscu
+#. odoo-python
+#: code:addons/l10n_ke_edi_oscu/models/account_move.py:0
+msgid ""
+"eTims does not accept credit notes with a date earlier than the "
+"corresponding invoice."
 msgstr ""
 
 #. module: l10n_ke_edi_oscu

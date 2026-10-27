@@ -18,7 +18,10 @@ class L10n_UkTaxReportHandler(models.AbstractModel):
         if self.env.user.l10n_uk_user_token and not self.env.user.l10n_uk_hmrc_vat_token:
             self.env['hmrc.service']._login()
         button_name = _('Send to HMRC') if self.env.user.l10n_uk_hmrc_vat_token else _('Connect to HMRC')
-        options['buttons'].append({'name': button_name, 'action': 'send_hmrc', 'sequence': 50, 'client_tag': 'send_hmrc_button_report', 'always_show': False})
+        client_tag = 'send_hmrc_button_report'
+        if options.get('available_tax_units') and options.get('tax_unit', 'company_only') == 'company_only':
+            client_tag = 'dialog_apply_tax_unit'
+        options['buttons'].append({'name': button_name, 'action': 'send_hmrc', 'sequence': 50, 'client_tag': client_tag, 'always_show': False})
 
     def send_hmrc(self, options):
         if not options.get('_running_export_test'):
@@ -28,13 +31,6 @@ class L10n_UkTaxReportHandler(models.AbstractModel):
 
             # Check obligations: should be logged in by now
             self.env['l10n_uk.vat.obligation'].import_vat_obligations(self.env.context['client_data'])
-
-            # import_vat_obligations() removes the token if the user is not authorised when importing the obligations.
-            # This can happen if the user switched companies then tried to send the report. Before the user had to
-            # manually delete his tokens from the user tab but now they're automatically sent to the login page to
-            # request a new token.
-            if not self.env.user.l10n_uk_user_token:
-                return self.env['hmrc.service']._login()
 
         # Show wizard when sending to HMRC
         context = self.env.context.copy()

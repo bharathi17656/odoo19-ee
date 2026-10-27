@@ -11,7 +11,7 @@ const userMenuRegistry = registry.category("user_menuitems");
 export const mobileService = {
     timeBetweenReadsInMs: session.time_between_reads_in_ms || 100,
     idInterval: null,
-    start() {
+    start(env) {
         let listenerCount = 0;
         this.bus = new HookEventBus({
             onAddListener: (eventName, listener) => {
@@ -44,6 +44,27 @@ export const mobileService = {
             userMenuRegistry.remove('odoo_account');
 
             userMenuRegistry.add("web_mobile.switch", switchAccountItem);
+        }
+
+        if (mobile.methods.updateAvailableApps) {
+            let lastApps = null;
+            env.bus.addEventListener("HOME-MENU:APPS-UPDATED", ({ detail }) => {
+                const apps = detail.apps.map((app) => {
+                    const match = (app.webIconData || "").match(/^data:image\/png;base64,(.*)$/);
+                    return {
+                        xmlid: app.xmlid,
+                        link: app.href,
+                        name: app.label,
+                        pngIcon: match ? match[1] : null,
+                    };
+                });
+                const serializedApps = JSON.stringify(apps);
+                if (serializedApps === lastApps) {
+                    return;
+                }
+                lastApps = serializedApps;
+                mobile.methods.updateAvailableApps(apps);
+            });
         }
 
         return api;

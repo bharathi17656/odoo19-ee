@@ -70,7 +70,7 @@ class TestAIDocumentSource(TransactionCase, CronMixinCase):
             })
         new_attachment = self.env["ir.attachment"].create({
             "name": "Doc Source v2",
-            "raw": "Second version",
+            "raw": b"Second version",
         })
         document.write({
             "attachment_id": new_attachment.id,

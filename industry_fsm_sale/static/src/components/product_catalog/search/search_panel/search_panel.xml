@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="industry_fsm_sale.ProductCatalogSearchPanelContent" t-inherit="account.ProductCatalogSearchPanelContent" t-inherit-mode="primary">
+        <xpath expr="//button[contains(@t-on-click, 'enableSectionInput')]" position="attributes">
+            <attribute name="t-if">canCreateSections</attribute>
+        </xpath>
+        <xpath expr="//i[contains(@t-on-click, 'enableSectionInput')]" position="attributes">
+            <attribute name="t-if">canCreateSections</attribute>
+        </xpath>
+        <xpath expr="//span[contains(@t-if, 'sectionId')]" position="attributes">
+            <attribute name="t-att-class">{ 'd-none': !canCreateSections }</attribute>
+        </xpath>
+        <xpath expr="//li[@t-foreach='this.state.sections.keys()']" position="attributes">
+            <attribute name="t-att-draggable">canCreateSections ? 'true' : 'false'</attribute>
+        </xpath>
+    </t>
+
+    <t t-name="industry_fsm_sale.ProductCatalogSearchPanel" t-inherit="account.ProductCatalogSearchPanel" t-inherit-mode="primary">
+        <xpath expr="//t[@t-call='account.ProductCatalogSearchPanelContent']" position="attributes">
+            <attribute name="t-call">industry_fsm_sale.ProductCatalogSearchPanelContent</attribute>
+        </xpath>
+    </t>
+</templates>

@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:41+0000\n"
+"POT-Creation-Date: 2026-07-03 17:41+0000\n"
 "PO-Revision-Date: 2025-11-21 14:41+0000\n"
 "Last-Translator: Odoo Turkish Import <dyki+tr@odoo.com>\n"
 "Language-Team: Turkish <https://translate.odoo.com/projects/odoo-19/"
@@ -63,7 +63,6 @@ msgstr "%(amount)s / %(duration)s"
 
 #. module: sale_renting
 #. odoo-python
-#: code:addons/sale_renting/models/product_template.py:0
 #: code:addons/sale_renting/models/sale_order_recurrence.py:0
 msgid "%(duration)s %(unit)s"
 msgstr "%(duration)s %(unit)s"
@@ -85,6 +84,12 @@ msgstr ""
 "Makbuzu - %s' %(object.name)) or 'Sipariş - %s' % (object.name)"
 
 #. module: sale_renting
+#. odoo-python
+#: code:addons/sale_renting/models/product_template.py:0
+msgid "/ %(duration)s %(unit)s"
+msgstr ""
+
+#. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.report_rental_order_document
 msgid "123 Main St"
 msgstr "123 Ana Cadde"
@@ -93,16 +98,6 @@ msgstr "123 Ana Cadde"
 #: model:sale.temporal.recurrence,name:sale_renting.recurrence_2_weeks
 msgid "2 Weeks"
 msgstr "2 Hafta"
-
-#. module: sale_renting
-#: model_terms:ir.ui.view,arch_db:sale_renting.report_rental_order_document
-msgid "2023-08-01"
-msgstr "2023-08-01"
-
-#. module: sale_renting
-#: model_terms:ir.ui.view,arch_db:sale_renting.report_rental_order_document
-msgid "2023-08-10"
-msgstr "10-08-2023"
 
 #. module: sale_renting
 #: model:sale.temporal.recurrence,name:sale_renting.recurrence_3_hours
@@ -146,8 +141,8 @@ msgid ""
 msgstr ""
 "<span invisible=\"duration_days != 1\"> gün </span>\n"
 "                    <span invisible=\"duration_days in [0,1]\"> gün </span>\n"
-"                    <span invisible="
-"\"duration_days == 0 or remaining_hours == 0\">ve </span>"
+"                    <span invisible=\"duration_days == 0 or remaining_hours "
+"== 0\">ve </span>"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_order_form_view
@@ -157,8 +152,8 @@ msgid ""
 "span>"
 msgstr ""
 "<span invisible=\"remaining_hours != 1\"> saat </span>\n"
-"                    <span invisible=\"remaining_hours in [0,1]\"> saat "
-"</span>"
+"                    <span invisible=\"remaining_hours in [0,1]\"> saat </"
+"span>"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.product_template_form_view_rental
@@ -784,6 +779,12 @@ msgid "Next Action"
 msgstr "Sonraki İşlem"
 
 #. module: sale_renting
+#. odoo-python
+#: code:addons/sale_renting/models/sale_order_recurrence.py:0
+msgid "Night"
+msgstr ""
+
+#. module: sale_renting
 #: model:sale.temporal.recurrence,name:sale_renting.recurrence_nightly
 msgid "Nightly"
 msgstr "Gecelik"
@@ -795,6 +796,8 @@ msgid "Nightly periods cannot be mixed with other rental periods."
 msgstr "Gecelik dönemler diğer kiralama dönemleriyle karıştırılamaz."
 
 #. module: sale_renting
+#. odoo-python
+#: code:addons/sale_renting/models/sale_order_recurrence.py:0
 #: model:ir.model.fields.selection,name:sale_renting.selection__sale_temporal_recurrence__displayed_unit__night
 msgid "Nights"
 msgstr "Geceler"
@@ -1644,6 +1647,12 @@ msgstr "tüm varyantlar"
 #: model_terms:ir.ui.view,arch_db:sale_renting.res_config_settings_view_form
 msgid "hours"
 msgstr "saat"
+
+#~ msgid "2023-08-01"
+#~ msgstr "2023-08-01"
+
+#~ msgid "2023-08-10"
+#~ msgstr "10-08-2023"
 
 #~ msgid "/day"
 #~ msgstr "/gün"

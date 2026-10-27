@@ -2,7 +2,6 @@ import logging
 
 from lxml import etree
 from urllib.parse import urlencode
-from zoneinfo import ZoneInfo
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
@@ -17,15 +16,19 @@ _logger = logging.getLogger(__name__)
 DOC_TYPE_NAME = {
     'FACT': "Factura Electrónica",
     'FCAM': "Factura Cambiaria",
+    'FESP': "Factura Especial",
     'FPEQ': "Factura Electrónica para Pequeños Contribuyentes",
     'FCAP': "Factura Cambiaria de Pequeño Contribuyente",
-    'NABN': "Nota de Pago Electrónica",
+    'NABN': "Nota de Abono",
     'NCRE': "Nota de Crédito Electrónica",
     'NDEB': "Nota de Débito Electrónica",
 }
 
+# document types for which SAT accepts the export complement
+EXPORT_DOC_TYPES = {'FACT', 'FCAM', 'FPEQ', 'FCAP'}
+
 VALID_DOC_TYPES_BY_AFFILIATION = {
-    'GEN': {'FACT', 'FCAM', 'NABN', 'NCRE', 'NDEB'},
+    'GEN': {'FACT', 'FCAM', 'FESP', 'NABN', 'NCRE', 'NDEB'},
     'PEQ': {'FPEQ', 'FCAP', 'NABN'},
     'PEE': {'NABN'},
     'AGR': {'NABN'},
@@ -33,6 +36,8 @@ VALID_DOC_TYPES_BY_AFFILIATION = {
     'ECA': {'NABN'},
     'EXI': {'NABN'},
     'EXE': {},
+    'PRIM': {},
+    'PECU': {},
 }
 
 
@@ -155,15 +160,19 @@ class AccountMove(models.Model):
                 elif move.move_type in ('out_invoice', 'out_receipt', 'in_invoice', 'in_receipt'):
                     available_types.extend(('FACT', 'FCAM', 'FPEQ', 'FCAP'))
 
-                if not move.debit_origin_id and move.move_type in ('in_invoice', 'in_receipt'):
-                    available_types.append('NABN')
+                if not move.debit_origin_id:
+                    if move.move_type in ('in_invoice', 'in_receipt'):
+                        available_types.append('FESP')
+                    elif move.move_type == 'in_refund':
+                        available_types.append('NABN')
 
-            final_available_types = [
-                doc_type
-                for doc_type in available_types
-                if doc_type in VALID_DOC_TYPES_BY_AFFILIATION.get(move.company_id.l10n_gt_edi_vat_affiliation, {})
-            ]
-            move.l10n_gt_edi_available_doc_types = ','.join(final_available_types)
+            if move.is_sale_document(include_receipts=True):
+                available_types = (
+                    doc_type
+                    for doc_type in available_types
+                    if doc_type in VALID_DOC_TYPES_BY_AFFILIATION.get(move.company_id.l10n_gt_edi_vat_affiliation, {})
+                )
+            move.l10n_gt_edi_available_doc_types = ','.join(available_types)
 
     @api.depends('l10n_gt_edi_available_doc_types')
     def _compute_l10n_gt_edi_doc_type(self):
@@ -175,20 +184,21 @@ class AccountMove(models.Model):
             else:
                 move.l10n_gt_edi_doc_type = False
 
-    @api.depends('commercial_partner_id')
+    @api.depends('commercial_partner_id', 'l10n_gt_edi_doc_type', 'state')
     def _compute_l10n_gt_edi_phrase_ids(self):
         for move in self:
-            if move.country_code == 'GT' and move.commercial_partner_id:
-                if move.state == 'draft':
-                    move.l10n_gt_edi_phrase_ids = (
-                        move.l10n_gt_edi_phrase_ids +
-                        move.company_id.l10n_gt_edi_phrase_ids +
-                        move.commercial_partner_id.l10n_gt_edi_phrase_ids
-                    )
-                else:
-                    move.l10n_gt_edi_phrase_ids = move.l10n_gt_edi_phrase_ids
-            else:
+            if move.country_code != 'GT' or not move.commercial_partner_id or move.l10n_gt_edi_doc_type == 'FESP':
                 move.l10n_gt_edi_phrase_ids = False
+            elif move.state == 'draft':
+                move.l10n_gt_edi_phrase_ids = (
+                    move.l10n_gt_edi_phrase_ids +
+                    move.company_id.l10n_gt_edi_phrase_ids +
+                    move.commercial_partner_id.l10n_gt_edi_phrase_ids
+                )
+                if move.l10n_gt_edi_doc_type == 'NABN':
+                    move.l10n_gt_edi_phrase_ids -= move.company_id.l10n_gt_edi_phrase_ids
+            else:
+                move.l10n_gt_edi_phrase_ids = move.l10n_gt_edi_phrase_ids
 
     @api.depends('country_code', 'commercial_partner_id')
     def _compute_l10n_gt_edi_show_consignatory_partner(self):
@@ -227,7 +237,7 @@ class AccountMove(models.Model):
             'certification_date': values['certification_date'],
         })
         document.attachment_id = self.env['ir.attachment'].sudo().create([{
-            'name': f"{'DEMO' if values['uuid'] == 'DEMO' else 'SAT'}_certificate_{self._l10n_gt_edi_get_name()}.xml",
+            'name': self._l10n_gt_edi_get_sat_xml_name(),
             'res_model': self._name,
             'res_id': self.id,
             'raw': values['certificate'],
@@ -263,6 +273,15 @@ class AccountMove(models.Model):
     def _l10n_gt_edi_get_name(self):
         self.ensure_one()
         return self.name.replace('/', '_')
+
+    def _l10n_gt_edi_get_sat_xml_name(self):
+        self.ensure_one()
+        return f"SAT_certificate_{self._l10n_gt_edi_get_name()}.xml"
+
+    def _l10n_gt_edi_is_vat_void(self):
+        self.ensure_one()
+        vat = self.commercial_partner_id.vat
+        return not vat or vat in ['/', 'na', 'NA']
 
     def _get_name_invoice_report(self):
         # EXTENDS account
@@ -304,15 +323,30 @@ class AccountMove(models.Model):
             'company_name': current_company.l10n_gt_edi_legal_name,
             'company_vat': sudo_root_company.vat,
             'phrases': self.l10n_gt_edi_phrase_ids.mapped('pdf_message'),
-            'have_exportacion': self.l10n_gt_edi_doc_type == 'FACT' and self.commercial_partner_id.country_code != 'GT',
-            'have_referencias': self.l10n_gt_edi_doc_type in ('NCRE', 'NDEB'),
         }
+        self._l10n_gt_edi_add_base_values(report_values)
         if report_values['have_exportacion']:
             self._l10n_gt_edi_add_export_values(report_values)
         if report_values['have_referencias']:
             self._l10n_gt_edi_add_reference_values(report_values)
-
+        if report_values['have_cambiaria']:
+            self._l10n_gt_edi_add_payment_values(report_values)
+        if report_values['is_especial_fectura']:
+            self._l10n_gt_edi_add_withholding_values(report_values)
         return report_values
+
+    def _get_l10n_gt_withhold_tax_groups_id(self):
+        ChartTemplate = self.env['account.chart.template'].with_company(self.company_id)
+        tax_group_iva_withhold = ChartTemplate.ref('tax_group_iva_withhold_12', raise_if_not_found=False)
+        tax_group_isr_withhold = ChartTemplate.ref('tax_group_isr_withhold_5', raise_if_not_found=False)
+        return (
+            {
+                'iva_withhold': tax_group_iva_withhold.id,
+                'isr_withhold': tax_group_isr_withhold.id,
+            }
+            if tax_group_iva_withhold and tax_group_isr_withhold
+            else {}
+        )
 
     ################################################################################
     # Alerts & Errors Helper
@@ -377,7 +411,7 @@ class AccountMove(models.Model):
             }
 
         # When IDReceptor="CF" is used (on CF or partners without VAT), the total amount of the invoice must be below 2500 GTQ
-        if not self.commercial_partner_id.vat and self.amount_total >= 2500:
+        if self._l10n_gt_edi_is_vat_void() and abs(self.amount_total_signed) >= 2500:
             if partner_is_cf:
                 additional_message = _("Please replace Consumidor Final with a real partner and VAT number.")
             else:
@@ -390,7 +424,7 @@ class AccountMove(models.Model):
 
         if not self.l10n_gt_edi_doc_type:
             alerts['l10n_gt_edi_missing_vat'] = {'message': _("Missing GT Document Type")}
-        if not self.l10n_gt_edi_phrase_ids:
+        if not self.l10n_gt_edi_phrase_ids and self.l10n_gt_edi_doc_type not in ('FESP', 'NABN'):
             alerts['l10n_gt_edi_missing_vat'] = {'message': _("Missing GT Phrases")}
         if not sudo_root_company.l10n_gt_edi_phrase_ids:
             alerts['l10n_gt_edi_missing_vat'] = {
@@ -453,6 +487,20 @@ class AccountMove(models.Model):
                 self.l10n_gt_edi_doc_type,
             )}
 
+        if self.l10n_gt_edi_doc_type == 'FESP':
+            withhold_tax_group_ids = self._get_l10n_gt_withhold_tax_groups_id().values()
+            if withhold_tax_group_ids and any(
+                not all(tax_group_id in line.tax_ids.tax_group_id.ids for tax_group_id in withhold_tax_group_ids)
+                for line in self.invoice_line_ids
+                if line.display_type == 'product'
+            ):
+                alerts['l10n_gt_edi_missing_tax_on_fesp'] = {
+                    'message': _(
+                        "Each product line must have both VAT Withholding and ISR Withholding taxes "
+                        "in order to send it with FESP"
+                    )
+                }
+
         if self.l10n_gt_edi_doc_type in ('FPEQ', 'FCAP', 'NABN'):
             if any(line.tax_ids for line in self.invoice_line_ids if line.display_type == 'product'):
                 alerts['l10n_gt_edi_forbidden_tax'] = {'message': _(
@@ -464,8 +512,8 @@ class AccountMove(models.Model):
 
         if all((
             self.commercial_partner_id.country_code != 'GT',  # Export invoices (uses Exportacion complemento)
-            'consu' in self.invoice_line_ids.product_id.mapped('type')  # Have product lines of type goods
-            or all(                                                     # Or have product combo lines where every item inside it is goods product
+            'service' not in self.invoice_line_ids.product_id.mapped('type')  # Have product lines of type goods or combo
+            and all(                                                     # And if any product combo lines, their product should be goods
                 combo_child_product.type == 'consu'
                 for combo_product in self.invoice_line_ids.product_id.filtered(lambda p: p.type == 'combo')
                 for combo_child_product in combo_product.combo_ids.combo_item_ids.product_id
@@ -485,19 +533,54 @@ class AccountMove(models.Model):
     ################################################################################
     # Guatemalan EDI Business Flow
     ################################################################################
+    def _l10n_gt_total_grouping_function(self, base_line, tax_data):
+        withhold_tax_groups = self._get_l10n_gt_withhold_tax_groups_id().values()
+        if not tax_data or not withhold_tax_groups:
+            return None
+        tax = tax_data['tax']
+        is_withhold = (
+            self.l10n_gt_edi_doc_type == 'FESP'
+            and tax.tax_group_id.id in withhold_tax_groups
+        )
+        return {
+            'tax_group_id': tax.tax_group_id.id,
+            'is_withhold': is_withhold,
+        }
 
     def _l10n_gt_edi_add_base_values(self, gt_values: dict):
         self.ensure_one()
         items = []
         total_impuestos = []
-        have_tax = self.l10n_gt_edi_doc_type not in ('FPEQ', 'FCAP', 'NABN')
         base_lines, _tax_lines = self._get_rounded_base_and_tax_lines()
         AccountTax = self.env['account.tax']
+        withhold_tax_groups = self._get_l10n_gt_withhold_tax_groups_id().values()
+
+        def need_tax_data_to_be_reported(tax_data):
+            if not tax_data or not withhold_tax_groups:
+                return False
+
+            tax = tax_data['tax']
+            return (
+                not self.l10n_gt_edi_doc_type in ('FPEQ', 'FCAP', 'NABN')
+                and not (
+                    self.l10n_gt_edi_doc_type == 'FESP'
+                    and tax.tax_group_id.id in withhold_tax_groups
+                )
+            )
 
         def tax_grouping_function(_arg_base_line, arg_tax_data):
-            return {'nombre_corto': arg_tax_data['tax'].l10n_gt_edi_short_name}
+            if not need_tax_data_to_be_reported(arg_tax_data):
+                return {}
 
-        for item_no, base_line in enumerate(base_lines, start=1):
+            tax = arg_tax_data['tax']
+            return {
+                'nombre_corto': tax.l10n_gt_edi_short_name,
+                'codigo_unidad_gravable': tax.l10n_gt_edi_taxable_unit_code,
+                'is_petroleo': tax.l10n_gt_edi_short_name == 'PETROLEO'
+            }
+
+        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, tax_grouping_function)
+        for item_no, (base_line, aggregated_values) in enumerate(base_lines_aggregated_values, start=1):
             line = base_line['record']
             is_goods_product = (
                 line.product_id.type == 'consu' or
@@ -508,7 +591,16 @@ class AccountMove(models.Model):
             price_unit = base_line['price_unit']
             quantity = base_line['quantity']
             tax_details = base_line['tax_details']
-            price_total = tax_details['raw_total_included_currency']
+            price_total = (
+                tax_details['raw_total_excluded_currency']
+                + sum(
+                    tax_data['raw_tax_amount_currency']
+                    for tax_data in tax_details['taxes_data']
+                    if tax_data['tax'].tax_group_id.id not in withhold_tax_groups
+                )
+                if self.l10n_gt_edi_doc_type == 'FESP' and withhold_tax_groups
+                else tax_details['raw_total_included_currency']
+            )
 
             if discount == 100.0:
                 gross_price_total_before_discount = price_unit * quantity
@@ -530,30 +622,43 @@ class AccountMove(models.Model):
                 'precio': f'{gross_price_total_before_discount:.10f}',
                 'descuento': f'{discount_amount:.10f}',
                 'total': f'{price_total:.10f}',
-                'impuestos': [],
+                'impuestos': [
+                    {
+                        'nombre_corto': grouping_key['nombre_corto'],
+                        'codigo_unidad_gravable': grouping_key['codigo_unidad_gravable'],
+                        'monto_impuesto': f"{values['tax_amount_currency']:.10f}",
+                        'monto_gravable': f"{values['base_amount_currency']:.10f}" if not grouping_key['is_petroleo'] else None,
+                        'cantidad_unidadades_gravables': base_line['quantity'] if grouping_key['is_petroleo'] else None,
+                    } for grouping_key, values in aggregated_values.items() if grouping_key
+                ],
             })
-            if have_tax:
-                aggregated_tax_details = self.env['account.tax']._aggregate_base_line_tax_details(base_line, tax_grouping_function)
-                for grouping_key, tax_details in aggregated_tax_details.items():
-                    for tax_data in tax_details['taxes_data']:
-                        items[-1]['impuestos'].append({
-                            'nombre_corto': grouping_key['nombre_corto'],
-                            'codigo_unidad_gravable': tax_data['tax'].l10n_gt_edi_taxable_unit_code,
-                            'monto_impuesto': f"{tax_data['tax_amount_currency']:.10f}",
-                            'monto_gravable': f"{tax_data['base_amount_currency']:.10f}"
-                                if tax_data['tax'].l10n_gt_edi_short_name != 'PETROLEO' else None,
-                            'cantidad_unidadades_gravables': sum(base_line['quantity'] for base_line in base_lines)
-                                if tax_data['tax'].l10n_gt_edi_short_name == 'PETROLEO' else None,
-                        })
 
-        if have_tax:
-            base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, tax_grouping_function)
-            aggregated_tax_details = AccountTax._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
-            for grouping_key, values in aggregated_tax_details.items():
-                total_impuestos.append({
-                    'nombre_corto': grouping_key['nombre_corto'],
-                    'total_monto_impuesto': f"{values['tax_amount_currency']:.10f}",
-                })
+        def global_tax_grouping_function(base_line, tax_data):
+            if not need_tax_data_to_be_reported(tax_data):
+                return {}
+            return {'nombre_corto': tax_data['tax'].l10n_gt_edi_short_name}
+
+        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, global_tax_grouping_function)
+        aggregated_tax_details = AccountTax._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
+        for grouping_key, values in aggregated_tax_details.items():
+            if not grouping_key:
+                continue
+            total_impuestos.append({
+                'nombre_corto': grouping_key['nombre_corto'],
+                'total_monto_impuesto': f"{values['tax_amount_currency']:.10f}",
+            })
+
+        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, lambda base_line, tax_data: True)
+        aggregated_tax_details = AccountTax._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
+        total_base = sum(values['base_amount_currency'] for values in aggregated_tax_details.values())
+
+        base_lines_aggregated_values = AccountTax._aggregate_base_lines_tax_details(base_lines, self._l10n_gt_total_grouping_function)
+        aggregated_tax_details = AccountTax._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
+        grand_total = total_base + sum(
+            values['tax_amount_currency']
+            for grouping_key, values in aggregated_tax_details.items()
+            if grouping_key and not grouping_key['is_withhold']
+        )
 
         # Emisor & Receptor identification fields
         current_company = self.company_id
@@ -562,19 +667,25 @@ class AccountMove(models.Model):
         partner_is_final_consumer = self.commercial_partner_id == self.env.ref('l10n_gt_edi.final_consumer', raise_if_not_found=False)
         partner_is_guatemalan = self.commercial_partner_id.country_code == 'GT'
 
+        dte_exp = self.l10n_gt_edi_doc_type in EXPORT_DOC_TYPES and not partner_is_guatemalan
+        if self.l10n_gt_edi_doc_type in ('NCRE', 'NDEB'):
+            # notes copy 'Exp' from the referenced document but never carry the export complement
+            reference_move = self.reversed_entry_id if self.l10n_gt_edi_doc_type == 'NCRE' else self.debit_origin_id
+            dte_exp = reference_move.l10n_gt_edi_doc_type in EXPORT_DOC_TYPES and reference_move.commercial_partner_id.country_code != 'GT'
+
         receptor_tipo_especial = None
         receptor_id = (self.commercial_partner_id.vat or '').replace('-', '')
         if partner_is_guatemalan and partner_uses_cui:
             receptor_tipo_especial = "CUI"
         if not partner_is_guatemalan:
             receptor_tipo_especial = "EXT"
-        if partner_is_final_consumer or not receptor_id:
+        if partner_is_final_consumer or self._l10n_gt_edi_is_vat_void():
             receptor_id = "CF"
             receptor_tipo_especial = None
 
         gt_values.update({
             'dte_tipo': self.l10n_gt_edi_doc_type,
-            'dte_exp': 'SI' if self.commercial_partner_id.country_code != 'GT' else None,
+            'dte_exp': 'SI' if dte_exp else None,
             'dte_fecha': self.invoice_date.strftime(DTE_DATE_FORMAT),
             'dte_codigo_moneda': self.currency_id.name,
             'emisor_nit': (sudo_root_company.vat or '').replace('-', ''),
@@ -608,11 +719,15 @@ class AccountMove(models.Model):
             ],
             'items': items,
             'total_impuestos': total_impuestos,
-            'gran_total': f"{self.amount_total:.10f}",
-            'have_tax': have_tax,
-            'have_exportacion': self.l10n_gt_edi_doc_type == 'FACT' and not partner_is_guatemalan,
+            'gran_total': f"{grand_total:.10f}",
+            'have_exportacion': self.l10n_gt_edi_doc_type in EXPORT_DOC_TYPES and dte_exp,
             'have_referencias': self.l10n_gt_edi_doc_type in ('NCRE', 'NDEB'),
             'have_cambiaria': self.l10n_gt_edi_doc_type in ('FCAM', 'FCAP'),
+            'is_especial_fectura': self.l10n_gt_edi_doc_type == 'FESP',
+            'skip_phrases': (
+                self.l10n_gt_edi_doc_type in ('FESP', 'NABN')
+                and not self.l10n_gt_edi_phrase_ids
+            ),
             'narration': html2plaintext(self.narration),
         })
 
@@ -633,7 +748,7 @@ class AccountMove(models.Model):
         original_document = reference_move.l10n_gt_edi_document_ids.sorted()[0]  # guaranteed to be an `invoice_sent` document
         gt_values.update({
             'referencias_motivo_ajuste': self.ref,
-            'referencias_fecha_emision_documento_origen': original_document.datetime.astimezone(ZoneInfo("America/Guatemala")).strftime("%Y-%m-%d"),
+            'referencias_fecha_emision_documento_origen': reference_move.invoice_date.strftime("%Y-%m-%d"),
             'referencias_numero_autorizacion_documento_origen': original_document.uuid,
             'referencias_numero_documento_origen': original_document.serial_number,
             'referencias_serie_documento_origen': original_document.series,
@@ -649,6 +764,24 @@ class AccountMove(models.Model):
                 'fecha_vencimiento': payment_term_line.payment_date.strftime("%Y-%m-%d"),
                 'monto_abono': f"{payment_term_line.amount_currency:.10f}",
             })
+
+    def _l10n_gt_edi_add_withholding_values(self, gt_values: dict):
+        self.ensure_one()
+        withhold_group_ids = self._get_l10n_gt_withhold_tax_groups_id()
+        gt_values['retencion_gran_total'] = float(gt_values['gran_total'])
+
+        base_lines, _tax_lines = self._get_rounded_base_and_tax_lines()
+        base_lines_aggregated_values = self.env['account.tax']._aggregate_base_lines_tax_details(base_lines, self._l10n_gt_total_grouping_function)
+        aggregated_tax_details = self.env['account.tax']._aggregate_base_lines_aggregated_values(base_lines_aggregated_values)
+
+        for group_key, values in aggregated_tax_details.items():
+            if group_key and group_key['is_withhold']:
+                if withhold_group_ids['iva_withhold'] == group_key['tax_group_id']:
+                    gt_values['retencion_iva'] = -values['tax_amount']
+                elif withhold_group_ids['isr_withhold'] == group_key['tax_group_id']:
+                    gt_values['retencion_isr'] = -values['tax_amount']
+
+                gt_values['retencion_gran_total'] += values['tax_amount']
 
     def _l10n_gt_edi_try_send(self):
         """
@@ -668,11 +801,13 @@ class AccountMove(models.Model):
         gt_values = {}
         self._l10n_gt_edi_add_base_values(gt_values)
         if gt_values['have_exportacion']:
-            self._l10n_gt_edi_add_export_values(gt_values)  # FACT export invoices (to foreigner)
+            self._l10n_gt_edi_add_export_values(gt_values)  # export documents (to foreigner)
         if gt_values['have_referencias']:
             self._l10n_gt_edi_add_reference_values(gt_values)  # credit/debit note (NCRE/NDEB)
         if gt_values['have_cambiaria']:
             self._l10n_gt_edi_add_payment_values(gt_values)  # payment values (Abono)
+        if gt_values['is_especial_fectura']:
+            self._l10n_gt_edi_add_withholding_values(gt_values)  # FESP invoices
 
         xml_data = self.env['ir.qweb']._render('l10n_gt_edi.SAT', gt_values)
         xml_data = etree.tostring(cleanup_xml_node(xml_data, remove_blank_nodes=False), pretty_print=True, encoding='unicode')
@@ -700,7 +835,7 @@ class AccountMove(models.Model):
                                          "It is considered as accepted and it won't be sent to the SAT."))
 
         if self._can_commit():
-            self._cr.commit()
+            self.env.cr.commit()
 
     def l10n_gt_edi_send_bill_to_sat(self):
         self.ensure_one()

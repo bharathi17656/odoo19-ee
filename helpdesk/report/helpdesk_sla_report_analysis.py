@@ -78,8 +78,8 @@ class HelpdeskSlaReportAnalysis(models.Model):
                             T.priority AS priority,
                             NULLIF(T.close_hours, 0) AS ticket_close_hours,
                             CASE
-                                WHEN EXTRACT(EPOCH FROM (COALESCE(T.assign_date, NOW() AT TIME ZONE 'UTC') - T.create_date)) / 3600 < 1 THEN NULL
-                                ELSE EXTRACT(EPOCH FROM (COALESCE(T.assign_date, NOW() AT TIME ZONE 'UTC') - T.create_date)) / 3600
+                                WHEN EXTRACT(EPOCH FROM (COALESCE(T.close_date, NOW() AT TIME ZONE 'UTC') - T.create_date)) / 3600 < 1 THEN NULL
+                                ELSE EXTRACT(EPOCH FROM (COALESCE(T.close_date, NOW() AT TIME ZONE 'UTC') - T.create_date)) / 3600
                             END AS ticket_open_hours,
                             NULLIF(T.assign_hours, 0) AS ticket_assignation_hours,
                             NULLIF(T.avg_response_hours, 0) AS avg_response_hours,
@@ -103,7 +103,7 @@ class HelpdeskSlaReportAnalysis(models.Model):
                                 WHEN SLA_S.reached_datetime IS NULL AND (SLA_S.deadline IS NULL OR SLA_S.deadline > NOW() AT TIME ZONE 'UTC') THEN 'ongoing'
                             END AS sla_status,
                             CASE
-                                WHEN (SLA_S.deadline IS NOT NULL AND SLA_S.deadline > NOW() AT TIME ZONE 'UTC') THEN TRUE ELSE FALSE
+                                WHEN SLA_S.reached_datetime IS NOT NULL AND (SLA_S.deadline IS NULL OR SLA_S.reached_datetime < SLA_S.deadline) THEN TRUE ELSE FALSE
                             END AS sla_success
         """
 

@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import date
+from datetime import date, datetime
 
 from odoo.fields import Command
 from odoo.tests.common import tagged
@@ -177,6 +177,40 @@ class TestPayslipValidation(TestPayslipValidationCommon):
         payslip_third_month.compute_sheet()
         payslip_third_month_results = payslip_second_month_results
         self._validate_payslip(payslip_third_month, payslip_third_month_results)
+
+    def test_ntg_payslip_unpaid_days(self):
+        self.contract.l10n_tr_is_net_to_gross = True
+        self.env['resource.calendar.leaves'].create([{
+            'name': 'Unpaid Leave',
+            'company_id': self.env.company.id,
+            'resource_id': self.employee.resource_id.id,
+            'date_from': datetime(2025, 1, 6, 16, 0, 0),
+            'date_to': datetime(2025, 1, 9, 1, 0, 0),
+            'time_type': 'leave',
+            'work_entry_type_id': self.env.ref('hr_work_entry.work_entry_type_unpaid_leave').id
+        }])
+        payslip = self._generate_payslip(date(2025, 1, 1), date(2025, 1, 31))
+        payslip_results = {
+            "YTDGROSS": 0.0,
+            "ACTD": 0.00,
+            "GFNET": 55902.39,
+            "BASIC": 55902.39,
+            "SSIEDED": -7826.33,
+            "SSIDED": -559.02,
+            "SSICDED": 8664.87,
+            "SSIUCDED": 1118.05,
+            "GROSS": 47517.03,
+            "CURTAXABLE": 47517.03,
+            "TAXB": 47517.03,
+            "TOTTB": 7127.55,
+            "BTAXNET": 7127.55,
+            "BTNET": -3811.85,
+            "STAX": -226.92,
+            "NETTAX": -4038.77,
+            "EXPNET": 43478.26,
+            "NET": 43478.26,
+        }
+        self._validate_payslip(payslip, payslip_results)
 
     def test_ntg_payslip_deduction(self):
         self.contract.l10n_tr_is_net_to_gross = True

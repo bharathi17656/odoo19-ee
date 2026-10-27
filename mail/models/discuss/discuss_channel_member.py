@@ -2,7 +2,6 @@
 
 import logging
 import requests
-import uuid
 from datetime import timedelta
 from markupsafe import Markup
 
@@ -62,21 +61,37 @@ class DiscussChannelMember(models.Model):
     @api.autovacuum
     def _gc_unpin_outdated_sub_channels(self):
         outdated_dt = fields.Datetime.now() - timedelta(days=2)
-        domain = Domain.AND(
-            [
-                [
-                    ("channel_id.parent_channel_id", "!=", False),
-                    ("last_interest_dt", "<", outdated_dt),
-                ],
-                Domain.OR(
-                    [
-                        [("channel_id.last_interest_dt", "=", False)],
-                        [("channel_id.last_interest_dt", "<", outdated_dt)],
-                    ]
-                ),
-            ]
+        self.env["discuss.channel"].flush_model()
+        self.env["discuss.channel.member"].flush_model()
+        self.env["mail.message"].flush_model()
+        self.env.cr.execute(
+            """
+            SELECT member.id
+              FROM discuss_channel_member member
+              JOIN discuss_channel channel
+                ON channel.id = member.channel_id
+               AND channel.parent_channel_id IS NOT NULL
+             WHERE (
+                       member.unpin_dt IS NULL
+                    OR member.last_interest_dt >= member.unpin_dt
+                    OR channel.last_interest_dt >= member.unpin_dt
+               )
+               AND COALESCE(member.last_interest_dt, member.create_date) < %(outdated_dt)s
+               AND COALESCE(channel.last_interest_dt, channel.create_date) < %(outdated_dt)s
+               AND NOT EXISTS (
+                   SELECT 1
+                     FROM mail_message
+                    WHERE mail_message.res_id = channel.id
+                      AND mail_message.model = 'discuss.channel'
+                      AND mail_message.id >= member.new_message_separator
+                      AND mail_message.message_type NOT IN ('notification', 'user_notification')
+               )
+            """,
+            {"outdated_dt": outdated_dt},
         )
-        members = self.env["discuss.channel.member"].search(domain)
+        members = self.env["discuss.channel.member"].search(
+            [("id", "in", [row[0] for row in self.env.cr.fetchall()])],
+        )
         members.unpin_dt = fields.Datetime.now()
         for member in members:
             Store(bus_channel=member._bus_channel()).add(
@@ -437,12 +452,9 @@ class DiscussChannelMember(models.Model):
         sfu_server_url = discuss.get_sfu_url(self.env)
         if not sfu_server_url:
             return
-        sfu_local_key = self.env["ir.config_parameter"].sudo().get_param("mail.sfu_local_key")
-        if not sfu_local_key:
-            sfu_local_key = str(uuid.uuid4())
-            self.env["ir.config_parameter"].sudo().set_param("mail.sfu_local_key", sfu_local_key)
+        channel_key = discuss.get_derived_sfu_key(self.env, self.channel_id.id)
         json_web_token = jwt.sign(
-            {"iss": f"{self.get_base_url()}:channel:{self.channel_id.id}", "key": sfu_local_key},
+            {"iss": f"{self.get_base_url()}:channel:{self.channel_id.id}", "key": channel_key},
             key=discuss.get_sfu_key(self.env),
             ttl=30,
             algorithm=jwt.Algorithm.HS256,
@@ -463,7 +475,7 @@ class DiscussChannelMember(models.Model):
         for session in self.channel_id.rtc_session_ids:
             session._bus_send(
                 "discuss.channel.rtc.session/sfu_hot_swap",
-                {"serverInfo": self._get_rtc_server_info(session, ice_servers, key=sfu_local_key)},
+                {"serverInfo": self._get_rtc_server_info(session, ice_servers, key=channel_key)},
             )
 
     def _get_rtc_server_info(self, rtc_session, ice_servers=None, key=None):
@@ -472,8 +484,9 @@ class DiscussChannelMember(models.Model):
         if not sfu_channel_uuid or not sfu_server_url:
             return None
         if not key:
-            key = self.env["ir.config_parameter"].sudo().get_param("mail.sfu_local_key")
+            key = discuss.get_derived_sfu_key(self.env, self.channel_id.id)
         claims = {
+            "sfu_channel_uuid": sfu_channel_uuid,
             "session_id": rtc_session.id,
             "ice_servers": ice_servers,
         }

@@ -4,14 +4,15 @@
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
-# "Abe Manyo (abem)" <abem@odoo.com>, 2025.
+# "Abe Manyo (abem)" <abem@odoo.com>, 2025, 2026.
+# "Nurul Aini Akrima Sabila (nuaas)" <nuaas@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:41+0000\n"
-"PO-Revision-Date: 2025-11-20 08:15+0000\n"
-"Last-Translator: \"Abe Manyo (abem)\" <abem@odoo.com>\n"
+"POT-Creation-Date: 2026-07-03 17:41+0000\n"
+"PO-Revision-Date: 2026-09-14 05:32+0000\n"
+"Last-Translator: \"Nurul Aini Akrima Sabila (nuaas)\" <nuaas@odoo.com>\n"
 "Language-Team: Indonesian <https://translate.odoo.com/projects/odoo-19/"
 "sale_renting/id/>\n"
 "Language: id\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: sale_renting
 #. odoo-python
@@ -45,7 +46,6 @@ msgstr "%(amount)s / %(duration)s"
 
 #. module: sale_renting
 #. odoo-python
-#: code:addons/sale_renting/models/product_template.py:0
 #: code:addons/sale_renting/models/sale_order_recurrence.py:0
 msgid "%(duration)s %(unit)s"
 msgstr "%(duration)s %(unit)s"
@@ -67,6 +67,12 @@ msgstr ""
 "Receipt - %s' %(object.name)) or 'Order - %s' % (object.name)"
 
 #. module: sale_renting
+#. odoo-python
+#: code:addons/sale_renting/models/product_template.py:0
+msgid "/ %(duration)s %(unit)s"
+msgstr ""
+
+#. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.report_rental_order_document
 msgid "123 Main St"
 msgstr "123 Main St"
@@ -75,16 +81,6 @@ msgstr "123 Main St"
 #: model:sale.temporal.recurrence,name:sale_renting.recurrence_2_weeks
 msgid "2 Weeks"
 msgstr "2 Minggu"
-
-#. module: sale_renting
-#: model_terms:ir.ui.view,arch_db:sale_renting.report_rental_order_document
-msgid "2023-08-01"
-msgstr "2023-08-01"
-
-#. module: sale_renting
-#: model_terms:ir.ui.view,arch_db:sale_renting.report_rental_order_document
-msgid "2023-08-10"
-msgstr "2023-08-10"
 
 #. module: sale_renting
 #: model:sale.temporal.recurrence,name:sale_renting.recurrence_3_hours
@@ -255,12 +251,12 @@ msgstr "Dibatalkan"
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_temporal_recurrence__pickup_time
 msgid "Check-in"
-msgstr ""
+msgstr "Check-In"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_temporal_recurrence__return_time
 msgid "Check-out"
-msgstr ""
+msgstr "Check-out"
 
 #. module: sale_renting
 #. odoo-javascript
@@ -439,7 +435,7 @@ msgstr "Jumlah Harian"
 #: model:ir.model.fields,field_description:sale_renting.field_product_product__extra_daily
 #: model:ir.model.fields,field_description:sale_renting.field_product_template__extra_daily
 msgid "Daily Fine"
-msgstr ""
+msgstr "Denda Harian"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_report__quantity
@@ -510,7 +506,7 @@ msgstr "Nama Tampilan"
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_temporal_recurrence__displayed_unit
 msgid "Displayed Unit"
-msgstr ""
+msgstr "Unit yang Ditampilkan"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_temporal_recurrence__duration
@@ -550,13 +546,13 @@ msgstr "Diharapkan: %(date)s"
 #: model:ir.model.fields,help:sale_renting.field_product_product__extra_daily
 #: model:ir.model.fields,help:sale_renting.field_product_template__extra_daily
 msgid "Fine per day late"
-msgstr ""
+msgstr "Denda per hari terlambat"
 
 #. module: sale_renting
 #: model:ir.model.fields,help:sale_renting.field_product_product__extra_hourly
 #: model:ir.model.fields,help:sale_renting.field_product_template__extra_hourly
 msgid "Fine per hour late"
-msgstr ""
+msgstr "Denda per jam terlambat"
 
 #. module: sale_renting
 #: model:ir.model.fields,help:sale_renting.field_product_product__display_price
@@ -605,7 +601,7 @@ msgstr "Per jam"
 #: model:ir.model.fields,field_description:sale_renting.field_product_product__extra_hourly
 #: model:ir.model.fields,field_description:sale_renting.field_product_template__extra_hourly
 msgid "Hourly Fine"
-msgstr ""
+msgstr "Denda Per Jam"
 
 #. module: sale_renting
 #: model:ir.model.fields.selection,name:sale_renting.selection__sale_temporal_recurrence__displayed_unit__hour
@@ -764,6 +760,12 @@ msgid "Next Action"
 msgstr "Aksi Selanjutnya"
 
 #. module: sale_renting
+#. odoo-python
+#: code:addons/sale_renting/models/sale_order_recurrence.py:0
+msgid "Night"
+msgstr "Malam"
+
+#. module: sale_renting
 #: model:sale.temporal.recurrence,name:sale_renting.recurrence_nightly
 msgid "Nightly"
 msgstr ""
@@ -776,9 +778,11 @@ msgstr ""
 "Periode-periode malam tidak dapat digabungkan dengan periode rental lainnya."
 
 #. module: sale_renting
+#. odoo-python
+#: code:addons/sale_renting/models/sale_order_recurrence.py:0
 #: model:ir.model.fields.selection,name:sale_renting.selection__sale_temporal_recurrence__displayed_unit__night
 msgid "Nights"
-msgstr ""
+msgstr "Malam"
 
 #. module: sale_renting
 #: model_terms:ir.actions.act_window,help:sale_renting.action_rental_report
@@ -830,7 +834,7 @@ msgstr "Order"
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_temporal_recurrence__overnight
 msgid "Overnight"
-msgstr ""
+msgstr "Semalam"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_res_company__extra_day
@@ -1074,7 +1078,7 @@ msgstr "Laporan Analisis Rental"
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_order_line__rental_color
 msgid "Rental Color"
-msgstr ""
+msgstr "Warna Rental"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_order_wizard_line__rental_order_wizard_id
@@ -1365,7 +1369,7 @@ msgstr "Pesanan sudah dikembalikkan."
 #. module: sale_renting
 #: model:ir.model.constraint,message:sale_renting.constraint_sale_temporal_recurrence_check_pickup_time
 msgid "The pickup time has to be between 0 and 24."
-msgstr ""
+msgstr "Waktu pickup harus antara 0 dan 24."
 
 #. module: sale_renting
 #: model:ir.model.constraint,message:sale_renting.constraint_sale_temporal_recurrence_temporal_recurrence_duration
@@ -1384,6 +1388,8 @@ msgid ""
 "The products haven't been picked-up or returned in time. This excludes any "
 "grace period before late fees apply."
 msgstr ""
+"Produk belum di pick-up atau dikembalikan tepat waktu. Ini terkecuali masa "
+"tenggang apa pun sebelum biaya terlambat diterapkan."
 
 #. module: sale_renting
 #. odoo-javascript
@@ -1405,7 +1411,7 @@ msgstr "Tanggal mulai rental harus sebelum tanggal pengembalian rental."
 #. module: sale_renting
 #: model:ir.model.constraint,message:sale_renting.constraint_sale_temporal_recurrence_check_return_time
 msgid "The return time has to be between 0 and 24."
-msgstr ""
+msgstr "Waktu pengembalian harus antara 0 dan 24."
 
 #. module: sale_renting
 #: model_terms:ir.actions.act_window,help:sale_renting.rental_order_today_pickup_action
@@ -1624,6 +1630,12 @@ msgstr "semua varian"
 #: model_terms:ir.ui.view,arch_db:sale_renting.res_config_settings_view_form
 msgid "hours"
 msgstr "jam"
+
+#~ msgid "2023-08-01"
+#~ msgstr "2023-08-01"
+
+#~ msgid "2023-08-10"
+#~ msgstr "2023-08-10"
 
 #~ msgid "You cannot return more than what has been picked up."
 #~ msgstr ""

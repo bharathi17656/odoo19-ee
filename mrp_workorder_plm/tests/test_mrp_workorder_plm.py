@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo import Command
 from odoo.addons.mrp_plm.tests.test_common import TestPlmCommon
+from odoo.exceptions import UserError
 from odoo.tests import Form
 
 class TestMrpWorkorderPlm(TestPlmCommon):
@@ -153,6 +154,49 @@ class TestMrpWorkorderPlm(TestPlmCommon):
         self.assertFalse(add_step_check.point_id)
         self.assertFalse(self.bom_table.eco_ids)
 
+    def test_add_check_in_chain_when_operation_match_is_ambiguous_or_missing(self):
+        """
+        Ensure a quality check can only be added when exactly one BOM operation matches the work order operation.
+        """
+        # Make sure both operations have the same name and workcenter
+        self.bom_table.operation_ids[1].write({
+            'name': self.bom_table.operation_ids[0].name,
+            'workcenter_id': self.bom_table.operation_ids[0].workcenter_id.id,
+        })
+        mo = self.env['mrp.production'].create({
+            'product_id': self.table.id,
+            'bom_id': self.bom_table.id,
+            'product_qty': 1,
+        })
+        mo.action_confirm()
+
+        wo = mo.workorder_ids
+        add_step_check = self.env['quality.check'].create({
+            'test_type_id': self.env.ref('quality.test_type_instructions').id,
+            'workorder_id': wo[0].id,
+            'production_id': mo.id,
+            'product_id': self.table.id,
+            'team_id': self.env['quality.alert.team'].search(['|', ('company_id', '=', self.env.company.id), ('company_id', '=', False)], limit=1).id,
+            'name': 'QC Test',
+        })
+        with self.assertRaisesRegex(UserError,
+                'Unable to add the proposed step to the corresponding Engineering Change Order .* for '
+                'this work order .* because multiple operations were matched with the WO. '
+                'Please differentiate the operations by name, work center, or product variant. '
+                'Please let your manager know if you need additional assistance for your proposed change.'
+            ):
+            add_step_check.add_check_in_chain()
+
+        self.bom_table.operation_ids[0].name = 'different-name'
+        with self.assertRaisesRegex(UserError,
+                'Unable to add the proposed step to the corresponding Engineering Change Order .* '
+                'for this work order because no corresponding operation could not be found in the ECO\'s '
+            ):
+            add_step_check.add_check_in_chain()
+
+        self.assertFalse(add_step_check.point_id)
+        self.assertFalse(self.bom_table.eco_ids)
+
     def test_add_new_step_to_multi_mo(self):
         """ Test that adding a step to multiple MOs of the same bom does not trigger
         singleton errors. """
@@ -167,3 +211,32 @@ class TestMrpWorkorderPlm(TestPlmCommon):
             add_step_form = Form(self.env[action['res_model']].with_context(action['context']), view=action['views'][0][0])
             add_step = add_step_form.save()
             add_step.with_user(self.env.user).add_check_in_chain()
+
+    def test_adding_suggestion_after_delete_suggestion(self):
+        """ Adding a delete suggestion should not prevent the user
+            from adding suggestions after the one they suggested deleting. """
+        mo = self.env['mrp.production'].create({
+            'product_id': self.table.id,
+            'bom_id': self.bom_table.id,
+            'product_qty': 1,
+        })
+        mo.action_confirm()
+        wo = mo.workorder_ids[0]
+
+        # Add two suggestion steps one after another
+        for i in range(2):
+            action = wo.action_add_step()
+            add_step_form = Form(self.env[action['res_model']].with_context(action['context']), view=action['views'][0][0])
+            last_step = add_step_form.save()
+            last_step.add_check_in_chain()
+            wo.write({'current_quality_check_id': last_step.id})  # JS popup "Indicate after which step you would like to add this one"
+
+        action = wo.action_propose_change(change_type="remove_step", check_id=last_step.id)
+        delete_suggestion_form = Form(self.env[action['res_model']].with_context(action['context']), view=action['views'][0][0])
+        delete_suggestion_form.comment = "I declare this step useless"
+        delete_suggestion_form.save().process()
+
+        wo.write({'current_quality_check_id': last_step.id})  # Select to add a new suggestion after the one we just suggested deleting
+        action = wo.action_add_step()
+        add_step_form = Form(self.env[action['res_model']].with_context(action['context']), view=action['views'][0][0])
+        add_step_form.save().add_check_in_chain()

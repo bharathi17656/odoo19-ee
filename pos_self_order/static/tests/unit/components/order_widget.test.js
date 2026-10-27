@@ -22,19 +22,39 @@ test("buttonToShow", async () => {
     // With valid payment method
     models["pos.payment.method"].getFirst().use_payment_terminal = "stripe";
     expect(comp.buttonToShow).toMatchObject({ label: "Pay", disabled: false });
+    // With zero amount order
+    store.currentOrder.lines.forEach((line) => {
+        line.price_unit = 0;
+    });
+    expect(comp.buttonToShow).toMatchObject({ label: "Order", disabled: false });
 });
 
 test("lineNotSend", async () => {
     const store = await setupSelfPosEnv();
     const comp = await mountWithCleanup(OrderWidget, { props: { action: () => {} } });
 
-    expect(comp.lineNotSend).toMatchObject({ price: 0, count: 0 });
+    expect(comp.lineNotSend).toMatchObject({
+        priceWithTax: 0,
+        priceWithoutTax: 0,
+        count: 0,
+        tax: 0,
+    });
     await getFilledSelfOrder(store);
-    expect(comp.lineNotSend).toMatchObject({ price: 595, count: 5 });
+    expect(comp.lineNotSend).toMatchObject({
+        priceWithTax: 595,
+        priceWithoutTax: 500,
+        count: 5,
+        tax: 95,
+    });
 
     const product1 = store.models["product.template"].get(5);
     await store.addToCart(product1, 1);
-    expect(comp.lineNotSend).toMatchObject({ price: 710, count: 6 });
+    expect(comp.lineNotSend).toMatchObject({
+        priceWithTax: 710,
+        priceWithoutTax: 600,
+        count: 6,
+        tax: 110,
+    });
 });
 
 test("shouldGoBack", async () => {

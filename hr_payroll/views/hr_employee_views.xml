@@ -29,6 +29,10 @@
             <xpath expr="//page[@name='personal_information']//group[@name='hr_birth_group']" position="inside">
                 <field name="lang" string="Payslip Language" placeholder="User Language"/>
             </xpath>
+            <group name="hr_document_group" position="inside">
+                <field name="sim_card"/>
+                <field name="internet_invoice"/>
+            </group>
             <field name="marital" position="before">
                 <field name="disabled"/>
             </field>
@@ -74,17 +78,29 @@
                 </group>
             </group>
             <page name="payroll_information" position="after">
-                <page name="salary_attachment" string="Salary Adjustments">
+                <page name="salary_attachment" string="Salary Adjustments" groups="hr_payroll.group_hr_payroll_user">
 
                     <field name="salary_attachment_ids" widget="salary_attachment_2many"
                            context="{
                                 'default_employee_ids': [id],
                                 'form_view_ref': 'hr_payroll.hr_salary_attachment_employee_view_form',
                                 'list_view_ref': 'hr_payroll.hr_salary_attachment_employee_view_list',
+                                'kanban_view_ref': 'hr_payroll.hr_salary_attachment_employee_view_kanban',
                             }"
                     />
                 </page>
             </page>
+        </field>
+    </record>
+
+    <record id="payroll_hr_employee_view_form_work_entry" model="ir.ui.view">
+        <field name="name">payroll.hr.employee.view.form.work.entry</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr_work_entry.hr_employee_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_open_work_entries']" position="attributes">
+                <attribute name="groups">hr_payroll.group_hr_payroll_user</attribute>
+            </xpath>
         </field>
     </record>
 

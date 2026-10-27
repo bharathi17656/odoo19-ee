@@ -4,15 +4,15 @@
 #
 # Translators:
 # Martin Trigaux, 2022
-# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2023
+# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2023, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:47+0000\n"
-"PO-Revision-Date: 2025-11-16 17:51+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2025-12-30 18:45+0000\n"
+"PO-Revision-Date: 2026-10-07 10:33+0000\n"
+"Last-Translator: Alina Lisnenko <alina.lisnenko@erp.co.ua>\n"
 "Language-Team: Ukrainian <https://translate.odoo.com/projects/odoo-19/"
 "marketing_automation_sms/uk/>\n"
 "Language: uk\n"
@@ -23,17 +23,17 @@ msgstr ""
 "? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > "
 "14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % "
 "100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: marketing_automation_sms
 #: model_terms:ir.ui.view,arch_db:marketing_automation_sms.marketing_activity_summary_template_sms
 msgid "\" <strong>bounced</strong>,"
-msgstr ""
+msgstr "\" <strong>повернено</strong>,"
 
 #. module: marketing_automation_sms
 #: model_terms:ir.ui.view,arch_db:marketing_automation_sms.marketing_activity_summary_template_sms
 msgid "\" gets clicked,"
-msgstr ""
+msgstr "\" отримує натискання,"
 
 #. module: marketing_automation_sms
 #: model:ir.model.fields,field_description:marketing_automation_sms.field_marketing_campaign__mailing_sms_count
@@ -76,8 +76,8 @@ msgstr ""
 "<i data-trigger-type=\"sms_click\" class=\"fa fa-hand-pointer-o "
 "o_ma_text_processed o_add_child_activity text-success\" title=\"Clicked\" "
 "role=\"img\" aria-label=\"Clicked\"/>\n"
-"                    <i data-trigger-type=\"sms_not_click\" class="
-"\"fa fa-hand-pointer-o o_ma_text_rejected o_add_child_activity text-danger\" "
+"                    <i data-trigger-type=\"sms_not_click\" class=\"fa fa-"
+"hand-pointer-o o_ma_text_rejected o_add_child_activity text-danger\" "
 "title=\"Not Clicked\" role=\"img\" aria-label=\"Not Clicked\"/>\n"
 "                    <i data-trigger-type=\"sms_bounce\" class=\"fa fa fa-"
 "exclamation-circle o_ma_text_rejected o_add_child_activity text-danger\" "
@@ -203,7 +203,7 @@ msgstr "Шаблон SMS"
 #. odoo-python
 #: code:addons/marketing_automation_sms/models/marketing_activity.py:0
 msgid "SMS cancelled"
-msgstr ""
+msgstr "SMS скасовано"
 
 #. module: marketing_automation_sms
 #. odoo-python
@@ -261,6 +261,7 @@ msgstr "Тип тригеру"
 #: model_terms:ir.ui.view,arch_db:marketing_automation_sms.marketing_activity_summary_template_sms
 msgid "after the <strong>SMS text message</strong> sent by the Activity \""
 msgstr ""
+"після <strong>текстового повідомлення SMS</strong> надісланого через Дію \""
 
 #. module: marketing_automation_sms
 #: model_terms:ir.ui.view,arch_db:marketing_automation_sms.marketing_activity_summary_template_sms
@@ -268,6 +269,8 @@ msgid ""
 "after the Participant <strong>clicked</strong>,<br/>on any link included in "
 "the <strong>SMS text message</strong> sent by the Activity \""
 msgstr ""
+"після того, як Учасник <strong>натиснув</strong>,<br/>на будь-яке посилання "
+"включно <strong>текстове повідомлення SMS</strong> надіслане через Дію \""
 
 #. module: marketing_automation_sms
 #: model_terms:ir.ui.view,arch_db:marketing_automation_sms.marketing_activity_summary_template_sms
@@ -275,6 +278,8 @@ msgid ""
 "if no link included in the <strong>SMS text message</strong> sent by the "
 "Activity \""
 msgstr ""
+"якщо немає посилань у <strong>текстовому повідомленні SMS</strong> "
+"надісланому через Дію \""
 
 #~ msgid "Bounced"
 #~ msgstr "Повернено"

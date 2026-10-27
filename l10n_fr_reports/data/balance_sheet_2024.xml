@@ -10,7 +10,6 @@
         <field name="filter_journals" eval="True"/>
         <field name="country_id" ref="base.fr"/>
         <field name="filter_multi_company">selector</field>
-        <field name="allow_account_audit_status_on_lines" eval="True"/>
         <field name="column_ids">
             <record id="account_financial_report_l10n_fr_bilan_column00_2024" model="account.report.column">
                 <field name="name">Gross</field>
@@ -1210,6 +1209,7 @@
                                                 <field name="label">net</field>
                                                 <field name="engine">aggregation</field>
                                                 <field name="formula">REPORT_NOUVEAU_2024.past_pnl + REPORT_NOUVEAU_2024.accounts</field>
+                                                <field name="subformula" eval="False"/>
                                             </record>
                                         </field>
                                     </record>

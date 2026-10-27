@@ -254,10 +254,27 @@ class TestAiDocuments(TestAiDocumentsCommon):
         }).sudo(False)
         llm_calls = 0
 
+        # The user cannot access the target folder,
+        # but the name of the folder is still inserted in the prompt
+        self.env.invalidate_all()
+        with self.assertRaises(AccessError):
+            self.target_folder.with_user(self.user_internal).name
+        self.assertEqual(
+            self.target_folder.with_user(self.user_internal).sudo().user_permission,
+            'none',
+        )
+        self.assertEqual(
+            self.target_folder.with_user(self.user_internal).sudo().display_name,
+            'Restricted Folder',
+        )
+
         def _mocked_request_llm(
             service, llm_model, system_prompts, user_prompts, tools=None,
             files=None, schema=None, temperature=0.2, inputs=(), web_grounding=False
         ):
+            self.assertIn('Target Folder', ''.join(user_prompts))
+            self.assertNotIn('Restricted Folder', ''.join(user_prompts))
+
             nonlocal llm_calls
             llm_calls += 1
             if llm_calls == 1:

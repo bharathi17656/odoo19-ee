@@ -2,14 +2,15 @@
 # This file contains the translation of the following modules:
 # * l10n_eu_oss_reports
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# "Marta (wacm)" <wacm@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 20:00+0000\n"
-"PO-Revision-Date: 2025-11-18 17:11+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-09-18 18:16+0000\n"
+"PO-Revision-Date: 2026-10-06 14:33+0000\n"
+"Last-Translator: \"Marta (wacm)\" <wacm@odoo.com>\n"
 "Language-Team: Czech <https://translate.odoo.com/projects/odoo-19-l10n/"
 "l10n_eu_oss_reports/cs/>\n"
 "Language: cs\n"
@@ -17,41 +18,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
-
-#. module: l10n_eu_oss_reports
-#. odoo-python
-#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
-msgid ""
-"\n"
-"                    Exclude any domestic or extra-EU sales from the OSS "
-"report.\n"
-"                "
-msgstr ""
-
-#. module: l10n_eu_oss_reports
-#. odoo-python
-#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
-msgid ""
-"\n"
-"                    OSS reports must be submitted in euros.\n"
-"                "
-msgstr ""
-
-#. module: l10n_eu_oss_reports
-#. odoo-python
-#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
-msgid ""
-"\n"
-"                    Only B2C transactions should be included in the OSS "
-"report.\n"
-"                "
-msgstr ""
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "<span>Download your OSS return</span><br/>"
-msgstr ""
+msgstr "<span>Stáhněte si přiznání OSS</span><br/>"
 
 #. module: l10n_eu_oss_reports
 #: model:ir.model,name:l10n_eu_oss_reports.model_account_report
@@ -72,6 +44,12 @@ msgstr "Typ účetní návratnosti"
 #: model:ir.model.fields,field_description:l10n_eu_oss_reports.field_account_report__availability_condition
 msgid "Availability"
 msgstr "Dostupnost"
+
+#. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "Business customers"
+msgstr "Zákazníci Business"
 
 #. module: l10n_eu_oss_reports
 #. odoo-python
@@ -114,13 +92,19 @@ msgstr "Zobrazovací název"
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "Download XML"
-msgstr ""
+msgstr "Stáhnout XML"
 
 #. module: l10n_eu_oss_reports
 #. odoo-python
 #: code:addons/l10n_eu_oss_reports/models/account_return.py:0
 msgid "EUR Currency"
-msgstr ""
+msgstr "Měna EUR"
+
+#. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "Exclude any domestic or extra-EU sales from the OSS report."
+msgstr "Z výkazu OSS vylučte veškeré tuzemské prodeje a prodeje mimo EU."
 
 #. module: l10n_eu_oss_reports
 #: model:ir.model.fields,field_description:l10n_eu_oss_reports.field_account_report__id
@@ -171,7 +155,7 @@ msgstr "Číslo zprostředkovatele"
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "Intervat"
-msgstr ""
+msgstr "Intervat"
 
 #. module: l10n_eu_oss_reports
 #: model:ir.model.fields,field_description:l10n_eu_oss_reports.field_l10n_eu_oss_reports_return_submission_wizard__write_uid
@@ -191,17 +175,17 @@ msgstr "Přihlaste se do"
 #. module: l10n_eu_oss_reports
 #: model:account.return.type,name:l10n_eu_oss_reports.eu_oss_imports_tax_return_type
 msgid "OSS Imports Return (CG)"
-msgstr ""
+msgstr "Přiznání OSS k dovozu (CG)"
 
 #. module: l10n_eu_oss_reports
 #: model:ir.model,name:l10n_eu_oss_reports.model_l10n_eu_oss_reports_return_submission_wizard
 msgid "OSS Return Submission Wizard"
-msgstr ""
+msgstr "Průvodce podáním přiznání OSS"
 
 #. module: l10n_eu_oss_reports
 #: model:account.return.type,name:l10n_eu_oss_reports.eu_oss_sales_tax_return_type
 msgid "OSS Sales Return (CG)"
-msgstr ""
+msgstr "Přiznání OSS k prodeji (CG)"
 
 #. module: l10n_eu_oss_reports
 #: model:ir.model,name:l10n_eu_oss_reports.model_l10n_eu_oss_tax_report_handler
@@ -221,14 +205,26 @@ msgstr "Vlastní zpracovatel daňových reportů OSS (Prodej)"
 #. module: l10n_eu_oss_reports
 #. odoo-python
 #: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "OSS reports must be submitted in euros."
+msgstr "Výkazy OSS je nutné podávat v eurech."
+
+#. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
 msgid "Only B2C transactions"
-msgstr ""
+msgstr "Pouze transakce B2C"
+
+#. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "Only B2C transactions should be included in the OSS report."
+msgstr "Do výkazu OSS by měly být zahrnuty pouze transakce B2C."
 
 #. module: l10n_eu_oss_reports
 #. odoo-python
 #: code:addons/l10n_eu_oss_reports/models/account_return.py:0
 msgid "Only intra-EU transactions"
-msgstr ""
+msgstr "Pouze transakce v rámci EU"
 
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.product_template_form
@@ -243,7 +239,7 @@ msgstr "Návrat"
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "Select Intervat &gt; Dashboard"
-msgstr ""
+msgstr "Vyberte Intervat &gt; Dashboard"
 
 #. module: l10n_eu_oss_reports
 #. odoo-python
@@ -266,12 +262,12 @@ msgstr ""
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "Upload it to the tax administration"
-msgstr ""
+msgstr "Nahrajte jej do systému finanční správy"
 
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "Upload the XML file on the right panel and click \"Continue\""
-msgstr ""
+msgstr "Nahrajte soubor XML v pravém panelu a klikněte na „Continue“"
 
 #. module: l10n_eu_oss_reports
 #: model:ir.model.fields,help:l10n_eu_oss_reports.field_res_company__intermediary_no
@@ -300,7 +296,7 @@ msgstr "Číslo VOES"
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "Validate the return"
-msgstr ""
+msgstr "Potvrďte přiznání"
 
 #. module: l10n_eu_oss_reports
 #. odoo-python
@@ -309,6 +305,12 @@ msgid "XML"
 msgstr "XML"
 
 #. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "id"
+msgstr "id"
+
+#. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "using Itsme or your card reader"
-msgstr ""
+msgstr "pomocí Itsme nebo čtečky karet"

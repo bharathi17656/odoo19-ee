@@ -8,6 +8,9 @@ import {
 } from "@website/js/tours/tour_utils";
 import { browser } from "@web/core/browser/browser";
 
+const oldWriteText = browser.navigator.clipboard.writeText;
+let copiedAnchorUrl;
+
 registerWebsitePreviewTour(
     "snippet_popup_display_on_click",
     {
@@ -34,20 +37,23 @@ registerWebsitePreviewTour(
             async run(helpers) {
                 // Patch and ignore write on clipboard in tour as we don't have
                 // permissions.
-                const oldWriteText = browser.navigator.clipboard.writeText;
-                browser.navigator.clipboard.writeText = () => {
+                browser.navigator.clipboard.writeText = (text) => {
+                    copiedAnchorUrl = text;
                     console.info("Copy in clipboard ignored!");
                 };
                 await helpers.click();
-                browser.navigator.clipboard.writeText = oldWriteText;
             },
         },
         {
-            content: "Check the copied anchor from the notification toast",
+            content: "Check the copied anchor of the popup",
             trigger: ".o_notification_manager .o_notification_content",
             run() {
-                const notificationContent = this.anchor.innerText;
-                const anchor = notificationContent.substring(notificationContent.indexOf("#"));
+                // Cleanup the patched clipboard method
+                browser.navigator.clipboard.writeText = oldWriteText;
+
+                // The toast only confirms the copy, so the anchor is checked on
+                // the value that was sent to the clipboard.
+                const anchor = copiedAnchorUrl.substring(copiedAnchorUrl.indexOf("#"));
 
                 if (anchor !== "#Win-%2420") {
                     console.error("The popup anchor is not '#Win-%2420' as expected.");

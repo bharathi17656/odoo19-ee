@@ -6,11 +6,15 @@
     margin: 0;
     background-color: #f0eeee;
     color: $o-gray-900;
+    color-scheme: $o-webclient-color-scheme;
     -webkit-user-select: none;
        -moz-user-select: none;
             user-select: none;
     text-shadow: none;
-    touch-action: manipulation;
+}
+
+* {
+    touch-action: pan-x pan-y;
 }
 /*  ********* Generic element styling  ********* */
 
@@ -81,5 +85,17 @@ html {
     }
     100% {
         transform: translateY(0);
+    }
+}
+
+.pos .o_error_detail {
+    user-select: text;
+}
+
+// .o-default-button would be hidden with web assets, but the dialog css file excluded from pos
+// as o-default-button is used inside custom pos dialogs, only apply it to form dialogs
+.o_dialog:has(.o_form_view) {
+    button.o-default-button:not(:only-child) {
+        display: none;
     }
 }

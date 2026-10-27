@@ -28,7 +28,8 @@ from odoo.service import security
 from odoo.http import request, root
 from odoo.tools import config, is_html_empty, parse_version, split_every
 from odoo.tools.barcode import check_barcode_encoding, createBarcodeDrawing, get_barcode_font
-from odoo.tools.misc import find_in_path
+from odoo.tools.lru import LRU
+from odoo.tools.misc import find_in_path, frozendict
 from odoo.tools.pdf import PdfFileReader, PdfFileWriter, PdfReadError
 from odoo.tools.safe_eval import safe_eval, time
 
@@ -80,6 +81,7 @@ class WkhtmlInfo(typing.NamedTuple):
     dpi_zoom_ratio: bool
     bin: str
     version: str
+    is_patched_qt: bool
     wkhtmltoimage_bin: str
     wkhtmltoimage_version: tuple[str, ...] | None
 
@@ -89,6 +91,7 @@ def _wkhtml() -> WkhtmlInfo:
     state = 'install'
     bin_path = 'wkhtmltopdf'
     version = ''
+    is_patched_qt = False
     dpi_zoom_ratio = False
     try:
         bin_path = find_in_path('wkhtmltopdf')
@@ -101,6 +104,8 @@ def _wkhtml() -> WkhtmlInfo:
         _logger.info('Will use the Wkhtmltopdf binary at %s', bin_path)
         out, _err = process.communicate()
         version = out.decode('ascii')
+        if '(with patched qt)' in version:
+            is_patched_qt = True
         match = re.search(r'([0-9.]+)', version)
         if match:
             version = match.group(0)
@@ -144,6 +149,7 @@ def _wkhtml() -> WkhtmlInfo:
         dpi_zoom_ratio=dpi_zoom_ratio,
         bin=bin_path,
         version=version,
+        is_patched_qt=is_patched_qt,
         wkhtmltoimage_bin=image_bin_path,
         wkhtmltoimage_version=wkhtmltoimage_version,
     )
@@ -261,7 +267,7 @@ class IrActionsReport(models.Model):
         attachment_name = safe_eval(self.attachment, {'object': record, 'time': time}) if self.attachment else ''
         if not attachment_name:
             return None
-        return self.env['ir.attachment'].search([
+        return record.env['ir.attachment'].search([
                 ('name', '=', attachment_name),
                 ('res_model', '=', self.model),
                 ('res_id', '=', record.id)
@@ -327,7 +333,7 @@ class IrActionsReport(models.Model):
                 command_args.extend(['--page-width', str(paperformat_id.page_width) + 'mm'])
                 command_args.extend(['--page-height', str(paperformat_id.page_height) + 'mm'])
 
-            if specific_paperformat_args and specific_paperformat_args.get('data-report-margin-top'):
+            if specific_paperformat_args and 'data-report-margin-top' in specific_paperformat_args:
                 command_args.extend(['--margin-top', str(specific_paperformat_args['data-report-margin-top'])])
             else:
                 command_args.extend(['--margin-top', str(paperformat_id.margin_top)])
@@ -346,14 +352,14 @@ class IrActionsReport(models.Model):
                 if _wkhtml().dpi_zoom_ratio:
                     command_args.extend(['--zoom', str(96.0 / dpi)])
 
-            if specific_paperformat_args and specific_paperformat_args.get('data-report-header-spacing'):
+            if specific_paperformat_args and 'data-report-header-spacing' in specific_paperformat_args:
                 command_args.extend(['--header-spacing', str(specific_paperformat_args['data-report-header-spacing'])])
             elif paperformat_id.header_spacing:
                 command_args.extend(['--header-spacing', str(paperformat_id.header_spacing)])
 
             command_args.extend(['--margin-left', str(paperformat_id.margin_left)])
 
-            if specific_paperformat_args and specific_paperformat_args.get('data-report-margin-bottom'):
+            if specific_paperformat_args and 'data-report-margin-bottom' in specific_paperformat_args:
                 command_args.extend(['--margin-bottom', str(specific_paperformat_args['data-report-margin-bottom'])])
             else:
                 command_args.extend(['--margin-bottom', str(paperformat_id.margin_bottom)])
@@ -446,24 +452,24 @@ class IrActionsReport(models.Model):
             'base_url': base_url,
             'report_xml_id': self.xml_id,
             'debug': self.env.context.get("debug"),
-        })
+        }) if len(header_node) else None
         footer = self.env['ir.qweb']._render(layout.id, {
             'subst': True,
             'body': Markup(lxml.html.tostring(footer_node, encoding='unicode')),
             'base_url': base_url,
             'report_xml_id': self.xml_id,
             'debug': self.env.context.get("debug"),
-        })
+        }) if len(footer_node) else None
 
         return bodies, res_ids, header, footer, specific_paperformat_args
 
-    def _run_wkhtmltoimage(self, bodies, width, height, image_format="jpg"):
+    def _run_wkhtmltoimage(self, bodies, width, height, image_format="jpg") -> list[bytes | None]:
         """
-        :bodies str: valid html documents as strings
-        :param width int: width in pixels
-        :param height int: height in pixels
-        :param image_format union['jpg', 'png']: format of the image
-        :return list[bytes|None]:
+        :param str bodies: valid html documents as strings
+        :param int width: width in pixels
+        :param int height: height in pixels
+        :param image_format: format of the image
+        :type image_format: typing.Literal['jpg', 'png']
         """
         if modules.module.current_test:
             return [None] * len(bodies)
@@ -572,15 +578,15 @@ class IrActionsReport(models.Model):
 
             if header:
                 head_file_fd, head_file_path = tempfile.mkstemp(suffix='.html', prefix='report.header.tmp.')
+                stack.callback(delete_file, head_file_path)
                 with closing(os.fdopen(head_file_fd, 'wb')) as head_file:
                     head_file.write(header.encode())
-                stack.callback(delete_file, head_file_path)
                 files_command_args.extend(['--header-html', head_file_path])
             if footer:
                 foot_file_fd, foot_file_path = tempfile.mkstemp(suffix='.html', prefix='report.footer.tmp.')
+                stack.callback(delete_file, foot_file_path)
                 with closing(os.fdopen(foot_file_fd, 'wb')) as foot_file:
                     foot_file.write(footer.encode())
-                stack.callback(delete_file, foot_file_path)
                 files_command_args.extend(['--footer-html', foot_file_path])
 
             paths = []
@@ -588,6 +594,7 @@ class IrActionsReport(models.Model):
             for body_idx, body in enumerate(bodies):
                 prefix = f'report.body.tmp.{body_idx}.'
                 body_file_fd, body_file_path = tempfile.mkstemp(suffix='.html', prefix=prefix)
+                stack.callback(delete_file, body_file_path)
                 with closing(os.fdopen(body_file_fd, 'wb')) as body_file:
                     # HACK: wkhtmltopdf doesn't like big table at all and the
                     #       processing time become exponential with the number
@@ -603,11 +610,10 @@ class IrActionsReport(models.Model):
                         _split_table(tree, 500)
                         body_file.write(lxml.html.tostring(tree))
                 paths.append(body_file_path)
-                stack.callback(delete_file, body_file_path)
 
             pdf_report_fd, pdf_report_path = tempfile.mkstemp(suffix='.pdf', prefix='report.tmp.')
-            os.close(pdf_report_fd)
             stack.callback(delete_file, pdf_report_path)
+            os.close(pdf_report_fd)
 
             process = _run_wkhtmltopdf(command_args + files_command_args + paths + [pdf_report_path])
             err = process.stderr
@@ -617,8 +623,7 @@ class IrActionsReport(models.Model):
                     pass
                 case 1:
                     if body_idx:
-                        wk_version = _wkhtml().version
-                        if '(with patched qt)' not in wk_version:
+                        if not _wkhtml().is_patched_qt:
                             if modules.module.current_test:
                                 raise unittest.SkipTest("Unable to convert multiple documents via wkhtmltopdf using unpatched QT")
                             raise UserError(_("Tried to convert multiple documents in wkhtmltopdf using unpatched QT"))
@@ -728,17 +733,19 @@ class IrActionsReport(models.Model):
             barcode_type = 'Code128'
 
         try:
-            barcode = createBarcodeDrawing(barcode_type, value=value, format='png', **kwargs)
-
-            # If a mask is asked and it is available, call its function to
-            # post-process the generated QR-code image
+            mask_to_apply = None
             if kwargs['mask']:
                 available_masks = self.get_available_barcode_masks()
                 mask_to_apply = available_masks.get(kwargs['mask'])
+            frozen_kwargs = frozendict(kwargs)
+            cache = self.env.cr.cache.setdefault('ir_actions_report_barcode', LRU(256))
+            cache_key = (barcode_type, value, frozen_kwargs, mask_to_apply)
+            if cache_key not in cache:
+                barcode = createBarcodeDrawing(barcode_type, value=value, format='png', **frozen_kwargs)
                 if mask_to_apply:
-                    mask_to_apply(kwargs['width'], kwargs['height'], barcode)
-
-            return barcode.asString('png')
+                    mask_to_apply(frozen_kwargs['width'], frozen_kwargs['height'], barcode)
+                cache[cache_key] = barcode.asString('png')
+            return cache[cache_key]
         except (ValueError, AttributeError):
             if barcode_type == 'Code128':
                 raise ValueError("Cannot convert into barcode.")
@@ -788,14 +795,17 @@ class IrActionsReport(models.Model):
         raise UserError(_("Odoo is unable to merge the generated PDFs."))
 
     @api.model
-    def _merge_pdfs(self, streams, handle_error=_handle_merge_pdfs_error):
+    def _merge_pdfs(self, streams, handle_error=None):
         writer = PdfFileWriter()
         for stream in streams:
             try:
                 reader = PdfFileReader(stream)
                 writer.appendPagesFromReader(reader)
             except (PdfReadError, TypeError, NotImplementedError, ValueError) as e:
-                handle_error(error=e, error_stream=stream)
+                if handle_error is None:
+                    self._handle_merge_pdfs_error(error=e, error_stream=stream)
+                else:
+                    handle_error(error=e, error_stream=stream)
         result_stream = io.BytesIO()
         streams.append(result_stream)
         try:
@@ -962,11 +972,11 @@ class IrActionsReport(models.Model):
                         stream = io.BytesIO()
                         attachment_writer.write(stream)
                         collected_streams[res_ids_wo_stream[i]]['stream'] = stream
-                    return collected_streams
                 else:
                     for res_id in res_ids_wo_stream:
                         individual_collected_stream = self._render_qweb_pdf_prepare_streams(report_ref=report_ref, data=data, res_ids=[res_id])
                         collected_streams[res_id]['stream'] = individual_collected_stream[res_id]['stream']
+                return collected_streams
             collected_streams[False] = {'stream': pdf_content_stream, 'attachment': None}
 
         return collected_streams

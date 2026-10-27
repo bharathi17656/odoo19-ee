@@ -3,13 +3,14 @@
 # * ai_website
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:45+0000\n"
-"PO-Revision-Date: 2025-11-17 07:01+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-01-09 18:45+0000\n"
+"PO-Revision-Date: 2026-10-05 20:33+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "ai_website/lt/>\n"
 "Language: lt\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: ai_website
 #. odoo-javascript
@@ -27,6 +28,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:ai_website.snippets
 msgid "AI"
 msgstr "Dirbtinis intelektas (AI)"
+
+#. module: ai_website
+#: model:ir.model,name:ai_website.model_ai_agent_source
+msgid "AI Agent Source"
+msgstr ""
 
 #. module: ai_website
 #: model_terms:ir.ui.view,arch_db:ai_website.snippets
@@ -58,9 +64,10 @@ msgid "Describe the page with keywords..."
 msgstr ""
 
 #. module: ai_website
+#: model:ir.model.fields,field_description:ai_website.field_ai_agent_source__display_name
 #: model:ir.model.fields,field_description:ai_website.field_website_page__display_name
 msgid "Display Name"
-msgstr "Rodomas pavadinimas"
+msgstr "Rodomas vardas"
 
 #. module: ai_website
 #. odoo-javascript
@@ -81,6 +88,7 @@ msgid "Generating content..."
 msgstr ""
 
 #. module: ai_website
+#: model:ir.model.fields,field_description:ai_website.field_ai_agent_source__id
 #: model:ir.model.fields,field_description:ai_website.field_website_page__id
 msgid "ID"
 msgstr "ID"
@@ -118,4 +126,4 @@ msgstr "Profesionalas"
 #. odoo-javascript
 #: code:addons/ai_website/static/src/components/dialog/add_page_dialog.xml:0
 msgid "Tone Selection"
-msgstr ""
+msgstr "Tono pasirinkimas"

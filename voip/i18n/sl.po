@@ -14,13 +14,17 @@
 # Martin Trigaux, 2022
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Žiga Trček <ziga.trcek@implex.si>, 2026.
+# NEDŽAD BEUS <nedzad.beus@implex.si>, 2026.
+# Jan Zorko <jan.zorko@implex.si>, 2026.
+# Nedžad Beus <nedzad.beus@implex.si>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-21 18:40+0000\n"
-"PO-Revision-Date: 2025-11-15 12:51+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2025-12-30 18:42+0000\n"
+"PO-Revision-Date: 2026-09-16 06:32+0000\n"
+"Last-Translator: Nedžad Beus <nedzad.beus@implex.si>\n"
 "Language-Team: Slovenian <https://translate.odoo.com/projects/odoo-19/voip/"
 "sl/>\n"
 "Language: sl\n"
@@ -29,7 +33,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || "
 "n%100==4 ? 2 : 3;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: voip
 #. odoo-javascript
@@ -37,19 +41,19 @@ msgstr ""
 #: code:addons/voip/static/src/softphone/tab_entry.js:0
 #: code:addons/voip/static/src/widgets/flag_phone_field.js:0
 msgid "%(country)s flag"
-msgstr ""
+msgstr "Zastava %(country)s"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/call_model.js:0
 msgid "%(hours)s:%(minutes)s:%(seconds)s"
-msgstr ""
+msgstr "%(hours)s:%(minutes)s:%(seconds)s"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/call_model.js:0
 msgid "%(minutes)s:%(seconds)s"
-msgstr ""
+msgstr "%(minutes)s:%(seconds)s"
 
 #. module: voip
 #. odoo-javascript
@@ -61,24 +65,24 @@ msgstr "%(status)s - %(timer)s"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/keypad.js:0
 msgid "%s others…"
-msgstr ""
+msgstr "%s drugih…"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/keypad.js:0
 msgid "1 other…"
-msgstr ""
+msgstr "1 drugo…"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/keypad.js:0
 msgid "2 others…"
-msgstr ""
+msgstr "2 drugih…"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_view_form
 msgid "<i class=\"fa fa-fw me-1 fa-phone text-primary\" title=\"Phone\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-fw me-1 fa-phone text-primary\" title=\"Telefon\"/>"
 
 #. module: voip
 #. odoo-javascript
@@ -87,23 +91,25 @@ msgid ""
 "A hardware error has occurred while trying to access the audio recording "
 "device. Please ensure that your drivers are up to date and try again."
 msgstr ""
+"Pri poskusu dostopa do naprave za snemanje zvoka je prišlo do napake strojne "
+"opreme. Prepričajte se, da so gonilniki posodobljeni, in poskusite znova."
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_call__state__aborted
 msgid "Aborted"
-msgstr ""
+msgstr "Prekinjeno"
 
 #. module: voip
 #. odoo-python
 #: code:addons/voip/models/voip_call.py:0
 msgid "Aborted call to %(phone_number)s"
-msgstr ""
+msgstr "Prekinjen klic na številko %(phone_number)s"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/call_invitation.xml:0
 msgid "Accept the call"
-msgstr ""
+msgstr "Sprejmi klic"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__message_needaction
@@ -136,7 +142,7 @@ msgstr "Ime dejavnosti"
 #. odoo-javascript
 #: code:addons/voip/static/src/web/call_queue_switch.js:0
 msgid "Add to Call Queue"
-msgstr ""
+msgstr "Dodaj v čakalno vrsto klicev"
 
 #. module: voip
 #: model:res.groups,name:voip.group_voip_admin
@@ -146,12 +152,12 @@ msgstr "Administrator"
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__res_users_settings__how_to_call_on_mobile__ask
 msgid "Always Ask"
-msgstr ""
+msgstr "Vedno vprašaj"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__res_users__how_to_call_on_mobile__ask
 msgid "Always ask before calling"
-msgstr ""
+msgstr "Vedno vprašaj pred klicem"
 
 #. module: voip
 #. odoo-javascript
@@ -160,6 +166,8 @@ msgid ""
 "An error occured involving the audio recording device (%(errorName)s):\n"
 "%(errorMessage)s"
 msgstr ""
+"Prišlo je do napake, povezane z napravo za snemanje zvoka (%(errorName)s):\n"
+"%(errorMessage)s\n"
 
 #. module: voip
 #. odoo-javascript
@@ -169,6 +177,9 @@ msgid ""
 "\n"
 "%(error)s"
 msgstr ""
+"Med instanciranjem uporabniškega agenta je prišlo do napake:\n"
+"\n"
+"%(error)s\n"
 
 #. module: voip
 #. odoo-javascript
@@ -178,12 +189,16 @@ msgid ""
 "\n"
 "Error: %(error)s"
 msgstr ""
+"Pri poskusu povabila naslednje številke je prišlo do napake: %(phoneNumber)"
+"s\n"
+"\n"
+"Napaka: %(error)s\n"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/user_agent_service.js:0
 msgid "An error occurred while attempting to answer the incoming call."
-msgstr ""
+msgstr "Pri poskusu odgovora na dohodni klic je prišlo do napake."
 
 #. module: voip
 #. odoo-javascript
@@ -192,12 +207,14 @@ msgid ""
 "Are you sure you want to delete this activity? It will be lost forever! (A "
 "long time!)"
 msgstr ""
+"Ali ste prepričani, da želite izbrisati to dejavnost? Izgubljena bo za "
+"vedno! (Zelo dolgo!)"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/transfer_confirmation.xml:0
 msgid "Ask First"
-msgstr ""
+msgstr "Najprej vprašaj"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__message_attachment_count
@@ -227,7 +244,7 @@ msgstr "Nazaj"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/keypad.xml:0
 msgid "Backspace"
-msgstr ""
+msgstr "Vračalka"
 
 #. module: voip
 #. odoo-javascript
@@ -245,99 +262,99 @@ msgstr "Klic"
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__call_count
 msgid "Call Count"
-msgstr ""
+msgstr "Število klicev"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/call_summary.js:0
 msgid "Call Missed (%(time)s)"
-msgstr ""
+msgstr "Zgrešen klic (%(time)s)"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_provider_tree_view
 #: model_terms:ir.ui.view,arch_db:voip.voip_provider_view_form
 msgid "Call Recording"
-msgstr ""
+msgstr "Snemanje klicev"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/widgets/call_status_badge_field.js:0
 msgid "Call Status Badge"
-msgstr ""
+msgstr "Značka stanja klica"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.res_user_form
 #: model_terms:ir.ui.view,arch_db:voip.res_users_view_form_preferences
 msgid "Call Via Desk Phone"
-msgstr ""
+msgstr "Kliči prek namiznega telefona"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/call_summary.js:0
 msgid "Call cancelled (%(time)s)"
-msgstr ""
+msgstr "Klic preklican (%(time)s)"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/call_summary.js:0
 msgid "Call declined (%(time)s)"
-msgstr ""
+msgstr "Klic zavrnjen (%(time)s)"
 
 #. module: voip
 #. odoo-python
 #: code:addons/voip/models/voip_call.py:0
 msgid "Call from %(correspondent)s"
-msgstr ""
+msgstr "Klic od %(correspondent)s"
 
 #. module: voip
 #. odoo-python
 #: code:addons/voip/models/voip_call.py:0
 msgid "Call from %(phone_number)s"
-msgstr ""
+msgstr "Klic iz %(phone_number)s"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users_settings__should_call_from_another_device
 msgid "Call from another device"
-msgstr ""
+msgstr "Pokliči iz druge naprave"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/session.js:0
 msgid "Call rejected (reason: “%(reasonPhrase)s”)"
-msgstr ""
+msgstr "Klic zavrnjen (razlog: “%(reasonPhrase)s”)"
 
 #. module: voip
 #. odoo-python
 #: code:addons/voip/models/voip_call.py:0
 msgid "Call to %(correspondent)s"
-msgstr ""
+msgstr "Klic na %(correspondent)s"
 
 #. module: voip
 #. odoo-python
 #: code:addons/voip/models/voip_call.py:0
 msgid "Call to %(phone_number)s"
-msgstr ""
+msgstr "Klic na številko %(phone_number)s"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__res_users__how_to_call_on_mobile__voip
 msgid "Call with Odoo Phone"
-msgstr ""
+msgstr "Klic z Odoo Phone"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__res_users__how_to_call_on_mobile__phone
 msgid "Call with phone's default app"
-msgstr ""
+msgstr "Pokliči s privzeto aplikacijo telefona"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_call__state__calling
 msgid "Calling"
-msgstr ""
+msgstr "Klicanje"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/session.js:0
 msgid "Calling…"
-msgstr ""
+msgstr "Klicanje…"
 
 #. module: voip
 #. odoo-python
@@ -347,13 +364,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_tree_view
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_view_form
 msgid "Calls"
-msgstr ""
+msgstr "Klici"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_view_graph
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_view_pivot
 msgid "Calls Analysis"
-msgstr ""
+msgstr "Analiza klicev"
 
 #. module: voip
 #. odoo-javascript
@@ -366,19 +383,19 @@ msgstr "Prekliči"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/transfer_confirmation.xml:0
 msgid "Cancel transfer"
-msgstr ""
+msgstr "Prekliči prenos"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/widgets/call_status_badge_field.js:0
 msgid "Cancelled Call"
-msgstr ""
+msgstr "Preklican klic"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/history.js:0
 msgid "Cancelled call"
-msgstr ""
+msgstr "Preklican klic"
 
 #. module: voip
 #. odoo-javascript
@@ -389,12 +406,16 @@ msgid ""
 "website is running over HTTPS and that your browser is not set to deny "
 "access to media devices."
 msgstr ""
+"Ni mogoče dostopati do naprave za snemanje zvoka. Če ste zavrnili dostop do "
+"mikrofona, ga dovolite in poskusite znova. V nasprotnem primeru preverite, "
+"ali se to spletno mesto izvaja prek HTTPS in ali vaš brskalnik ni nastavljen "
+"tako, da zavrne dostop do predstavnostnih naprav."
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/mobile/devise_selection_dialog.xml:0
 msgid "Choose a device:"
-msgstr ""
+msgstr "Izberite napravo:"
 
 #. module: voip
 #: model:ir.model.fields,help:voip.field_res_users_settings__how_to_call_on_mobile
@@ -402,6 +423,8 @@ msgid ""
 "Choose which app to open when clicking on a phone number in the Odoo Mobile "
 "app."
 msgstr ""
+"Izberite, katero aplikacijo želite odpreti ob kliku na telefonsko številko v "
+"mobilni aplikaciji Odoo."
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_provider__company_id
@@ -419,6 +442,9 @@ msgid ""
 "dialing code (e.g. +32), if any.\n"
 "Useful for displaying the flag associated with a phone number."
 msgstr ""
+"Izračuna kodo ISO države (npr. be za Belgijo) iz klicne kode telefonske "
+"številke (npr. +32), če obstaja.\n"
+"Uporabno za prikaz zastave, povezane s telefonsko številko."
 
 #. module: voip
 #: model:ir.ui.menu,name:voip.menu_voip_call_configuration
@@ -436,18 +462,18 @@ msgstr "Potrdi"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/in_call_view.xml:0
 msgid "Confirm Transfer"
-msgstr ""
+msgstr "Potrdi prenos"
 
 #. module: voip
 #: model_terms:ir.actions.act_window,help:voip.action_voip_provider_view
 msgid "Connect Odoo to your VoIP service by adding a provider."
-msgstr ""
+msgstr "Povežite Odoo s svojo VoIP-storitvijo tako, da dodate ponudnika."
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/user_agent_service.js:0
 msgid "Connecting…"
-msgstr ""
+msgstr "Povezovanje…"
 
 #. module: voip
 #. odoo-javascript
@@ -468,7 +494,7 @@ msgstr "Stik"
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_view_form
 msgid "Contact Avatar"
-msgstr ""
+msgstr "Avatar stika"
 
 #. module: voip
 #. odoo-javascript
@@ -481,7 +507,7 @@ msgstr "Stiki"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/address_book.xml:0
 msgid "Contacts with a phone number will be shown here."
-msgstr ""
+msgstr "Stiki s telefonsko številko bodo prikazani tukaj."
 
 #. module: voip
 #: model:ir.model,name:voip.model_res_country
@@ -503,7 +529,7 @@ msgstr "Ustvari stranko"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/address_book.xml:0
 msgid "Create a new contact"
-msgstr ""
+msgstr "Ustvari nov stik"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__create_uid
@@ -521,7 +547,7 @@ msgstr "Ustvarjeno"
 #: model_terms:ir.ui.view,arch_db:voip.res_user_form
 #: model_terms:ir.ui.view,arch_db:voip.res_users_view_form_preferences
 msgid "Credentials"
-msgstr ""
+msgstr "Poverilnice"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_tree_view
@@ -532,13 +558,13 @@ msgstr "Datum"
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users_settings__how_to_call_on_mobile
 msgid "Default phone app"
-msgstr ""
+msgstr "Privzeta telefonska aplikacija"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/contact_info.js:0
 msgid "Default profile picture"
-msgstr ""
+msgstr "Privzeta profilna slika"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_provider__mode__demo
@@ -549,19 +575,19 @@ msgstr "Demo"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/softphone.xml:0
 msgid "Demo Mode"
-msgstr ""
+msgstr "Demo način"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/session.js:0
 msgid "Demo call"
-msgstr ""
+msgstr "Predstavitveni klic"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/transfer_confirmation.xml:0
 msgid "Direct transfer"
-msgstr ""
+msgstr "Neposredni prenos"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__direction
@@ -591,24 +617,24 @@ msgstr "Prikazani naziv"
 #: code:addons/voip/static/src/softphone/dnd_selector.js:0
 #: code:addons/voip/static/src/softphone/dnd_selector.xml:0
 msgid "Do Not Disturb"
-msgstr ""
+msgstr "Ne moti"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users_settings__do_not_disturb_until_dt
 msgid "Do Not Disturb until"
-msgstr ""
+msgstr "Ne moti do"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/dnd_selector.js:0
 msgid "Do Not Disturb until %(time)s"
-msgstr ""
+msgstr "Ne moti do %(time)s"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/dnd_selector.js:0
 msgid "Do Not Disturb until I turn it back on"
-msgstr ""
+msgstr "Ne moti, dokler ga ne vklopim nazaj"
 
 #. module: voip
 #. odoo-javascript
@@ -620,25 +646,25 @@ msgstr "Opravljeno"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/agenda.js:0
 msgid "Due: %(date)s"
-msgstr ""
+msgstr "Rok: %(date)s"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/agenda.js:0
 msgid "Due: Today"
-msgstr ""
+msgstr "Rok: danes"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/agenda.js:0
 msgid "Due: Tomorrow"
-msgstr ""
+msgstr "Rok: jutri"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/agenda.js:0
 msgid "Due: Yesterday"
-msgstr ""
+msgstr "Rok: Včeraj"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__duration
@@ -667,13 +693,13 @@ msgstr "Končni datum"
 #: code:addons/voip/static/src/softphone/history.js:0
 #: code:addons/voip/static/src/widgets/call_status_badge_field.js:0
 msgid "Ended unexpectedly"
-msgstr ""
+msgstr "Nepričakovano končano"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/in_call_view.js:0
 msgid "Enforced by admin"
-msgstr ""
+msgstr "Uveljavljeno s strani skrbnika"
 
 #. module: voip
 #. odoo-javascript
@@ -682,24 +708,26 @@ msgid ""
 "Error message:\n"
 "%s"
 msgstr ""
+"Sporočilo o napaki:\n"
+"%s\n"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/session.js:0
 msgid "Error putting the call on hold:"
-msgstr ""
+msgstr "Napaka pri zadržanju klica:"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/session.js:0
 msgid "Error resuming the call:"
-msgstr ""
+msgstr "Napaka pri nadaljevanju klica:\n"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/history.xml:0
 msgid "Expand history"
-msgstr ""
+msgstr "Razširi zgodovino"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_view_search
@@ -709,12 +737,12 @@ msgstr "Zunanji"
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users__external_device_number
 msgid "External Device Number"
-msgstr ""
+msgstr "Številka zunanje naprave"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users_settings__external_device_number
 msgid "External device number"
-msgstr ""
+msgstr "Številka zunanje naprave"
 
 #. module: voip
 #. odoo-javascript
@@ -724,6 +752,9 @@ msgid ""
 "\n"
 "%(error)s"
 msgstr ""
+"Knjižnice SIP.js ni bilo mogoče naložiti:\n"
+"\n"
+"%(error)s\n"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__message_follower_ids
@@ -738,19 +769,19 @@ msgstr "Sledilci (partnerji)"
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_provider__recording_policy__always
 msgid "Force for all users"
-msgstr ""
+msgstr "Vsili za vse uporabnike"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_provider__recording_policy_option__always
 msgid "Force recording of all calls. Users can't disable it."
-msgstr ""
+msgstr "Vsili snemanje vseh klicev. Uporabniki ga ne morejo onemogočiti."
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/call_banner.xml:0
 #: code:addons/voip/static/src/softphone/in_call_view.xml:0
 msgid "Hang up"
-msgstr ""
+msgstr "Prekini klic"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__has_message
@@ -767,7 +798,7 @@ msgstr "Skrij"
 #. odoo-javascript
 #: code:addons/voip/static/src/web/voip_systray_item.js:0
 msgid "Hide Softphone"
-msgstr ""
+msgstr "Skrij programski telefon"
 
 #. module: voip
 #: model:ir.actions.act_window,name:voip.voip_call_action_history
@@ -778,18 +809,18 @@ msgstr "Zgodovina"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/in_call_view.xml:0
 msgid "Hold"
-msgstr ""
+msgstr "Zadrži"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/agenda.js:0
 msgid "Hold your horses!"
-msgstr ""
+msgstr "Počasi!"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users__how_to_call_on_mobile
 msgid "How To Call On Mobile"
-msgstr ""
+msgstr "Kako klicati na mobilnem telefonu"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_mail_activity__id
@@ -818,7 +849,7 @@ msgstr "Če je označeno, nekatera sporočila vsebujejo napako pri dostavi."
 #. module: voip
 #: model:ir.model.fields,help:voip.field_res_users_settings__do_not_disturb_until_dt
 msgid "If set, Odoo Phone will be in Do Not Disturb mode until this time."
-msgstr ""
+msgstr "Če je nastavljeno, bo Odoo Telefon do tega časa v načinu »Ne moti«."
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__image_1920
@@ -829,7 +860,7 @@ msgstr "Slika"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/softphone.js:0
 msgid "In call"
-msgstr ""
+msgstr "V klicu"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_call__direction__incoming
@@ -847,25 +878,25 @@ msgstr "Dohodni klic"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/history.js:0
 msgid "Incoming call (%(duration)s)"
-msgstr ""
+msgstr "Dohodni klic (%(duration)s)"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/dnd_selector.js:0
 msgid "Incoming calls will be muted"
-msgstr ""
+msgstr "Dohodni klici bodo utišani"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/softphone.js:0
 msgid "Incoming call…"
-msgstr ""
+msgstr "Dohodni klic…"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/mobile/device_selection_dialog.js:0
 msgid "Input device selection"
-msgstr ""
+msgstr "Izbira vhodne naprave"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_view_search
@@ -880,14 +911,14 @@ msgstr "Je sledilec"
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__is_within_same_company
 msgid "Is Within Same Company"
-msgstr ""
+msgstr "Je znotraj istega podjetja"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_partner__has_call_in_queue
 #: model:ir.model.fields,field_description:voip.field_res_users__has_call_in_queue
 #: model:ir.model.fields,field_description:voip.field_voip_queue_mixin__has_call_in_queue
 msgid "Is in the Call Queue"
-msgstr ""
+msgstr "Je v čakalni vrsti klicev"
 
 #. module: voip
 #. odoo-javascript
@@ -897,13 +928,15 @@ msgid ""
 "have your administrator verify that the media type is correctly set to SRTP-"
 "DTLS."
 msgstr ""
+"Zdi se, da strežnik morda ne uporablja pravilne vrste medija. Prosite "
+"skrbnika, naj preveri, ali je vrsta medija pravilno nastavljena na SRTP-DTLS."
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/in_call_view.xml:0
 #: code:addons/voip/static/src/softphone/softphone.js:0
 msgid "Keypad"
-msgstr ""
+msgstr "Tipkovnica"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_view_search
@@ -913,7 +946,7 @@ msgstr "Zadnjih 7 dni"
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users__last_seen_phone_call
 msgid "Last Seen Phone Call"
-msgstr ""
+msgstr "Zadnji viden telefonski klic"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__write_uid
@@ -931,17 +964,17 @@ msgstr "Zadnjič posodobljeno"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/call_summary.js:0
 msgid "Lasted: %(duration)s"
-msgstr ""
+msgstr "Trajalo: %(duration)s"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_provider__recording_policy__user
 msgid "Let users decide"
-msgstr ""
+msgstr "Odločitev prepustite uporabnikom"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_provider__recording_policy_option__user
 msgid "Let users decide when to record."
-msgstr ""
+msgstr "Uporabnikom omogočite, da se odločijo, kdaj snemati."
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__message_main_attachment_id
@@ -953,7 +986,7 @@ msgstr "Glavna priponka"
 #: model_terms:ir.ui.view,arch_db:voip.res_user_form
 #: model_terms:ir.ui.view,arch_db:voip.res_users_view_form_preferences
 msgid "Manage Providers"
-msgstr ""
+msgstr "Upravljaj ponudnike"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__message_has_error
@@ -969,31 +1002,31 @@ msgstr "Sporočila"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/agenda.js:0
 msgid "Missclicked, sorry"
-msgstr ""
+msgstr "Pomotoma sem kliknil/-a, oprostite"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_call__state__missed
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_view_search
 msgid "Missed"
-msgstr ""
+msgstr "Neodgovorjen"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/widgets/call_status_badge_field.js:0
 msgid "Missed Call"
-msgstr ""
+msgstr "Neodgovorjeni klic"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/history.js:0
 msgid "Missed call"
-msgstr ""
+msgstr "Neodgovorjeni klic"
 
 #. module: voip
 #. odoo-python
 #: code:addons/voip/models/voip_call.py:0
 msgid "Missed call from %(phone_number)s"
-msgstr ""
+msgstr "Neodgovorjen klic iz %(phone_number)s"
 
 #. module: voip
 #. odoo-javascript
@@ -1004,7 +1037,7 @@ msgstr "Izklop zvoka"
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_view_search
 msgid "My Calls"
-msgstr ""
+msgstr "Moji klici"
 
 #. module: voip
 #. odoo-javascript
@@ -1016,7 +1049,7 @@ msgstr "Naziv"
 #. module: voip
 #: model_terms:ir.actions.act_window,help:voip.voip_call_view
 msgid "No Calls Yet!"
-msgstr ""
+msgstr "Klicev še ni!"
 
 #. module: voip
 #. odoo-javascript
@@ -1025,48 +1058,50 @@ msgid ""
 "No audio recording device available. The application requires a microphone "
 "in order to be used."
 msgstr ""
+"Nobena naprava za snemanje zvoka ni na voljo. Aplikacija za uporabo zahteva "
+"mikrofon."
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/agenda.xml:0
 msgid "No call activities found"
-msgstr ""
+msgstr "Klicne aktivnosti niso bile najdene"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/agenda.xml:0
 msgid "No calls scheduled for today 😎"
-msgstr ""
+msgstr "Za danes ni načrtovanih klicev 😎"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/address_book.xml:0
 msgid "No contacts found"
-msgstr ""
+msgstr "Ni najdenih stikov."
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/history.xml:0
 msgid "No recent calls found"
-msgstr ""
+msgstr "Nedavnih klicev ni bilo mogoče najti"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.res_user_form
 #: model_terms:ir.ui.view,arch_db:voip.res_users_view_form_preferences
 msgid "No redirect"
-msgstr ""
+msgstr "Brez preusmeritve"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/tab.xml:0
 msgid "No search results 💔"
-msgstr ""
+msgstr "Ni rezultatov iskanja 💔"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/tab.js:0
 msgid "Nothing to see here 😔"
-msgstr ""
+msgstr "Tukaj ni ničesar za ogled 😔"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__message_needaction_counter
@@ -1091,7 +1126,7 @@ msgstr "Število sporočil, ki niso bila pravilno dostavljena."
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__res_users_settings__how_to_call_on_mobile__voip
 msgid "Odoo Phone"
-msgstr ""
+msgstr "Odoo telefon"
 
 #. module: voip
 #: model:res.groups,name:voip.group_voip_officer
@@ -1102,14 +1137,14 @@ msgstr "Uradnik"
 #: model_terms:ir.ui.view,arch_db:voip.res_user_form
 #: model_terms:ir.ui.view,arch_db:voip.res_users_view_form_preferences
 msgid "On Mobile"
-msgstr ""
+msgstr "Na mobilnem telefonu"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/session.js:0
 #: code:addons/voip/static/src/softphone/in_call_view.xml:0
 msgid "On hold"
-msgstr ""
+msgstr "Na čakanju"
 
 #. module: voip
 #. odoo-javascript
@@ -1122,18 +1157,20 @@ msgstr "V teku"
 #. odoo-javascript
 #: code:addons/voip/static/src/widgets/call_status_badge_field.js:0
 msgid "Ongoing Call"
-msgstr ""
+msgstr "Trenutni klic"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/agenda.xml:0
 msgid "Open related record"
-msgstr ""
+msgstr "Odpri povezani zapis"
 
 #. module: voip
 #: model_terms:ir.actions.act_window,help:voip.voip_call_view
 msgid "Open the softphone in the systray at the top to make your first call."
 msgstr ""
+"Odprite programski telefon v sistemski vrstici na vrhu, da opravite svoj "
+"prvi klic."
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_call__direction__outgoing
@@ -1145,30 +1182,30 @@ msgstr "Odhajajoča količina"
 #. odoo-javascript
 #: code:addons/voip/static/src/widgets/call_status_badge_field.js:0
 msgid "Outgoing call"
-msgstr ""
+msgstr "Odhodni klic"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/history.js:0
 msgid "Outgoing call (%(duration)s)"
-msgstr ""
+msgstr "Odhodni klic (%(duration)s)"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/softphone.js:0
 msgid "Outgoing call…"
-msgstr ""
+msgstr "Odhodni klic…"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_provider__pbx_ip
 msgid "PBX Server IP"
-msgstr ""
+msgstr "IP strežnika PBX"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/user_agent_service.js:0
 msgid "PBX or Websocket address is missing. Please check your settings."
-msgstr ""
+msgstr "Naslov PBX ali WebSocket ni naveden. Preverite svoje nastavitve."
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_mail_activity__phone
@@ -1179,7 +1216,7 @@ msgstr "Telefon"
 #. module: voip
 #: model:ir.model,name:voip.model_voip_country_code_mixin
 msgid "Phone Country Mixin"
-msgstr ""
+msgstr "Mešalnik telefonske države"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__phone_number
@@ -1189,7 +1226,7 @@ msgstr "Telefonska številka"
 #. module: voip
 #: model:ir.model,name:voip.model_voip_call
 msgid "Phone call"
-msgstr ""
+msgstr "Telefonski klic"
 
 #. module: voip
 #. odoo-javascript
@@ -1200,13 +1237,13 @@ msgstr "Telefonska številka"
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__res_users_settings__how_to_call_on_mobile__phone
 msgid "Phone's Default App"
-msgstr ""
+msgstr "Privzeta aplikacija za telefon"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/user_agent_service.js:0
 msgid "Please accept the use of the microphone."
-msgstr ""
+msgstr "Prosimo, sprejmite uporabo mikrofona."
 
 #. module: voip
 #. odoo-javascript
@@ -1215,6 +1252,8 @@ msgid ""
 "Please try again later. If the problem persists, you may want to ask an "
 "administrator to check the configuration."
 msgstr ""
+"Poskusite znova pozneje. Če težava ne izgine, prosite skrbnika, naj preveri "
+"konfiguracijo."
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.res_user_form
@@ -1226,7 +1265,7 @@ msgstr "Nastavitve"
 #. odoo-javascript
 #: code:addons/voip/static/src/web/voip_systray_item.js:0
 msgid "Processing…"
-msgstr ""
+msgstr "Obdelava…"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_provider__mode__prod
@@ -1237,13 +1276,13 @@ msgstr "Proizvodnja"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/tab_entry.xml:0
 msgid "Profile picture"
-msgstr ""
+msgstr "Profilna slika"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/contact_info.js:0
 msgid "Profile picture of %(user)s"
-msgstr ""
+msgstr "Profilna slika uporabnika %(user)s"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.res_user_form
@@ -1264,7 +1303,7 @@ msgstr "Ocene"
 #. module: voip
 #: model_terms:ir.actions.act_window,help:voip.action_voip_provider_view
 msgid "Ready to Start Calling?"
-msgstr ""
+msgstr "Pripravljeni na začetek klicanja?"
 
 #. module: voip
 #. odoo-javascript
@@ -1276,7 +1315,7 @@ msgstr "Nedavno"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/history.js:0
 msgid "Recent Calls"
-msgstr ""
+msgstr "Nedavni klici"
 
 #. module: voip
 #. odoo-javascript
@@ -1290,6 +1329,8 @@ msgid ""
 "Record VoIP calls. An indicator is displayed during calls. There is no vocal "
 "announcement by default."
 msgstr ""
+"Zabeležite klice VoIP. Med klici je prikazan indikator. Privzeto ni "
+"glasovnega obvestila."
 
 #. module: voip
 #. odoo-javascript
@@ -1300,19 +1341,19 @@ msgstr "Beleženje"
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_provider__recording_policy
 msgid "Recording Policy"
-msgstr ""
+msgstr "Politika snemanja"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/registerer.js:0
 msgid "Registration rejected: %(statusCode)s %(reasonPhrase)s."
-msgstr ""
+msgstr "Registracija zavrnjena: %(statusCode)s %(reasonPhrase)s."
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/call_invitation.xml:0
 msgid "Reject the call"
-msgstr ""
+msgstr "Zavrni klic"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_call__state__rejected
@@ -1323,37 +1364,37 @@ msgstr "Zavrnjeno"
 #. odoo-javascript
 #: code:addons/voip/static/src/widgets/call_status_badge_field.js:0
 msgid "Rejected Call"
-msgstr ""
+msgstr "Zavrnjen klic"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/history.js:0
 msgid "Rejected call"
-msgstr ""
+msgstr "Zavrnjen klic"
 
 #. module: voip
 #. odoo-python
 #: code:addons/voip/models/voip_call.py:0
 msgid "Rejected call from %(phone_number)s"
-msgstr ""
+msgstr "Zavrnjen klic iz %(phone_number)s"
 
 #. module: voip
 #. odoo-python
 #: code:addons/voip/models/voip_call.py:0
 msgid "Rejected call to %(phone_number)s"
-msgstr ""
+msgstr "Zavrnjen klic na številko %(phone_number)s"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/mobile/call_method_selection_dialog.xml:0
 msgid "Remember my choice"
-msgstr ""
+msgstr "Zapomni si mojo izbiro"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/web/call_queue_switch.js:0
 msgid "Remove from Call Queue"
-msgstr ""
+msgstr "Odstrani iz čakalne vrste klicev"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__user_id
@@ -1364,7 +1405,7 @@ msgstr "Odgovoren"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/softphone.js:0
 msgid "Ringing…"
-msgstr ""
+msgstr "Zvonjenje…"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__message_has_sms_error
@@ -1374,7 +1415,7 @@ msgstr "Napaka pri dostavi SMS"
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.res_config_settings_view_form
 msgid "Schedule & make calls from your database"
-msgstr ""
+msgstr "Načrtujte in opravljajte klice iz svoje baze podatkov"
 
 #. module: voip
 #. odoo-javascript
@@ -1390,7 +1431,7 @@ msgstr "Razporedi aktivnost"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/search_bar.xml:0
 msgid "Search…"
-msgstr ""
+msgstr "Iskanje…"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.res_user_form
@@ -1402,42 +1443,42 @@ msgstr "Skrivnost"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/agenda.xml:0
 msgid "See all other activities"
-msgstr ""
+msgstr "Prikaži vse druge aktivnosti"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/history.xml:0
 msgid "See your contact list"
-msgstr ""
+msgstr "Oglejte si svoj seznam stikov"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/mobile/call_method_selection_dialog.js:0
 msgid "Select a call method"
-msgstr ""
+msgstr "Izberite način klica"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/history.xml:0
 msgid "Send e-mail"
-msgstr ""
+msgstr "Pošlji e-pošto"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users__should_call_from_another_device
 msgid "Should Call From Another Device"
-msgstr ""
+msgstr "Ali naj kliče iz druge naprave"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/web/voip_systray_item.js:0
 msgid "Show Softphone"
-msgstr ""
+msgstr "Prikaži programski telefon"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/widgets/simple_datetime_field.js:0
 msgid "Simple Date & Time"
-msgstr ""
+msgstr "Preprost datum in čas"
 
 #. module: voip
 #. odoo-python
@@ -1447,12 +1488,15 @@ msgid ""
 "number set. The fixer-uppers: %(record_names)s.\n"
 "Let’s add the missing numbers and start the dialing party!"
 msgstr ""
+"Nekaterih potencialnih strank ni mogoče dodati v čakalno vrsto klicev, ker "
+"nimajo nastavljene telefonske številke. Tiste, ki jih je treba urediti: %"
+"(record_names)s. Dodajmo manjkajoče številke in začnimo klicati!"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/error_screen.js:0
 msgid "Something went wrong 😵‍💫"
-msgstr ""
+msgstr "Nekaj je šlo narobe 😵‍💫"
 
 #. module: voip
 #: model:ir.model.fields,help:voip.field_res_users_settings__external_device_number
@@ -1462,6 +1506,9 @@ msgid ""
 "preferred device (your desk phone or cell phone) and then connect you to the "
 "recipient."
 msgstr ""
+"Določite telefonsko številko, tako da bo klicanje v Odoo Phone zazvonilo na "
+"vaši prednostni napravi (namiznem ali mobilnem telefonu) in vas nato "
+"povezalo s prejemnikom."
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__start_date
@@ -1471,7 +1518,7 @@ msgstr "Začetni datum"
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__state
 msgid "State"
-msgstr "Zvezna država ali regija"
+msgstr "Stanje"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_tree_view
@@ -1489,7 +1536,7 @@ msgstr "Ustavi"
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_call__state__terminated
 msgid "Terminated"
-msgstr ""
+msgstr "Prekinjeno"
 
 #. module: voip
 #. odoo-javascript
@@ -1498,22 +1545,25 @@ msgid ""
 "The DTLS fingerprint and/or setup is missing from the SDP. Please have your "
 "administrator verify that the PBX is configured to use SRTP-DTLS."
 msgstr ""
+"Prstni odtis DTLS in/ali nastavitev v SDP manjkata. Prosite skrbnika, naj "
+"preveri, ali je PBX konfiguriran za uporabo SRTP-DTLS."
 
 #. module: voip
 #: model:ir.model.fields,help:voip.field_voip_provider__pbx_ip
 msgid "The IP address of your PBX Server"
-msgstr ""
+msgstr "Naslov IP vašega strežnika PBX"
 
 #. module: voip
 #: model:ir.model.fields,help:voip.field_voip_provider__ws_server
 msgid "The URL of your WebSocket"
-msgstr ""
+msgstr "URL vašega WebSocketa"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/user_agent_service.js:0
 msgid "The WebSocket connection was lost and couldn't be reestablished."
 msgstr ""
+"Povezava WebSocket je bila prekinjena in je ni bilo mogoče znova vzpostaviti."
 
 #. module: voip
 #. odoo-javascript
@@ -1523,11 +1573,14 @@ msgid ""
 "verify the websocket server URL in the VoIP Provider Settings. If the "
 "problem persists, this is probably an issue with the server."
 msgstr ""
+"Napaka je morda posledica transportne plasti. Prosite skrbnika, naj preveri "
+"URL strežnika websocket v nastavitvah ponudnika VoIP. Če težava vztraja, gre "
+"najverjetneje za težavo na strežniku."
 
 #. module: voip
 #: model:ir.model.fields,help:voip.field_voip_call__activity_name
 msgid "The name of the activity related to this phone call, if any."
-msgstr ""
+msgstr "Ime aktivnosti, povezane s tem telefonskim klicem, če obstaja."
 
 #. module: voip
 #. odoo-javascript
@@ -1537,6 +1590,9 @@ msgid ""
 "connection cannot be made. Please check your configuration.\n"
 "(Reason received: %(reasonPhrase)s)"
 msgstr ""
+"Številka ni pravilna, uporabniški podatki so morda napačni ali pa povezave "
+"ni mogoče vzpostaviti. Preverite svojo konfiguracijo.\n"
+"(Razlog: %(reasonPhrase)s)"
 
 #. module: voip
 #: model:ir.model.fields,help:voip.field_res_partner__t9_name
@@ -1550,17 +1606,22 @@ msgid ""
 "T9 stands for Text on 9 keys, it comes from the name of the original "
 "technology on old cell phones."
 msgstr ""
+"Ime partnerja, kodirano s števkami, ki ustrezajo črkam na tipkovnici starega "
+"mobilnega telefona. Uporabno za iskanje partnerjev na podlagi tega polja. "
+"Presledki se ohranijo, znaki, ki jih ni mogoče kodirati, pa se nadomestijo z "
+"»x«. T9 je kratica za Text on 9 keys, izhaja pa iz imena prvotne tehnologije "
+"na starih mobilnih telefonih."
 
 #. module: voip
 #: model:ir.model.fields,help:voip.field_res_users_settings__voip_secret
 msgid "The password that will be used to register with the PBX server."
-msgstr ""
+msgstr "Geslo, ki bo uporabljeno za registracijo pri strežniku PBX."
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/session.js:0
 msgid "The person you try to contact is currently unavailable."
-msgstr ""
+msgstr "Oseba, s katero želite vzpostaviti stik, trenutno ni dosegljiva."
 
 #. module: voip
 #. odoo-javascript
@@ -1570,11 +1631,14 @@ msgid ""
 "that you are reaching the right server (PBX server IP in the VoIP Provider "
 "Settings) and that the credentials in your user preferences are correct."
 msgstr ""
+"Strežnik vas ni uspel overiti. Prosite skrbnika, naj preveri, ali dostopate "
+"do pravega strežnika (IP-naslov strežnika PBX v nastavitvah ponudnika VoIP) "
+"in ali so poverilnice v vaših uporabniških nastavitvah pravilne."
 
 #. module: voip
 #: model:ir.model.fields,help:voip.field_voip_call__call_count
 msgid "The total number of calls made to the same phone number."
-msgstr ""
+msgstr "Skupno število klicev na isto telefonsko številko."
 
 #. module: voip
 #. odoo-javascript
@@ -1584,6 +1648,9 @@ msgid ""
 "incorrect. Please have an administrator check the websocket server URL in "
 "the VoIP Provider Settings."
 msgstr ""
+"Uporabniškega agenta ni bilo mogoče zagnati. URL strežnika WebSocket morda "
+"ni pravilen. Skrbnik naj preveri URL strežnika WebSocket v nastavitvah "
+"ponudnika VoIP."
 
 #. module: voip
 #: model:ir.model.fields,help:voip.field_res_users_settings__voip_username
@@ -1591,6 +1658,8 @@ msgid ""
 "The username (typically the extension number) that will be used to register "
 "with the PBX server."
 msgstr ""
+"Uporabniško ime (običajno interna številka), ki bo uporabljeno za "
+"registracijo pri strežniku PBX."
 
 #. module: voip
 #. odoo-javascript
@@ -1599,13 +1668,15 @@ msgid ""
 "The websocket connection to the server has been lost. Attempting to "
 "reestablish the connection…"
 msgstr ""
+"Povezava WebSocket s strežnikom je bila prekinjena. Poskus ponovne "
+"vzpostavitve povezave…"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/core/voip_service.js:0
 msgid ""
 "There is still a call in progress, are you sure you want to leave the page?"
-msgstr ""
+msgstr "Klic še vedno poteka, ali ste prepričani, da želite zapustiti stran?"
 
 #. module: voip
 #. odoo-javascript
@@ -1618,13 +1689,13 @@ msgstr "Danes"
 #. odoo-javascript
 #: code:addons/voip/static/src/widgets/simple_datetime_field.js:0
 msgid "Today, %(time)s"
-msgstr ""
+msgstr "Danes, %(time)s"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/web/voip_systray_item.js:0
 msgid "Toggle Softphone"
-msgstr ""
+msgstr "Preklopi mehki telefon"
 
 #. module: voip
 #. odoo-javascript
@@ -1638,7 +1709,7 @@ msgstr "Prenos"
 #: code:addons/voip/static/src/softphone/history.js:0
 #: code:addons/voip/static/src/widgets/call_status_badge_field.js:0
 msgid "Trying to call"
-msgstr ""
+msgstr "Poskus klicanja"
 
 #. module: voip
 #. odoo-javascript
@@ -1667,13 +1738,13 @@ msgstr "Url statične slike zastave"
 #. odoo-javascript
 #: code:addons/voip/static/src/mobile/call_method_selection_dialog.xml:0
 msgid "Use Odoo Phone"
-msgstr ""
+msgstr "Uporabi Odoo Phone"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/mobile/call_method_selection_dialog.xml:0
 msgid "Use phone's default app"
-msgstr ""
+msgstr "Uporabi privzeto aplikacijo telefona"
 
 #. module: voip
 #: model:ir.model,name:voip.model_res_users
@@ -1697,18 +1768,18 @@ msgstr "Uporabniško ime"
 #. module: voip
 #: model:ir.model,name:voip.model_voip_queue_mixin
 msgid "VOIP Queue support"
-msgstr ""
+msgstr "Podpora za čakalne vrste VOIP"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_res_users_settings_view_form
 msgid "View call history"
-msgstr ""
+msgstr "Ogled zgodovine klicev"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/call_invitation.xml:0
 msgid "View caller information"
-msgstr ""
+msgstr "Ogled informacij o klicatelju"
 
 #. module: voip
 #. odoo-javascript
@@ -1716,14 +1787,14 @@ msgstr ""
 #: code:addons/voip/static/src/softphone/call_summary.xml:0
 #: code:addons/voip/static/src/softphone/keypad.xml:0
 msgid "View contact information"
-msgstr ""
+msgstr "Ogled kontaktnih podatkov"
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/history.xml:0
 #: code:addons/voip/static/src/softphone/in_call_view.xml:0
 msgid "View customer details"
-msgstr ""
+msgstr "Ogled podrobnosti stranke"
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_provider_tree_view
@@ -1740,7 +1811,7 @@ msgstr "Voip"
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_res_users_settings_view_form
 msgid "VoIP Configuration"
-msgstr ""
+msgstr "Konfiguracija VoIP"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_provider__mode
@@ -1751,44 +1822,44 @@ msgstr "VoIP okolje"
 #: model:ir.model,name:voip.model_voip_provider
 #: model:ir.model.fields,field_description:voip.field_res_users_settings__voip_provider_id
 msgid "VoIP Provider"
-msgstr ""
+msgstr "Ponudnik VoIP"
 
 #. module: voip
 #: model:ir.actions.act_window,name:voip.action_voip_provider_view
 #: model:ir.ui.menu,name:voip.voip_provider_view_menu
 #: model_terms:ir.ui.view,arch_db:voip.voip_provider_tree_view
 msgid "VoIP Providers"
-msgstr ""
+msgstr "Ponudniki VoIP"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users_settings__voip_secret
 msgid "VoIP secret"
-msgstr ""
+msgstr "Skrivnost VoIP"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users_settings__voip_username
 msgid "VoIP username / Extension number"
-msgstr ""
+msgstr "Uporabniško ime VoIP / interna številka"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users__voip_provider_id
 msgid "Voip Provider"
-msgstr ""
+msgstr "Ponudnik VoIP"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users__voip_secret
 msgid "Voip Secret"
-msgstr ""
+msgstr "Skrivnost VoIP"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users__voip_username
 msgid "Voip Username"
-msgstr ""
+msgstr "Uporabniško ime VoIP"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_provider__ws_server
 msgid "WebSocket"
-msgstr ""
+msgstr "WebSocket"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_call__website_message_ids
@@ -1804,7 +1875,7 @@ msgstr "Kronologija komunikacij spletne strani"
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/agenda.js:0
 msgid "Yes, I know what I'm doing"
-msgstr ""
+msgstr "Da, vem, kaj počnem"
 
 #. module: voip
 #. odoo-javascript
@@ -1817,7 +1888,7 @@ msgstr "Včeraj"
 #. odoo-javascript
 #: code:addons/voip/static/src/widgets/simple_datetime_field.js:0
 msgid "Yesterday, %(time)s"
-msgstr ""
+msgstr "Včeraj, %(time)s"
 
 #. module: voip
 #. odoo-javascript
@@ -1826,12 +1897,15 @@ msgid ""
 "Your browser does not support some of the features required for VoIP to "
 "work. Please try updating your browser or using a different one."
 msgstr ""
+"Vaš brskalnik ne podpira nekaterih funkcij, ki so potrebne za delovanje VoIP-"
+"a. Poskusite posodobiti brskalnik ali uporabiti drugega."
 
 #. module: voip
 #. odoo-javascript
 #: code:addons/voip/static/src/softphone/history.xml:0
 msgid "Your call history is empty! Make a call now and have it listed here 💡"
 msgstr ""
+"Vaša zgodovina klicev je prazna! Pokličite zdaj in klic bo prikazan tukaj 💡"
 
 #. module: voip
 #. odoo-javascript
@@ -1839,16 +1913,17 @@ msgstr ""
 msgid ""
 "Your login details are not set correctly. Please contact your administrator."
 msgstr ""
+"Vaši prijavni podatki niso pravilno nastavljeni. Obrnite se na skrbnika."
 
 #. module: voip
 #: model:res.groups,comment:voip.group_voip_officer
 msgid "can view and report on all calls."
-msgstr ""
+msgstr "lahko si ogleda in poroča o vseh klicih."
 
 #. module: voip
 #: model:res.groups,comment:voip.group_voip_admin
 msgid "can view, report, and manage call settings."
-msgstr ""
+msgstr "lahko pregleduje, poroča in upravlja nastavitve klicev."
 
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.voip_call_view_form

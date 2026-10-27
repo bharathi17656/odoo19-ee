@@ -1,7 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from urllib.parse import quote
 
 from odoo import _, api, fields, models, tools
 from odoo.exceptions import AccessError, ValidationError
+from odoo.tools import SQL
 
 
 class HrEmployee(models.Model):
@@ -21,37 +23,69 @@ class HrEmployee(models.Model):
     def _check_create_documents(self):
         return self.company_id.documents_hr_settings and super()._check_create_documents()
 
+    @api.depends_context('uid')
     def _compute_document_count(self):
         # FIX in 18.3, to remove when documents hr setting won't be optional anymore.
-        if not self.hr_employee_folder_id:
+        employees_without_document_settings = self.filtered(
+            lambda e: not e.company_id.documents_hr_settings
+        )
+        if employees_without_document_settings:
             # Search everywhere if no employee folder configured.
-            # Method not optimized for batches since it is only used in the form view.
-            for employee in self:
-                if employee.work_contact_id:
-                    employee.document_count = self.env['documents.document'].search_count([
-                        ('partner_id', '=', self.work_contact_id.id)
-                    ])
-                else:
-                    employee.document_count = 0
-            return
-        document_count_by_folder = dict(self.env['documents.document']._read_group([
-            ('id', 'child_of', self.hr_employee_folder_id.ids),
-            ('type', '!=', 'folder')
-        ], groupby=['folder_id'], aggregates=['__count']))
+            document_count_by_partner = dict(self.env['documents.document']._read_group(
+                [('partner_id', 'in', employees_without_document_settings.work_contact_id.ids)],
+                groupby=['partner_id'], aggregates=['__count'],
+            ))
+            for employee in employees_without_document_settings:
+                employee.document_count = document_count_by_partner.get(employee.work_contact_id, 0)
 
-        document_count_by_employee_folder = {
-            folder: sum(
-                count for doc_folder, count in document_count_by_folder.items()
-                if doc_folder.parent_path.startswith(folder.parent_path)
-            ) for folder in self.hr_employee_folder_id
-        }
-        for employee in self:
-            employee.document_count = document_count_by_employee_folder.get(employee.hr_employee_folder_id, 0)
+        employees_with_document_settings = self - employees_without_document_settings
+        employees_with_document_settings.document_count = 0
+        # documents are only linked to stored employees
+        employees_with_document_settings = employees_with_document_settings.filtered('id')
+        if not employees_with_document_settings:
+            return
+
+        folders_query = self.env['documents.document']._search([('type', '=', 'folder')])
+        documents_query = self.env['documents.document']._search([('type', '!=', 'folder')])
+        self.flush_recordset(['hr_employee_folder_id'])
+        self.env['documents.document'].flush_model()
+        self.env['documents.access'].flush_model()
+        query = SQL(
+            """
+            WITH RECURSIVE accessible_folder AS (%(folders)s),
+            -- The folder of each employee and, recursively, its subfolders, interrupting for
+            -- access rights (unless sudo): an inaccessible folder hides its content.
+            employee_folder (employee_id, folder_id) AS (
+                SELECT employee.id, root.id
+                  FROM hr_employee AS employee
+                  JOIN accessible_folder AS root
+                    ON root.id = employee.hr_employee_folder_id
+                 WHERE employee.id = ANY(%(employee_ids)s)
+                 UNION ALL
+                SELECT ef.employee_id, subfolder.id
+                  FROM employee_folder AS ef
+                  JOIN accessible_folder AS subfolder
+                    ON subfolder.folder_id = ef.folder_id
+            )
+            SELECT employee_folder.employee_id, COUNT(*)
+              FROM (%(documents)s) AS document
+              JOIN employee_folder
+                ON employee_folder.folder_id = document.folder_id
+          GROUP BY employee_folder.employee_id
+            """,
+            employee_ids=employees_with_document_settings.ids,
+            folders=folders_query.select(*(SQL.identifier(folders_query.table, f) for f in ('id', 'folder_id'))),
+            documents=documents_query.select(SQL.identifier(documents_query.table, 'folder_id')),
+        )
+        counts = dict(self.env.execute_query(query))
+        for employee in employees_with_document_settings:
+            employee.document_count = counts.get(employee.id, 0)
 
     @api.model_create_multi
     def create(self, vals_list):
         employees = super().create(vals_list)
-        employees._generate_employee_documents_folders()
+        if not self.env.context.get('salary_simulation', False):
+            employees._generate_employee_documents_folders()
         return employees
 
     def write(self, vals):
@@ -76,6 +110,7 @@ class HrEmployee(models.Model):
                 'default_res_id': self.id,
                 'default_res_model': 'hr.employee',
             }
+            action['domain'] = [('partner_id', '=', self.work_contact_id.id)]
             return action
         if not self.hr_employee_folder_id:
             raise ValidationError(_('You must configure the HR Employee folder in document settings to use Document\'s features.'))
@@ -83,7 +118,10 @@ class HrEmployee(models.Model):
             raise AccessError(_('You cannot access the employee\'s folder.'))
         return {
             'type': 'ir.actions.act_url',
-            'url': self.hr_employee_folder_id.sudo().access_url,
+            'target': 'self',
+            # do not use the document's access_url, as it uses the web.base.url and could redirect on a domain you are not connected
+            # on if web.base.url points to a different domain than the one you are connected on (and web.base.url.freeze is set)
+            'url': f"/odoo/documents/{quote(self.hr_employee_folder_id.sudo().access_token, safe='')}",
         }
 
     def _generate_employee_documents_folders(self, skip_subfolders=False):

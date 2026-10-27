@@ -205,16 +205,12 @@ export function clickPartnerButton() {
         },
         {
             content: "partner screen is shown",
-            trigger: `${PartnerList.clickPartner().trigger}`,
+            trigger: PartnerList.partnerListTrigger(),
         },
     ];
 }
 export function clickCustomer(name) {
-    return [
-        ...PartnerList.searchCustomerValue(name),
-        PartnerList.clickPartner(name),
-        { ...back(), isActive: ["mobile"] },
-    ];
+    return [...PartnerList.clickPartner(name), { ...back(), isActive: ["mobile"] }];
 }
 export function selectPreset(selectedPreset, presetToSelect) {
     return [
@@ -520,24 +516,17 @@ export function serialCheckStep(number) {
     ];
 }
 
-export function enterExistingLotNumber(number, tracking = "serial") {
-    const steps = [];
-    steps.push(
+export function enterExistingLotNumber(number) {
+    return [
         {
             content: "enter lot number",
             trigger: ".o-autocomplete input",
             run: "edit " + number,
         },
-        {
-            trigger: ".o-autocomplete input",
-            run: "press Enter",
-        }
-    );
-    if (tracking === "serial") {
-        steps.push(...serialCheckStep(number));
-    }
-    steps.push(Dialog.confirm());
-    return steps;
+        // Apply the typed lot directly: pressing Enter only selects it while the
+        // autocomplete dropdown is open, and any page scroll closes it.
+        Dialog.confirm(),
+    ];
 }
 
 export function enterLotNumbers(numbers) {
@@ -871,7 +860,7 @@ export function checkTotalAmount(amount) {
 export function selectCategoryAndAddProduct(categoryName, productName) {
     return [
         {
-            trigger: `.category-button > span:contains(${categoryName})`,
+            trigger: `.category-button > div span:contains(${categoryName})`,
             run: "click",
         },
         ...addOrderline(productName, "1"),
@@ -881,7 +870,7 @@ export function selectCategoryAndAddProduct(categoryName, productName) {
 export function verifyCategorySequence(categories) {
     return categories.map((category, index) => ({
         content: `Verify '${category}' category has sequence number ${index + 1}`,
-        trigger: `.category-button > span:contains("${category}")`,
+        trigger: `.category-button > div span:contains("${category}")`,
     }));
 }
 
@@ -940,6 +929,13 @@ function productInputSteps(name, barcode, list_price) {
             run: `edit ${list_price}`,
         },
     ];
+}
+
+export function ensureTaxesInputIsReadonly() {
+    return {
+        content: "Taxes field should be readonly.",
+        trigger: 'div[name="taxes_id"].o_readonly_modifier',
+    };
 }
 
 export function createProductFromFrontend(name, barcode, list_price, category) {
@@ -1040,6 +1036,17 @@ export function openCartMobile() {
             trigger: ".switchpane .btn-switchpane:contains('Cart')",
             run: "click",
             isActive: ["mobile"],
+        },
+    ];
+}
+
+export function saveOrder() {
+    return [
+        clickReview(),
+        {
+            content: "save order",
+            trigger: ".pads .fa-upload",
+            run: "click",
         },
     ];
 }

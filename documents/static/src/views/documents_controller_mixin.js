@@ -3,6 +3,7 @@ import { DETAIL_PANEL_REQUIRED_FIELDS } from "@documents/views/hooks";
 import { makeActiveField } from "@web/model/relational_model/utils";
 import { useSearchBarToggler } from "@web/search/search_bar/search_bar_toggler";
 import { _t } from "@web/core/l10n/translation";
+import { useService } from "@web/core/utils/hooks";
 import { omit } from "@web/core/utils/objects";
 import { useSubEnv } from "@odoo/owl";
 
@@ -14,6 +15,46 @@ export const DocumentsControllerMixin = (component) =>
             useSubEnv({
                 searchBarToggler: this.searchBarToggler,
             });
+
+            this.documentService = useService("document.document");
+            this.ui = useService("ui");
+            this.firstLoadSelectId = this.documentService.initData?.documentId;
+        }
+
+        /**
+         * Open document preview when the view is loaded for a specific document such as in:
+         *  * Direct access to the app via a document URL / _get_access_action
+         *  * In-app redirection from shortcut
+         */
+        openInitialPreview() {
+            if (!this.firstLoadSelectId) {
+                return;
+            }
+            const initData = this.documentService.initData;
+            const doc = this.model.root.records.find(
+                (record) => record.data.id === this.firstLoadSelectId
+            );
+            if (doc) {
+                this.firstLoadSelectId = false;
+                doc.selected = true;
+                if (initData.openPreview) {
+                    initData.openPreview = false;
+                    doc.onClickPreview(new Event("click"));
+                }
+            }
+        }
+
+        openTrashIfNecessary() {
+            if (this.documentService.archivedDocumentRestored) {
+                if (this.env.searchModel.getSelectedFolderId() !== "TRASH") {
+                    const section = this.env.searchModel.getSections()[0];
+                    this.env.searchModel.toggleCategoryValue(section.id, "TRASH");
+                }
+                this.documentService.updateDocumentURL(undefined, [
+                    { data: this.documentService.archivedDocumentRestored },
+                ]);
+                this.documentService.archivedDocumentRestored = undefined;
+            }
         }
 
         get modelParams() {
@@ -172,7 +213,10 @@ export const DocumentsControllerMixin = (component) =>
                 },
                 details: {
                     isAvailable: () =>
-                        userIsInternal && !this.env.searchModel.context.documents_view_secondary,
+                        userIsInternal &&
+                        !this.env.searchModel.context.documents_view_secondary &&
+                        (!this.env.isSmall ||
+                            !this.documentService.rightPanelReactive.previewedDocument),
                     sequence: 75,
                     description: _t("Info & tags"),
                     icon: "fa fa-info-circle",

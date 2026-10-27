@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 19:58+0000\n"
-"PO-Revision-Date: 2025-11-13 19:58+0000\n"
+"POT-Creation-Date: 2026-09-11 18:07+0000\n"
+"PO-Revision-Date: 2026-09-11 18:07+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -42,15 +42,8 @@ msgstr ""
 
 #. module: l10n_de_pos_cert
 #. odoo-javascript
-#: code:addons/l10n_de_pos_cert/static/src/app/screens/payment_screen/payment_screen.js:0
-msgid ""
-"An unknown error has occurred! Please contact Odoo for more information."
-msgstr ""
-
-#. module: l10n_de_pos_cert
-#. odoo-javascript
-#: code:addons/l10n_de_pos_cert/static/src/app/utils/order_payment_validation.js:0
-msgid "An unknown error has occurred! Please, contact Odoo."
+#: code:addons/l10n_de_pos_cert/static/src/app/services/pos_store.js:0
+msgid "An error occurred while deleting the order."
 msgstr ""
 
 #. module: l10n_de_pos_cert
@@ -59,6 +52,12 @@ msgstr ""
 msgid ""
 "An unknown error has occurred! Try to validate this order or cancel it "
 "again. Please contact Odoo for more information."
+msgstr ""
+
+#. module: l10n_de_pos_cert
+#. odoo-javascript
+#: code:addons/l10n_de_pos_cert/static/src/app/services/pos_store.js:0
+msgid "Auth request failed"
 msgstr ""
 
 #. module: l10n_de_pos_cert
@@ -75,12 +74,6 @@ msgstr ""
 #. module: l10n_de_pos_cert
 #: model:ir.model.fields.selection,name:l10n_de_pos_cert.selection__l10n_de_pos_dsfinvk_export__state__cancelled
 msgid "Cancelled"
-msgstr ""
-
-#. module: l10n_de_pos_cert
-#. odoo-javascript
-#: code:addons/l10n_de_pos_cert/static/src/app/screens/payment_screen/payment_screen.js:0
-msgid "Cannot sync the orders with Fiskaly!"
 msgstr ""
 
 #. module: l10n_de_pos_cert
@@ -118,8 +111,8 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/l10n_de_pos_cert/static/src/app/services/pos_store.js:0
 msgid ""
-"Check the internet connection then try to validate or cancel the order. Do "
-"not delete your browsing, cookies and cache data in the meantime!"
+"Check the internet connection then try to validate(sync) or cancel the "
+"order. Do not delete your browsing, cookies and cache data in the meantime!"
 msgstr ""
 
 #. module: l10n_de_pos_cert
@@ -247,6 +240,8 @@ msgid "End Datetime"
 msgstr ""
 
 #. module: l10n_de_pos_cert
+#. odoo-javascript
+#: code:addons/l10n_de_pos_cert/static/src/app/services/pos_store.js:0
 #: model:ir.model.fields.selection,name:l10n_de_pos_cert.selection__l10n_de_pos_dsfinvk_export__state__error
 msgid "Error"
 msgstr ""
@@ -345,8 +340,8 @@ msgstr ""
 
 #. module: l10n_de_pos_cert
 #. odoo-javascript
-#: code:addons/l10n_de_pos_cert/static/src/app/screens/partner_list.js:0
-msgid "Invalid/Missing field(s) data"
+#: code:addons/l10n_de_pos_cert/static/src/app/services/pos_store.js:0
+msgid "Invalid or missing customer information"
 msgstr ""
 
 #. module: l10n_de_pos_cert
@@ -409,16 +404,6 @@ msgstr ""
 #. module: l10n_de_pos_cert
 #: model:ir.model.fields.selection,name:l10n_de_pos_cert.selection__l10n_de_pos_dsfinvk_export__state__pending
 msgid "Pending"
-msgstr ""
-
-#. module: l10n_de_pos_cert
-#. odoo-javascript
-#: code:addons/l10n_de_pos_cert/static/src/app/screens/partner_list.js:0
-msgid ""
-"Please make sure the selected customer has the following required details filled in before proceeding:\n"
-"- Street Address\n"
-"- Zip Code\n"
-"You can update these in the customer’s profile."
 msgstr ""
 
 #. module: l10n_de_pos_cert
@@ -535,6 +520,12 @@ msgid "TSS ID"
 msgstr ""
 
 #. module: l10n_de_pos_cert
+#. odoo-javascript
+#: code:addons/l10n_de_pos_cert/static/src/app/components/order_receipt/order_receipt.xml:0
+msgid "TSS not reachable."
+msgstr ""
+
+#. module: l10n_de_pos_cert
 #: model_terms:ir.ui.view,arch_db:l10n_de_pos_cert.view_pos_config_kanban
 msgid "Test"
 msgstr ""
@@ -578,6 +569,14 @@ msgstr ""
 msgid ""
 "The combination of your Fiskaly API key and secret is incorrect. Please "
 "update them in your company settings"
+msgstr ""
+
+#. module: l10n_de_pos_cert
+#. odoo-javascript
+#: code:addons/l10n_de_pos_cert/static/src/app/services/pos_store.js:0
+msgid ""
+"The customer of the selected sale order must have a street and ZIP code.\n"
+"Update the customer's details to continue."
 msgstr ""
 
 #. module: l10n_de_pos_cert
@@ -660,12 +659,6 @@ msgid ""
 msgstr ""
 
 #. module: l10n_de_pos_cert
-#. odoo-javascript
-#: code:addons/l10n_de_pos_cert/static/src/app/components/order_receipt/order_receipt.xml:0
-msgid "This receipt is invalid because of TSS issue."
-msgstr ""
-
-#. module: l10n_de_pos_cert
 #: model:ir.model.fields,help:l10n_de_pos_cert.field_res_company__l10n_de_vat_export_data
 msgid ""
 "This stores VAT definition export IDs for the company's taxes from Fiskaly"
@@ -703,6 +696,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/l10n_de_pos_cert/static/src/app/services/pos_store.js:0
 msgid "Unknown error"
+msgstr ""
+
+#. module: l10n_de_pos_cert
+#. odoo-javascript
+#: code:addons/l10n_de_pos_cert/static/src/app/services/pos_store.js:0
+msgid "VAT definitions request failed"
 msgstr ""
 
 #. module: l10n_de_pos_cert

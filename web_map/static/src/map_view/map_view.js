@@ -18,7 +18,7 @@ export const mapView = {
     props: (genericProps, view, config) => {
         let modelParams = genericProps.state;
         if (!modelParams) {
-            const { arch, resModel, fields, context } = genericProps;
+            const { arch, resModel, fields, context, limit } = genericProps;
             const parser = new view.ArchParser();
             const archInfo = parser.parse(arch);
             const views = config.views || [];
@@ -33,7 +33,7 @@ export const mapView = {
                 hideAddress: archInfo.hideAddress || false,
                 hideName: archInfo.hideName || false,
                 hideTitle: archInfo.hideTitle || false,
-                limit: archInfo.limit || 80,
+                limit: archInfo.limit || limit || 80,
                 numbering: archInfo.routing || false,
                 offset: 0,
                 panelTitle: archInfo.panelTitle || config.getDisplayName() || _t("Items"),

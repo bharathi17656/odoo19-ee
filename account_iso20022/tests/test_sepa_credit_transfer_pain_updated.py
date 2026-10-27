@@ -33,8 +33,8 @@ class TestSEPACreditTransferUpdateCommon(AccountTestInvoicingCommon):
             'country_id': cls.env.ref('base.be'),
             'iso20022_lei': '05874837010477472802',
             'street': 'Test street',
-            'zip': '12345',
-            'city': 'testcity',
+            'zip': '12345678901234567',
+            'city': 'testcity that is way longer than thirty-five characters',
         })
         cls.env['res.partner.bank'].create({
             'acc_type': 'iban',
@@ -83,15 +83,16 @@ class TestSEPACreditTransferUpdate(TestSEPACreditTransferUpdateCommon):
         self.assertTrue(self.payment.is_sent)
         sct_doc = etree.fromstring(b64decode(self.batch.export_file))
 
-        uetr = self.payment.iso20022_uetr
         namespaces = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.09'}
         execution_date = sct_doc.findtext('.//ns:PmtInf/ns:ReqdExctnDt/ns:Dt', namespaces=namespaces)
-        uetr_text = sct_doc.findtext('.//ns:CdtTrfTxInf/ns:PmtId/ns:UETR', namespaces=namespaces)
+        initg_pty_bic = sct_doc.findtext('.//ns:InitgPty/ns:Id/ns:OrgId/ns:AnyBIC', namespaces=namespaces)
+        initg_pty_lei = sct_doc.findtext('.//ns:InitgPty/ns:Id/ns:OrgId/ns:LEI', namespaces=namespaces)
         cdtr_lei = sct_doc.findtext('.//ns:CdtTrfTxInf/ns:CdtrAgt/ns:FinInstnId/ns:LEI', namespaces=namespaces)
         dbtr_lei = sct_doc.findtext('.//ns:PmtInf/ns:Dbtr/ns:Id/ns:OrgId/ns:LEI', namespaces=namespaces)
 
         self.assertEqual(execution_date, self.batch.date.strftime('%Y-%m-%d'))
-        self.assertEqual(uetr_text, uetr)
+        self.assertEqual(initg_pty_bic, self.bank_ing.bic)
+        self.assertEqual(initg_pty_lei, self.company_data['company'].iso20022_lei)
         self.assertEqual(cdtr_lei, self.partner_a.iso20022_lei)
         self.assertEqual(dbtr_lei, self.company_data['company'].iso20022_lei)
 
@@ -103,8 +104,8 @@ class TestSEPACreditTransferUpdate(TestSEPACreditTransferUpdateCommon):
         end_to_end_id = sct_doc.find('.//ns:CdtTrfTxInf/ns:PmtId/ns:EndToEndId', namespaces=namespaces)
 
         self.assertEqual(street, self.partner_a.street)
-        self.assertEqual(postal_code, self.partner_a.zip)
-        self.assertEqual(city, self.partner_a.city)
+        self.assertEqual(postal_code, self.partner_a.zip[:16])
+        self.assertEqual(city, self.partner_a.city[:35])
         self.assertFalse(adr_line)
         self.assertEqual(end_to_end_id.text, self.payment.end_to_end_uuid)
 

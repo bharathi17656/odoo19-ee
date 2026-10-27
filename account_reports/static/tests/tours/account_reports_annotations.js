@@ -21,9 +21,17 @@ registry.category("web_tour.tours").add("account_reports_annotations", {
             run: "click",
         },
         {
+            content: "First line is unfolded",
+            trigger: "tr:nth-child(5) .name:contains('101401')",
+        },
+        {
             content: "Unfold second line",
             trigger: "tr:nth-child(7) td:first()",
             run: "click",
+        },
+        {
+            content: "Second line is unfolded",
+            trigger: "tr:nth-child(8) .name:contains('121000')",
         },
         {
             content: "Unfold third line",
@@ -31,11 +39,15 @@ registry.category("web_tour.tours").add("account_reports_annotations", {
             run: "click",
         },
         {
-            content: "Extra Trigger step",
+            content: "Third line is unfolded",
+            trigger: "tr:nth-child(12) .name:contains('101404')",
+        },
+        {
+            content: "First annotated line is loaded",
             trigger: "tr:nth-child(5) .o_account_report_chatter_annoted",
         },
         {
-            content: "Extra Trigger step",
+            content: "Second annotated line is loaded",
             trigger: "tr:nth-child(12) .o_account_report_chatter_annoted",
         },
         {

@@ -144,7 +144,7 @@ export default class BarcodePickingBatchModel extends BarcodePickingModel {
             );
             await this.refreshCache(data.records);
             this.selectedPickings = [];
-            this.config = { ...this.config, ...(data.config || {}) }; // Get the picking type's scan restrictions configuration.
+            this.setConfig(data.config); // Get the picking type's scan restrictions configuration.
             this.trigger("update");
         }
     }
@@ -191,14 +191,18 @@ export default class BarcodePickingBatchModel extends BarcodePickingModel {
         this._groupedLines = this._groupLines(
             [...this.pageLines],
             "batchParentLine",
-            super.groupKey,
+            super.groupKey.bind(this),
             false
         );
         return this._groupedLines;
     }
 
     groupKey(line) {
-        return `${line.picking_id.id}_` + super.groupKey(...arguments);
+        return `${line.picking_id.id}_${line.product_id.id}_${line.location_id.id}_${line.location_dest_id.id}`;
+    }
+
+    mustGroupSameProductLines() {
+        return this.config.group_lines_by_product;
     }
 
     get needPickings() {
@@ -314,8 +318,9 @@ export default class BarcodePickingBatchModel extends BarcodePickingModel {
     }
 
     _defaultDestLocation() {
+        const picking = this.selectedLine?.picking_id || this.picking;
         return (
-            this.picking && this.cache.getRecord("stock.location", this.picking.location_dest_id)
+            picking && this.cache.getRecord("stock.location", picking.location_dest_id)
         );
     }
 
@@ -330,12 +335,15 @@ export default class BarcodePickingBatchModel extends BarcodePickingModel {
             const parentLine = this._getParentLine(this.selectedLine);
             if (parentLine && this._lineIsNotComplete(parentLine)) {
                 let foundLine = false;
+                const hasLotLessLine = parentLine.lines.some(
+                    (line) => !line.lot_id && !line.lot_name
+                );
                 for (const line of parentLine.lines) {
                     const lineLotName = line.lot_name || (line.lot_id && line.lot_id.name) || false;
                     const sameLotName = Boolean(lineLotName && dataLotName === lineLotName);
                     if (
-                        dataLotName &&
-                        (sameLotName || this._canOverrideTrackingNumber(line, dataLotName))
+                        this._canOverrideTrackingNumber(line, dataLotName) &&
+                        (!sameLotName || this._lineIsNotComplete(line) || !hasLotLessLine)
                     ) {
                         foundLine = line;
                         if (sameLotName) {
@@ -365,7 +373,8 @@ export default class BarcodePickingBatchModel extends BarcodePickingModel {
             }
         }
         // Get the line's picking as the default one, or take the batch's first one.
-        const defaultPicking = line?.picking_id || this.picking;
+        const defaultPicking =
+            (fieldsParams && fieldsParams.picking_id) || (line && line.picking_id) || this.picking;
         if (!this.config.group_lines_by_product) {
             // Don't add the color if lines are grouped by product.
             defaultValues.colorLine = this.colorByPickingId.get(defaultPicking.id);

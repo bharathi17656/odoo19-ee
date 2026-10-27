@@ -1,6 +1,7 @@
 import { BuilderAction } from "@html_builder/core/builder_action";
 import { ClassAction } from "@html_builder/core/core_builder_action_plugin";
 import { Plugin } from "@html_editor/plugin";
+import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { renderToElement } from "@web/core/utils/render";
 
@@ -9,7 +10,7 @@ import { renderToElement } from "@web/core/utils/render";
  * @property { CardImageOptionPlugin['adaptRatio'] } adaptRatio
  */
 
-const ratiosOnlySupportedForTopImage = [
+const ratiosOnlySupportedForTopBottomImage = [
     "ratio ratio-4x3",
     "ratio ratio-16x9",
     "ratio ratio-21x9",
@@ -17,15 +18,18 @@ const ratiosOnlySupportedForTopImage = [
 ];
 const imageRelatedClasses = [
     "o_card_img_top",
+    "o_card_img_bottom",
     "o_card_img_horizontal",
     "flex-lg-row",
     "flex-lg-row-reverse",
+    "flex-column-reverse",
 ];
 const imageRelatedStyles = [
     "--card-img-aspect-ratio",
     "--card-img-size-h",
     "--card-img-ratio-align",
 ];
+const cardImageSelector = ".o_card_img_wrapper > .o_card_img";
 
 class CardImageOptionPlugin extends Plugin {
     static id = "cardImageOption";
@@ -33,6 +37,12 @@ class CardImageOptionPlugin extends Plugin {
     static shared = ["adaptRatio"];
     /** @type {import("plugins").WebsiteResources} */
     resources = {
+        clone_disabled_reason_providers: ({ el, reasons }) => {
+            if (el.matches(cardImageSelector)) {
+                reasons.push(_t("You cannot duplicate this image."));
+            }
+        },
+        unremovable_node_predicates: (node) => node.matches?.(cardImageSelector),
         builder_actions: {
             SetCoverImagePositionAction,
             RemoveCoverImageAction,
@@ -50,8 +60,8 @@ class CardImageOptionPlugin extends Plugin {
      * positioned horizontally.
      */
     adaptRatio(editingElement, imagePositionClass) {
-        if (imagePositionClass === "card-img-top") {
-            // All ratios are supported for top image
+        if (["card-img-top", "card-img-bottom"].includes(imagePositionClass)) {
+            // All ratios are supported for top/bottom image
             return;
         }
         const imageWrapper = editingElement.querySelector(".o_card_img_wrapper");
@@ -59,7 +69,7 @@ class CardImageOptionPlugin extends Plugin {
             editingElement: imageWrapper,
             params: { mainParam },
         });
-        for (const ratioClasses of ratiosOnlySupportedForTopImage) {
+        for (const ratioClasses of ratiosOnlySupportedForTopBottomImage) {
             if (this.classAction.isApplied(asMainParam(ratioClasses))) {
                 this.classAction.clean(asMainParam(ratioClasses));
                 // Only square ratio is supported for horizontal image

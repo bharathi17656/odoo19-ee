@@ -8,15 +8,16 @@
 # Jolien De Paepe, 2023
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
 # Louis Travaux <lotr@odoo.com>, 2025.
-# "Manon Rondou (ronm)" <ronm@odoo.com>, 2025.
+# "Manon Rondou (ronm)" <ronm@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Odoo Translation Bot <c3p@odoo.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-21 18:40+0000\n"
-"PO-Revision-Date: 2025-11-08 19:34+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-02-27 18:44+0000\n"
+"PO-Revision-Date: 2026-01-15 10:16+0000\n"
+"Last-Translator: \"Manon Rondou (ronm)\" <ronm@odoo.com>\n"
 "Language-Team: French <https://translate.odoo.com/projects/odoo-19/iot/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -24,13 +25,13 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : ((n != 0 && n % "
 "1000000 == 0) ? 1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: iot
 #. odoo-javascript
 #: code:addons/iot/static/src/view_widgets/iot_restart_odoo.js:0
 msgid "%s is currently restarting"
-msgstr ""
+msgstr "%s est en train de redémarrer"
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_no_iot_box_found
@@ -56,7 +57,7 @@ msgstr "Un module de données fiscales est connecté à cette IoT Box"
 #. module: iot
 #: model:ir.model,name:iot.model_add_iot_box
 msgid "Add IoT Box wizard"
-msgstr "Assistant de connexion d'IoT Box"
+msgstr "Assistant d'ajout IoT Box"
 
 #. module: iot
 #: model:ir.model.fields,field_description:iot.field_iot_discovered_box__add_iot_box_wizard_id
@@ -72,7 +73,7 @@ msgstr "Administrateur"
 #. odoo-javascript
 #: code:addons/iot/static/src/view_widgets/test_iot_box.js:0
 msgid "All communication protocols are working properly."
-msgstr ""
+msgstr "Tous les protocoles de communication fonctionnent correctement."
 
 #. module: iot
 #: model:ir.model,name:iot.model_iot_discovered_box
@@ -83,7 +84,7 @@ msgstr "Une IoT Box qui est en mode appairage"
 #. odoo-javascript
 #: code:addons/iot/static/src/view_widgets/iot_restart_odoo.js:0
 msgid "Are you sure you want to restart Odoo on the IoT Box?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir redémarrer Odoo sur l’IoT Box ?"
 
 #. module: iot
 #: model:ir.model.fields,field_description:iot.field_iot_box__drivers_auto_update
@@ -104,7 +105,7 @@ msgstr "Lecteur de codes-barres"
 #. odoo-javascript
 #: code:addons/iot/static/src/view_widgets/iot_remote_debug.xml:0
 msgid "Be careful:"
-msgstr ""
+msgstr "Attention :"
 
 #. module: iot
 #. odoo-javascript
@@ -114,6 +115,9 @@ msgid ""
 "disconnected. Please check its cable connection and its power supply. "
 "Restart if necessary."
 msgstr ""
+"La Blackbox n’a pas répondu à votre requête. Cela signifie généralement "
+"qu’elle est déconnectée. Veuillez vérifier ses branchements et son "
+"alimentation. Redémarrez-la si nécessaire."
 
 #. module: iot
 #. odoo-javascript
@@ -122,12 +126,14 @@ msgid ""
 "Blackbox driver update required. Please restart your IoT Box to update the "
 "blackbox driver."
 msgstr ""
+"Une mise à jour du pilote de la boîte noire est requise. Veuillez redémarrer "
+"votre IoT Box pour mettre à jour le pilote."
 
 #. module: iot
 #. odoo-javascript
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "Blackbox is running and operational"
-msgstr ""
+msgstr "La boîte noire est allumée et opérationnelle"
 
 #. module: iot
 #. odoo-javascript
@@ -136,6 +142,8 @@ msgid ""
 "Blackbox responded with invalid response. Please check the cable connection "
 "and the power supply, then retry. Restart if necessary"
 msgstr ""
+"La boîte noire a renvoyé une réponse invalide. Veuillez vérifier les "
+"branchements et l’alimentation, puis réessayer. Redémarrez-la si nécessaire"
 
 #. module: iot
 #: model:ir.model.fields.selection,name:iot.selection__iot_device__connection__bluetooth
@@ -146,12 +154,6 @@ msgstr "Bluetooth"
 #: model:ir.model.fields.selection,name:iot.selection__iot_device__type__camera
 msgid "Camera"
 msgstr "Caméra"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/backend/iot_device_form.js:0
-msgid "Check if the device is still connected"
-msgstr "Vérifiez si le périphérique est toujours connecté"
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_no_iot_box_found
@@ -167,7 +169,7 @@ msgstr "Cliquez sur"
 #. odoo-javascript
 #: code:addons/iot/static/src/view_widgets/test_iot_box.js:0
 msgid "Communication protocol '%s' is not working properly."
-msgstr ""
+msgstr "Le protocole de communication '%s' ne fonctionne pas correctement."
 
 #. module: iot
 #: model:ir.model.fields,field_description:iot.field_iot_box__company_id
@@ -211,12 +213,6 @@ msgid "Connection"
 msgstr "Connexion"
 
 #. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/backend/iot_device_form.js:0
-msgid "Connection to device failed"
-msgstr "Échec de la connexion au périphérique"
-
-#. module: iot
 #: model:ir.model.fields,field_description:iot.field_add_iot_box__create_uid
 #: model:ir.model.fields,field_description:iot.field_iot_box__create_uid
 #: model:ir.model.fields,field_description:iot.field_iot_device__create_uid
@@ -251,7 +247,7 @@ msgstr "Nombre de périphériques"
 #. odoo-javascript
 #: code:addons/iot/static/src/backend/iot_device_form.js:0
 msgid "Device is disconnected"
-msgstr ""
+msgstr "L'appareil est déconnecté"
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.iot_device_view_kanban
@@ -343,6 +339,8 @@ msgstr "Adresse du domaine"
 msgid ""
 "Failed to check IoT Box network, check that it's connected to the Internet."
 msgstr ""
+"Échec de la vérification du réseau de l’IoT Box. Vérifiez qu’elle est "
+"connectée à Internet."
 
 #. module: iot
 #. odoo-javascript
@@ -372,7 +370,25 @@ msgstr "Échec de la réinitialisation du mot de passe de %s."
 #. odoo-javascript
 #: code:addons/iot/static/src/view_widgets/iot_restart_odoo.js:0
 msgid "Failed to send the restart command to the IoT Box ('%s')"
-msgstr ""
+msgstr "Échec de l’envoi de la commande de redémarrage à l’IoT Box ('%s')"
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "Failed to toggle remote debug."
+msgstr "Impossible d’activer ou de désactiver le débogage à distance."
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/backend/iot_device_form.js:0
+msgid "Failed to update keyboard layout on the device."
+msgstr "Impossible de mettre à jour la disposition du clavier sur l’appareil."
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/backend/iot_device_form.js:0
+msgid "Failed to update scanner mode on the device."
+msgstr "Impossible de mettre à jour le mode du scanner sur l’appareil."
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_pair_offline
@@ -405,7 +421,7 @@ msgstr "Module de contrôle fiscal"
 #. odoo-javascript
 #: code:addons/iot/static/src/backend/iot_device_form.js:0
 msgid "Fiscal Data Module is connected and operational"
-msgstr ""
+msgstr "Le module de données fiscales est connecté et opérationnel"
 
 #. module: iot
 #. odoo-javascript
@@ -507,13 +523,13 @@ msgstr "Internet est connecté"
 #. odoo-javascript
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "Invalid PIN."
-msgstr ""
+msgstr "PIN invalide."
 
 #. module: iot
 #. odoo-javascript
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "Invalid data in message sent to the blackbox."
-msgstr ""
+msgstr "Données invalides dans le message envoyé à la boîte noire."
 
 #. module: iot
 #: model:ir.ui.menu,name:iot.iot_menu_root
@@ -557,6 +573,8 @@ msgstr "IoT Box trouvée. Connexion en cours..."
 msgid ""
 "IoT Box local network is %(lan_quality)s and internet is %(wan_quality)s"
 msgstr ""
+"Le réseau local de l’IoT Box est %(lan_quality)s et Internet est %"
+"(wan_quality)s"
 
 #. module: iot
 #: model:ir.actions.act_window,name:iot.iot_box_action
@@ -701,6 +719,8 @@ msgstr "Aucune IoT Box trouvée !"
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "No Vat Signing Card or Vat Signing Card broken."
 msgstr ""
+"Aucune carte de signature TVA détectée, ou carte de signature TVA "
+"défectueuse."
 
 #. module: iot
 #. odoo-javascript
@@ -749,7 +769,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "Operation wasn't saved on the blackbox"
-msgstr ""
+msgstr "L’opération n’a pas été enregistrée sur la blackbox"
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_no_iot_box_found
@@ -759,14 +779,8 @@ msgstr "Optionnel : Branchez un écran"
 #. module: iot
 #. odoo-javascript
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
-msgid "Out of paper"
-msgstr "Plus de papier"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "PIN accepted."
-msgstr ""
+msgstr "PIN accepté."
 
 #. module: iot
 #. odoo-python
@@ -787,12 +801,6 @@ msgid "Pairing code received from a printer or screen"
 msgstr "Code d’appairage reçu d’une imprimante ou d’un écran"
 
 #. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/network_utils/iot_http_service.js:0
-msgid "Paper is low"
-msgstr "Niveau de papier faible"
-
-#. module: iot
 #: model:ir.model.fields.selection,name:iot.selection__iot_device__type__payment
 msgid "Payment Terminal"
 msgstr "Terminal de paiement"
@@ -801,7 +809,7 @@ msgstr "Terminal de paiement"
 #. odoo-javascript
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "Please activate the Vat Signing Card with PIN."
-msgstr ""
+msgstr "Veuillez activer la carte de signature TVA avec le code PIN."
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_no_iot_box_found
@@ -827,12 +835,6 @@ msgstr "Imprimer"
 #: model:ir.model.fields.selection,name:iot.selection__iot_device__type__printer
 msgid "Printer"
 msgstr "Imprimante"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/network_utils/iot_http_service.js:0
-msgid "Printer is not ready"
-msgstr "L'imprimante n'est pas prête"
 
 #. module: iot
 #. odoo-javascript
@@ -865,7 +867,13 @@ msgstr "Imprimante de reçu"
 #. odoo-javascript
 #: code:addons/iot/static/src/view_widgets/iot_remote_debug.xml:0
 msgid "Remote Debug"
-msgstr ""
+msgstr "Débogage à distance"
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "Remote debug is %s."
+msgstr "Le débogage à distance est %s."
 
 #. module: iot
 #. odoo-javascript
@@ -876,6 +884,10 @@ msgid ""
 "                and local network. If it's unintended, click on \"Disable\" "
 "below."
 msgstr ""
+"Le débogage à distance est activé ; le propriétaire du jeton que vous avez "
+"fourni dispose d’un accès à votre IoT Box\n"
+"                ainsi qu’à votre réseau local. Si ce n’est pas souhaité, "
+"cliquez sur \"Désactiver\" ci-dessous."
 
 #. module: iot
 #. odoo-javascript
@@ -960,7 +972,7 @@ msgstr "Sélectionnez l’IoT Box à connecter"
 #. odoo-python
 #: code:addons/iot/models/ir_actions_report.py:0
 msgid "Select Printers for %s"
-msgstr ""
+msgstr "Sélectionner les imprimantes pour %s"
 
 #. module: iot
 #. odoo-javascript
@@ -1067,6 +1079,8 @@ msgstr "Page de test imprimée"
 #: code:addons/iot/static/src/view_widgets/test_iot_box.js:0
 msgid "Testing communication with IoT Box and network quality, please wait..."
 msgstr ""
+"Test de la communication avec l’IoT Box et de la qualité du réseau en cours, "
+"veuillez patienter…"
 
 #. module: iot
 #: model:ir.model,name:iot.model_iot_channel
@@ -1080,6 +1094,8 @@ msgid ""
 "The report you are trying to print requires an IoT Box to be printed.\n"
 "Make sure you linked the report '%s' to the corresponding IoT printer device."
 msgstr ""
+"Le rapport que vous tentez d’imprimer nécessite une IoT Box.\n"
+"Assurez-vous d’avoir lié le rapport '%s' à l’imprimante IoT correspondante."
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_pair_offline
@@ -1146,13 +1162,13 @@ msgstr "Erreur inconnue de l’imprimante"
 #. odoo-javascript
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "Unspecified error."
-msgstr ""
+msgstr "Erreur non spécifiée."
 
 #. module: iot
 #. odoo-javascript
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "Unspecified warning."
-msgstr ""
+msgstr "Avertissement non spécifié."
 
 #. module: iot
 #: model:ir.model.fields.selection,name:iot.selection__iot_device__type__unsupported
@@ -1191,7 +1207,7 @@ msgstr ""
 #. module: iot
 #: model:ir.model.fields,field_description:iot.field_iot_box__version_commit_url
 msgid "Version Commit Url"
-msgstr ""
+msgstr "URL du commit de la version"
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.iot_box_view_form
@@ -1218,6 +1234,8 @@ msgstr "Laquelle souhaitez-vous connecter ?<br/><br/>"
 msgid ""
 "You can enable remote debug on your IoT Box by providing a Ngrok authtoken."
 msgstr ""
+"Vous pouvez activer le débogage à distance sur votre IoT Box en fournissant "
+"un authtoken Ngrok."
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.iot_box_view_form
@@ -1240,6 +1258,12 @@ msgid "device-icon"
 msgstr "device-icon"
 
 #. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "disabled"
+msgstr "désactivé"
+
+#. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_enter_pairing_code
 msgid "documentation"
 msgstr "documentation"
@@ -1248,6 +1272,12 @@ msgstr "documentation"
 #: model_terms:ir.ui.view,arch_db:iot.view_enter_pairing_code
 msgid "e.g. ABDE0123"
 msgstr "ex. ABDE0123"
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "enabled"
+msgstr "activé"
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_enter_pairing_code
@@ -1286,6 +1316,21 @@ msgstr "reset.linked.printers"
 #: model_terms:ir.actions.act_window,help:iot.iot_box_action
 msgid "to add an IoT Box."
 msgstr "pour ajouter une IoT Box."
+
+#~ msgid "Out of paper"
+#~ msgstr "Plus de papier"
+
+#~ msgid "Paper is low"
+#~ msgstr "Niveau de papier faible"
+
+#~ msgid "Printer is not ready"
+#~ msgstr "L'imprimante n'est pas prête"
+
+#~ msgid "Check if the device is still connected"
+#~ msgstr "Vérifiez si le périphérique est toujours connecté"
+
+#~ msgid "Connection to device failed"
+#~ msgstr "Échec de la connexion au périphérique"
 
 #~ msgid "Are you sure you want to restart Odoo on the IoT box?"
 #~ msgstr "Êtes-vous sûr de vouloir redémarrer Odoo sur l'IoT Box ?"

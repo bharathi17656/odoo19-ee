@@ -33,7 +33,7 @@ export class ResUsers extends mailModels.ResUsers {
     }
 
     reset_last_seen_phone_call() {
-        const domain = [("user_id", "=", [this.env.user.id])];
+        const domain = [["user_id", "=", this.env.user.id]];
         const last_call = this.env["voip.call"].search(
             domain,
             makeKwArgs({

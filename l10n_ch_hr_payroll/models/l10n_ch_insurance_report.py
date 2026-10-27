@@ -2,7 +2,6 @@
 
 from odoo import fields, models, _
 from ..api.swissdec_declarations import SwissdecDeclaration, SwissdecInstitution
-import re
 import base64
 import math
 
@@ -40,7 +39,7 @@ class L10nCHInsuranceReport(models.Model):
                                         "default_year": declaration.year,
                                         "default_income_to_split": avs_salary
                                     }),
-                                    'blocking': "all",
+                                    'level': "warning",
                                     "action_text": _("Split AVS Salary"),
                                 }
                                 i += 1
@@ -260,48 +259,7 @@ class L10nCHInsuranceReport(models.Model):
 
             tax_accounting_reports.update(report.get("tax_accounting_reports", {}))
 
-        pattern = re.compile(r"_pers_([A-Za-z0-9_]+)\.pdf$")
-
-        # Let's assume we have employees grouped by registration_number
-        employees_mapped_by_registration_number = dict(
-            self.env['hr.employee']._read_group(
-                domain=[],
-                groupby=['registration_number'],
-                aggregates=['id:recordset']
-            )
-        )
-
-        employee_declaration_vals = []
-
-        for file_name, pdf_b64 in tax_accounting_reports.items():
-
-            match = pattern.search(file_name)
-            if not match:
-                continue
-            registration = match.group(1)
-
-            employee = employees_mapped_by_registration_number.get(registration, self.env['hr.employee'])
-
-            if employee:
-                employee_declaration_vals.append({
-                    'employee_id': employee.id,
-                    'res_model': self._name,
-                    'res_id': self.id,
-                    'pdf_filename': _("Wage_statement_%(year)s_%(name)s", year=self.year, name=employee.name),
-                    'pdf_to_generate': False,
-                    'state': 'pdf_generated',
-                    'pdf_file': pdf_b64
-                })
-            else:
-                attachment = self.env['ir.attachment'].create({
-                    'name': f"Tax_Accounting_Report_{self.year}_{registration}.pdf",
-                    'datas': pdf_b64,
-                    'res_id': self.id,
-                    'res_model': self._name,
-                })
-                self.message_post(body=_("Employee with number %s was either archived or deleted. Wage statement will not be sent automatically.", registration), attachment_ids=[attachment.id])
-
-        self.env['hr.payroll.employee.declaration'].create(employee_declaration_vals)
+        self._save_wage_statements(tax_accounting_reports)
 
     def _compute_wage_statement_count(self):
         mapped_employee_declarations = dict(self.env['hr.payroll.employee.declaration']._read_group(domain=[('res_model', '=', self._name)], groupby=['res_id'], aggregates=['__count']))
@@ -331,3 +289,9 @@ class L10nCHInsuranceReport(models.Model):
                 'res_model': self._name,
             })
             self.message_post(attachment_ids=[attachment.id], body=_('EIV File Successfully Generated'))
+
+    def _get_posted_mail_template(self):
+        return self.env.ref('documents_hr_payroll.mail_template_new_declaration', raise_if_not_found=False)
+
+    def _get_posted_document_owner(self, employee):
+        return employee.user_id

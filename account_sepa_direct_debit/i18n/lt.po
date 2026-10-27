@@ -19,13 +19,14 @@
 # Arunas V. <arunas@devoro.com>, 2023
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:45+0000\n"
-"PO-Revision-Date: 2025-11-16 05:25+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-03 17:43+0000\n"
+"PO-Revision-Date: 2026-10-06 09:36+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "account_sepa_direct_debit/lt/>\n"
 "Language: lt\n"
@@ -33,9 +34,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < "
-"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 :"
-" n % 1 != 0 ? 2: 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 "
+": n % 1 != 0 ? 2: 3);\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: account_sepa_direct_debit
 #: model:ir.actions.report,print_report_name:account_sepa_direct_debit.sdd_mandate_form_report_main
@@ -45,6 +46,10 @@ msgid ""
 "((object.partner_id.name).replace(' ', '_'), object.name)\n"
 "            "
 msgstr ""
+"\n"
+"                '%s_sdd_mandate_form_%s' % ((object.partner_id.name).replace"
+"(' ', '_'), object.name)\n"
+"            "
 
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_mandate_form
@@ -69,31 +74,6 @@ msgstr ""
 msgid ""
 ".\n"
 "                        SEPA requires a 5 days notice."
-msgstr ""
-
-#. module: account_sepa_direct_debit
-#: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_mandate_form
-msgid "123456789"
-msgstr ""
-
-#. module: account_sepa_direct_debit
-#: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_mandate_form
-msgid "2023-08-10"
-msgstr ""
-
-#. module: account_sepa_direct_debit
-#: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_mandate_form
-msgid "2023-09-10"
-msgstr ""
-
-#. module: account_sepa_direct_debit
-#: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_mandate_form
-msgid "380055"
-msgstr ""
-
-#. module: account_sepa_direct_debit
-#: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_mandate_form
-msgid "3956012345678"
 msgstr ""
 
 #. module: account_sepa_direct_debit
@@ -321,6 +301,135 @@ msgid ""
 "</table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: "
+"16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; "
+"color: #454748; width: 100%; border-collapse:separate;\"><tr><td "
+"align=\"center\">\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
+"style=\"padding: 16px; background-color: white; color: #454748; border-"
+"collapse:separate;\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"   <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\"> \n"
+"           <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
+"0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr> <td valign=\"middle\">\n"
+"                    <t t-set=\"company\" t-value=\"object.company_id\"/> \n"
+"                   <span style=\"font-size: 10px;\"> Jūsų pranešimas apie "
+"mokėjimą tiesioginio debeto būdu</span><br/>\n"
+"               </td></tr> \n"
+"               <tr><td valign=\"middle\" align=\"right\" t-if=\"not "
+"company.uses_default_logo\"> \n"
+"                   <img t-attf-src=\"/logo.png?company={{ company.id }}\" "
+"style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-"
+"alt=\"company.name\"/>\n"
+"                </td> </tr>\n"
+"                <tr> <td colspan=\"2\" style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb"
+"(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-"
+"height:1px;line-height:0; margin:16px 0px 16px 0px;\"/> \n"
+"               </td></tr> \n"
+"           </table>\n"
+"        </td> \n"
+"   </tr>\n"
+"\n"
+"    <!-- CONTENT --> \n"
+"   <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\"> \n"
+"           <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
+"0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr> <td valign=\"top\" style=\"font-size: 13px;\"> \n"
+"                    Gerb. „ <t t-out=\"object.partner_id.name or ''\">“ „"
+"Azure Interior“</t><br/>\n"
+"                   <br/> \n"
+"                    Jūsų bankui bus išsiųstas tiesioginio debeto mokėjimo "
+"prašymas, kurio suma sudaro\n"
+"                   <span style=\"font-weight:bold;\" t-out=\"format_amount"
+"(object.amount, object.currency_id) or ''\"> $ 0,00</span>\n"
+"                   <br/> \n"
+"                    Iš jūsų sąskaitos, kurios numeris baigiasi <t t-"
+"out=\"ctx.get('iban_last_4') or ''\">1234</t>, suma bus automatiškai "
+"nurašyta\n"
+"                   <span style=\"font-weight:bold;\" t-out=\"format_date"
+"(ctx.get('collection_date'))\"> 2020-04-18</span>,\n"
+"                    arba netrukus po to.<br/>\n"
+"                    Prašome užtikrinti, kad sąskaitoje būtų reikalinga "
+"suma.<br/>\n"
+"                    <br/>\n"
+"                   <t t-if=\"ctx.get('creditor_iban') or ctx.get"
+"('mandate_ref')\"> \n"
+"                        Prekybininko duomenys:<br/>\n"
+"                        <ul>\n"
+"                           <t t-if=\"ctx.get('creditor_iban')\">\n"
+"                                <li> IBAN: <t t-out=\"ctx['creditor_iban'] "
+"or ''\">NO 93 8601 1117947</t></li>\n"
+"                           </t>\n"
+"                            <t t-if=\"ctx.get('mandate_ref')\"> \n"
+"                               <li> SEPA tiesioginio debeto įgaliojimo "
+"nuoroda: <t t-out=\"ctx['mandate_ref'] or ''\"/></li>\n"
+"                           </t>\n"
+"                        </ul> \n"
+"                   </t>\n"
+"                    <br/> \n"
+"                    Jei turite klausimų, nedvejodami susisiekite su mumis.\n"
+"               </td></tr> \n"
+"               <tr><td style=\"text-align:center;\"> \n"
+"                   <hr width=\"100%\" style=\"background-color:rgb"
+"(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-"
+"height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td> </tr>\n"
+"            </table> \n"
+"       </td>\n"
+"    </tr> \n"
+"   <!-- FOOTER -->\n"
+"    <tr> \n"
+"       <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: white; font-size: "
+"11px; padding: 0px 8px 0px 8px; border-collapse:separate;\"> \n"
+"               <tr><td valign=\"middle\" align=\"left\"> \n"
+"                   <t t-out=\"company.name or ''\"> „YourCompany“</t>\n"
+"                </td></tr>\n"
+"                <tr> <td valign=\"middle\" align=\"left\" style=\"opacity: "
+"0.7;\">\n"
+"                    <t t-if=\"company.phone\"> \n"
+"                       <t t-out=\"company.phone or ''\"> +1 650-123-4567</t> "
+"|\n"
+"                   </t>\n"
+"                    <t t-if=\"company.email\"> \n"
+"                       <a t-attf-href=\"'mailto:%s' % {{ company.email }}\" "
+"style=\"text-decoration:none; color: #454748;\" t-out=\"company.email or "
+"''\"> info@yourcompany.com</a> |\n"
+"                   </t>\n"
+"                    <t t-if=\"company.website\"> \n"
+"                       <a t-attf-href=\"'%s' % {{ company.website }}\" "
+"style=\"text-decoration:none; color: #454748;\" t-out=\"company.website or "
+"''\"> http://www.example.com</a>\n"
+"                    </t>\n"
+"               </td></tr> \n"
+"           </table>\n"
+"        </td> \n"
+"   </tr>\n"
+"</tbody> \n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY --> \n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"   <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
+"style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; "
+"padding: 8px; border-collapse:separate;\">\n"
+"      <tr> <td style=\"text-align: center; font-size: 13px;\"> \n"
+"        Sukurta naudojant „ <a target=\"_blank\" href=\"https://"
+"www.odoo.com?utm_source=db&amp;utm_medium=mail\" style=\"color: #875A7B;\">“ "
+"„Odoo“</a>\n"
+"      </td></tr>\n"
+"    </table> \n"
+"</td></tr>\n"
+"</table>\n"
+"            "
 
 #. module: account_sepa_direct_debit
 #: model:mail.template,body_html:account_sepa_direct_debit.email_template_sdd_mandate_expiring
@@ -430,6 +539,113 @@ msgid ""
 "                </table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: "
+"16px; background-color: #FFFFFF; font-family:Verdana, Arial,sans-serif; "
+"color: #454748; width: 100%; border-collapse:separate;\">\n"
+"                    <tr>\n"
+"                       <td align=\"center\">\n"
+"                            <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: "
+"#FFFFFF; color: #454748; border-collapse:separate;\"> \n"
+"                               <tbody>\n"
+"                                    <!-- CONTENT --> \n"
+"                                   <tr>\n"
+"                                        <td align=\"center\" style=\"min-"
+"width: 590px;\"> \n"
+"                                           <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; "
+"background-color: white; padding: 0px 8px 0px 8px; border-"
+"collapse:separate;\">\n"
+"                                                <tr> \n"
+"                                                   <td valign=\"top\" "
+"style=\"font-size: 13px;\">\n"
+"                                                        <div> \n"
+"                                                            Sveiki,<br/><br/>"
+"\n"
+"                                                            SEPA tiesioginio "
+"debeto įgaliojimas automatiškai baigsis <span t-out=\"format_date"
+"(object._get_expiry_date_per_mandate()[object])\">2020-04-18</span><br/>\n"
+"                                                            Tai gali būti "
+"dėl vienos iš šių priežasčių:\n"
+"                                                           <ul>\n"
+"                                                                <li> \n"
+"                                                                    Ta data "
+"yra įgaliojimo galiojimo pabaigos data, dėl kurios buvo susitarta "
+"pasirašant.\n"
+"                                                               </li>\n"
+"                                                                <li> \n"
+"                                                                    Tuomet "
+"nuo paskutinio šio įgaliojimo panaudojimo būtų praėję daugiau nei 36 "
+"mėnesiai.\n"
+"                                                               </li>\n"
+"                                                            </ul> \n"
+"                                                           <div "
+"style=\"margin: 16px 0px 16px 0px;\">\n"
+"                                                                <a t-attf-"
+"href=\"{{ website_url }}/odoo/sdd-mandates/{{ object.id }}\" "
+"style=\"background-color: #4caf50; padding: 8px 16px 8px 16px; text-"
+"decoration: none; color: #fff; border-radius: 5px; font-size:13px;\"> \n"
+"                                                                    Eikite į "
+"„Įgaliojimas“\n"
+"                                                               </a>\n"
+"                                                            </div> \n"
+"                                                            Saugumo "
+"patarimas: Patikrinkite, ar domeno vardas, į kurį esate nukreipiami, yra: <b>"
+"<a t-att-href=\"object.get_base_url()\" t-out=\"object.get_base_url() or "
+"''\">\n"
+"                                                            https://"
+"yourcompany.odoo.com</a></b>\n"
+"                                                       </div>\n"
+"                                                    </td> \n"
+"                                               </tr>\n"
+"                                                <tr> \n"
+"                                                   <td style=\"text-"
+"align:center;\">\n"
+"                                                        <hr width=\"100%\" "
+"style=\"background-color:rgb(204,204,204);border:medium "
+"none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; "
+"margin: 16px 0px 16px 0px;\"/> \n"
+"                                                   </td>\n"
+"                                                </tr> \n"
+"                                           </table>\n"
+"                                        </td> \n"
+"                                   </tr>\n"
+"                                </tbody> \n"
+"                           </table>\n"
+"                        </td> \n"
+"                   </tr>\n"
+"                    <!-- POWERED BY --> \n"
+"                   <tr>\n"
+"                        <td align=\"center\" style=\"min-width: 590px;\"> \n"
+"                           <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: "
+"#F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"                                <tr> \n"
+"                                   <td style=\"text-align: center; font-"
+"size: 13px;\"> \n"
+"                                        Sukurta naudojant „ <a "
+"target=\"_blank\" href=\"https://"
+"www.odoo.com?utm_source=db&amp;utm_medium=auth\" style=\"color: #875A7B;\">“ "
+"„Odoo“</a>\n"
+"                                    </td>\n"
+"                               </tr>\n"
+"                            </table> \n"
+"                           <table border=\"0\" cellpadding=\"0\" "
+"cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; color: #454748; "
+"padding: 8px; border-collapse:separate;\">\n"
+"                                <tr> \n"
+"                                   <td style=\"text-align: center; font-"
+"size: 11px;\"> \n"
+"                                        PS: Tai yra automatinis el. laiškas, "
+"kurį išsiuntė „Odoo Accounting“, siekdama pranešti, kad SEPA tiesioginio "
+"debeto įgaliojimas bus automatiškai uždarytas.\n"
+"                                   </td>\n"
+"                                </tr> \n"
+"                           </table>\n"
+"                        </td> \n"
+"                   </tr>\n"
+"                </table> \n"
+"            "
 
 #. module: account_sepa_direct_debit
 #. odoo-python
@@ -438,6 +654,8 @@ msgid ""
 "A SEPA direct debit version should be selected to generate the addresses in "
 "the export file."
 msgstr ""
+"Norint sugeneruoti adresus eksporto faile, reikia pasirinkti SEPA "
+"tiesioginio debeto versiją."
 
 #. module: account_sepa_direct_debit
 #. odoo-python
@@ -445,6 +663,8 @@ msgstr ""
 msgid ""
 "A SEPA direct debit version should be selected to generate the export file."
 msgstr ""
+"Norint sugeneruoti eksporto failą, reikia pasirinkti SEPA tiesioginio debeto "
+"versiją."
 
 #. module: account_sepa_direct_debit
 #. odoo-python
@@ -462,7 +682,7 @@ msgstr ""
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__partner_bank_id
 msgid "Account of the customer to collect payments from."
-msgstr ""
+msgstr "Kliento sąskaita, iš kurios bus nurašomi mokėjimai."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__message_needaction
@@ -499,7 +719,7 @@ msgstr "Veiklos tipo ikona"
 #. odoo-python
 #: code:addons/account_sepa_direct_debit/models/account_batch_payment.py:0
 msgid "All the payments in the batch must have the same SDD scheme."
-msgstr ""
+msgstr "Visi mokėjimai partijoje turi turėti tą pačią SDD schemą."
 
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_mandate_form
@@ -522,6 +742,8 @@ msgid ""
 "Ask the bank to group the bank transactions corresponding to these payments "
 "into a single transaction."
 msgstr ""
+"Paprašykite banko sujungti šiuos mokėjimus atitinkančias banko operacijas į "
+"vieną operaciją."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__message_attachment_count
@@ -716,7 +938,7 @@ msgstr ""
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__partner_id
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate_send__partner_id
 msgid "Customer whose payments are to be managed by this mandate."
-msgstr ""
+msgstr "Klientas, kurio mokėjimai turi būti tvarkomi pagal šį įgaliojimą."
 
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_mandate_form
@@ -741,6 +963,8 @@ msgid ""
 "Date when the company expects to receive the payments of this batch. It "
 "can't be inferior to the sending day + the minimum pre-notification period."
 msgstr ""
+"Data, kada įmonė tikisi gauti šios partijos mokėjimus. Ji negali būti "
+"vėlesnė už siuntimo dieną + minimalų išankstinio pranešimo laikotarpį."
 
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_mandate_form
@@ -772,18 +996,18 @@ msgstr ""
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_account_journal_dashboard_kanban_view
 msgid "Direct Debit Payment to Collect"
-msgstr ""
+msgstr "Mokėjimas tiesioginiu debetu surinkimui"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__payments_to_collect_nber
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_account_journal_dashboard_kanban_view
 msgid "Direct Debit Payments to Collect"
-msgstr ""
+msgstr "Mokėjimai tiesioginio debeto būdu, kuriuos reikia surinkti"
 
 #. module: account_sepa_direct_debit
 #: model:ir.actions.act_window,name:account_sepa_direct_debit.action_sdd_payments_to_collect
 msgid "Direct debit payments to collect"
-msgstr ""
+msgstr "Mokėjimai, kuriuos reikia surinkti per tiesioginį debetą"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_account_batch_payment__display_name
@@ -822,6 +1046,13 @@ msgid ""
 "valid.\n"
 "Revoked: Fraudulent mandates. Previous invoices might need reimbursement.\n"
 msgstr ""
+"Juodraštis: Patvirtinkite prieš naudojimą.\n"
+"Aktyvus: Galiojantys įgaliojimai surinkti mokėjimus.\n"
+"Atšauktas: Įgaliojimai, kurie niekada nebuvo patvirtinti.\n"
+"Uždarytas: Pasibaigę arba rankiniu būdu uždaryti įgaliojimai. Ankstesnės "
+"operacijos lieka galiojančios.\n"
+"Panaikintas: Suklastoti įgaliojimai. Ankstesnės sąskaitos gali turėti būti "
+"grąžintos.\n"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate_send__checkbox_send_mail
@@ -862,7 +1093,7 @@ msgstr ""
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.view_batch_payment_form_inherit
 msgid "First-Time Payments"
-msgstr ""
+msgstr "Pirmieji mokėjimai"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__message_follower_ids
@@ -900,7 +1131,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_sepa_direct_debit/models/account_batch_payment.py:0
 msgid "Go to payments"
-msgstr ""
+msgstr "Eiti į mokėjimus"
 
 #. module: account_sepa_direct_debit
 #. odoo-python
@@ -975,7 +1206,7 @@ msgstr "Jei pažymėta, yra žinučių, turinčių pristatymo klaidų."
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__payment_ids
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.account_sepa_direct_debit_mandate_form
 msgid "In-process and completed payments generated under this mandate."
-msgstr ""
+msgstr "Pagal šį įgaliojimą sugeneruoti vykdomi ir užbaigti mokėjimai."
 
 #. module: account_sepa_direct_debit
 #. odoo-python
@@ -1068,6 +1299,12 @@ msgid "Mandate Form PDF"
 msgstr ""
 
 #. module: account_sepa_direct_debit
+#. odoo-python
+#: code:addons/account_sepa_direct_debit/models/sdd_mandate.py:0
+msgid "Mandate customer and bank account need to match."
+msgstr ""
+
+#. module: account_sepa_direct_debit
 #: model:ir.actions.report,name:account_sepa_direct_debit.sdd_mandate_form_report_main
 msgid "Mandate form"
 msgstr ""
@@ -1076,6 +1313,7 @@ msgstr ""
 #: model:ir.model.constraint,message:account_sepa_direct_debit.constraint_sdd_mandate_name_unique
 msgid "Mandate identifier must be unique! Please choose another one."
 msgstr ""
+"Įgaliojimo identifikatorius turi būti unikalus! Prašome pasirinkti kitą."
 
 #. module: account_sepa_direct_debit
 #: model:ir.actions.server,name:account_sepa_direct_debit.sdd_mandate_state_cron_ir_actions_server
@@ -1130,7 +1368,7 @@ msgstr ""
 #. module: account_sepa_direct_debit
 #: model_terms:ir.actions.act_window,help:account_sepa_direct_debit.action_sdd_payments_to_collect
 msgid "No direct debit payment to collect"
-msgstr ""
+msgstr "Negalima rinkti mokėjimų tiesioginio debeto būdu"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__message_needaction_counter
@@ -1146,7 +1384,7 @@ msgstr "Klaidų kiekis"
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__payments_to_collect_nber
 msgid ""
 "Number of in-process and completed payments generated under this mandate."
-msgstr ""
+msgstr "Pagal šį įgaliojimą sugeneruotų vykdomų ir užbaigtų mokėjimų skaičius."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__paid_invoices_nber
@@ -1180,6 +1418,13 @@ msgid ""
 "file containing this operation\n"
 "                    and send it to your bank to effectively get paid."
 msgstr ""
+"Kai sąskaita faktūra bus sukurta\n"
+"                    „Odoo“ sistemoje klientui, kurio įgaliojimas sąskaitos "
+"faktūros išrašymo dieną yra galiojantis,\n"
+"                    jos patvirtinimas sukels automatinį mokėjimą, ir jums\n"
+"                    tada tereikės sugeneruoti SEPA tiesioginio debeto (SDD) "
+"XML failą, kuriame bus nurodyta ši operacija,\n"
+"                    ir nusiųsti jį savo bankui, kad gautumėte mokėjimą."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_account_payment__sdd_mandate_id
@@ -1187,6 +1432,8 @@ msgid ""
 "Once this invoice has been paid with Direct Debit, contains the mandate that "
 "allowed the payment."
 msgstr ""
+"Kai ši sąskaita apmokama tiesioginio debeto būdu, joje pateikiamas "
+"įgaliojimas, leidęs atlikti mokėjimą."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__one_off
@@ -1201,6 +1448,9 @@ msgid ""
 "select a journal associated to one or add an IBAN bank account to the "
 "current journal"
 msgstr ""
+"SEPA tiesioginio debeto mokėjimus gali priimti tik IBAN sąskaitų numeriai. "
+"Prašome pasirinkti vieną iš susijusių žurnalų arba pridėti IBAN banko "
+"sąskaitą prie dabartinio žurnalo"
 
 #. module: account_sepa_direct_debit
 #. odoo-python
@@ -1296,7 +1546,7 @@ msgstr "Mokėjimo būdai"
 #. module: account_sepa_direct_debit
 #: model:mail.template,subject:account_sepa_direct_debit.email_template_sdd_pre_notification
 msgid "Payment notification {{ object.memo }}"
-msgstr ""
+msgstr "Pranešimas apie mokėjimą {{ object.memo }}"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model,name:account_sepa_direct_debit.model_account_payment
@@ -1307,19 +1557,19 @@ msgstr "Mokėjimai"
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.view_account_move_line_payment_filter
 msgid "Payments matching a valid SEPA Direct Debit Mandate"
-msgstr ""
+msgstr "Mokėjimai, atitinkantys galiojantį SEPA tiesioginio debeto įgaliojimą"
 
 #. module: account_sepa_direct_debit
 #. odoo-python
 #: code:addons/account_sepa_direct_debit/models/sdd_mandate.py:0
 msgid "Payments to Collect"
-msgstr ""
+msgstr "Mokėjimai, kuriuos reikia surinkti"
 
 #. module: account_sepa_direct_debit
 #. odoo-python
 #: code:addons/account_sepa_direct_debit/models/account_batch_payment.py:0
 msgid "Payments without mandate"
-msgstr ""
+msgstr "Mokėjimai be įgaliojimo"
 
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_report_invoice_document
@@ -1328,6 +1578,9 @@ msgid ""
 "processed\n"
 "                        automatically."
 msgstr ""
+"Prašome nemokėti rankiniu būdu, mokėjimas bus paprašytas jūsų banko "
+"apdoroti\n"
+"                        automatiškai."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__pre_notification_period
@@ -1549,7 +1802,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/account_sepa_direct_debit/models/account_payment.py:0
 msgid "Select a SEPA Direct Debit version before generating the XML."
-msgstr ""
+msgstr "Prieš generuojant XML, pasirinkite SEPA tiesioginio debeto versiją."
 
 #. module: account_sepa_direct_debit
 #. odoo-python
@@ -1580,18 +1833,20 @@ msgid ""
 "Some draft payments could not be posted because of the lack of any active "
 "mandate."
 msgstr ""
+"Kai kurie mokėjimų projektai negalėjo būti įrašyti į apskaitą dėl to, kad "
+"nebuvo jokio galiojančio įgaliojimo."
 
 #. module: account_sepa_direct_debit
 #. odoo-python
 #: code:addons/account_sepa_direct_debit/models/account_batch_payment.py:0
 msgid "Some payments are linked to an inactive mandate."
-msgstr ""
+msgstr "Kai kurie mokėjimai yra susieti su neaktyviu įgaliojimu."
 
 #. module: account_sepa_direct_debit
 #. odoo-python
 #: code:addons/account_sepa_direct_debit/models/account_batch_payment.py:0
 msgid "Some payments are not linked to any mandate."
-msgstr ""
+msgstr "Kai kurie mokėjimai nėra susieti su jokiu pavedimu."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__start_date
@@ -1639,6 +1894,8 @@ msgid ""
 "The SEPA Direct Debit mandate associated to the payment has been revoked and "
 "cannot be used anymore."
 msgstr ""
+"Su mokėjimu susijęs SEPA tiesioginio debeto įgaliojimas buvo atšauktas ir jo "
+"daugiau naudoti negalima."
 
 #. module: account_sepa_direct_debit
 #. odoo-python
@@ -1717,11 +1974,13 @@ msgid ""
 "The payment must be linked to a SEPA Direct Debit mandate in order to "
 "generate a Direct Debit XML."
 msgstr ""
+"Mokėjimas turi būti susietas su SEPA tiesioginio debeto įgaliojimu, kad būtų "
+"galima sugeneruoti tiesioginio debeto XML failą."
 
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.account_sepa_direct_debit_mandate_form
 msgid "The selected customer is a child of"
-msgstr ""
+msgstr "Pasirinktas klientas yra"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__name
@@ -1732,6 +1991,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.view_batch_payment_form_inherit
 msgid "This batch includes payments from mandates with no prior collections:"
 msgstr ""
+"Ši partija apima mokėjimus pagal pavedimus, pagal kuriuos anksčiau nebuvo "
+"atlikti surinkimai:"
 
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_report_invoice_document
@@ -1748,6 +2009,10 @@ msgid ""
 "but you are entitled to request your bank not to debit your account up until "
 "the day on which the payment is due."
 msgstr ""
+"Šis reikalavimas skirtas tik verslo sandoriams. Jūs neturite teisės gauti "
+"grąžinamosios išmokos iš savo banko po to, kai lėšos buvo nurašytos iš jūsų "
+"sąskaitos, tačiau turite teisę paprašyti savo banko nenurašyti lėšų iš jūsų "
+"sąskaitos iki mokėjimo termino dienos."
 
 #. module: account_sepa_direct_debit
 #. odoo-python
@@ -1756,6 +2021,8 @@ msgid ""
 "To solve that, you should create a mandate for each of the involved "
 "customers, valid at the moment of the payment date."
 msgstr ""
+"Norėdami išspręsti šią problemą, turėtumėte sukurti įgaliojimą kiekvienam "
+"susijusiam klientui, galiojantį mokėjimo dieną."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__one_off
@@ -1764,6 +2031,9 @@ msgid ""
 "will automatically go from 'active' to 'closed' after its first use in "
 "payment if this option is set.\n"
 msgstr ""
+"Tiesa tik tuo atveju, jei šis pavedimas gali būti naudojamas tik vienam "
+"sandoriui. Jei ši parinktis yra nustatyta, po pirmojo panaudojimo mokėjimui "
+"jis automatiškai pereis iš „aktyvaus“ į „uždaryto“ statusą.\n"
 
 #. module: account_sepa_direct_debit
 #. odoo-python
@@ -1772,6 +2042,8 @@ msgid ""
 "Trying to generate a Direct Debit XML file containing payments from another "
 "company than that file's creditor."
 msgstr ""
+"Bandoma sugeneruoti tiesioginio debeto XML failą, kuriame yra mokėjimai iš "
+"kitos įmonės nei to failo kreditorius."
 
 #. module: account_sepa_direct_debit
 #. odoo-python
@@ -1780,6 +2052,8 @@ msgid ""
 "Trying to generate a Direct Debit XML for payments coming from another "
 "payment method than SEPA Direct Debit."
 msgstr ""
+"Bandoma sugeneruoti tiesioginio debeto XML failą mokėjimams, atliekamiems "
+"naudojant kitą mokėjimo būdą nei SEPA tiesioginis debetas."
 
 #. module: account_sepa_direct_debit
 #. odoo-python
@@ -1787,6 +2061,8 @@ msgstr ""
 msgid ""
 "Trying to register a payment on a mandate belonging to a different partner."
 msgstr ""
+"Bandoma užregistruoti mokėjimą pagal įgaliojimą, priklausantį kitam "
+"partneriui."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__activity_exception_decoration
@@ -1863,11 +2139,20 @@ msgstr ""
 
 #. module: account_sepa_direct_debit
 #. odoo-python
+#: code:addons/account_sepa_direct_debit/models/sdd_mandate.py:0
+msgid "You don't have the rights to validate SDD mandates."
+msgstr ""
+
+#. module: account_sepa_direct_debit
+#. odoo-python
 #: code:addons/account_sepa_direct_debit/models/account_batch_payment.py:0
 msgid ""
 "Your company must have a creditor identifier in order to issue SEPA Direct "
 "Debit payments requests. It can be defined in accounting module's settings."
 msgstr ""
+"Jūsų įmonė privalo turėti kreditoriaus identifikatorių, kad galėtų išduoti "
+"SEPA tiesioginio debeto mokėjimo prašymus. Jį galima nustatyti apskaitos "
+"modulio nustatymuose."
 
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_mandate_form
@@ -1887,6 +2172,7 @@ msgstr ""
 #: model:mail.template,subject:account_sepa_direct_debit.email_template_sdd_new_mandate
 msgid "{{ object.partner_id.display_name }} SEPA Direct Debit Mandate"
 msgstr ""
+"{{ object.partner_id.display_name }} SEPA tiesioginio debeto įgaliojimas"
 
 #~ msgid "Journal Item"
 #~ msgstr "Žurnalo įrašas"

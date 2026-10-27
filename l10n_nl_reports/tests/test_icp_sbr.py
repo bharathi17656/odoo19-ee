@@ -21,6 +21,12 @@ class TestNlICPSBR(AccountSalesReportCommon):
             'l10n_nl_reports_sbr_ob_nummer': '987654321B09',
         })
 
+        cls.partner_c = cls.env['res.partner'].create({
+            'name': 'Partner C',
+            'country_id': cls.env.ref('base.de').id,
+            'vat': 'DE123456788',
+        })
+
     @freeze_time('2019-02-23 18:45')
     def test_icp_xbrl_export(self):
         # Create a new partner for the representative and link it to the company.
@@ -52,6 +58,8 @@ class TestNlICPSBR(AccountSalesReportCommon):
         })
         self.init_invoice('out_invoice', partner=self.partner_a, invoice_date=fields.Date.from_string('2019-02-15'), post=True, products=[self.product_a, product_service, product_triangular])
         self.init_invoice('out_invoice', partner=self.partner_b, invoice_date=fields.Date.from_string('2019-06-20'), post=True, products=[self.product_a, product_service])
+        # Credit note for a fictitious invoice in a previous month, tests that negative values are also included in the export
+        self.init_invoice('out_refund', partner=self.partner_c, invoice_date=fields.Date.from_string('2019-06-30'), post=True, products=[product_triangular])
         self.env['account.move.line'].flush_model()
 
         report = self.env.ref('l10n_nl_reports.dutch_icp_report')
@@ -66,14 +74,8 @@ class TestNlICPSBR(AccountSalesReportCommon):
         wizard.action_download_xbrl_file()
         generated_xbrl = self.get_xml_tree_from_string(self.env['l10n_nl_reports.ec.sales.report.handler'].export_icp_report_to_xbrl(options).get('file_content'))
         expected_xbrl = self.get_xml_tree_from_string('''
-            <xbrli:xbrl xmlns:link="http://www.xbrl.org/2003/linkbase"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                xmlns:bd-t="http://www.nltaxonomie.nl/nt19/bd/20241211/dictionary/bd-tuples"
-                xmlns:bd-i="http://www.nltaxonomie.nl/nt19/bd/20241211/dictionary/bd-data"
-                xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:iso4217="http://www.xbrl.org/2003/iso4217"
-                xml:lang="nl">
-                <link:schemaRef xlink:type="simple"
-                    xlink:href="http://www.nltaxonomie.nl/nt19/bd/20241211/entrypoints/bd-rpt-icp-opgaaf-2025.xsd" />
+            <xbrli:xbrl xmlns:bd-i="http://www.nltaxonomie.nl/nt20/bd/20251210/dictionary/bd-data" xmlns:xbrldi="http://xbrl.org/2006/xbrldi" xmlns:bd-axes="http://www.nltaxonomie.nl/nt20/bd/20251210/validation/bd-axes" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:bd-domains="http://www.nltaxonomie.nl/nt20/bd/20251210/validation/bd-domains" xmlns:iso4217="http://www.xbrl.org/2003/iso4217" xml:lang="nl">
+                <link:schemaRef xlink:type="simple" xlink:href="http://www.nltaxonomie.nl/nt20/bd/20251210/entrypoints/bd-rpt-icp-opgaaf-2026.xsd" />
                 <xbrli:context id="CD_Opgaaf">
                     <xbrli:entity>
                         <xbrli:identifier scheme="www.belastingdienst.nl/omzetbelastingnummer">987654321B09</xbrli:identifier>
@@ -83,6 +85,71 @@ class TestNlICPSBR(AccountSalesReportCommon):
                         <xbrli:endDate>2019-12-31</xbrli:endDate>
                     </xbrli:period>
                 </xbrli:context>
+                <xbrli:context id="Msg_PASN1">
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="www.belastingdienst.nl/omzetbelastingnummer">987654321B09</xbrli:identifier>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:startDate>2019-01-01</xbrli:startDate>
+                        <xbrli:endDate>2019-12-31</xbrli:endDate>
+                    </xbrli:period>
+                    <xbrli:scenario>
+                        <xbrldi:typedMember dimension="bd-axes:ProfessionalAssociationSerialNumberDimension">
+                            <bd-domains:ProfessionalAssociationSerialNumberDomain>1</bd-domains:ProfessionalAssociationSerialNumberDomain>
+                        </xbrldi:typedMember>
+                    </xbrli:scenario>
+                </xbrli:context>
+                <xbrli:context id="ICP_FR_23334175221">
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="www.belastingdienst.nl/omzetbelastingnummer">987654321B09</xbrli:identifier>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:startDate>2019-01-01</xbrli:startDate>
+                        <xbrli:endDate>2019-12-31</xbrli:endDate>
+                    </xbrli:period>
+                    <xbrli:scenario>
+                        <xbrldi:typedMember dimension="bd-axes:VATNumberDimension">
+                            <bd-domains:VATNumberDomain>23334175221</bd-domains:VATNumberDomain>
+                        </xbrldi:typedMember>
+                        <xbrldi:typedMember dimension="bd-axes:CountryCodeEUDimension">
+                            <bd-domains:CountryCodeEUDomain>FR</bd-domains:CountryCodeEUDomain>
+                        </xbrldi:typedMember>
+                    </xbrli:scenario>
+                </xbrli:context>
+                <xbrli:context id="ICP_BE_0477472701">
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="www.belastingdienst.nl/omzetbelastingnummer">987654321B09</xbrli:identifier>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:startDate>2019-01-01</xbrli:startDate>
+                        <xbrli:endDate>2019-12-31</xbrli:endDate>
+                    </xbrli:period>
+                    <xbrli:scenario>
+                        <xbrldi:typedMember dimension="bd-axes:VATNumberDimension">
+                            <bd-domains:VATNumberDomain>0477472701</bd-domains:VATNumberDomain>
+                        </xbrldi:typedMember>
+                        <xbrldi:typedMember dimension="bd-axes:CountryCodeEUDimension">
+                            <bd-domains:CountryCodeEUDomain>BE</bd-domains:CountryCodeEUDomain>
+                        </xbrldi:typedMember>
+                    </xbrli:scenario>
+                </xbrli:context>
+                <xbrli:context id="ICP_DE_123456788">
+                    <xbrli:entity>
+                        <xbrli:identifier scheme="www.belastingdienst.nl/omzetbelastingnummer">987654321B09</xbrli:identifier>
+                    </xbrli:entity>
+                    <xbrli:period>
+                        <xbrli:startDate>2019-01-01</xbrli:startDate>
+                        <xbrli:endDate>2019-12-31</xbrli:endDate>
+                    </xbrli:period>
+                    <xbrli:scenario>
+                        <xbrldi:typedMember dimension="bd-axes:VATNumberDimension">
+                            <bd-domains:VATNumberDomain>123456788</bd-domains:VATNumberDomain>
+                        </xbrldi:typedMember>
+                        <xbrldi:typedMember dimension="bd-axes:CountryCodeEUDimension">
+                            <bd-domains:CountryCodeEUDomain>DE</bd-domains:CountryCodeEUDomain>
+                        </xbrldi:typedMember>
+                    </xbrli:scenario>
+                </xbrli:context>
                 <xbrli:unit id="EUR">
                     <xbrli:measure>iso4217:EUR</xbrli:measure>
                 </xbrli:unit>
@@ -91,40 +158,19 @@ class TestNlICPSBR(AccountSalesReportCommon):
                 <bd-i:SoftwarePackageName contextRef="CD_Opgaaf">Odoo</bd-i:SoftwarePackageName>
                 <bd-i:SoftwarePackageVersion contextRef="CD_Opgaaf">___ignore___</bd-i:SoftwarePackageVersion>
                 <bd-i:DateTimeCreation contextRef="CD_Opgaaf">201902231845</bd-i:DateTimeCreation>
-                <bd-t:ProfessionalAssociationForTaxServiceProvidersSpecification>
-                    <bd-i:ProfessionalAssociationForTaxServiceProvidersName contextRef="CD_Opgaaf">Fidu NL</bd-i:ProfessionalAssociationForTaxServiceProvidersName>
-                </bd-t:ProfessionalAssociationForTaxServiceProvidersSpecification>
+                <bd-i:ProfessionalAssociationForTaxServiceProvidersName contextRef="Msg_PASN1">NBA</bd-i:ProfessionalAssociationForTaxServiceProvidersName>
                 <bd-i:TaxConsultantNumber contextRef="CD_Opgaaf">123456</bd-i:TaxConsultantNumber>
                 <bd-i:ContactInitials contextRef="CD_Opgaaf">BIAA</bd-i:ContactInitials>
                 <bd-i:ContactPrefix contextRef="CD_Opgaaf">I am</bd-i:ContactPrefix>
                 <bd-i:ContactSurname contextRef="CD_Opgaaf">accountman!</bd-i:ContactSurname>
                 <bd-i:ContactTelephoneNumber contextRef="CD_Opgaaf">+31432112345</bd-i:ContactTelephoneNumber>
                 <bd-i:VATIdentificationNumberNLFiscalEntityDivision contextRef="CD_Opgaaf">123456782B90</bd-i:VATIdentificationNumberNLFiscalEntityDivision>
-                <bd-t:IntraCommunitySupplies>
-                    <bd-i:CountryCodeISO-EC contextRef="CD_Opgaaf">FR</bd-i:CountryCodeISO-EC>
-                    <bd-i:SuppliesAmount contextRef="CD_Opgaaf" unitRef="EUR" decimals="INF">1000</bd-i:SuppliesAmount>
-                    <bd-i:VATIdentificationNumberNational contextRef="CD_Opgaaf">23334175221</bd-i:VATIdentificationNumberNational>
-                </bd-t:IntraCommunitySupplies>
-                <bd-t:IntraCommunitySupplies>
-                    <bd-i:CountryCodeISO-EC contextRef="CD_Opgaaf">BE</bd-i:CountryCodeISO-EC>
-                    <bd-i:SuppliesAmount contextRef="CD_Opgaaf" unitRef="EUR" decimals="INF">1000</bd-i:SuppliesAmount>
-                    <bd-i:VATIdentificationNumberNational contextRef="CD_Opgaaf">0477472701</bd-i:VATIdentificationNumberNational>
-                </bd-t:IntraCommunitySupplies>
-                <bd-t:IntraCommunityServices>
-                    <bd-i:CountryCodeISO-EC contextRef="CD_Opgaaf">FR</bd-i:CountryCodeISO-EC>
-                    <bd-i:ServicesAmount contextRef="CD_Opgaaf" unitRef="EUR" decimals="INF">750</bd-i:ServicesAmount>
-                    <bd-i:VATIdentificationNumberNational contextRef="CD_Opgaaf">23334175221</bd-i:VATIdentificationNumberNational>
-                </bd-t:IntraCommunityServices>
-                <bd-t:IntraCommunityServices>
-                    <bd-i:CountryCodeISO-EC contextRef="CD_Opgaaf">BE</bd-i:CountryCodeISO-EC>
-                    <bd-i:ServicesAmount contextRef="CD_Opgaaf" unitRef="EUR" decimals="INF">750</bd-i:ServicesAmount>
-                    <bd-i:VATIdentificationNumberNational contextRef="CD_Opgaaf">0477472701</bd-i:VATIdentificationNumberNational>
-                </bd-t:IntraCommunityServices>
-                <bd-t:IntraCommunityABCSupplies>
-                    <bd-i:CountryCodeISO-EC contextRef="CD_Opgaaf">FR</bd-i:CountryCodeISO-EC>
-                    <bd-i:SuppliesAmount contextRef="CD_Opgaaf" unitRef="EUR" decimals="INF">500</bd-i:SuppliesAmount>
-                    <bd-i:VATIdentificationNumberNational contextRef="CD_Opgaaf">23334175221</bd-i:VATIdentificationNumberNational>
-                </bd-t:IntraCommunityABCSupplies>
+                <bd-i:SuppliesAmount unitRef="EUR" decimals="INF" contextRef="ICP_FR_23334175221">1000</bd-i:SuppliesAmount>
+                <bd-i:SuppliesAmount unitRef="EUR" decimals="INF" contextRef="ICP_BE_0477472701">1000</bd-i:SuppliesAmount>
+                <bd-i:ServicesAmount unitRef="EUR" decimals="INF" contextRef="ICP_FR_23334175221">750</bd-i:ServicesAmount>
+                <bd-i:ServicesAmount unitRef="EUR" decimals="INF" contextRef="ICP_BE_0477472701">750</bd-i:ServicesAmount>
+                <bd-i:ABCSuppliesAmount unitRef="EUR" decimals="INF" contextRef="ICP_FR_23334175221">500</bd-i:ABCSuppliesAmount>
+                <bd-i:ABCSuppliesAmount unitRef="EUR" decimals="INF" contextRef="ICP_DE_123456788">-500</bd-i:ABCSuppliesAmount>
             </xbrli:xbrl>
         ''')
         self.assertXmlTreeEqual(generated_xbrl, expected_xbrl)
@@ -156,6 +202,7 @@ class TestNlSBRFlow(TestAccountReportsCommon):
         })
         self.assertTrue(certificate.private_key_id)
         self.env.company.l10n_nl_reports_sbr_cert_id = certificate
+        self.env['ir.config_parameter'].sudo().set_param('l10n_nl_reports.sbr_mode', 'test')
 
         date_from = fields.Date.from_string('2019-01-01')
         date_to = fields.Date.from_string('2019-12-31')
@@ -164,6 +211,6 @@ class TestNlSBRFlow(TestAccountReportsCommon):
 
         wizard = self.env['l10n_nl_reports.sbr.icp.wizard']\
             .with_context(default_date_from=date_from, default_date_to=date_to, options=options)\
-            .create({'is_test': True})
+            .create({})
         res = wizard.send_xbrl()
         self.assertTrue(res)

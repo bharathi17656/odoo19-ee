@@ -3,15 +3,15 @@
 # * delivery_iot
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Junko Augias (juau)" <juau@odoo.com>, 2025.
+# "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:43+0000\n"
-"PO-Revision-Date: 2025-11-08 20:02+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2025-12-30 18:44+0000\n"
+"PO-Revision-Date: 2026-09-01 03:08+0000\n"
+"Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
 "Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/"
 "delivery_iot/ja/>\n"
 "Language: ja\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: delivery_iot
 #: model:ir.actions.report,print_report_name:delivery_iot.action_report_shipping_docs
@@ -102,7 +102,7 @@ msgstr "IOT デバイス"
 #. module: delivery_iot
 #: model:ir.model.fields,field_description:delivery_iot.field_stock_put_in_pack__iot_device_identifier
 msgid "Identifier"
-msgstr "保管ロット"
+msgstr "識別子"
 
 #. module: delivery_iot
 #: model:ir.model.fields,help:delivery_iot.field_stock_picking_type__auto_print_carrier_labels
@@ -156,6 +156,18 @@ msgstr "手動計測"
 #: model:ir.model.fields,help:delivery_iot.field_stock_put_in_pack__manual_measurement
 msgid "Manually read the measurement from the device"
 msgstr "デバイスから測定値を手動で読み込みます"
+
+#. module: delivery_iot
+#. odoo-python
+#: code:addons/delivery_iot/models/ir_action_report.py:0
+msgid ""
+"One of the printer used to print the document has been removed.\n"
+"To reset printers, go to the Inventory App, Configuration tab, \"Reset "
+"Linked Printers\" and retry the operation."
+msgstr ""
+"ドキュメントを印刷するために使用されていたプリンタの一つが削除されました。\n"
+"プリンタをリセットするには、在庫アプリの設定タブにある「リンク済プリンタをリ"
+"セット」を選択し、操作を再実行してください。"
 
 #. module: delivery_iot
 #: model:ir.model.fields,field_description:delivery_iot.field_iot_device__picking_type_ids

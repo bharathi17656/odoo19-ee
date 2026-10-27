@@ -3,15 +3,15 @@
 # * hr_appraisal_survey
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
-# Saara Hakanen <sahak@odoo.com>, 2025.
+# Saara Hakanen <sahak@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-16 13:52+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-09 17:45+0000\n"
+"PO-Revision-Date: 2026-06-06 13:53+0000\n"
+"Last-Translator: Saara Hakanen <sahak@odoo.com>\n"
 "Language-Team: Finnish <https://translate.odoo.com/projects/odoo-19/"
 "hr_appraisal_survey/fi/>\n"
 "Language: fi\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
@@ -38,7 +38,7 @@ msgstr "360 palaute"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_hr_appraisal_template__survey_template_ids
 msgid "360 Feedback Survey"
-msgstr ""
+msgstr "360-palautekysely"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
@@ -87,13 +87,13 @@ msgid ""
 "            "
 msgstr ""
 "<p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"                    Hyvä <t t-out=\"object.partner_id.name or 'participant'\""
-">[osallistuja]</t>,\n"
+"                    Hyvä <t t-out=\"object.partner_id.name or "
+"'participant'\">[osallistuja]</t>,\n"
 "                    <br/>\n"
-"                    Osana 360° palauteprosessiamme, <t t-out="
-"\"ctx.get('logged_user')\">[Nykyinen käyttäjä]</t> haluaisi kuulla\n"
-"                    näkemyksesi <t t-out=\"ctx.get('employee')\">"
-"[työntekijän]</t> suoriutumisesta.\n"
+"                    Osana 360° palauteprosessiamme, <t t-"
+"out=\"ctx.get('logged_user')\">[Nykyinen käyttäjä]</t> haluaisi kuulla\n"
+"                    näkemyksesi <t t-out=\"ctx.get('employee')"
+"\">[työntekijän]</t> suoriutumisesta.\n"
 "                    <br/>\n"
 "                    Palautteesi on arvokasta ja auttaa meitä tunnistamaan "
 "vahvuuksiamme sekä kehitysmahdollisuuksiamme.\n"
@@ -102,23 +102,23 @@ msgstr ""
 "kestää vain muutaman minuutin:\n"
 "                    <br/>\n"
 "                    </p><div class=\"text-center my-4\">\n"
-"                        <a t-att-href=\"object.get_start_url()\" t-attf-style"
-"=\"background-color: {{user.company_id.email_secondary_color or '#875A7B'}}; "
-"padding: 8px 16px 8px 16px; text-decoration: none; color: {{"
-"user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; font-"
-"size:13px;\">\n"
+"                        <a t-att-href=\"object.get_start_url()\" t-attf-"
+"style=\"background-color: {{user.company_id.email_secondary_color or "
+"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"{{user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
+"font-size:13px;\">\n"
 "                            Anna palautetta\n"
 "                        </a>\n"
 "                    </div>\n"
-"                    Täytä kysely viimeistään <t t-out=\"ctx.get('deadline')\""
-">[tarkka määräaika]</t>.\n"
+"                    Täytä kysely viimeistään <t t-out=\"ctx.get('deadline')"
+"\">[tarkka määräaika]</t>.\n"
 "                    <br/>\n"
 "                    Kiitos ajastasi ja rehellisyydestäsi!\n"
 "                    <br/>\n"
 "                    <t t-if=\"ctx.get('user_body')\">\n"
 "                        <div class=\"my-3 py-2 px-3 bg-secondary\">\n"
-"                            <t t-out=\"ctx.get('user_body')\">"
-"[Valinnainen kommentti]</t>\n"
+"                            <t t-out=\"ctx.get('user_body')\">[Valinnainen "
+"kommentti]</t>\n"
 "                        </div>\n"
 "                    </t>\n"
 "                \n"
@@ -201,22 +201,12 @@ msgstr "Myöntää virheensä"
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__allowed_survey_template_ids
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_select_survey__allowed_survey_template_ids
 msgid "Allowed Survey Template"
-msgstr ""
+msgstr "Sallittu kyselymallipohja"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.x_360_5_5
 msgid "Almost always"
 msgstr "Melkein aina"
-
-#. module: hr_appraisal_survey
-#. odoo-python
-#: code:addons/hr_appraisal_survey/wizard/appraisal_ask_feedback.py:0
-msgid ""
-"An appraisal feedback was requested. Please take time to fill the <a "
-"href=\"%s\" target=\"_blank\">survey</a>"
-msgstr ""
-"Arviointipalautetta pyydettiin. Varaa aikaa <a href=\"%s\" "
-"target=\"_blank\">kyselyn</a> täyttämiseen"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_11
@@ -328,7 +318,7 @@ msgstr "Peruuta"
 #: code:addons/hr_appraisal_survey/models/survey_survey.py:0
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_select_survey_view_form
 msgid "Choose Survey"
-msgstr ""
+msgstr "Valitse kysely"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.y_360_5_3
@@ -488,7 +478,7 @@ msgstr "Innostus ja sitoutuminen hankkeisiin tai tehtäviin"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_template_view_form
 msgid "Every template allowed"
-msgstr ""
+msgstr "Kaikki mallipohjat sallittu"
 
 #. module: hr_appraisal_survey
 #: model_terms:survey.question,description:hr_appraisal_survey.appraisal_3
@@ -515,7 +505,7 @@ msgstr "Siirry arviointilomakkeeseen"
 #. module: hr_appraisal_survey
 #: model:mail.template,name:hr_appraisal_survey.mail_template_appraisal_ask_feedback
 msgid "HR: Ask Feedback 360"
-msgstr ""
+msgstr "Henkilöstöhallinto: Pyydä 360-palautetta"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_360_5
@@ -561,7 +551,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
 msgid "If you need,"
-msgstr ""
+msgstr "Jos tarvetta,"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_5
@@ -667,7 +657,7 @@ msgstr "Ei koskaan"
 #. odoo-python
 #: code:addons/hr_appraisal_survey/models/survey_survey.py:0
 msgid "No surveys found for this appraisal."
-msgstr ""
+msgstr "Tälle arvioinnille ei löytynyt kyselyitä."
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_2_1
@@ -682,7 +672,7 @@ msgstr "Usein"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_ask_feedback_view_form
 msgid "Optional comment..."
-msgstr ""
+msgstr "Valinnainen kommentti..."
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_appraisal_ask_feedback__lang
@@ -692,6 +682,10 @@ msgid ""
 "usually be a placeholder expression that provides the appropriate language, "
 "e.g. {{ object.partner_id.lang }}."
 msgstr ""
+"Valinnainen käännöskieli (ISO-koodi), joka valitaan sähköpostia "
+"lähetettäessä. Jos sitä ei ole määritetty, käytetään pääkumppanin kieltä. "
+"Tämän tulisi yleensä olla lausekkeen paikkamerkki, joka antaa sopivan "
+"kielen, esim. {{ object.partner_id.lang }}."
 
 #. module: hr_appraisal_survey
 #: model_terms:survey.question,description:hr_appraisal_survey.appraisal_1
@@ -712,7 +706,7 @@ msgstr "Henkilökohtaiset suorituskykytavoitteet"
 #. odoo-python
 #: code:addons/hr_appraisal_survey/wizard/appraisal_ask_feedback.py:0
 msgid "Please set an Answer Deadline in the future"
-msgstr "Aseta vastaamisen eräpäivä tulevaisuuteen"
+msgstr "Aseta vastauksen eräpäivä tulevaisuuteen"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_1_2
@@ -802,7 +796,7 @@ msgstr "Katso vastaukset"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_select_survey_view_form
 msgid "See Results"
-msgstr ""
+msgstr "Katso tulokset"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_user_input_view_tree
@@ -817,7 +811,7 @@ msgstr "Yritä ymmärtää ongelma ennen ratkaisun löytämistä"
 #. module: hr_appraisal_survey
 #: model:ir.model,name:hr_appraisal_survey.model_appraisal_select_survey
 msgid "Select survey type for an appraisal to show its results"
-msgstr ""
+msgstr "Valitse arvioinnille kyselytyyppi näyttääksesi sen tulokset"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_ask_feedback_view_form
@@ -889,7 +883,7 @@ msgstr "Kyselyn palaute"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_select_survey__survey_input_ids
 msgid "Survey Inputs"
-msgstr ""
+msgstr "Kyselyn tulokset"
 
 #. module: hr_appraisal_survey
 #: model:ir.model,name:hr_appraisal_survey.model_survey_question_answer
@@ -899,12 +893,12 @@ msgstr "Kyselyn otsikko"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__survey_template_id
 msgid "Survey Template"
-msgstr "Kyselymalli"
+msgstr "Kyselypohja"
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_survey_survey__survey_type
 msgid "Survey Type"
-msgstr "Tutkimuksen tyyppi"
+msgstr "Kyselyn tyyppi"
 
 #. module: hr_appraisal_survey
 #: model:ir.model,name:hr_appraisal_survey.model_survey_user_input
@@ -917,8 +911,8 @@ msgid ""
 "Take part in {{ ctx.get('employee_id') and ctx['employee_id'].name or "
 "'this' }} appraisal"
 msgstr ""
-"Osallistu {{ ctx.get('employee_id') ja ctx['employee_id'].name tai 'tämä' }} "
-"arviointi"
+"Osallistu {{ ctx.get('employee_id') and ctx['employee_id'].name or 'this' }} "
+"arviointiin"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_4
@@ -997,6 +991,7 @@ msgid ""
 "The survey templates available to choose from for the appraisals that use "
 "this template."
 msgstr ""
+"Tätä mallipohjaa käyttäville arvioinneille valittavissa olevat kyselypohjat."
 
 #. module: hr_appraisal_survey
 #: model_terms:survey.survey,description:hr_appraisal_survey.appraisal_feedback_template
@@ -1126,18 +1121,18 @@ msgstr ""
 #. odoo-python
 #: code:addons/hr_appraisal_survey/models/survey_survey.py:0
 msgid "You can't ask feedback for multiple appraisals at once."
-msgstr ""
+msgstr "Et voi pyytää palautetta useista arvioinneista kerralla."
 
 #. module: hr_appraisal_survey
 #. odoo-python
 #: code:addons/hr_appraisal_survey/models/survey_survey.py:0
 msgid "You can't select multiple feedback templates."
-msgstr ""
+msgstr "Et voi valita useita palautepohjia."
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
 msgid "ask feedback"
-msgstr ""
+msgstr "pyydä palautetta"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
@@ -1147,4 +1142,11 @@ msgstr "tai"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
 msgid "to a selection of colleagues you work with."
-msgstr ""
+msgstr "valikoiduilta työkavereiltasi."
+
+#~ msgid ""
+#~ "An appraisal feedback was requested. Please take time to fill the <a "
+#~ "href=\"%s\" target=\"_blank\">survey</a>"
+#~ msgstr ""
+#~ "Arviointipalautetta pyydettiin. Varaa aikaa <a href=\"%s\" "
+#~ "target=\"_blank\">kyselyn</a> täyttämiseen"

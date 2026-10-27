@@ -1,3 +1,4 @@
+from itertools import zip_longest
 from odoo import models, fields, api, _, Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import SQL
@@ -132,6 +133,7 @@ class AccountPayment(models.Model):
         store=True, readonly=False,
         compute='_compute_destination_account_id',
         domain="[('account_type', 'in', ('asset_receivable', 'liability_payable'))]",
+        index='btree_not_null',
         check_company=True)
 
     # == Stat buttons ==
@@ -156,6 +158,7 @@ class AccountPayment(models.Model):
         compute='_compute_stat_buttons_from_reconciliation')
     reconciled_bill_ids = fields.Many2many('account.move', string="Reconciled Bills",
         compute='_compute_stat_buttons_from_reconciliation',
+        search='_search_reconciled_invoice_ids',
         help="Invoices whose journal items have been reconciled with these payments.")
     reconciled_bills_count = fields.Integer(string="# Reconciled Bills",
         compute="_compute_stat_buttons_from_reconciliation")
@@ -218,28 +221,29 @@ class AccountPayment(models.Model):
         '''
         self.ensure_one()
 
-        # liquidity_lines, counterpart_lines, writeoff_lines
-        lines = [self.env['account.move.line'] for _dummy in range(3)]
-        valid_account_types = self._get_valid_payment_account_types()
-        for line in self.move_id.line_ids:
-            if line.account_id in self._get_valid_liquidity_accounts():
-                lines[0] += line  # liquidity_lines
-            elif line.account_id.account_type in valid_account_types or line.account_id == line.company_id.transfer_account_id:
-                lines[1] += line  # counterpart_lines
-            else:
-                lines[2] += line  # writeoff_lines
+        valid_account_types = set(self._get_valid_payment_account_types())
+        valid_liquidity_accounts = set(self._get_valid_liquidity_accounts())
+
+        def categorize(line):
+            if line.account_id in valid_liquidity_accounts:
+                return 'liquidity'
+            if line.account_id.account_type in valid_account_types or line.account_id == line.company_id.transfer_account_id:
+                return 'counterpart'
+            return 'writeoff'
+        groups = self.move_id.line_ids.grouped(categorize)
+        liquidity, counterpart, writeoff = (groups.get(key, self.env['account.move.line']) for key in ('liquidity', 'counterpart', 'writeoff'))
 
         # In some case, there is no liquidity or counterpart line (after changing an outstanding account on the journal for example)
         # In that case, and if there is one writeoff line, we take this line and set it as liquidity/counterpart line
-        if len(lines[2]) == 1:
-            for i in (0, 1):
-                if not lines[i]:
-                    lines[i] = lines[2]
-                    lines[2] -= lines[2]
-
-        return lines
+        if len(writeoff) == 1:
+            if not liquidity:
+                liquidity, writeoff = writeoff, liquidity
+            elif not counterpart:
+                counterpart, writeoff = writeoff, counterpart
+        return liquidity, counterpart, writeoff
 
     def _get_valid_liquidity_accounts(self):
+        self.ensure_one()
         return (
             self.journal_id.default_account_id |
             self.payment_method_line_id.payment_account_id |
@@ -247,6 +251,12 @@ class AccountPayment(models.Model):
             self.journal_id.outbound_payment_method_line_ids.payment_account_id |
             self.outstanding_account_id
         )
+
+    def _valid_payment_states(self):
+        """ This method is used to know in which edition we are: Community or Enterprise
+            and fetch the payment states accordingly.
+        """
+        return ['in_process', 'paid'] if self.env['account.move']._get_invoice_in_payment_state() == 'paid' else ['in_process']
 
     def _get_aml_default_display_name_list(self):
         """ Hook allowing custom values when constructing the default label to set on the journal items.
@@ -271,28 +281,72 @@ class AccountPayment(models.Model):
             ('label', label),
         ]
 
-    def _prepare_move_line_default_vals(self, write_off_line_vals=None, force_balance=None):
-        ''' Prepare the dictionary to create the default account.move.lines for the current payment.
-        :param write_off_line_vals: Optional list of dictionaries to create a write-off account.move.line easily containing:
-            * amount:       The amount to be added to the counterpart amount.
-            * name:         The label to set on the line.
-            * account_id:   The account on which create the write-off.
-        :param force_balance: Optional balance.
-        :return: A list of python dictionary to be passed to the account.move.line's 'create' method.
+    def _prepare_move_withholding_lines(self, default_values):
+        self.ensure_one()
+        return []
+
+    def _prepare_move_liquidity_lines(self, default_values):
+        self.ensure_one()
+        return [{
+            'name': default_values['name'],
+            'date_maturity': self.date,
+            'partner_id': self.partner_id.id,
+            'account_id': self.outstanding_account_id.id,
+            'currency_id': self.currency_id.id,
+            'balance': default_values['balance'],
+            'amount_currency': default_values['amount_currency'],
+        }]
+
+    def _prepare_move_counterpart_lines(self, default_values):
+        self.ensure_one()
+        return [{
+            'name': default_values['name'],
+            'date_maturity': self.date,
+            'partner_id': self.partner_id.id,
+            'account_id': self.destination_account_id.id,
+            'currency_id': self.currency_id.id,
+            'balance': default_values['balance'],
+            'amount_currency': default_values['amount_currency'],
+        }]
+
+    def _prepare_move_lines_per_type(self, write_off_line_vals=None, force_balance=None):
+        ''' Prepare the dictionary containing default vals for account.move.lines for the current payment.
+        returns a dictionary of list of python dictionary containing liquidity, counterpart and writeoff lines.
+            E.g.
+            {
+                'liquidity_lines': [...],
+                'counterpart_lines': [...],
+                'writeoff_lines': [...],
+            }
         '''
         self.ensure_one()
-        write_off_line_vals = write_off_line_vals or []
 
         if not self.outstanding_account_id:
             raise UserError(_(
                 "You can't create a new payment without an outstanding payments/receipts account set either on the company or the %(payment_method)s payment method in the %(journal)s journal.",
                 payment_method=self.payment_method_line_id.name, journal=self.journal_id.display_name))
 
-        # Compute amounts.
-        write_off_line_vals_list = write_off_line_vals or []
-        write_off_amount_currency = sum(x['amount_currency'] for x in write_off_line_vals_list)
-        write_off_balance = sum(x['balance'] for x in write_off_line_vals_list)
+        # Compute a default label to set on the journal items.
+        line_name = ''.join(x[1] for x in self._get_aml_default_display_name_list() if x[1])
 
+        # Prepare write-off lines.
+        write_off_lines = write_off_line_vals or []
+        write_off_amount_currency = sum(x['amount_currency'] for x in write_off_lines)
+        write_off_balance = sum(x['balance'] for x in write_off_lines)
+
+        # Prepare withholding lines.
+        withholding_lines = self._prepare_move_withholding_lines({})
+        withholding_amount_currency = sum(x['amount_currency'] for x in withholding_lines)
+        withholding_balance = sum(x['balance'] for x in withholding_lines)
+
+        # We don't support to combine 'write_off_lines' and 'withholding_lines' together because the withholding lines are already
+        # passed as parameter as write-off lines in '_synchronize_to_moves'.
+        if withholding_lines and write_off_lines:
+            write_off_lines = []
+            write_off_amount_currency = 0.0
+            write_off_balance = 0.0
+
+        # Prepare liquidity lines.
         if self.payment_type == 'inbound':
             # Receive money.
             liquidity_amount_currency = self.amount
@@ -312,39 +366,47 @@ class AccountPayment(models.Model):
                 self.company_id,
                 self.date,
             )
-        counterpart_amount_currency = -liquidity_amount_currency - write_off_amount_currency
-        counterpart_balance = -liquidity_balance - write_off_balance
-        currency_id = self.currency_id.id
+        liquidity_amount_currency -= withholding_amount_currency
+        liquidity_balance -= withholding_balance
 
-        # Compute a default label to set on the journal items.
-        liquidity_line_name = ''.join(x[1] for x in self._get_aml_default_display_name_list() if x[1])
-        counterpart_line_name = liquidity_line_name
+        liquidity_lines = self._prepare_move_liquidity_lines({
+            'name': line_name,
+            'balance': liquidity_balance,
+            'amount_currency': liquidity_amount_currency,
+        })
 
-        line_vals_list = [
-            # Liquidity line.
-            {
-                'name': liquidity_line_name,
-                'date_maturity': self.date,
-                'amount_currency': liquidity_amount_currency,
-                'currency_id': currency_id,
-                'debit': liquidity_balance if liquidity_balance > 0.0 else 0.0,
-                'credit': -liquidity_balance if liquidity_balance < 0.0 else 0.0,
-                'partner_id': self.partner_id.id,
-                'account_id': self.outstanding_account_id.id,
-            },
-            # Receivable / Payable.
-            {
-                'name': counterpart_line_name,
-                'date_maturity': self.date,
-                'amount_currency': counterpart_amount_currency,
-                'currency_id': currency_id,
-                'debit': counterpart_balance if counterpart_balance > 0.0 else 0.0,
-                'credit': -counterpart_balance if counterpart_balance < 0.0 else 0.0,
-                'partner_id': self.partner_id.id,
-                'account_id': self.destination_account_id.id,
-            },
-        ]
-        return line_vals_list + write_off_line_vals_list
+        # Prepare counterpart lines.
+        counterpart_amount_currency = -liquidity_amount_currency - write_off_amount_currency - withholding_amount_currency
+        counterpart_balance = -liquidity_balance - write_off_balance - withholding_balance
+        counterpart_lines = self._prepare_move_counterpart_lines({
+            'name': line_name,
+            'balance': counterpart_balance,
+            'amount_currency': counterpart_amount_currency,
+        })
+
+        return {
+            'liquidity_lines': liquidity_lines,
+            'counterpart_lines': counterpart_lines,
+            'write_off_lines': write_off_lines,
+            'withholding_lines': withholding_lines,
+        }
+
+    def _prepare_move_line_default_vals(self, write_off_line_vals=None, force_balance=None):
+        ''' Prepare the dictionary to create the default account.move.lines for the current payment.
+        :param write_off_line_vals: Optional list of dictionaries to create a write-off account.move.line easily containing:
+            * amount:       The amount to be added to the counterpart amount.
+            * name:         The label to set on the line.
+            * account_id:   The account on which create the write-off.
+        :param force_balance: Optional balance.
+        :return: A list of python dictionary to be passed to the account.move.line's 'create' method.
+        '''
+        self.ensure_one()
+
+        line_vals_per_type = self._prepare_move_lines_per_type(write_off_line_vals=write_off_line_vals, force_balance=force_balance)
+        line_vals = []
+        for sub_line_vals in line_vals_per_type.values():
+            line_vals += sub_line_vals
+        return line_vals
 
     # -------------------------------------------------------------------------
     # COMPUTE METHODS
@@ -389,8 +451,9 @@ class AccountPayment(models.Model):
             if payment.journal_id.company_id not in payment.company_id.parent_ids:
                 payment.company_id = (payment.journal_id.company_id or self.env.company)._accessible_branches()[:1]
 
-    @api.depends('reconciled_invoice_ids.payment_state', 'move_id.line_ids.amount_residual')
+    @api.depends('reconciled_invoice_ids.payment_state', 'reconciled_bill_ids.payment_state', 'move_id.line_ids.amount_residual')
     def _compute_state(self):
+        paid_payments_to_recompute = self.env['account.payment']
         for payment in self:
             if not payment.state:
                 payment.state = 'draft'
@@ -402,8 +465,10 @@ class AccountPayment(models.Model):
                     if move.company_currency_id.is_zero(sum(liquidity.mapped('amount_residual'))) or not any(liquidity.account_id.mapped('reconcile')) else
                     'in_process'
                 )
-            if payment.state == 'in_process' and payment.reconciled_invoice_ids and all(invoice.payment_state == 'paid' for invoice in payment.reconciled_invoice_ids):
+            if payment.state == 'in_process' and (moves := (payment.reconciled_invoice_ids | payment.reconciled_bill_ids)) and all(invoice.payment_state == 'paid' for invoice in moves):
                 payment.state = 'paid'
+                paid_payments_to_recompute |= payment
+        self.env.add_to_compute(self._fields['is_matched'], paid_payments_to_recompute)
 
     @api.depends('move_id.line_ids.amount_residual', 'move_id.line_ids.amount_residual_currency', 'move_id.line_ids.account_id', 'state')
     def _compute_reconciliation_status(self):
@@ -612,7 +677,7 @@ class AccountPayment(models.Model):
 
             pay.qr_code = None
 
-    @api.depends('move_id.line_ids.matched_debit_ids', 'move_id.line_ids.matched_credit_ids')
+    @api.depends('move_id.line_ids.matched_debit_ids', 'move_id.line_ids.matched_credit_ids', 'invoice_ids')
     def _compute_stat_buttons_from_reconciliation(self):
         ''' Retrieve the invoices reconciled to the payments through the reconciliation (account.partial.reconcile). '''
         stored_payments = self.filtered('id')
@@ -849,7 +914,7 @@ class AccountPayment(models.Model):
         accounting_installed = self.env['account.move']._get_invoice_in_payment_state() == 'in_payment'
 
         for i, (pay, vals) in enumerate(zip(payments, vals_list)):
-            if not accounting_installed and not pay.outstanding_account_id:
+            if (not accounting_installed and not pay.outstanding_account_id) or self.env.context.get('force_payment_move'):
                 outstanding_account = pay._get_outstanding_account(pay.payment_type)
                 pay.outstanding_account_id = outstanding_account.id
 
@@ -943,6 +1008,10 @@ class AccountPayment(models.Model):
             if pay.move_id.state == 'posted':
                 continue
             liquidity_lines, counterpart_lines, writeoff_lines = pay._seek_for_lines()
+
+            if 'amount' in changed_fields and len(liquidity_lines) > 1:
+                raise UserError(_("You cannot change the amount of a payment with multiple liquidity lines."))
+
             # Make sure to preserve the write-off amount.
             # This allows to create a new payment with custom 'line_ids'.
             write_off_line_vals = []
@@ -955,14 +1024,28 @@ class AccountPayment(models.Model):
                     'amount_currency': sum(writeoff_lines.mapped('amount_currency')),
                     'balance': sum(writeoff_lines.mapped('balance')),
                 })
-            line_vals_list = pay._prepare_move_line_default_vals(write_off_line_vals=write_off_line_vals)
-            line_ids_commands = [
-                Command.update(liquidity_lines.id, line_vals_list[0]) if liquidity_lines else Command.create(line_vals_list[0]),
-                Command.update(counterpart_lines.id, line_vals_list[1]) if counterpart_lines else Command.create(line_vals_list[1])
-            ]
+            line_vals_per_type = pay._prepare_move_lines_per_type(write_off_line_vals=write_off_line_vals)
+            line_ids_commands = []
+
+            liquidity_lines_vals = line_vals_per_type.get('liquidity_lines', [])
+            for liquidity_line, newline_val in zip_longest(liquidity_lines, liquidity_lines_vals):
+                if liquidity_line and newline_val:
+                    line_ids_commands.append(Command.update(liquidity_line.id, newline_val))
+                elif not liquidity_line and newline_val:
+                    line_ids_commands.append(Command.create(newline_val))
+                elif liquidity_line and not newline_val:
+                    line_ids_commands.append(Command.delete(liquidity_line.id))
+
+            counterpart_lines_vals = line_vals_per_type.get('counterpart_lines', [])
+            line_ids_commands.append(
+                Command.update(counterpart_lines.id, counterpart_lines_vals[0])
+                if counterpart_lines
+                else Command.create(counterpart_lines_vals[0])
+            )
+
             for line in writeoff_lines:
                 line_ids_commands.append((2, line.id))
-            for extra_line_vals in line_vals_list[2:]:
+            for extra_line_vals in line_vals_per_type.get('write_off_lines', []) + line_vals_per_type.get('withholding_lines', []):
                 line_ids_commands.append((0, 0, extra_line_vals))
             # Update the existing journal items.
             # If dealing with multiple write-off lines, they are dropped and a new one is generated.

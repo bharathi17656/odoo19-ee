@@ -85,6 +85,7 @@ class TestKeEdiMocked(TestKeEdi):
         with freeze_time('2024-04-15'), self.patch_session([
             ('saveItem', 'save_item_0', 'success'),
             ('saveTrnsSalesOsdc', 'save_sale_1', 'save_sale_success'),
+            ('selectInvoiceDetails', 'get_invoice_details_1', 'get_invoice_details_success'),
             ('saveTrnsSalesOsdc', 'save_refund_1', 'save_sale_success'),
         ]):
             self._test_send_invoice_and_credit_note()

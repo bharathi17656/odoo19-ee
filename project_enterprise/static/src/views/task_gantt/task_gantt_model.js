@@ -23,13 +23,21 @@ export class TaskGanttModel extends TaskGanttModelCommon {
         }).getHighlightIds;
     }
 
-    getDialogContext() {
+    getDialogContext(params = {}) {
         const context = super.getDialogContext(...arguments);
         this._replaceSpecialMany2manyKeys(context);
         if ("user_ids" in context && !context.user_ids) {
             delete context.user_ids;
         }
-        return { ...context, search_default_open_tasks: true };
+        const { start, stop } = params;
+        const coversWholeDays = Boolean(
+            start && stop && start.equals(start.startOf("day")) && stop.equals(stop.startOf("day"))
+        );
+        return {
+            ...context,
+            search_default_open_tasks: true,
+            use_working_schedule: this.metaData.scale.interval !== "hour" || coversWholeDays,
+        };
     }
 
     /**
@@ -138,7 +146,16 @@ export class TaskGanttModel extends TaskGanttModelCommon {
             }
         }
         if (displayUnassigned) {
-            domain = Domain.or([domain, "[('user_ids', '=', false)]"]).toList();
+            const domainList = new Domain(domain).toList();
+            const projectId = context?.default_project_id || null;
+            let unassignedOnlyDomain = new Domain([["user_ids", "=", false]]);
+            if (projectId) {
+                unassignedOnlyDomain = Domain.and([
+                    unassignedOnlyDomain,
+                    [["project_id", "=", projectId]],
+                ]);
+            }
+            domain = Domain.or([domainList, unassignedOnlyDomain]).toList();
         }
         searchParams.domain = this._processSearchDomain(domain);
         return super.load({ ...searchParams, context: { ...context }, displayUnassigned });

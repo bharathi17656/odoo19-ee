@@ -10,13 +10,13 @@
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
-# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2025.
+# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-19 16:32+0000\n"
+"POT-Creation-Date: 2026-04-10 18:45+0000\n"
+"PO-Revision-Date: 2026-09-20 17:33+0000\n"
 "Last-Translator: \"Malaz Siddig Elsayed Abuidris (msea)\" <msea@odoo.com>\n"
 "Language-Team: Arabic <https://translate.odoo.com/projects/odoo-19/"
 "industry_fsm/ar/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__nbr
@@ -56,16 +56,6 @@ msgstr "(شاملة"
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
 msgid "10 days"
 msgstr "10 أيام"
-
-#. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
-msgid "10:00"
-msgstr "10:00"
-
-#. module: industry_fsm
-#: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
-msgid "2023-01-01"
-msgstr "2023-01-01"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
@@ -106,8 +96,8 @@ msgid ""
 "        "
 msgstr ""
 "<div>\n"
-"    <t t-set=\"date_begin\" t-value=\"format_datetime("
-"object.planned_date_begin, tz=object.partner_id.tz, "
+"    <t t-set=\"date_begin\" t-"
+"value=\"format_datetime(object.planned_date_begin, tz=object.partner_id.tz, "
 "lang_code=object.partner_id.lang)\"/>\n"
 "\n"
 "    <t t-set=\"date_end\" t-value=\"format_datetime(object.date_deadline, "
@@ -117,8 +107,8 @@ msgstr ""
 "><br/>\n"
 "    <t t-if=\"date_begin and date_end\">\n"
 "        تمت جدولة <t t-out=\"object.name or ''\">عملية صيانة الغلاية</t> من "
-"تاريخ <t t-out=\"date_begin or ''\">05/31/2021 12:30:00</t> إلى تاريخ <t "
-"t-out=\"date_end or ''\">05/31/2021 14:30:00</t>.\n"
+"تاريخ <t t-out=\"date_begin or ''\">05/31/2021 12:30:00</t> إلى تاريخ <t t-"
+"out=\"date_end or ''\">05/31/2021 14:30:00</t>.\n"
 "    </t>\n"
 "    <t t-else=\"\">\n"
 "        تمت جدولة <t t-out=\"object.name or ''\">عملية صيانة الغلاية</t> "
@@ -128,8 +118,8 @@ msgstr ""
 "    مع أطيب التحيات،\n"
 "    <t t-if=\"user.signature\" data-o-mail-quote-container=\"1\">\n"
 "        <br/>\n"
-"        <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-out="
-"\"user.signature or ''\" data-o-mail-quote=\"1\">ميتشل آدمن</t></div>\n"
+"        <div data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/><t t-"
+"out=\"user.signature or ''\" data-o-mail-quote=\"1\">ميتشل آدمن</t></div>\n"
 "    </t>\n"
 "</div>\n"
 "        "
@@ -154,12 +144,12 @@ msgid ""
 "        "
 msgstr ""
 "<p>\n"
-"                عزيزنا <t t-out=\"object.partner_id.name or 'Customer'\""
-">العميل</t>،<br/><br/>\n"
+"                عزيزنا <t t-out=\"object.partner_id.name or "
+"'Customer'\">العميل</t>،<br/><br/>\n"
 "                إليك تقرير الخدمة الميدانية لعمليتنا في موقع العمل مرفقة "
 "أدناه. <br/><br/>\n"
-"                لا تتردد في التواصل معنا إذا كانت لديك أي أسئلة أو "
-"استفسارات.<br/><br/>\n"
+"                لا تتردد في التواصل معنا إذا كانت لديك أي أسئلة أو استفسارات."
+"<br/><br/>\n"
 "                مع أطيب التحيات،<br/><br/>\n"
 "            </p>\n"
 "        "
@@ -171,9 +161,9 @@ msgid ""
 "title=\"By saving this change, the customer contact number will also be "
 "updated.\" invisible=\"not partner_id or not is_task_phone_update\"/>"
 msgstr ""
-"<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" title="
-"\"بحفظك لهذا التغيير، سيتم أيضاً تحديث رقم هاتف العميل. \" invisible="
-"\"not partner_id or not is_task_phone_update\"/>"
+"<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
+"title=\"بحفظك لهذا التغيير، سيتم أيضاً تحديث رقم هاتف العميل. \" "
+"invisible=\"not partner_id or not is_task_phone_update\"/>"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
@@ -196,15 +186,16 @@ msgid ""
 "                            Signed\n"
 "                        </span>"
 msgstr ""
-"<span style=\"                             font-size: 10px;"
-"                             color: #fff;                             text-"
-"transform: uppercase;                             text-align: center;"
-"                             font-weight: bold; line-height: 20px;"
-"                             transform: rotate(45deg);"
-"                             width: 100px; height: auto; display: block;"
-"                             background: green;                             "
-"position: absolute;                             top: 19px; right: -21px; "
-"left: auto;                             padding: 0;\">\n"
+"<span style=\"                             font-size: "
+"10px;                             color: #fff;                             "
+"text-transform: uppercase;                             text-align: "
+"center;                             font-weight: bold; line-height: "
+"20px;                             transform: "
+"rotate(45deg);                             width: 100px; height: auto; "
+"display: block;                             background: "
+"green;                             position: "
+"absolute;                             top: 19px; right: -21px; left: "
+"auto;                             padding: 0;\">\n"
 "                            تم التوقيع\n"
 "                        </span>"
 
@@ -226,7 +217,7 @@ msgstr "<strong>العميل: </strong>"
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
 msgid "<strong>Technician: </strong>"
-msgstr ""
+msgstr "<strong>الفني: </strong>"
 
 #. module: industry_fsm
 #: model:ir.model.constraint,message:industry_fsm.constraint_project_project_company_id_required_for_fsm_project
@@ -631,16 +622,16 @@ msgstr "الأنشطة المستقبلية"
 #: code:addons/industry_fsm/models/project_task.py:0
 msgid "GPS Coordinates: %(localisation_start)s (%(latitude)s, %(longitude)s)"
 msgstr ""
-"إحداثيات جهاز الملاحة GPS: %(localisation_start)s (%(latitude)s, "
-"%(longitude)s)"
+"إحداثيات جهاز الملاحة GPS: %(localisation_start)s (%(latitude)s, %"
+"(longitude)s)"
 
 #. module: industry_fsm
 #. odoo-python
 #: code:addons/industry_fsm/wizard/hr_timesheet_stop_timer_confirmation_wizard.py:0
 msgid "GPS Coordinates: %(localisation_stop)s (%(latitude)s, %(longitude)s)"
 msgstr ""
-"إحداثيات جهاز الملاحة GPS: %(localisation_stop)s (%(latitude)s, "
-"%(longitude)s)"
+"إحداثيات جهاز الملاحة GPS: %(localisation_stop)s (%(latitude)s, %"
+"(longitude)s)"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_hr_timesheet_stop_timer_confirmation_wizard__allow_geolocation
@@ -661,7 +652,7 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__has_template_ancestor
 msgid "Has Template Ancestor"
-msgstr ""
+msgstr "يحتوي على قالب "
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_account_analytic_line__id
@@ -716,7 +707,7 @@ msgstr "قالب"
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
 msgid "Jane Technician"
-msgstr ""
+msgstr "الفني (جاين)"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
@@ -783,7 +774,7 @@ msgstr "فلنقم بإنشاء <b>مهمتك</b> الأولى."
 #. odoo-javascript
 #: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
 msgid "Let's start from scratch."
-msgstr ""
+msgstr "فلنبدأ من الصفر."
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard__line_ids
@@ -1415,14 +1406,14 @@ msgstr "أنشطة اليوم"
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_view_form_inherit
 msgid "Track technician location when running the timer"
-msgstr ""
+msgstr "تتبع موقع الفني عندما يكون المؤقِّت جارياً "
 
 #. module: industry_fsm
 #: model:ir.model.fields,help:industry_fsm.field_hr_timesheet_stop_timer_confirmation_wizard__allow_geolocation
 #: model:ir.model.fields,help:industry_fsm.field_project_project__allow_geolocation
 #: model:ir.model.fields,help:industry_fsm.field_project_task__allow_geolocation
 msgid "Track technician location when running the timer."
-msgstr ""
+msgstr "تتبع موقع الفني عندما يكون المؤقِّت جارياً."
 
 #. module: industry_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_type_action_fsm
@@ -1519,10 +1510,10 @@ msgid ""
 "lang_code=object.partner_id.lang) or '' }}"
 msgstr ""
 "تمت جدولة عملك الميداني {{ object.planned_date_begin and "
-"object.date_deadline and 'from the ' + format_datetime("
-"object.planned_date_begin, tz=object.partner_id.tz, "
-"lang_code=object.partner_id.lang) + ' to the ' + format_datetime("
-"object.date_deadline, tz=object.partner_id.tz, "
+"object.date_deadline and 'from the ' + "
+"format_datetime(object.planned_date_begin, tz=object.partner_id.tz, "
+"lang_code=object.partner_id.lang) + ' to the ' + "
+"format_datetime(object.date_deadline, tz=object.partner_id.tz, "
 "lang_code=object.partner_id.lang) or '' }}"
 
 #. module: industry_fsm
@@ -1549,8 +1540,14 @@ msgid ""
 "                        <span class=\"fw-bold text-dark\"> Sub-tasks</span>)"
 msgstr ""
 "في\n"
-"                        <span class=\"fw-bold text-dark\"> المهام "
-"الفرعية</span>)"
+"                        <span class=\"fw-bold text-dark\"> المهام الفرعية</"
+"span>)"
+
+#~ msgid "10:00"
+#~ msgstr "10:00"
+
+#~ msgid "2023-01-01"
+#~ msgstr "2023-01-01"
 
 #~ msgid "<b>Review and sign</b> the <b>task report</b> with your customer."
 #~ msgstr "<b>قم بمراجعة والتوقيع على</b> <b>تقرير المهمة</b> مع عميلك. "

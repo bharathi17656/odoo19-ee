@@ -49,18 +49,30 @@ export class Keypad extends Component {
         this.selection = useSelection({
             refName: "input-ref",
             model: this.props.state.input.selection,
+            preserveOnClickAwayPredicate: (ev) =>
+                Boolean(ev.target.closest(".o-voip-Keypad-backspace, .o-voip-Keypad-digitBtn")),
         });
         this.ui = useService("ui");
         this.softphone = useService("voip").softphone;
-        this.isMobile = isMobileOS();
+        this.isMobile = isMobileOS(); // TODO unused, remove in master
         useEffect(
             (shouldFocusInput) => {
                 if (
                     shouldFocusInput &&
                     this.inputRef.el &&
                     !this.voip.error &&
-                    !isCurrentFocusEditable()
+                    (document.activeElement === this.inputRef.el || !isCurrentFocusEditable())
                 ) {
+                    // By default, the <input> is rendered with "none" as
+                    // inputMode, which should ensure that no update from OWL
+                    // would open the keyboard. We also re-force "none" here, in
+                    // the function that controls the focus. We only set to
+                    // "text" when the user actually engages with the input
+                    // using his finger. As soon as the input will change in any
+                    // other way than using the mobile keyboard, this will be
+                    // switched back to "none".
+                    this.inputRef.el.inputMode = "none";
+
                     this.inputRef.el.focus();
                     this.selection.restore();
                     this.props.state.input.focus = false;
@@ -143,7 +155,9 @@ export class Keypad extends Component {
                     break;
                 }
             }
-            const phoneMatch = matchPhoneNumber(contact.phone, searchTerms);
+            const phoneMatch =
+                matchPhoneNumber(contact.phone, searchTerms) ??
+                (contact.phone_sanitized ? matchPhoneNumber(contact.phone_sanitized, searchTerms) : null);
             if (!phoneMatch) {
                 continue;
             }
@@ -285,7 +299,7 @@ export class Keypad extends Component {
             this.updateCountryCode();
         }
         this.selection.moveCursor(cursorPosition);
-        this.props.state.input.focus = !this.isMobile;
+        this.props.state.input.focus = true;
         this.onInputSearchBar();
     }
 
@@ -317,10 +331,7 @@ export class Keypad extends Component {
             this.props.state.input.value =
                 value.slice(0, selectionStart) + key + value.slice(selectionEnd);
             this.selection.moveCursor(selectionStart + 1);
-            if (this.isMobile) {
-                this.inputRef.el.blur();
-            }
-            this.props.state.input.focus = !this.isMobile;
+            this.props.state.input.focus = true;
             this.onInputSearchBar();
         }
     }
@@ -341,7 +352,7 @@ export class Keypad extends Component {
 
     /** @param {KeyboardEvent} ev */
     onKeydown(ev) {
-        if (ev.key !== "Enter") {
+        if (ev.key !== "Enter" || this.props.dtmf) {
             return;
         }
         const inputValue = this.props.state.input.value.trim();

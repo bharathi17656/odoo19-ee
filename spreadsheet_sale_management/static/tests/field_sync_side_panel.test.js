@@ -1,4 +1,4 @@
-import { before, describe, expect, test } from "@odoo/hoot";
+import { before, describe, expect, getFixture, test } from "@odoo/hoot";
 import { animationFrame } from "@odoo/hoot-mock";
 
 import { defineModels, contains } from "@web/../tests/web_test_helpers";
@@ -134,4 +134,33 @@ test("side panel is closed when field sync is deleted", async () => {
     deleteFieldSyncs(model, "A1");
     await animationFrame();
     expect(".o-sidePanel").toHaveCount(0);
+});
+
+test("side panel input value preserved on render", async () => {
+    const { model, env } = await mountSaleOrderSpreadsheetAction();
+    addFieldSync(model, "A1", "product_uom_qty", 0);
+    const sheetId = model.getters.getActiveSheetId();
+    env.openSidePanel("FieldSyncSidePanel", { position: { sheetId, col: 0, row: 0 } });
+    await animationFrame();
+    const fixture = getFixture();
+    const input = fixture.querySelector(".o-sidePanel input.o_input");
+    input.focus();
+    input.value = "10";
+    await animationFrame();
+    expect(input.value).toBe("10");
+});
+
+test("side panel saves input value on close", async () => {
+    const { model, env } = await mountSaleOrderSpreadsheetAction();
+    addFieldSync(model, "A1", "product_uom_qty", 0);
+    const sheetId = model.getters.getActiveSheetId();
+    env.openSidePanel("FieldSyncSidePanel", { position: { sheetId, col: 0, row: 0 } });
+    await animationFrame();
+    const fixture = getFixture();
+    const input = fixture.querySelector(".o-sidePanel input.o_input");
+    input.focus();
+    input.value = "10";
+    await contains(".o-sidePanelClose").click();
+    await animationFrame();
+    expect(getFieldSync(model, "A1").indexInList).toBe(9);
 });

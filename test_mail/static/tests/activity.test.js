@@ -79,13 +79,12 @@ function patchActivityDomain(load, params) {
     return load(params);
 }
 
-// Because tests implicitly use Popover
-// and that it uses HTMLElement.animate()
-disableAnimations();
-
 describe.current.tags("desktop");
 defineTestMailModels();
 beforeEach(async () => {
+    // Because tests implicitly use Popover
+    // and that it uses HTMLElement.animate()
+    disableAnimations();
     mockDate("2023-04-08 10:00:00", 0);
     patchWithCleanup(DynamicList.prototype, {
         async load(params) {
@@ -677,6 +676,20 @@ test("activity view: group_by in the action has no effect", async () => {
         views: [[false, "activity"]],
     });
     await waitForSteps(["get_activity_data"]);
+});
+
+test("activity view: fetchActivityData uses the action limit when provided", async () => {
+    onRpc("get_activity_data", ({ kwargs }) => {
+        asyncStep("get_activity_data:limit:" + kwargs.limit);
+    });
+    await start();
+    registerArchs(archs);
+    await openView({
+        res_model: "mail.test.activity",
+        views: [[false, "activity"]],
+        limit: 80,
+    });
+    await waitForSteps(["get_activity_data:limit:80"]);
 });
 
 test("activity view: search more to schedule an activity for a record of a respecting model", async () => {

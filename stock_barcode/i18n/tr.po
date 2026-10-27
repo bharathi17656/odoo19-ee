@@ -25,7 +25,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:41+0000\n"
+"POT-Creation-Date: 2026-09-25 17:42+0000\n"
 "PO-Revision-Date: 2025-11-21 14:41+0000\n"
 "Last-Translator: Odoo Turkish Import <dyki+tr@odoo.com>\n"
 "Language-Team: Turkish <https://translate.odoo.com/projects/odoo-19/"
@@ -43,6 +43,12 @@ msgstr ""
 msgid "%s can't be inventoried. Only storable products can be inventoried."
 msgstr ""
 "%s envanterlenemez. Sadece depolanabilir ürünlerin envanteri yapılabilir."
+
+#. module: stock_barcode
+#. odoo-javascript
+#: code:addons/stock_barcode/static/src/components/count_screen_rfid.xml:0
+msgid "/s"
+msgstr ""
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.scrap_product_selector
@@ -150,7 +156,7 @@ msgstr ""
 
 #. module: stock_barcode
 #. odoo-javascript
-#: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
+#: code:addons/stock_barcode/static/src/components/extra_product_dialog.js:0
 msgid "Add extra product?"
 msgstr "Ekstra ürün eklensin mi?"
 
@@ -213,8 +219,8 @@ msgid ""
 "An error occured with field '%(field_name)s': the corresponding AI '%"
 "(ai_code)s' was not found in the element_string"
 msgstr ""
-"'%(field_name)s' alanı ile ilgili bir hata oluştu: karşılık gelen AI "
-"'%(ai_code)s' element_string içinde bulunamadı"
+"'%(field_name)s' alanı ile ilgili bir hata oluştu: karşılık gelen AI '%"
+"(ai_code)s' element_string içinde bulunamadı"
 
 #. module: stock_barcode
 #. odoo-python
@@ -690,6 +696,14 @@ msgid "Following backorders were created:"
 msgstr "Aşağıdaki bekleyen siparişler oluşturuldu:"
 
 #. module: stock_barcode
+#. odoo-javascript
+#: code:addons/stock_barcode/static/src/components/extra_product_dialog.js:0
+msgid ""
+"Following scanned products are not reserved for this transfer. Are you sure "
+"you want to add them?"
+msgstr ""
+
+#. module: stock_barcode
 #: model:ir.model.fields,help:stock_barcode.field_stock_picking_type__barcode_allow_extra_product
 msgid "For planned transfers, allow adding non-reserved products"
 msgstr ""
@@ -1160,8 +1174,8 @@ msgid ""
 "Partition table %(table_name)s not found, available tables are : %"
 "(table_list)s)"
 msgstr ""
-"Bölümleme tablosu %(table_name)s bulunamadı, kullanılabilir tablolar : "
-"%(table_list)s)"
+"Bölümleme tablosu %(table_name)s bulunamadı, kullanılabilir tablolar : %"
+"(table_list)s)"
 
 #. module: stock_barcode
 #. odoo-javascript
@@ -1387,8 +1401,8 @@ msgid ""
 "(bold_s)s lot%(bold_e)s, a %(bold_s)s packaging%(bold_e)s, or a %(bold_s)s "
 "package%(bold_e)s to filter your records"
 msgstr ""
-"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir "
-"%(bold_s)s ürün%(bold_e)s, bir %(bold_s)s lot%(bold_e)s, bir %(bold_s)s "
+"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir %"
+"(bold_s)s ürün%(bold_e)s, bir %(bold_s)s lot%(bold_e)s, bir %(bold_s)s "
 "ambalaj%(bold_e)s veya bir %(bold_s)s paket%(bold_e)s tarayın"
 
 #. module: stock_barcode
@@ -1399,8 +1413,8 @@ msgid ""
 "(bold_s)s lot%(bold_e)s, or a %(bold_s)s package%(bold_e)s to filter your "
 "records"
 msgstr ""
-"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir "
-"%(bold_s)s ürün%(bold_e)s, bir %(bold_s)s lot%(bold_e)s veya bir %(bold_s)s "
+"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir %"
+"(bold_s)s ürün%(bold_e)s, bir %(bold_s)s lot%(bold_e)s veya bir %(bold_s)s "
 "paket%(bold_e)s tarayın"
 
 #. module: stock_barcode
@@ -1411,8 +1425,8 @@ msgid ""
 "(bold_s)s lot%(bold_e)s, or a %(bold_s)s packaging%(bold_e)s to filter your "
 "records"
 msgstr ""
-"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir "
-"%(bold_s)s ürün%(bold_e)s, bir %(bold_s)s lot%(bold_e)s veya bir %(bold_s)s "
+"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir %"
+"(bold_s)s ürün%(bold_e)s, bir %(bold_s)s lot%(bold_e)s veya bir %(bold_s)s "
 "ambalaj%(bold_e)s tarayın"
 
 #. module: stock_barcode
@@ -1423,9 +1437,9 @@ msgid ""
 "(bold_s)s packaging%(bold_e)s, or a %(bold_s)s package%(bold_e)s to filter "
 "your records"
 msgstr ""
-"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir "
-"%(bold_s)s ürün%(bold_e)s, bir %(bold_s)s ambalaj%(bold_e)s veya bir "
-"%(bold_s)s paket%(bold_e)s tarayın"
+"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir %"
+"(bold_s)s ürün%(bold_e)s, bir %(bold_s)s ambalaj%(bold_e)s veya bir %"
+"(bold_s)s paket%(bold_e)s tarayın"
 
 #. module: stock_barcode
 #. odoo-javascript
@@ -1434,8 +1448,8 @@ msgid ""
 "Scan a %(bold_s)s transfer%(bold_e)s, a %(bold_s)s product%(bold_e)s, or a %"
 "(bold_s)s lot%(bold_e)s to filter your records"
 msgstr ""
-"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir "
-"%(bold_s)s ürün%(bold_e)s veya bir %(bold_s)s lot%(bold_e)s tarayın"
+"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir %"
+"(bold_s)s ürün%(bold_e)s veya bir %(bold_s)s lot%(bold_e)s tarayın"
 
 #. module: stock_barcode
 #. odoo-javascript
@@ -1444,8 +1458,8 @@ msgid ""
 "Scan a %(bold_s)s transfer%(bold_e)s, a %(bold_s)s product%(bold_e)s, or a %"
 "(bold_s)s package%(bold_e)s to filter your records"
 msgstr ""
-"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir "
-"%(bold_s)s ürün%(bold_e)s veya bir %(bold_s)s paket%(bold_e)s tarayın"
+"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir %"
+"(bold_s)s ürün%(bold_e)s veya bir %(bold_s)s paket%(bold_e)s tarayın"
 
 #. module: stock_barcode
 #. odoo-javascript
@@ -1454,8 +1468,8 @@ msgid ""
 "Scan a %(bold_s)s transfer%(bold_e)s, a %(bold_s)s product%(bold_e)s, or a %"
 "(bold_s)s packaging%(bold_e)s to filter your records"
 msgstr ""
-"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir "
-"%(bold_s)s ürün%(bold_e)s veya bir %(bold_s)s ambalaj%(bold_e)s tarayın"
+"Kayıtlarınızı filtrelemek için bir %(bold_s)s transfer%(bold_e)s, bir %"
+"(bold_s)s ürün%(bold_e)s veya bir %(bold_s)s ambalaj%(bold_e)s tarayın"
 
 #. module: stock_barcode
 #. odoo-javascript
@@ -1483,8 +1497,8 @@ msgid ""
 "Scan a %(bold_s)sproduct%(bold_e)s or its %(bold_s)spackaging%(bold_e)s to "
 "locate it"
 msgstr ""
-"Bulmak için bir %(bold_s)sürününü%(bold_e)s veya "
-"%(bold_s)sambalajını%(bold_e)s tarayın"
+"Bulmak için bir %(bold_s)sürününü%(bold_e)s veya %(bold_s)sambalajını%"
+"(bold_e)s tarayın"
 
 #. module: stock_barcode
 #. odoo-javascript
@@ -1493,8 +1507,8 @@ msgid ""
 "Scan a %(bold_s)stracking number%(bold_e)s or a %(bold_s)spackage%(bold_e)s "
 "to find a transfer"
 msgstr ""
-"Transfer bulmak için bir %(bold_s)stakip numarasını%(bold_e)s veya bir "
-"%(bold_s)spaketini%(bold_e)s tarayın"
+"Transfer bulmak için bir %(bold_s)stakip numarasını%(bold_e)s veya bir %"
+"(bold_s)spaketini%(bold_e)s tarayın"
 
 #. module: stock_barcode
 #. odoo-javascript
@@ -1712,6 +1726,14 @@ msgstr "Daha fazla ürün tarayın veya yeni bir kaynak konum tarayın"
 
 #. module: stock_barcode
 #. odoo-javascript
+#: code:addons/stock_barcode/static/src/components/main.xml:0
+msgid ""
+"Scan more quantities or scan a lot number to apply the scanned quantity to "
+"it."
+msgstr ""
+
+#. module: stock_barcode
+#. odoo-javascript
 #: code:addons/stock_barcode/static/src/main_menu/main_menu.xml:0
 msgid "Scan or tap"
 msgstr "Tara yada Elle Giriş Yap"
@@ -1739,16 +1761,6 @@ msgstr "Stok Konumlarını Tara"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 msgid "Scan the source location or a package"
 msgstr "Stok Konumnu yada Ürünü Tara"
-
-#. module: stock_barcode
-#. odoo-javascript
-#: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
-msgid ""
-"Scanned product %s is not reserved for this transfer. Are you sure you want "
-"to add it?"
-msgstr ""
-"Taranan %s ürünü bu transfer için ayrılmamış. Eklemek istediğinizden emin "
-"misiniz?"
 
 #. module: stock_barcode
 #. odoo-javascript
@@ -1894,6 +1906,12 @@ msgstr "Taranan konum, bu işlemin hedefine ait değil"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 msgid "The scanned location doesn't belong to this operation's location"
 msgstr "Taranan konum, bu işlemin konumuna ait değil"
+
+#. module: stock_barcode
+#. odoo-javascript
+#: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
+msgid "The scanned serial number %(lotName)s is already awaiting confirmation."
+msgstr ""
 
 #. module: stock_barcode
 #. odoo-javascript
@@ -2097,6 +2115,14 @@ msgstr "Evet"
 
 #. module: stock_barcode
 #. odoo-javascript
+#: code:addons/stock_barcode/static/src/models/barcode_model.js:0
+msgid ""
+"You already scanned %(packaging_name)s, please scan a lot before scanning "
+"another type of packaging."
+msgstr ""
+
+#. module: stock_barcode
+#. odoo-javascript
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 msgid ""
 "You are about to take the product %(productName)s from the location %"
@@ -2163,6 +2189,26 @@ msgid "You must scan a product"
 msgstr "Bir Ürün Taraması yapmanız gerek"
 
 #. module: stock_barcode
+#. odoo-javascript
+#: code:addons/stock_barcode/static/src/components/main.xml:0
+msgid "You scanned"
+msgstr ""
+
+#. module: stock_barcode
+#. odoo-javascript
+#: code:addons/stock_barcode/static/src/models/barcode_model.js:0
+msgid ""
+"You still have unassigned quantities for product %(product)s. Scan a lot to "
+"assign them before scanning another product."
+msgstr ""
+
+#. module: stock_barcode
+#. odoo-javascript
+#: code:addons/stock_barcode/static/src/components/main.xml:0
+msgid "of"
+msgstr ""
+
+#. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.view_backorder_confirmation
 msgid "products were not processed at all."
 msgstr "ürün hiç işlenmedi."
@@ -2171,6 +2217,13 @@ msgstr "ürün hiç işlenmedi."
 #: model_terms:ir.ui.view,arch_db:stock_barcode.view_backorder_confirmation
 msgid "products were partially processed."
 msgstr "ürün kısmen işlendi."
+
+#~ msgid ""
+#~ "Scanned product %s is not reserved for this transfer. Are you sure you "
+#~ "want to add it?"
+#~ msgstr ""
+#~ "Taranan %s ürünü bu transfer için ayrılmamış. Eklemek istediğinizden emin "
+#~ "misiniz?"
 
 #~ msgid "<i class=\"fa fa-print\"/> Print barcode commands"
 #~ msgstr "<i class=\"fa fa-print\"/> Barkod komutlarını yazdır"

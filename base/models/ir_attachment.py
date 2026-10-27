@@ -3,26 +3,40 @@
 import base64
 import binascii
 import contextlib
+import functools
 import hashlib
 import logging
 import mimetypes
 import os
-import psycopg2
 import re
 import uuid
 import warnings
-import werkzeug
-
 from collections import defaultdict
 from collections.abc import Collection
 
-from odoo import api, fields, models, _
-from odoo.exceptions import AccessError, MissingError, ValidationError, UserError
+import psycopg2
+import werkzeug
+
+from odoo import _, api, fields, models
+from odoo.exceptions import AccessError, MissingError, UserError, ValidationError
 from odoo.fields import Domain
-from odoo.http import Stream, root, request
-from odoo.tools import config, consteq, human_size, image, split_every, str2bool, OrderedSet
+from odoo.http import Stream, request, root
+from odoo.tools import (
+    OrderedSet,
+    config,
+    consteq,
+    human_size,
+    image,
+    split_every,
+    str2bool,
+)
 from odoo.tools.constants import PREFETCH_MAX
-from odoo.tools.mimetypes import guess_mimetype, fix_filename_extension, _olecf_mimetypes
+from odoo.tools.mimetypes import (
+    MIMETYPE_HEAD_SIZE,
+    _olecf_mimetypes,
+    fix_filename_extension,
+    guess_mimetype,
+)
 from odoo.tools.misc import limited_field_access_token
 
 _logger = logging.getLogger(__name__)
@@ -147,10 +161,10 @@ class IrAttachment(models.Model):
         fname, full_path = self._get_path(bin_value, checksum)
         if not os.path.exists(full_path):
             try:
-                with open(full_path, 'wb') as fp:
-                    fp.write(bin_value)
                 # add fname to checklist, in case the transaction aborts
                 self._mark_for_gc(fname)
+                with open(full_path, 'wb') as fp:
+                    fp.write(bin_value)
             except OSError:
                 _logger.info("_file_write writing %s", full_path)
                 raise
@@ -256,6 +270,14 @@ class IrAttachment(models.Model):
                 attach.raw = attach._file_read(attach.store_fname)
             else:
                 attach.raw = attach.db_datas
+
+    def _get_pdf_raw(self):
+        self.ensure_one()
+        if self.type != 'binary':
+            return False
+        if not self.mimetype.startswith('application/pdf'):
+            return False
+        return self.raw
 
     def _inverse_raw(self):
         self._set_attachment_data(lambda a: a.raw or b'')
@@ -410,19 +432,15 @@ class IrAttachment(models.Model):
         return values
 
     @api.model
-    def _index(self, bin_data, file_type, checksum=None):
+    def _index(self, bin_data: bytes, file_type: str, checksum=None) -> str | None:
         """ compute the index content of the given binary data.
-            This is a python implementation of the unix command 'strings'.
-            :param bin_data : datas in binary form
-            :return index_content : string containing all the printable character of the binary data
+        This is a python implementation of the unix command 'strings'.
         """
-        index_content = False
-        if file_type:
-            index_content = file_type.split('/')[0]
-            if index_content == 'text': # compute index_content only for text type
-                words = re.findall(b"[\x20-\x7E]{4,}", bin_data)
-                index_content = b"\n".join(words).decode('ascii')
-        return index_content
+        # compute index_content only for text type
+        if file_type and file_type.startswith('text/'):
+            words = re.findall(rb"[\x20-\x7E]{4,}", bin_data)
+            return b"\n".join(words).decode('ascii')
+        return None
 
     @api.model
     def get_serving_groups(self):
@@ -474,6 +492,15 @@ class IrAttachment(models.Model):
                 if not any(has_group(g) for g in attachment.get_serving_groups()):
                     raise ValidationError(_("Sorry, you are not allowed to write on this document"))
 
+    @api.constrains('res_model', 'res_id')
+    def _check_circular_attachment(self):
+        for record in self.sudo():
+            if record.res_model == 'ir.attachment' and record.id == record.res_id:
+                raise ValidationError(_(
+                    "You cannot attach an attachment to itself.\n"
+                    "Attachment %(record)s cannot have res_id: %(res_id)s",
+                    record=record, res_id=record))
+
     @api.model
     def check(self, mode, values=None):
         """ Restricts the access to an ir.attachment, according to referred mode """
@@ -520,24 +547,28 @@ class IrAttachment(models.Model):
         # DLE P173: `test_01_portal_attachment`
         remaining = remaining.sudo()
         remaining.fetch(SECURITY_FIELDS)  # fetch only these fields
+        # computed once per call and per field, not once per attachment
+        is_system = self.env.is_system()
+
+        @functools.cache
+        def has_field_access(res_model, res_field):
+            model = self.env.get(res_model)
+            field = model._fields.get(res_field) if model is not None else None
+            return field is not None and self._has_field_access(field, operation)
+
         for attachment in remaining:
             if attachment.public and operation == 'read':
                 continue
             att_id = attachment.id
             res_model, res_id = attachment.res_model, attachment.res_id
-            if not self.env.is_system():
+            if not is_system:
                 if not res_id and attachment.create_uid.id != self.env.uid:
                     forbidden_ids.add(att_id)
                     continue
-                if res_field := attachment.res_field:
-                    try:
-                        field = self.env[res_model]._fields[res_field]
-                    except KeyError:
-                        # field does not exist
-                        field = None
-                    if field is None or not self._has_field_access(field, operation):
-                        forbidden_ids.add(att_id)
-                        continue
+                res_field = attachment.res_field
+                if res_field and not has_field_access(res_model, res_field):
+                    forbidden_ids.add(att_id)
+                    continue
             if res_model and res_id:
                 model_ids[res_model].add(res_id)
                 att_model_ids.append((att_id, (res_model, res_id)))
@@ -657,9 +688,22 @@ class IrAttachment(models.Model):
         domain = domain.optimize_full(self)
         ordered = bool(order)
         if limit is None:
-            records = self.sudo().with_context(active_test=False).search_fetch(
-                domain, SECURITY_FIELDS, order=order).sudo(False)
-            return records._filtered_access('read')[offset:]._as_query(ordered)
+            # The SQL conditions alone grant access to public attachments and
+            # to the ones linked to no record, for an administrator or for
+            # their creator. Only the other attachments go through the check in
+            # Python, and the result stays a query.
+            if self.env.is_system():
+                granted = Domain('public', '=', True) | Domain('res_id', '=', False)
+            else:
+                granted = Domain('public', '=', True) | (
+                    Domain('res_id', '=', False)
+                    & Domain('res_field', '=', False)
+                    & Domain('create_uid', '=', self.env.uid)
+                )
+            to_check = self.sudo().with_context(active_test=False).search_fetch(
+                domain & ~granted, SECURITY_FIELDS).sudo(False)
+            accessible = granted | Domain('id', 'in', to_check._filtered_access('read').ids)
+            return super()._search(domain & accessible, offset, limit, order, active_test=active_test)
         # Fetch by small batches
         sub_offset = 0
         limit += offset
@@ -738,17 +782,20 @@ class IrAttachment(models.Model):
         checksum_raw_map = {}
 
         for values in vals_list:
-            values = self._check_contents(values)
-            raw, datas = values.pop('raw', None), values.pop('datas', None)
-            if raw or datas:
+            # needs to be popped in all cases to bypass `_inverse_datas`
+            datas = values.pop('datas', None)
+            if raw := values.get('raw'):
                 if isinstance(raw, str):
-                    # b64decode handles str input but raw needs explicit encoding
-                    raw = raw.encode()
-                elif not raw:
-                    raw = base64.b64decode(datas or b'')
+                    values['raw'] = raw.encode()
+            elif datas:
+                values['raw'] = base64.b64decode(datas)
+            else:
+                values['raw'] = b''
+
+            values = self._check_contents(values)
+            if raw := values.pop('raw'):
                 values.update(self._get_datas_related_values(raw, values['mimetype']))
-                if raw:
-                    checksum_raw_map[values['checksum']] = raw
+                checksum_raw_map[values['checksum']] = raw
 
             # 'check()' only uses res_model and res_id from values, and make an exists.
             # We can group the values by model, res_id to make only one query when
@@ -809,10 +856,11 @@ class IrAttachment(models.Model):
                 ['file_size', '=', len(bin_data)],
                 ['mimetype', '=', values['mimetype']],
             ]
-            existing = self.sudo().search(existing_domain)
-            if existing:
-                for attachment in existing:
-                    ids.append(attachment.id)
+            # Only reuse the attachments the current user can write, as callers may
+            # link new attachments to them (e.g. the resized variants of an image).
+            existing_ids = self.sudo().search(existing_domain).with_env(self.env)._filtered_access('write').ids
+            if existing_ids:
+                ids.extend(existing_ids)
             else:
                 attachment = self.create(values)
                 ids.append(attachment.id)
@@ -862,7 +910,7 @@ class IrAttachment(models.Model):
             mimetype = file.content_type
             filename = file.filename
         elif mimetype == 'GUESS':
-            head = file.read(1024)
+            head = file.read(MIMETYPE_HEAD_SIZE)
             file.seek(-len(head), 1)  # rewind
             mimetype = guess_mimetype(head)
             filename = fix_filename_extension(file.filename, mimetype)

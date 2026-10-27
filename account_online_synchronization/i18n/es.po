@@ -3,15 +3,15 @@
 # * account_online_synchronization
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
-# "Noemi Pla Garcia (nopl)" <nopl@odoo.com>, 2025.
+# "Noemi Pla Garcia (nopl)" <nopl@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:45+0000\n"
-"PO-Revision-Date: 2025-11-13 13:15+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2025-12-30 18:43+0000\n"
+"PO-Revision-Date: 2026-08-21 12:09+0000\n"
+"Last-Translator: \"Noemi Pla Garcia (nopl)\" <nopl@odoo.com>\n"
 "Language-Team: Spanish <https://translate.odoo.com/projects/odoo-19/"
 "account_online_synchronization/es/>\n"
 "Language: es\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: account_online_synchronization
 #. odoo-python
@@ -169,26 +169,27 @@ msgstr ""
 "                                    <tr>\n"
 "                                        <td align=\"center\" style=\"min-"
 "width: 590px;\">\n"
-"                                            <table border=\"0\" cellpadding="
-"\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-"
-"color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                                            <table border=\"0\" "
+"cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; "
+"background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;"
+"\">\n"
 "                                                <tr>\n"
-"                                                    <td valign=\"top\" style"
-"=\"font-size: 13px;\">\n"
+"                                                    <td valign=\"top\" "
+"style=\"font-size: 13px;\">\n"
 "                                                        <div>\n"
 "                                                            Hola:<br/><br/>\n"
 "                                                            La conexión "
-"entre <b><a t-att-href=\"object.get_base_url()\" t-out="
-"\"object.get_base_url() or ''\">https://suempresa.odoo.com</a></b> y <t "
-"t-out=\"object.account_online_link_id.name or ''\">Belfius</t> <t t-if="
-"\"not object.expiring_synchronization_due_day\">expiró.</t><t t-else=\""
-"\">expira en <t t-out=\"object.expiring_synchronization_due_day or ''\">10</"
-"t> días.</t><br/>\n"
-"                                                            <div style="
-"\"margin: 16px 0px 16px 0px;\">\n"
+"entre <b><a t-att-href=\"object.get_base_url()\" t-"
+"out=\"object.get_base_url() or ''\">https://suempresa.odoo.com</a></b> y <t "
+"t-out=\"object.account_online_link_id.name or ''\">Belfius</t> <t t-if=\"not "
+"object.expiring_synchronization_due_day\">expiró.</t><t t-else=\"\">expira "
+"en <t t-out=\"object.expiring_synchronization_due_day or ''\">10</t> días.</"
+"t><br/>\n"
+"                                                            <div "
+"style=\"margin: 16px 0px 16px 0px;\">\n"
 "                                                                <a t-attf-"
-"href=\"{{ website_url }}/renew_consent/{{ object.id "
-"}}?access_token={{object.access_token}}\" style=\"background-color: #4caf50; "
+"href=\"{{ website_url }}/renew_consent/{{ object.id }}?"
+"access_token={{object.access_token}}\" style=\"background-color: #4caf50; "
 "padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-"
 "radius: 5px; font-size:13px;\">\n"
 "                                                                    Renovar "
@@ -197,8 +198,8 @@ msgstr ""
 "                                                            </div>\n"
 "                                                            Consejo de "
 "seguridad: verifique que el nombre de dominio al que se le redirige sea: "
-"<b><a t-att-href=\"object.get_base_url()\" t-out="
-"\"object.get_base_url() or ''\">https://suempresa.odoo.com</a></b>\n"
+"<b><a t-att-href=\"object.get_base_url()\" t-out=\"object.get_base_url() or "
+"''\">https://suempresa.odoo.com</a></b>\n"
 "                                                        </div>\n"
 "                                                    </td>\n"
 "                                                </tr>\n"
@@ -227,10 +228,10 @@ msgstr ""
 "                                <tr>\n"
 "                                    <td style=\"text-align: center; font-"
 "size: 13px;\">\n"
-"                                        Desarrollado por <a target=\"_blank\""
-" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=auth\" t-attf-"
-"style=\"color: {{object.company_id.email_secondary_color or '#875A7B'}};\""
-">Odoo</a>\n"
+"                                        Desarrollado por <a "
+"target=\"_blank\" href=\"https://www.odoo.com?"
+"utm_source=db&amp;utm_medium=auth\" t-attf-style=\"color: "
+"{{object.company_id.email_secondary_color or '#875A7B'}};\">Odoo</a>\n"
 "                                    </td>\n"
 "                                </tr>\n"
 "                            </table>\n"
@@ -338,7 +339,7 @@ msgstr "Estado de la actividad"
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_type_icon
 msgid "Activity Type Icon"
-msgstr "Icono de tipo de actvidad"
+msgstr "Icono de tipo de actividad"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_bank_statement_line_transient__amount
@@ -438,6 +439,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_duplicate_transaction_wizard_view_form
 msgid "Choose a date from which you want to check the transactions."
 msgstr ""
+"Escoge una fecha a partir de la cual deseas comprobar las transacciones."
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__client_id
@@ -777,7 +779,7 @@ msgstr ""
 "                \n"
 "Si la sincronización automática está desactivada, se debe a la política de "
 "seguridad del banco. Por lo tanto, tendrán que iniciar la sincronización "
-"manualmente."
+"manualmente"
 
 #. module: account_online_synchronization
 #. odoo-javascript
@@ -844,8 +846,8 @@ msgid ""
 "(currency_name)s to it"
 msgstr ""
 "El diario %(journal_name)s está configurado con otra moneda y ya tiene "
-"asientos existentes. No puede vincular la cuenta bancaria seleccionada en %"
-"(currency_name)s a él."
+"asientos existentes. No puedes vincular al diario la cuenta bancaria "
+"seleccionada en %(currency_name)s"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__last_refresh
@@ -855,7 +857,7 @@ msgstr "Última sincronización"
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__last_sync
 msgid "Last Transaction Synchronized on"
-msgstr ""
+msgstr "Última transacción sincronizada el"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_bank_selection__write_uid
@@ -929,7 +931,7 @@ msgstr "Nombre"
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr "Siguiente evento en el calendario de actividades."
+msgstr "Siguiente evento del calendario de actividades"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_date_deadline
@@ -1077,7 +1079,7 @@ msgstr "Vuelva a conectar su cuenta electrónica."
 #. odoo-python
 #: code:addons/account_online_synchronization/wizard/account_bank_statement_line.py:0
 msgid "Please select first the transactions you wish to import."
-msgstr "Seleccione las primeras transacciones que desea importar"
+msgstr "Selecciona las primeras transacciones que deseas importar."
 
 #. module: account_online_synchronization
 #: model:ir.model.fields.selection,name:account_online_synchronization.selection__account_bank_statement_line_transient__state__posted
@@ -1160,7 +1162,7 @@ msgstr "Notificar problema"
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__client_id
 msgid "Represent a link for a given user towards a banking institution"
 msgstr ""
-"Represente un enlace de un usuario específico en una institución bancaria."
+"Representa un enlace de un usuario específico con una institución bancaria"
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_online_link_view_form
@@ -1311,7 +1313,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/account_online_synchronization/static/src/components/transient_bank_statement_line_list_view/transient_bank_statement_line_list_view.xml:0
 msgid "There are cancelled"
-msgstr ""
+msgstr "Hay cancelaciones"
 
 #. module: account_online_synchronization
 #. odoo-python
@@ -1360,14 +1362,13 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__access_token
 msgid "Token used to access API."
-msgstr "Token utilizado para accesar a API"
+msgstr "Token utilizado para acceder a la API."
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__refresh_token
 msgid "Token used to sign API request, Never disclose it"
 msgstr ""
-"Token que se usa para firmar la solicitud API, nunca lo comparta con alguien "
-"más."
+"Token que se usa para firmar la solicitud API. No lo compartas con nadie"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_duplicate_transaction_wizard__transaction_ids
@@ -1377,7 +1378,7 @@ msgstr "Transacción"
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_bank_statement_line_transient__transaction_details
 msgid "Transaction Details"
-msgstr "Detalles de transacción"
+msgstr "Detalles de la transacción"
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_duplicate_transaction_wizard_view_form
@@ -1453,6 +1454,14 @@ msgstr "Puede ponerse en contacto con el equipo de soporte de Odoo"
 
 #. module: account_online_synchronization
 #. odoo-python
+#: code:addons/account_online_synchronization/models/account_online.py:0
+msgid "You can manage your bank synchronization consent for this connection %s"
+msgstr ""
+"Puedes gestionar tu consentimiento de sincronización bancaria para esta "
+"conexión %s"
+
+#. module: account_online_synchronization
+#. odoo-python
 #: code:addons/account_online_synchronization/models/account_journal.py:0
 msgid "You can only execute this action for bank-synchronized journals."
 msgstr ""
@@ -1515,6 +1524,12 @@ msgid "entries"
 msgstr "asientos"
 
 #. module: account_online_synchronization
+#. odoo-python
+#: code:addons/account_online_synchronization/models/account_online.py:0
+msgid "here."
+msgstr "aquí."
+
+#. module: account_online_synchronization
 #. odoo-javascript
 #: code:addons/account_online_synchronization/static/src/components/bank_configure/bank_configure.xml:0
 msgid "loading..."
@@ -1548,9 +1563,11 @@ msgstr "transacciones recuperadas"
 msgid ""
 "within this period that were not created using the online synchronization."
 msgstr ""
+"dentro de este período que no se crearon utilizando la sincronización en "
+"línea."
 
 #. module: account_online_synchronization
 #. odoo-javascript
 #: code:addons/account_online_synchronization/static/src/components/transient_bank_statement_line_list_view/transient_bank_statement_line_list_view.xml:0
 msgid "within this period."
-msgstr ""
+msgstr "en este período."

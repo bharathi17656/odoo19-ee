@@ -203,8 +203,8 @@ class ProductTemplate(models.Model):
             # (and without conversion, we risk changing day).
             if request and request.is_frontend and request.cookies.get('tz'):
                 client_tz = timezone(request.cookies['tz'])
-                default_start_dt = client_tz.localize(default_start_dt).astimezone(UTC)
-                default_end_dt = client_tz.localize(default_end_dt).astimezone(UTC)
+                default_start_dt = client_tz.localize(default_start_dt).astimezone(UTC).replace(tzinfo=None)
+                default_end_dt = client_tz.localize(default_end_dt).astimezone(UTC).replace(tzinfo=None)
         return default_start_dt, default_end_dt
 
     @api.model

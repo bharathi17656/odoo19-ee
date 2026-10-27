@@ -57,7 +57,6 @@ class L10n_Br_EdiInvoiceUpdate(models.TransientModel):
     def _finalize_update(self, iap_args):
         move = self.move_id
         if self.mode == "cancel":
-            move.l10n_br_last_edi_status = "cancelled"
             move.button_cancel()
         else:
             move.l10n_br_edi_last_correction_number = iap_args["seq"]
@@ -80,6 +79,8 @@ class L10n_Br_EdiInvoiceUpdate(models.TransientModel):
             success_message = _('E-invoice corrected successfully for reason "%s".', self.reason)
             iap_args["seq"] = move.l10n_br_edi_last_correction_number + 1
             response = move._l10n_br_iap_correct_invoice_goods(iap_args)
+            if error := move._l10n_br_get_error_from_response(response):
+                raise ValidationError(error)
             if not response["xml"]["base64"]:
                 raise ValidationError(response["status"]["desc"])
             attachments |= self.env["ir.attachment"].create(
@@ -103,7 +104,6 @@ class L10n_Br_EdiInvoiceUpdate(models.TransientModel):
         move.message_post(
             body=_("E-invoice cancelled in Odoo, make sure to also cancel it in your city's portal."),
         )
-        move.l10n_br_last_edi_status = "cancelled"
         move.button_cancel()
 
     def action_submit(self):

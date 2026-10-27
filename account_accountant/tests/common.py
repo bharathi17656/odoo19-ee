@@ -47,19 +47,3 @@ class TestBankRecWidgetCommon(AccountTestInvoicingCommon):
             cls.env.cr.execute("UPDATE account_bank_statement_line SET create_date = %s WHERE id=%s",
                                (st_line.date, st_line.id))
         return st_line
-
-    @classmethod
-    def _create_reconcile_model(cls, **kwargs):
-        return cls.env['account.reconcile.model'].create({
-            'name': "test",
-            **kwargs,
-            'line_ids': [
-                Command.create({
-                    'account_id': cls.company_data['default_account_revenue'].id,
-                    'amount_type': 'percentage',
-                    'label': f"test {i}",
-                    **line_vals,
-                })
-                for i, line_vals in enumerate(kwargs.get('line_ids', []))
-            ],
-        })

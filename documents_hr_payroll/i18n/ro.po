@@ -3,13 +3,15 @@
 # * documents_hr_payroll
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Dorin Hongu <dhongu@gmail.com>, 2025.
+# Odoo Translation Bot <c3p@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:46+0000\n"
-"PO-Revision-Date: 2025-11-17 03:33+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-04-03 18:45+0000\n"
+"PO-Revision-Date: 2026-04-09 11:25+0000\n"
+"Last-Translator: Odoo Translation Bot <c3p@odoo.com>\n"
 "Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/"
 "documents_hr_payroll/ro/>\n"
 "Language: ro\n"
@@ -18,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: documents_hr_payroll
 #. odoo-python
@@ -54,6 +56,30 @@ msgid ""
 "    </tbody></table>\n"
 "                "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%; "
+"margin:0px auto;\"><tbody>\n"
+"        <t t-set=\"document_access_link\" t-"
+"value=\"object.document_access_url\"/>\n"
+"        <tr><td valign=\"top\" style=\"text-align: left; font-size: 14px;"
+"\">\n"
+"            Stimate/Stimată <t t-out=\"object.employee_id.name\"/>, un nou "
+"fluturaș de salariu este disponibil.<br/><br/>\n"
+"            <t t-if=\"object.employee_id.user_id\">Vă rugăm să găsiți PDF-ul "
+"în portalul dumneavoastră de angajat.<br/><br/></t>\n"
+"            <div t-if=\"document_access_link\" style=\"text-align: center; "
+"padding: 16px 0px 16px 0px; font-size: 14px;\">\n"
+"                <a t-attf-href=\"{{ document_access_link }}\" "
+"target=\"_blank\" style=\"background-color: #875A7B; padding: 8px 16px 8px "
+"16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;"
+"\">\n"
+"                    Fluturașul tău de salariu\n"
+"                </a>\n"
+"            </div>\n"
+"            O zi frumoasă,<br/>\n"
+"            Echipa HR\n"
+"        </td></tr>\n"
+"    </tbody></table>\n"
+"                "
 
 #. module: documents_hr_payroll
 #: model:mail.template,body_html:documents_hr_payroll.mail_template_new_declaration
@@ -71,10 +97,10 @@ msgid ""
 "    </tbody></table>\n"
 "                "
 msgstr ""
-"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style="
-"\"width:100%; margin:0px auto;\"><tbody>\n"
-"        <tr><td valign=\"top\" style=\"text-align: left; font-size: 14px;\">"
-"\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%; "
+"margin:0px auto;\"><tbody>\n"
+"        <tr><td valign=\"top\" style=\"text-align: left; font-size: 14px;"
+"\">\n"
 "            Dragă <t t-esc=\"object.name\"/>, un nou fișier de declarație "
 "este disponibil pentru dumneavoastră.<br/><br/>\n"
 "            Găsiți PDF-ul în portalul de angajat.<br/><br/>\n"
@@ -105,6 +131,7 @@ msgstr "Setări de configurare"
 #: model:ir.model.fields,field_description:documents_hr_payroll.field_hr_payroll_declaration_mixin__display_name
 #: model:ir.model.fields,field_description:documents_hr_payroll.field_hr_payroll_employee_declaration__display_name
 #: model:ir.model.fields,field_description:documents_hr_payroll.field_hr_payslip__display_name
+#: model:ir.model.fields,field_description:documents_hr_payroll.field_hr_payslip_run__display_name
 #: model:ir.model.fields,field_description:documents_hr_payroll.field_res_company__display_name
 #: model:ir.model.fields,field_description:documents_hr_payroll.field_res_config_settings__display_name
 msgid "Display Name"
@@ -167,22 +194,22 @@ msgstr ""
 #: model:ir.model.fields,field_description:documents_hr_payroll.field_hr_payroll_declaration_mixin__id
 #: model:ir.model.fields,field_description:documents_hr_payroll.field_hr_payroll_employee_declaration__id
 #: model:ir.model.fields,field_description:documents_hr_payroll.field_hr_payslip__id
+#: model:ir.model.fields,field_description:documents_hr_payroll.field_hr_payslip_run__id
 #: model:ir.model.fields,field_description:documents_hr_payroll.field_res_company__id
 #: model:ir.model.fields,field_description:documents_hr_payroll.field_res_config_settings__id
 msgid "ID"
 msgstr "ID"
 
 #. module: documents_hr_payroll
-#. odoo-javascript
-#: code:addons/documents_hr_payroll/static/src/views/employee_declaration_list/documents_hr_payroll_employee_declaration_list_controller.xml:0
-msgid "PDFs"
+#. odoo-python
+#: code:addons/documents_hr_payroll/models/hr_payroll_employee_declaration.py:0
+msgid "PDFs are going to be posted in Documents shortly"
 msgstr ""
 
 #. module: documents_hr_payroll
-#. odoo-python
-#: code:addons/documents_hr_payroll/models/hr_payroll_employee_declaration.py:0
-msgid "PDFs are gonna be posted in Documents shortly"
-msgstr "PDF-urile vor fi postate în Documente în scurt timp"
+#: model:ir.model,name:documents_hr_payroll.model_hr_payslip_run
+msgid "Pay Run"
+msgstr ""
 
 #. module: documents_hr_payroll
 #: model:ir.model,name:documents_hr_payroll.model_hr_payslip
@@ -238,15 +265,15 @@ msgstr "Postare PDF"
 
 #. module: documents_hr_payroll
 #. odoo-javascript
-#: code:addons/documents_hr_payroll/static/src/views/employee_declaration_list/documents_hr_payroll_employee_declaration_list_controller.xml:0
-msgid "Post"
-msgstr "Postează"
-
-#. module: documents_hr_payroll
-#. odoo-javascript
 #: code:addons/documents_hr_payroll/static/src/backend_components/cog_menu/hr_payroll_post_pdfs_cog_menu.xml:0
 msgid "Post PDFs"
 msgstr "Postare PDFs"
+
+#. module: documents_hr_payroll
+#. odoo-javascript
+#: code:addons/documents_hr_payroll/static/src/views/employee_declaration_list/documents_hr_payroll_employee_declaration_list_controller.xml:0
+msgid "Post Reports ("
+msgstr ""
 
 #. module: documents_hr_payroll
 #: model:ir.model.fields.selection,name:documents_hr_payroll.selection__hr_payroll_employee_declaration__state__pdf_posted
@@ -333,3 +360,6 @@ msgstr ""
 msgid "{{ object.name }}, a new declaration file is available for you"
 msgstr ""
 "{{ object.name }}}, un nou fișier de declarație este disponibil pentru dvs"
+
+#~ msgid "Post"
+#~ msgstr "Postează"

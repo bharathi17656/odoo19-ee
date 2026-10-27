@@ -3,13 +3,14 @@
 # * pos_tyro
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:48+0000\n"
-"PO-Revision-Date: 2025-11-17 03:41+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-03 17:45+0000\n"
+"PO-Revision-Date: 2026-10-06 09:37+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "pos_tyro/lt/>\n"
 "Language: lt\n"
@@ -19,7 +20,15 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
+
+#. module: pos_tyro
+#. odoo-javascript
+#: code:addons/pos_tyro/static/src/app/payment_tyro.js:0
+msgid ""
+"A tip was added on the Tyro terminal, but tipping is not enabled for this "
+"Point of Sale. It will instead be recorded as a surcharge."
+msgstr ""
 
 #. module: pos_tyro
 #: model:ir.model.fields,field_description:pos_tyro.field_pos_payment_method__tyro_always_print_merchant_receipt
@@ -70,6 +79,8 @@ msgid ""
 "If enabled, the Tyro receipt will be embedded in the Odoo receipt. Otherwise "
 "the terminal will print a separate payment receipt."
 msgstr ""
+"Jei ši funkcija įjungta, „Tyro“ kvitas bus įterptas į „Odoo“ kvitą. "
+"Priešingu atveju terminalas atspausdins atskirą mokėjimo kvitą."
 
 #. module: pos_tyro
 #: model:ir.model.fields,field_description:pos_tyro.field_pos_payment_method__tyro_integrated_receipts
@@ -88,6 +99,13 @@ msgstr "Žurnalai"
 
 #. module: pos_tyro
 #. odoo-javascript
+#: code:addons/pos_tyro/static/src/actions/get_tyro_report.js:0
+#: code:addons/pos_tyro/static/src/actions/pair_tyro_terminal.js:0
+msgid "Merchant ID and/or Terminal ID are not configured."
+msgstr ""
+
+#. module: pos_tyro
+#. odoo-javascript
 #: code:addons/pos_tyro/static/src/app/components/failure_dialog.xml:0
 msgid "OK"
 msgstr "Gerai"
@@ -99,23 +117,29 @@ msgstr ""
 
 #. module: pos_tyro
 #. odoo-javascript
+#: code:addons/pos_tyro/static/src/actions/pair_tyro_terminal.js:0
+msgid "Pairing timed out."
+msgstr ""
+
+#. module: pos_tyro
+#. odoo-javascript
 #: code:addons/pos_tyro/static/src/overrides/app/order_tabs/order_tabs.js:0
 #: code:addons/pos_tyro/static/src/overrides/app/services/pos_store.js:0
 msgid "Payment in progress"
-msgstr ""
+msgstr "Vyksta mokėjimas"
 
 #. module: pos_tyro
 #. odoo-javascript
 #: code:addons/pos_tyro/static/src/overrides/screens/payment_screen/payment_lines/payment_lines.xml:0
 msgid "Payments available to refund:"
-msgstr ""
+msgstr "Mokėjimai, kuriuos galima grąžinti:"
 
 #. module: pos_tyro
 #. odoo-javascript
 #: code:addons/pos_tyro/static/src/overrides/app/order_tabs/order_tabs.js:0
 #: code:addons/pos_tyro/static/src/overrides/app/services/pos_store.js:0
 msgid "Please complete or cancel the payment before navigatating away."
-msgstr ""
+msgstr "Prieš išeidami iš puslapio, užbaigkite arba atšaukite mokėjimą."
 
 #. module: pos_tyro
 #: model:ir.model,name:pos_tyro.model_pos_config
@@ -151,15 +175,21 @@ msgstr "Ataskaitos"
 
 #. module: pos_tyro
 #. odoo-javascript
-#: code:addons/pos_tyro/static/src/actions/get_tyro_report.xml:0
-msgid "Select a report type..."
+#: code:addons/pos_tyro/static/src/actions/get_tyro_report.js:0
+msgid "Requesting Tyro Reconciliation Report"
 msgstr ""
 
 #. module: pos_tyro
 #. odoo-javascript
 #: code:addons/pos_tyro/static/src/actions/get_tyro_report.xml:0
+msgid "Select a report type..."
+msgstr "Pasirinkite ataskaitos tipą..."
+
+#. module: pos_tyro
+#. odoo-javascript
+#: code:addons/pos_tyro/static/src/actions/get_tyro_report.xml:0
 msgid "Select date"
-msgstr ""
+msgstr "Pasirinkite datą"
 
 #. module: pos_tyro
 #: model:ir.model.fields.selection,name:pos_tyro.selection__pos_payment_method__tyro_mode__simulator
@@ -189,11 +219,19 @@ msgid ""
 "This order has one or more completed payments, please refund them before "
 "cancelling."
 msgstr ""
+"Šiame užsakyme yra vienas ar daugiau apmokėtų mokėjimų, prieš atšaukiant "
+"užsakymą, prašome juos grąžinti."
 
 #. module: pos_tyro
 #. odoo-javascript
 #: code:addons/pos_tyro/static/src/app/components/question_dialog.xml:0
 msgid "Tyro"
+msgstr ""
+
+#. module: pos_tyro
+#. odoo-javascript
+#: code:addons/pos_tyro/static/src/app/payment_tyro.js:0
+msgid "Tyro Error"
 msgstr ""
 
 #. module: pos_tyro
@@ -222,6 +260,12 @@ msgid "Tyro Terminal ID"
 msgstr ""
 
 #. module: pos_tyro
+#. odoo-javascript
+#: code:addons/pos_tyro/static/src/app/payment_tyro.js:0
+msgid "Tyro Warning"
+msgstr ""
+
+#. module: pos_tyro
 #: model_terms:ir.ui.view,arch_db:pos_tyro.pos_payment_method_view_form_inherit_pos_tyro
 msgid "Tyro logs"
 msgstr ""
@@ -230,7 +274,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pos_tyro/static/src/app/components/failure_dialog.xml:0
 msgid "Tyro payment failed"
-msgstr ""
+msgstr "„Tyro“ mokėjimas nepavyko"
 
 #. module: pos_tyro
 #: model_terms:ir.ui.view,arch_db:pos_tyro.pos_payment_method_view_form_inherit_pos_tyro
@@ -241,4 +285,10 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pos_tyro/static/src/overrides/screens/payment_screen/payment_lines/payment_lines.xml:0
 msgid "Waiting for card"
+msgstr ""
+
+#. module: pos_tyro
+#. odoo-javascript
+#: code:addons/pos_tyro/static/src/app/payment_tyro.js:0
+msgid "You cannot refund more than the original amount."
 msgstr ""

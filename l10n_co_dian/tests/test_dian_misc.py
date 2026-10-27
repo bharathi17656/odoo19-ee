@@ -7,6 +7,7 @@ from unittest.mock import patch, Mock
 from odoo import Command
 from odoo.tests import tagged, freeze_time
 from odoo.addons.l10n_co_dian import xml_utils
+from odoo.addons.l10n_co_dian.models.res_partner import ResPartner
 from .common import TestCoDianCommon
 
 
@@ -109,11 +110,11 @@ class TestDianMisc(TestCoDianCommon):
         self.assertIn('sts', root.nsmap)
         self.assertIn('ext', root.nsmap)
 
-        expected_xml = self._read_file('l10n_co_dian/tests/attachments/invoice_signed.xml', 'rb')
+        expected_xml = self._read_file('l10n_co_dian/tests/attachments/invoice_signed.xml', 'r')
         # Remove the namespaces as they are serialized in a non deterministic order
         self.assertEqual(
-            re.sub(b'xmlns.*"', b'', expected_xml),
-            re.sub(b'xmlns.*"', b'', xml),
+            re.sub(r'xmlns.*"', r'', expected_xml.strip()),
+            re.sub(r'xmlns.*"', r'', xml.strip().decode()),
         )
 
     def test_dian_xades_signature(self):
@@ -165,7 +166,7 @@ class TestDianMisc(TestCoDianCommon):
         self.invoice.partner_id.email = "tmp@odoo.com"  # so the email is sent by default when Send & Printing
 
         # Send & Print to generate the zip (containing the AttachedDocument + the PDF)
-        with patch(f'{self.document_path}._get_status', return_value=self._mocked_response('GetStatus_invoice.xml', 200)):
+        with self._mock_get_status():
             self._mock_send_and_print(move=self.invoice, response_file='SendBillSync_warnings.xml')
 
         attachments = self.env['ir.attachment'].search([
@@ -175,7 +176,7 @@ class TestDianMisc(TestCoDianCommon):
         self.assertIn("SETP202400001.zip", attachments.mapped('name'))
 
         # regenerate the attached document
-        with patch(f'{self.document_path}._get_status', return_value=self._mocked_response('GetStatus_invoice.xml', 200)):
+        with self._mock_get_status():
             xml, error = self.invoice.l10n_co_dian_document_ids._get_attached_document()
         self.assertEqual(error, "")
         self._assert_document_dian(xml, "l10n_co_dian/tests/attachments/attached_document.xml")
@@ -189,3 +190,37 @@ class TestDianMisc(TestCoDianCommon):
         journal = self.support_document_journal
         message = self._mock_button_l10n_co_dian_fetch_numbering_range(journal=journal, response_file='GetNumberingRange_journal.xml')
         self.assertEqual(message['params']['message'], 'The journal values were successfully updated.')
+
+    def test_dian_update_data_multi_company(self):
+        """ Test that the child contact created by DIAN update inherits the parent's company """
+
+        company_a = self.company_data['company']
+
+        company_b = self.env['res.company'].create({'name': 'Company B'})
+
+        parent_partner = self.env['res.partner'].create({
+            'name': 'Parent Contact',
+            'email': 'parent@test.com',
+            'company_id': company_b.id,
+            'country_id': self.env.ref('base.co').id,
+            'l10n_latam_identification_type_id': self.env.ref('l10n_co.rut').id,
+            'vat': '1018419008-5',
+        })
+
+        mock_dian_data = {
+            'name': 'Official DIAN Child',
+            'email': 'child_dian@test.com',
+        }
+
+        with patch.object(ResPartner, '_l10n_co_dian_call_get_acquirer', return_value=mock_dian_data):
+            # sudo() used to bypass multi company record rules
+            parent_partner.with_company(company_a).sudo()._l10n_co_dian_update_data(company_a)
+
+        child_partner = parent_partner.child_ids.filtered(lambda p: p.type == 'invoice')
+
+        self.assertTrue(child_partner, "A child invoice contact should have been created.")
+        self.assertEqual(
+            child_partner.company_id,
+            company_b,
+            "The child contact should inherit Company B from the parent, not the active Company A."
+        )

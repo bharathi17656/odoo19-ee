@@ -3,13 +3,14 @@
 # * pos_urban_piper
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-21 18:43+0000\n"
-"PO-Revision-Date: 2025-11-08 19:55+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-03 17:45+0000\n"
+"PO-Revision-Date: 2026-10-06 09:37+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "pos_urban_piper/lt/>\n"
 "Language: lt\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: pos_urban_piper
 #. odoo-javascript
@@ -123,6 +124,12 @@ msgid "Cancelled"
 msgstr "Atšauktas"
 
 #. module: pos_urban_piper
+#. odoo-python
+#: code:addons/pos_urban_piper/models/pos_urban_piper_request.py:0
+msgid "Cannot reach the server. Please try again later."
+msgstr ""
+
+#. module: pos_urban_piper
 #. odoo-javascript
 #: code:addons/pos_urban_piper/static/src/point_of_sale_overrirde/app/components/popups/order_info_popup/order_info_popup.js:0
 msgid "Card on Delivery"
@@ -156,6 +163,8 @@ msgstr ""
 #: model:ir.model.fields,help:pos_urban_piper.field_pos_payment_method__is_delivery_payment
 msgid "Check this if this payment method is used for online delivery orders."
 msgstr ""
+"Pažymėkite šią parinktį, jei šis mokėjimo būdas naudojamas užsakymams, "
+"pristatomiems internetu."
 
 #. module: pos_urban_piper
 #. odoo-javascript
@@ -285,7 +294,7 @@ msgstr ""
 #. module: pos_urban_piper
 #: model:ir.model.fields,field_description:pos_urban_piper.field_pos_payment_method__is_delivery_payment
 msgid "Delivery Payment"
-msgstr ""
+msgstr "Pristatymas Apmokėjimas"
 
 #. module: pos_urban_piper
 #. odoo-javascript
@@ -394,7 +403,7 @@ msgstr ""
 #. module: pos_urban_piper
 #: model_terms:ir.ui.view,arch_db:pos_urban_piper.res_config_settings_view_form_pos_urban_piper
 msgid "Enter your username"
-msgstr ""
+msgstr "Įveskite savo vartotojo vardą"
 
 #. module: pos_urban_piper
 #. odoo-javascript
@@ -412,6 +421,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pos_urban_piper/static/src/point_of_sale_overrirde/app/services/pos_store.js:0
 msgid "Error to send in preparation display."
+msgstr ""
+
+#. module: pos_urban_piper
+#. odoo-python
+#: code:addons/pos_urban_piper/models/pos_urban_piper_request.py:0
+msgid "Failed to parse server response."
 msgstr ""
 
 #. module: pos_urban_piper
@@ -681,7 +696,7 @@ msgstr "Vykstantis"
 #. module: pos_urban_piper
 #: model:ir.model.fields,field_description:pos_urban_piper.field_res_config_settings__pos_urbanpiper_payment_methods_ids
 msgid "Online Delivery Payment Methods"
-msgstr ""
+msgstr "Apmokėjimo būdai už pristatymą internetu"
 
 #. module: pos_urban_piper
 #: model:ir.model,name:pos_urban_piper.model_pos_delivery_provider
@@ -799,18 +814,18 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pos_urban_piper/static/src/point_of_sale_overrirde/app/components/popups/order_info_popup/order_info_popup.js:0
 msgid "Payment Gateway"
-msgstr ""
+msgstr "Mokėjimo vartai"
 
 #. module: pos_urban_piper
 #. odoo-javascript
 #: code:addons/pos_urban_piper/static/src/point_of_sale_overrirde/app/components/popups/order_info_popup/order_info_popup.js:0
 msgid "Payment Mode"
-msgstr ""
+msgstr "Mokėjimo būdas"
 
 #. module: pos_urban_piper
 #: model:ir.model.fields,help:pos_urban_piper.field_pos_config__urbanpiper_payment_methods_ids
 msgid "Payment methods for Urban Piper sync menu."
-msgstr ""
+msgstr "„Urban Piper“ sinchronizavimo meniu mokėjimo būdai."
 
 #. module: pos_urban_piper
 #. odoo-javascript
@@ -950,7 +965,7 @@ msgstr ""
 #. module: pos_urban_piper
 #: model:ir.model.fields,field_description:pos_urban_piper.field_pos_delivery_provider__technical_name
 msgid "Provider Name"
-msgstr ""
+msgstr "Tiekėjo pavadinimas"
 
 #. module: pos_urban_piper
 #: model:ir.model.constraint,message:pos_urban_piper.constraint_pos_delivery_provider_technical_name_uniq
@@ -976,12 +991,12 @@ msgstr ""
 #. module: pos_urban_piper
 #: model:ir.model.fields,field_description:pos_urban_piper.field_pos_config__urbanpiper_webhook_url
 msgid "Register Urbanpiper Webhook URL"
-msgstr ""
+msgstr "Užregistruokite „Urbanpiper“ webhook URL"
 
 #. module: pos_urban_piper
 #: model:ir.model.fields,help:pos_urban_piper.field_res_config_settings__pos_urbanpiper_webhook_url
 msgid "Register webhook with Urbanpiper."
-msgstr ""
+msgstr "Užregistruokite „webhook“ paslaugą „Urbanpiper“."
 
 #. module: pos_urban_piper
 #. odoo-javascript
@@ -1027,17 +1042,17 @@ msgstr ""
 #. module: pos_urban_piper
 #: model_terms:ir.ui.view,arch_db:pos_urban_piper.res_config_settings_view_form_pos_urban_piper
 msgid "Select Delivery Platform"
-msgstr ""
+msgstr "Pasirinkite platinimo platformą"
 
 #. module: pos_urban_piper
 #: model_terms:ir.ui.view,arch_db:pos_urban_piper.res_config_settings_view_form_pos_urban_piper
 msgid "Select Fiscal Position"
-msgstr ""
+msgstr "Pasirinkite fiskalinę poziciją"
 
 #. module: pos_urban_piper
 #: model_terms:ir.ui.view,arch_db:pos_urban_piper.res_config_settings_view_form_pos_urban_piper
 msgid "Select Pricelist"
-msgstr ""
+msgstr "Pasirinkite kainoraštį"
 
 #. module: pos_urban_piper
 #: model_terms:ir.ui.view,arch_db:pos_urban_piper.res_config_settings_view_form_pos_urban_piper
@@ -1053,7 +1068,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pos_urban_piper/static/src/point_of_sale_overrirde/app/components/popups/order_info_popup/order_info_popup.js:0
 msgid "Simpl (Deferred Payment)"
-msgstr ""
+msgstr "„Simpl“ (atidėtas mokėjimas)"
 
 #. module: pos_urban_piper
 #. odoo-javascript
@@ -1178,7 +1193,7 @@ msgstr ""
 #. module: pos_urban_piper
 #: model:ir.model.fields,help:pos_urban_piper.field_res_config_settings__pos_urbanpiper_payment_methods_ids
 msgid "The payment methods used for online delivery through UrbanPiper."
-msgstr ""
+msgstr "Mokėjimo būdai, naudojami užsakymams internetu per „UrbanPiper“."
 
 #. module: pos_urban_piper
 #: model:ir.model.fields,help:pos_urban_piper.field_res_config_settings__pos_urbanpiper_pricelist_id
@@ -1189,7 +1204,7 @@ msgstr ""
 #: model:ir.model.fields,help:pos_urban_piper.field_res_company__pos_urbanpiper_username
 #: model:ir.model.fields,help:pos_urban_piper.field_res_config_settings__urbanpiper_username
 msgid "The username of the UrbanPiper api account."
-msgstr ""
+msgstr "„UrbanPiper“ API paskyros vartotojo vardas."
 
 #. module: pos_urban_piper
 #. odoo-javascript
@@ -1252,7 +1267,7 @@ msgstr ""
 #. module: pos_urban_piper
 #: model:ir.model.fields,field_description:pos_urban_piper.field_pos_config__urbanpiper_payment_methods_ids
 msgid "Urban Piper Payment Methods"
-msgstr ""
+msgstr "„Urban Piper“ mokėjimo būdai"
 
 #. module: pos_urban_piper
 #: model:ir.model.fields,field_description:pos_urban_piper.field_pos_config__urbanpiper_pricelist_id
@@ -1317,13 +1332,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:pos_urban_piper.field_res_company__pos_urbanpiper_username
 #: model:ir.model.fields,field_description:pos_urban_piper.field_res_config_settings__urbanpiper_username
 msgid "UrbanPiper Username"
-msgstr ""
+msgstr "UrbanPiper Vartotojo vardas"
 
 #. module: pos_urban_piper
 #. odoo-python
 #: code:addons/pos_urban_piper/models/pos_config.py:0
 msgid "UrbanPiper Username is required.\n"
-msgstr ""
+msgstr "UrbanPiper Vartotojo vardas yra privalomas.\n"
 
 #. module: pos_urban_piper
 #. odoo-javascript

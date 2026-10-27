@@ -3,13 +3,13 @@
 # * frontdesk
 #
 # Odoo Translation Bot <c3p@odoo.com>, 2025.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-17 03:43+0000\n"
+"POT-Creation-Date: 2026-05-01 17:40+0000\n"
+"PO-Revision-Date: 2026-06-13 09:40+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Kabyle <https://translate.odoo.com/projects/odoo-19/frontdesk/"
 "kab/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: frontdesk
 #. odoo-python
@@ -65,7 +65,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:frontdesk.frontdesk_frontdesk_view_form
 msgid ""
 ")\n"
-"                        will be notified via email/SMS only, as they are not available on Discuss."
+"                        will be notified via email/SMS only, as they are not "
+"available on Discuss."
 msgstr ""
 
 #. module: frontdesk
@@ -77,8 +78,10 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:frontdesk.frontdesk_mail_template
 msgid ""
 ".\n"
-"                    <br/>Please let us know if you would like us to direct them to a meeting room or if you require any further assistance.\n"
-"                    <br/>After a successful meeting with the visitor, please proceed to check out their login."
+"                    <br/>Please let us know if you would like us to direct "
+"them to a meeting room or if you require any further assistance.\n"
+"                    <br/>After a successful meeting with the visitor, please "
+"proceed to check out their login."
 msgstr ""
 
 #. module: frontdesk
@@ -107,8 +110,9 @@ msgstr ""
 
 #. module: frontdesk
 #: model:ir.model.fields,field_description:frontdesk.field_frontdesk_visitor__message_needaction
+#, fuzzy
 msgid "Action Needed"
-msgstr ""
+msgstr "Tigawt taḍullit"
 
 #. module: frontdesk
 #: model:ir.model.fields,field_description:frontdesk.field_frontdesk_drink__active
@@ -124,8 +128,9 @@ msgstr ""
 
 #. module: frontdesk
 #: model:res.groups,name:frontdesk.frontdesk_group_administrator
+#, fuzzy
 msgid "Administrator"
-msgstr ""
+msgstr "Anedbal"
 
 #. module: frontdesk
 #. odoo-javascript
@@ -161,8 +166,9 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:frontdesk.frontdesk_frontdesk_view_search
 #: model_terms:ir.ui.view,arch_db:frontdesk.frontdesk_visitor_view_form
 #: model_terms:ir.ui.view,arch_db:frontdesk.frontdesk_visitor_view_search
+#, fuzzy
 msgid "Archived"
-msgstr ""
+msgstr "Yettwaɣbeṛ"
 
 #. module: frontdesk
 #. odoo-javascript
@@ -172,8 +178,9 @@ msgstr ""
 
 #. module: frontdesk
 #: model:ir.model.fields,field_description:frontdesk.field_frontdesk_visitor__message_attachment_count
+#, fuzzy
 msgid "Attachment Count"
-msgstr ""
+msgstr "Asiḍen n Tsawit"
 
 #. module: frontdesk
 #: model:ir.model.fields,field_description:frontdesk.field_frontdesk_frontdesk__authenticate_guest
@@ -316,8 +323,9 @@ msgstr ""
 #. module: frontdesk
 #. odoo-javascript
 #: code:addons/frontdesk/static/src/host_page/host_page.xml:0
+#, fuzzy
 msgid "Continue"
-msgstr ""
+msgstr "Smed"
 
 #. module: frontdesk
 #: model:ir.model.fields,field_description:frontdesk.field_frontdesk_drink__create_uid
@@ -363,8 +371,9 @@ msgstr "Aglam"
 #: model:ir.model.fields,field_description:frontdesk.field_frontdesk_drink__display_name
 #: model:ir.model.fields,field_description:frontdesk.field_frontdesk_frontdesk__display_name
 #: model:ir.model.fields,field_description:frontdesk.field_frontdesk_visitor__display_name
+#, fuzzy
 msgid "Display Name"
-msgstr ""
+msgstr "Isem n Ubeqqeḍ"
 
 #. module: frontdesk
 #. odoo-javascript
@@ -516,9 +525,9 @@ msgstr ""
 #: model:sms.template,body:frontdesk.frontdesk_sms_template
 msgid ""
 "Hello, Your visitor {{ object.name }} {{ '(%s)' % object.phone if "
-"object.phone else '' }} {{ '(%s)' % object.company if object.company else ''"
-" }} wants to meet you at {{ object.station_id.name }}. Please let them know "
-"you'll be there shortly."
+"object.phone else '' }} {{ '(%s)' % object.company if object.company else "
+"'' }} wants to meet you at {{ object.station_id.name }}. Please let them "
+"know you'll be there shortly."
 msgstr ""
 
 #. module: frontdesk
@@ -591,6 +600,14 @@ msgstr "Tugna"
 #. module: frontdesk
 #: model_terms:ir.ui.view,arch_db:frontdesk.frontdesk_frontdesk_view_kanban
 msgid "Install"
+msgstr ""
+
+#. module: frontdesk
+#. odoo-python
+#: code:addons/frontdesk/controllers/main.py:0
+msgid ""
+"Invalid domain. Allowed filters are: department_id with '=' and display_name "
+"with 'ilike'."
 msgstr ""
 
 #. module: frontdesk
@@ -686,8 +703,9 @@ msgstr ""
 
 #. module: frontdesk
 #: model:ir.model.fields,field_description:frontdesk.field_frontdesk_visitor__message_ids
+#, fuzzy
 msgid "Messages"
-msgstr ""
+msgstr "Iznan"
 
 #. module: frontdesk
 #: model_terms:ir.ui.view,arch_db:frontdesk.frontdesk_frontdesk_view_search
@@ -940,8 +958,8 @@ msgstr ""
 #. module: frontdesk
 #: model:ir.model.fields,help:frontdesk.field_frontdesk_frontdesk__responsible_ids
 msgid ""
-"Responsibles are people who will welcome the client and handle their drinks,"
-" etc."
+"Responsibles are people who will welcome the client and handle their drinks, "
+"etc."
 msgstr ""
 
 #. module: frontdesk

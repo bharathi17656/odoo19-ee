@@ -1,3 +1,4 @@
+import { browser } from "@web/core/browser/browser";
 import { session } from "@web/session";
 
 const ODOO_DOMAIN_REGEX = new RegExp(`^https?://${session.db}\\.odoo\\.com(/.*)?$`);
@@ -93,4 +94,51 @@ export function isAbsoluteURLInCurrentDomain(url, env = null) {
         // one, is always a bad practice anyway.
         ODOO_DOMAIN_REGEX.test(urlObj.origin)
     );
+}
+
+/**
+ * Get the links of the given readonly content that open in a new tab: the ones
+ * leaving the website, or all of them inside an iframe, where they would
+ * otherwise navigate within it.
+ *
+ * @param {HTMLElement} container
+ * @returns {NodeListOf<HTMLAnchorElement>}
+ */
+export function getLinksToRetarget(container) {
+    const selector =
+        container.ownerDocument === document
+            ? `a:not([href^="${browser.location.origin}"]):not([href^="/"])`
+            : "a";
+    return container.querySelectorAll(selector);
+}
+
+/**
+ * @param {HTMLAnchorElement} link
+ */
+export function retargetLinkToNewTab(link) {
+    link.setAttribute("target", "_blank");
+    link.setAttribute("rel", "noreferrer noopener");
+}
+
+export function scrollAndHighlightHeading(
+    content,
+    headingId = browser?.location?.hash?.replace?.(/^#/, "")
+) {
+    if (content && headingId) {
+        // Wait until the browser has rendered the editor before
+        // scrolling. The timeout value of 500 is a little arbitrary,
+        // but it should be enough to prevent an irritating case where
+        // a Youtube video is in the document and loads while the
+        // autoscroll is happening, and stops it.
+        setTimeout(() => {
+            const heading = content.querySelector(`[data-heading-link-id="${headingId}"]`);
+            if (heading) {
+                heading.scrollIntoView({ behavior: "smooth" });
+                heading.classList.add("o-highlight-heading");
+                setTimeout(() => {
+                    heading.classList.remove("o-highlight-heading");
+                }, 2000);
+            }
+        }, 500);
+    }
 }

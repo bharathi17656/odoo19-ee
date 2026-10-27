@@ -11,7 +11,7 @@ class HrEmployee(models.Model):
     _inherit = "hr.employee"
 
     next_appraisal_date = fields.Date(
-        string='Next Appraisal Date', compute='_compute_next_appraisal_date', groups="hr.group_hr_user", readonly=False, store=True,
+        string='Next Appraisal Date', compute='_compute_next_appraisal_date', groups="hr.group_hr_user", readonly=False, store=True, copy=False,
         help="The date of the next appraisal is computed by the appraisal plan's dates (first appraisal + periodicity).")
     last_ongoing_appraisal_date = fields.Date(compute='_compute_last_ongoing_appraisal_date', groups="hr.group_hr_user")
     is_last_appraisal_late = fields.Boolean(compute='_compute_last_ongoing_appraisal_date', groups="hr.group_hr_user")
@@ -31,7 +31,7 @@ class HrEmployee(models.Model):
 
     def _get_appraisal_plan_starting_date(self):
         self.ensure_one()
-        return self.create_date
+        return self.contract_date_start or self.date_version
 
     def action_send_appraisal_request(self):
         return {
@@ -117,7 +117,7 @@ class HrEmployee(models.Model):
     @api.depends('ongoing_appraisal_count', 'company_id.appraisal_plan', 'company_id.duration_after_recruitment', 'company_id.duration_first_appraisal', 'company_id.duration_next_appraisal')
     def _compute_next_appraisal_date(self):
         self.filtered('ongoing_appraisal_count').next_appraisal_date = False
-        employees_without_appraisal = self.filtered(lambda e: e.ongoing_appraisal_count == 0 and e.company_id.appraisal_plan)
+        employees_without_appraisal = self.filtered(lambda e: e.ongoing_appraisal_count == 0 and e.company_id.appraisal_plan and e.active)
         dates = employees_without_appraisal._upcoming_appraisal_creation_date()
         for employee in employees_without_appraisal:
             employee.next_appraisal_date = dates[employee.id]
@@ -164,7 +164,7 @@ class HrEmployee(models.Model):
 
     def action_open_employee_appraisals(self):
         self.ensure_one()
-        if self.appraisal_count == 1:
+        if self.appraisal_count == 1 and self.appraisal_ids:
             return {
                 'res_model': 'hr.appraisal',
                 'view_mode': 'form',
@@ -174,6 +174,11 @@ class HrEmployee(models.Model):
             }
         # Reuse the action in hr.appraisal to open the employee's previous appraisals
         return self.appraisal_ids[:1].action_open_employee_appraisals()
+
+    def action_archive(self):
+        res = super().action_archive()
+        self.next_appraisal_date = False
+        return res
 
     @api.ondelete(at_uninstall=False)
     def _unlink_expect_goal_manager(self):

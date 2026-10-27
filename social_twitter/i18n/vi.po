@@ -7,13 +7,13 @@
 # Thi Huong Nguyen, 2023
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:49+0000\n"
-"PO-Revision-Date: 2025-11-12 15:00+0000\n"
+"POT-Creation-Date: 2026-09-04 17:51+0000\n"
+"PO-Revision-Date: 2026-06-13 10:45+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Vietnamese <https://translate.odoo.com/projects/odoo-19/"
 "social_twitter/vi/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: social_twitter
 #. odoo-python
@@ -63,6 +63,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:social_twitter.social_stream_post_view_kanban
 msgid "<i class=\"fa fa-retweet me-1\" title=\"Repost a post\"/>"
 msgstr "<i class=\"fa fa-retweet me-1\" title=\"Đăng lại một bài viết\"/>"
+
+#. module: social_twitter
+#: model_terms:ir.ui.view,arch_db:social_twitter.twitter_preview
+msgid "@x ·"
+msgstr ""
 
 #. module: social_twitter
 #. odoo-python
@@ -266,16 +271,6 @@ msgid "Likes"
 msgstr "Thích"
 
 #. module: social_twitter
-#. odoo-python
-#: code:addons/social_twitter/models/social_stream.py:0
-msgid ""
-"Looks like you've made too many requests. Please wait a few minutes before "
-"giving it another try."
-msgstr ""
-"Có vẻ như bạn đã tạo quá nhiều yêu cầu. Vui lòng đợi vài phút trước khi thử "
-"lại."
-
-#. module: social_twitter
 #: model:ir.model.fields,field_description:social_twitter.field_social_media__media_type
 msgid "Media Type"
 msgstr "Media Type"
@@ -368,6 +363,12 @@ msgid "Read More about X Accounts"
 msgstr "Đọc thêm về tài khoản X"
 
 #. module: social_twitter
+#. odoo-javascript
+#: code:addons/social_twitter/static/src/xml/social_twitter_templates.xml:0
+msgid "Reply"
+msgstr ""
+
+#. module: social_twitter
 #: model_terms:ir.ui.view,arch_db:social_twitter.social_stream_post_view_kanban
 msgid "Repost"
 msgstr "Bài đăng lại"
@@ -445,15 +446,6 @@ msgstr "Bài phát trực tiếp trên mạng xã hội"
 #: model:ir.model,name:social_twitter.model_social_twitter_account
 msgid "Social X Account"
 msgstr "Tài khoản mạng xã hội X"
-
-#. module: social_twitter
-#. odoo-python
-#: code:addons/social_twitter/models/social_stream.py:0
-msgid ""
-"The keyword you've typed in does not look valid. Please try again with other "
-"words."
-msgstr ""
-"Từ khóa bạn đã nhập có vẻ không hợp lệ. Vui lòng thử lại với các từ khác."
 
 #. module: social_twitter
 #. odoo-python
@@ -559,6 +551,13 @@ msgstr ""
 #: model:ir.model.fields,help:social_twitter.field_social_post_template__twitter_image_ids
 msgid "Will attach images to your posts."
 msgstr "Sẽ đính kèm hình ảnh vào bài viết của bạn."
+
+#. module: social_twitter
+#: model:ir.model.fields.selection,name:social_twitter.selection__social_media__media_type__twitter
+#: model:social.media,name:social_twitter.social_media_twitter
+#, fuzzy
+msgid "X"
+msgstr "X"
 
 #. module: social_twitter
 #: model:ir.model.fields,field_description:social_twitter.field_social_stream_post__twitter_author_id
@@ -706,6 +705,22 @@ msgstr "ID bài viết X"
 
 #. module: social_twitter
 #. odoo-python
+#: code:addons/social_twitter/models/social_stream.py:0
+msgid ""
+"X: Looks like you've made too many requests. Please wait a few minutes "
+"before giving it another try."
+msgstr ""
+
+#. module: social_twitter
+#. odoo-python
+#: code:addons/social_twitter/models/social_stream.py:0
+msgid ""
+"X: The keyword you've typed in does not look valid. Please try again with "
+"other words."
+msgstr ""
+
+#. module: social_twitter
+#. odoo-python
 #: code:addons/social_twitter/models/social_stream_post.py:0
 msgid "You are not authenticated"
 msgstr "Bạn chưa được xác minh"
@@ -728,6 +743,14 @@ msgstr ""
 "bảo bạn theo dõi trước khi thử lại."
 
 #. module: social_twitter
+#. odoo-javascript
+#: code:addons/social_twitter/static/src/xml/social_twitter_templates.xml:0
+msgid ""
+"You cannot reply from an external service because this post doesn't mention "
+"or quote your account."
+msgstr ""
+
+#. module: social_twitter
 #. odoo-python
 #: code:addons/social_twitter/models/social_media.py:0
 msgid ""
@@ -738,6 +761,19 @@ msgstr "Bạn cần thêm URL gọi lại sau vào cài đặt ứng dụng X c�
 #: model_terms:ir.ui.view,arch_db:social_twitter.social_stream_view_form
 msgid "e.g. #odoo"
 msgstr "VD: #odoo"
+
+#~ msgid ""
+#~ "Looks like you've made too many requests. Please wait a few minutes "
+#~ "before giving it another try."
+#~ msgstr ""
+#~ "Có vẻ như bạn đã tạo quá nhiều yêu cầu. Vui lòng đợi vài phút trước khi "
+#~ "thử lại."
+
+#~ msgid ""
+#~ "The keyword you've typed in does not look valid. Please try again with "
+#~ "other words."
+#~ msgstr ""
+#~ "Từ khóa bạn đã nhập có vẻ không hợp lệ. Vui lòng thử lại với các từ khác."
 
 #~ msgid "You don't have an active subscription. Please buy one here: %s"
 #~ msgstr "Bạn không có đăng ký đang hoạt động. Hãy mua tại đây: %s"

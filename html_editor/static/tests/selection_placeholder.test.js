@@ -7,6 +7,8 @@ import { getContent } from "./_helpers/selection";
 import { closestElement } from "@html_editor/utils/dom_traversal";
 import { isTableCell } from "@html_editor/utils/dom_info";
 import { parseHTML } from "@html_editor/utils/html";
+import { isBlock } from "@html_editor/utils/blocks";
+import { Plugin } from "@html_editor/plugin";
 
 const pressArrowKey = async (editor, key) => {
     const selection = editor.shared.selection.getSelectionData().deepEditableSelection;
@@ -78,6 +80,58 @@ test("a selection placeholder is inserted between two tables, and removed on cle
         contentAfter: unformat(
             `<table><tbody><tr><td>a</td></tr></tbody></table>
             <table><tbody><tr><td>b</td></tr></tbody></table>`
+        ),
+    });
+});
+
+test("a selection placeholder is inserted inside a <td> before and after a contenteditable=false element, and removed on clean", async () => {
+    await testEditor({
+        contentBefore: unformat(
+            `<table class="table o_table table-bordered">
+                <tbody><tr><td><div contenteditable="false">X</div></td></tr></tbody>
+            </table>`
+        ),
+        contentBeforeEdit: unformat(
+            `<p data-selection-placeholder=""><br></p>
+            <table class="table o_table table-bordered">
+                <tbody><tr><td>
+                    <p data-selection-placeholder=""><br></p>
+                    <div contenteditable="false">X</div>
+                    <p data-selection-placeholder=""><br></p>
+                </td></tr></tbody>
+            </table>
+            <p data-selection-placeholder="" style="margin: -9px 0px 8px;"><br></p>`
+        ),
+        contentAfter: unformat(
+            `<table class="table o_table table-bordered">
+                <tbody><tr><td><div contenteditable="false">X</div></td></tr></tbody>
+            </table>`
+        ),
+    });
+});
+
+test("a selection placeholder is inserted inside a <th> before and after a contenteditable=false element, and removed on clean", async () => {
+    await testEditor({
+        contentBefore: unformat(
+            `<table class="table o_table table-bordered">
+                <tbody><tr><th><div contenteditable="false">X</div></th></tr></tbody>
+            </table>`
+        ),
+        contentBeforeEdit: unformat(
+            `<p data-selection-placeholder=""><br></p>
+            <table class="table o_table table-bordered">
+                <tbody><tr><th>
+                    <p data-selection-placeholder=""><br></p>
+                    <div contenteditable="false">X</div>
+                    <p data-selection-placeholder=""><br></p>
+                </th></tr></tbody>
+            </table>
+            <p data-selection-placeholder="" style="margin: -9px 0px 8px;"><br></p>`
+        ),
+        contentAfter: unformat(
+            `<table class="table o_table table-bordered">
+                <tbody><tr><th><div contenteditable="false">X</div></th></tr></tbody>
+            </table>`
         ),
     });
 });
@@ -579,4 +633,21 @@ test("selection placeholder margins remain correct when an element gets added", 
     });
     // Comment this to make it easier to debug visually.
     style.remove();
+});
+
+test("should not insert a selection placeholder around an inline element", async () => {
+    class SelectionBlockerPlugin extends Plugin {
+        id = "selectionBlockerPlugin";
+        resources = {
+            is_selection_blocker_predicates: (node) => node.nodeName === "i",
+        };
+    }
+    await testEditor({
+        includePlugins: [SelectionBlockerPlugin],
+        contentBefore: '<div contenteditable="true"><i>xyz</i></div>',
+        stepFunction: (editor) => {
+            expect(isBlock(editor.editable.querySelector("i"))).toBe(false);
+        },
+        contentAfterEdit: '<div contenteditable="true" class="o-paragraph"><i>xyz</i></div>',
+    });
 });

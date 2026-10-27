@@ -84,10 +84,10 @@ export function useInputField(params) {
                     pendingUpdate = true;
                     await component.props.record.update({ [fieldName]: val }, { save: shouldSave() });
                     pendingUpdate = false;
-                    component.props.record.model.bus.trigger("FIELD_IS_DIRTY", isDirty);
                 } else {
                     inputRef.el.value = params.getValue();
                 }
+                component.props.record.model.bus.trigger("FIELD_IS_DIRTY", isDirty);
             }
         }
     }
@@ -132,11 +132,13 @@ export function useInputField(params) {
         // the corresponding value in the record. Otherwise, in some cases,
         // if the value in the record change the useEffect isn't triggered.
         const value = params.getValue();
-        if (
-            inputRef.el &&
-            !isDirty &&
-            !component.props.record.isFieldInvalid(fieldName)
-        ) {
+        if (!inputRef.el) {
+            return;
+        }
+        if (inputRef.el.value === value) {
+            isDirty = false;
+        }
+        if (!isDirty && !component.props.record.isFieldInvalid(fieldName)) {
             inputRef.el.value = value;
             lastSetValue = inputRef.el.value;
         }
@@ -179,10 +181,10 @@ export function useInputField(params) {
             if ((val || false) !== (component.props.record.data[fieldName] || false)) {
                 lastSetValue = inputRef.el.value;
                 await component.props.record.update({ [fieldName]: val }, { save: shouldSave() });
-                component.props.record.model.bus.trigger("FIELD_IS_DIRTY", false);
             } else {
                 inputRef.el.value = params.getValue();
             }
+            component.props.record.model.bus.trigger("FIELD_IS_DIRTY", isDirty);
         }
     }
 

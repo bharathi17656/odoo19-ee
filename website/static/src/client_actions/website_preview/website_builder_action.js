@@ -77,6 +77,7 @@ export class WebsiteBuilderClientAction extends Component {
         this.iframefallback = useRef("iframefallback");
 
         this.websiteContent = useRef("iframe");
+        this.builderSidebarRef = useRef("builder_sidebar");
         this.cleanups = [];
 
         this.snippetsTemplate = "website.snippets";
@@ -202,6 +203,12 @@ export class WebsiteBuilderClientAction extends Component {
             },
             () => [this.state.isEditing]
         );
+        onMounted(() => {
+            document.body.classList.add("o_website_o_website_preview");
+        });
+        onWillUnmount(() => {
+            document.body.classList.remove("o_website_o_website_preview");
+        });
     }
 
     get testMode() {
@@ -279,6 +286,9 @@ export class WebsiteBuilderClientAction extends Component {
     }
 
     async onEditPage() {
+        if (!this.websiteContent.el) {
+            await this.iframeLoaded;
+        }
         this.websiteContext.showResourceEditor = false;
         this.blockIframe();
 
@@ -351,6 +361,10 @@ export class WebsiteBuilderClientAction extends Component {
         const currentTitle = iframe.contentDocument.title;
         history.replaceState(history.state, currentTitle, iframe.contentDocument.location.href);
         this.title.setParts({ action: currentTitle });
+        const frontendIconEl = iframe.contentDocument.querySelector("link[rel~='icon']");
+        if (frontendIconEl) {
+            document.querySelector("link[rel~='icon']").href = frontendIconEl.href;
+        }
     }
 
     onIframeLoad(ev) {
@@ -369,7 +383,6 @@ export class WebsiteBuilderClientAction extends Component {
         // If we detect that behavior, we reload the iframe with a new query
         // parameter, so that it's not cached for Chrome.
         const iframe = this.websiteContent.el;
-        iframe.contentDocument.body.setAttribute("is-ready", "false");
         if (isBrowserChrome() && !iframe.src.includes("iframe_reload")) {
             try {
                 /* eslint-disable no-unused-expressions */
@@ -392,6 +405,7 @@ export class WebsiteBuilderClientAction extends Component {
                 }
             }
         }
+        iframe.contentDocument.body.setAttribute("is-ready", "false");
         if (this.lastPageURL !== iframe.contentWindow.location.href) {
             // Hide Ace Editor when moving to another page.
             this.websiteService.context.showResourceEditor = false;
@@ -507,7 +521,7 @@ export class WebsiteBuilderClientAction extends Component {
     waitForIframeReady() {
         return new Promise((resolve) => {
             const doc = this.websiteContent.el.contentDocument;
-            if (doc.body.hasAttribute("is-ready")) {
+            if (doc.body.getAttribute("is-ready") === "true") {
                 resolve();
             } else {
                 const observer = new MutationObserver(() => {
@@ -525,7 +539,9 @@ export class WebsiteBuilderClientAction extends Component {
         this.initialTab = param.initialTab;
         this.target = param.target || null;
         await this.reloadIframe(this.state.isEditing, param.url);
-        // trigger an new instance of the builder menu
+        // Disable the current instance of the builder and trigger a new
+        // instance of it with `t-key`
+        this.builderSidebarRef.el.firstElementChild.classList.add("o_builder_disabled");
         this.state.key++;
     }
 
@@ -544,13 +560,20 @@ export class WebsiteBuilderClientAction extends Component {
         this.setIframeLoaded();
         this.websiteService.websiteRootInstance = undefined;
         if (url) {
-            const urlObj = new URL(url, this.websiteContent.el.contentWindow.location);
+            const baseUrl = new URL(this.websiteContent.el.contentWindow.location);
+            const urlObj = new URL(url, baseUrl);
             const pathSegments = urlObj.pathname.split("/").map(encodeURIComponent);
             const encodedPath = pathSegments.join("/");
-            this.websiteContent.el.contentWindow.location.href = new URL(
-                encodedPath,
-                this.websiteContent.el.contentWindow.location
-            );
+            const newUrl = new URL(encodedPath, baseUrl);
+            if(newUrl.origin !== baseUrl.origin) {
+                console.error("Tried to change the iframe's origin. Reloading instead")
+                this.websiteContent.el.contentWindow.location.reload();
+            } else {
+                if (history.state?.skipRouteChange) {
+                    history.pushState({}, "", newUrl);
+                }
+                this.websiteContent.el.contentWindow.location.href = newUrl;
+            }
         } else {
             this.websiteContent.el.contentWindow.location.reload();
         }
@@ -627,6 +650,7 @@ export class WebsiteBuilderClientAction extends Component {
                 );
 
                 this.addListeners(this.websiteContent.el.contentDocument);
+                this.iframefallback.el?.contentDocument.documentElement.replaceChildren();
                 resolve(this.websiteContent.el);
             };
         });
@@ -638,23 +662,11 @@ export class WebsiteBuilderClientAction extends Component {
         const websiteDoc = this.websiteContent.el?.contentDocument;
         const fallBackDoc = this.iframefallback.el?.contentDocument;
         if (!this.state.isEditing && websiteDoc && fallBackDoc) {
-            if (websiteDoc.head) {
-                fallBackDoc.head
-                    .querySelectorAll("link[rel='stylesheet'], style")
-                    .forEach((el) => el.remove());
-                for (const el of websiteDoc.head.querySelectorAll(
-                    "link[rel='stylesheet'], style"
-                )) {
-                    fallBackDoc.head.appendChild(el.cloneNode(true));
-                }
-            }
-            if (websiteDoc.body) {
-                fallBackDoc.body.replaceWith(websiteDoc.body.cloneNode(true));
-                const currentScrollEl = getScrollingElement(websiteDoc);
-                const scrollElement = getScrollingElement(fallBackDoc);
-                scrollElement.scrollTop = currentScrollEl.scrollTop;
-                this.cleanIframeFallback();
-            }
+            fallBackDoc.documentElement.replaceWith(websiteDoc.documentElement.cloneNode(true));
+            const currentScrollEl = getScrollingElement(websiteDoc);
+            const scrollElement = getScrollingElement(fallBackDoc);
+            scrollElement.scrollTop = currentScrollEl.scrollTop;
+            this.cleanIframeFallback();
         }
     }
 

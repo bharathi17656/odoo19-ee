@@ -1,11 +1,20 @@
+import re
 from lxml import etree
 
-from odoo import _, api, models
-from odoo.exceptions import UserError
+from odoo import api, fields, models
+from odoo.tools import float_repr
+from odoo.addons.account_batch_payment.models.sepa_mapping import sanitize_communication
 
 
 class AccountJournal(models.Model):
     _inherit = "account.journal"
+
+    has_iso_se_payment_method = fields.Boolean(compute='_compute_has_iso_se_payment_method')
+
+    @api.depends('outbound_payment_method_line_ids.payment_method_id.code')
+    def _compute_has_iso_se_payment_method(self):
+        for journal in self:
+            journal.has_iso_se_payment_method = 'iso20022_se' in journal.outbound_payment_method_line_ids.payment_method_id.mapped('code')
 
     @api.depends('bank_acc_number', 'company_id.account_fiscal_country_id', 'company_id.country_id')
     def _compute_sepa_pain_version(self):
@@ -14,24 +23,28 @@ class AccountJournal(models.Model):
         se_bban_journals.sepa_pain_version = 'pain.001.001.03'
         super(AccountJournal, self - se_bban_journals)._compute_sepa_pain_version()
 
+    # TODO: remove partner_acc_type arg in master
     def _is_se_bban(self, payment_method_code, partner_acc_type=None):
         """ Whenever this journal should be considered as a swedish bban, plusgiro or bankgiro
             in a batch payment.
 
             :param payment_method_code: The payment method used for the payment
-            :param partner_acc_type: A set containing the different acc_type of all the payments
-                                     we want to add in the xml file.
 
-            :return: True if the payment method is set to **iso20022_se** and either the bank account
-                     is not IBAN or there is any IBAN payments, else False.
+            :return: True if the payment method is set to **iso20022_se** and the bank account
+                     is not IBAN, else False.
         """
         return (
             payment_method_code == 'iso20022_se'
-            and (
-                self.bank_account_id.acc_type in {'bban_se', 'plusgiro', 'bankgiro'}
-                or len({'bban_se', 'plusgiro', 'bankgiro', *(partner_acc_type or {'iban'})}) == 3
-            )
-        )
+            and self.bank_account_id.acc_type in {'bban_se', 'plusgiro', 'bankgiro'}
+        ) or self.env.context.get('bban')
+
+    def _get_organization_id_node_text(self, payment_method_code, postal_address):
+        # EXTENDS account_iso_20022
+        result = super()._get_organization_id_node_text(payment_method_code, postal_address)
+        if payment_method_code == 'iso20022_se' and self.bank_id.bic == 'SWEDSESS' and postal_address:
+            result = re.split(r'[^0-9]', result)[0]
+
+        return result
 
     def _get_CtgyPurp(self, payment_method_code):
         if not self._is_se_bban(payment_method_code):
@@ -42,45 +55,23 @@ class AccountJournal(models.Model):
         Cd.text = 'SALA' if self.env.context.get('sepa_payroll_sala') else 'SUPP'
         return CtgyPurp
 
-    def _get_DbtrAcct(self, payment_method_code=None, payments=None):
-        # EXTEND of account_iso20022
-        payments = payments or []
-        acc_types = {payment['acc_type'] for payment in payments}
-        if payment_method_code != 'iso20022_se' or 'iban' in acc_types:
-            return super()._get_DbtrAcct(payment_method_code, payments)
-
-        if not self.bank_account_id.sanitized_acc_number:
-            raise UserError(_("This journal does not have a bank account defined."))
-        DbtrAcct = etree.Element("DbtrAcct")
-        Id = etree.SubElement(DbtrAcct, "Id")
-        Id.append(self._get_DbtrAcctOthr(payment_method_code, acc_types))
-        Ccy = etree.SubElement(DbtrAcct, "Ccy")
-        Ccy.text = self.currency_id.name or self.company_id.currency_id.name
-        return DbtrAcct
-
+    # TODO: remove partner_acc_type arg in master
     def _get_DbtrAcctOthr(self, payment_method_code=None, partner_acc_type=None):
         # EXTEND of account_iso20022
-        if not self._is_se_bban(payment_method_code, partner_acc_type):
-            return super()._get_DbtrAcctOthr(payment_method_code, partner_acc_type)
-
-        Othr = etree.Element("Othr")
-        OthrId = etree.SubElement(Othr, "Id")
-        if self.bank_account_id.sanitized_acc_number.isdigit():
-            OthrId.text = self.bank_account_id.sanitized_acc_number
-        else:
-            bank_code, account_number, _checksum = self.bank_account_id._se_get_acc_number_data(self.bank_account_id.sanitized_acc_number)
-            OthrId.text = f"{bank_code}{account_number}"
-        SchmeNm = etree.SubElement(Othr, "SchmeNm")
-        if self.bank_account_id.acc_type == 'bankgiro':
-            Prtry = etree.SubElement(SchmeNm, "Prtry")
-            Prtry.text = 'BGNR'
-        else:
-            Cd = etree.SubElement(SchmeNm, "Cd")
-            Cd.text = 'BBAN'
+        Othr = super()._get_DbtrAcctOthr(payment_method_code)
+        if payment_method_code == 'iso20022_se':
+            SchmeNm = etree.SubElement(Othr, "SchmeNm")
+            # Nordea has a special rule for DbtrAcct as they only use IBAN or BBAN
+            if self.bank_account_id.acc_type == 'bankgiro' and 'nordea' not in self.bank_account_id.bank_name.lower():
+                Prtry = etree.SubElement(SchmeNm, "Prtry")
+                Prtry.text = 'BGNR'
+            else:
+                Cd = etree.SubElement(SchmeNm, "Cd")
+                Cd.text = 'BBAN'
         return Othr
 
     def _get_CdtrAcctIdOthr(self, bank_account, payment_method_code=None):
-        if not self._is_se_bban(payment_method_code):
+        if payment_method_code != 'iso20022_se':
             return super()._get_CdtrAcctIdOthr(bank_account, payment_method_code)
 
         Othr = etree.Element("Othr")
@@ -95,11 +86,17 @@ class AccountJournal(models.Model):
             Cd.text = 'BBAN'
         return Othr
 
-    def _get_FinInstnId(self, bank_account, payment_method_code):
+    def _get_FinInstnId(self, bank_account, payment_method_code, mode=None):
         if not self._is_se_bban(payment_method_code):
-            return super()._get_FinInstnId(bank_account, payment_method_code)
+            return super()._get_FinInstnId(bank_account, payment_method_code, mode=mode)
 
         FinInstnId = etree.Element("FinInstnId")
+        bic_code = self._get_cleaned_bic_code(bank_account, payment_method_code)
+        if mode == 'DbtrAgt':
+            BIC = etree.SubElement(FinInstnId, self._get_bic_tag(payment_method_code))
+            BIC.text = bic_code
+            return FinInstnId
+
         ClrSysMmbId = etree.SubElement(FinInstnId, "ClrSysMmbId")
         ClrSysId = etree.SubElement(ClrSysMmbId, "ClrSysId")
         Cd = etree.SubElement(ClrSysId, "Cd")
@@ -108,33 +105,58 @@ class AccountJournal(models.Model):
         if bank_account.acc_type == 'bankgiro':
             MmbId.text = '9900'
         elif bank_account.acc_type == 'plusgiro':
-            MmbId.text = '9500'
-        else:
             bank_code, _acc_num, _checksum = bank_account._se_get_acc_number_data(bank_account.acc_number)
-            MmbId.text = bank_code[:4]
+            MmbId.text = '9960' if bank_code and bank_code.startswith('996') else '9500'
+        else:
+            if not bank_account.acc_number.isdigit():
+                _bban, bank_code = bank_account._se_get_bban_from_iban()
+            else:
+                bank_code, _acc_num, _checksum = bank_account._se_get_acc_number_data(bank_account.acc_number)
+            MmbId.text = bank_code
         return FinInstnId
 
-    def _get_cleaned_bic_code(self, bank_account, payment_method_code):
-        """
-        Return the cleaned or hardcoded BIC code for the given bank account.
+    def _get_RmtInf(self, payment_method_code, payment):
+        RmtInf = super()._get_RmtInf(payment_method_code, payment)
+        if RmtInf is False or not self._is_se_bban(payment_method_code):
+            return RmtInf
 
-        This override handles Swedish-specific account types for SEPA payments:
-        - Bankgiro accounts return 'SE:Bankgiro'
-        - Plusgiro accounts return 'SE:Plusgiro'
+        strd = RmtInf.find('Strd')
+        if strd is not None:
+            partner_bank_id = payment.get('partner_bank_id')
+            if partner_bank_id:
+                partner_bank = self.env['res.partner.bank'].browse(partner_bank_id)
+                if partner_bank and partner_bank.acc_type == 'bankgiro':
+                    # if we got structured reference and the recipient has an account of type bankgiro, we need RfdDocAmt.
+                    currency_id = payment.get('currency_id')
+                    if currency_id:
+                        ccy = self.env['res.currency'].browse(currency_id)
+                        RfrdDocAmt = etree.Element('RfrdDocAmt')
+                        if payment['payment_type'] == 'inbound':
+                            CdtNoteAmt = etree.SubElement(RfrdDocAmt, 'CdtNoteAmt', Ccy=ccy.name)
+                            CdtNoteAmt.text = float_repr(ccy.round(payment['amount']), 2)
+                            RmtdAmt = etree.SubElement(RfrdDocAmt, 'RmtdAmt', Ccy=ccy.name)
+                            RmtdAmt.text = '0.00'
+                        elif payment['payment_type'] == 'outbound':
+                            CdtNoteAmt = etree.SubElement(RfrdDocAmt, 'CdtNoteAmt', Ccy=ccy.name)
+                            CdtNoteAmt.text = '0.00'
+                            RmtdAmt = etree.SubElement(RfrdDocAmt, 'RmtdAmt', Ccy=ccy.name)
+                            RmtdAmt.text = float_repr(ccy.round(payment['amount']), 2)
+                        strd.insert(0, RfrdDocAmt)
+        return RmtInf
 
-        For all other account types and countries, the method falls back to the
-        standard implementation.
+    def _get_PstlAdr(self, partner_id, payment_method_code):
+        # EXTEND account_iso20022
+        if payment_method_code == 'iso20022_se':
+            postal_address = self.get_postal_address(partner_id, payment_method_code)
+            if postal_address is not None:
+                PstlAdr = etree.Element("PstlAdr")
+                for node_name, attr, size in [('StrtNm', 'street', 70), ('PstCd', 'zip', 16), ('TwnNm', 'city', 35), ('Ctry', 'country', 2)]:
+                    if postal_address[attr]:
+                        address_element = etree.SubElement(PstlAdr, node_name)
+                        address_element.text = sanitize_communication(postal_address[attr], size)
+                return PstlAdr
 
-        :param bank_account: The bank account record to retrieve the BIC for.
-        :type bank_account: res.partner.bank
-        :param payment_method_code: The payment method code, e.g., 'iso20022_se'.
-        :type payment_method_code: str
-        :return: The cleaned BIC code or a hardcoded SE-specific BIC.
-        :rtype: str
-        """
-        if payment_method_code == 'iso20022_se' and bank_account.acc_type in ('plusgiro', 'bankgiro'):
-            return 'SE:Bankgiro' if bank_account.acc_type == 'bankgiro' else 'SE:Plusgiro'
-        return super()._get_cleaned_bic_code(bank_account, payment_method_code)
+        return super()._get_PstlAdr(partner_id, payment_method_code)
 
     def _skip_CdtrAgt(self, partner_bank, payment_method_code):
         """
@@ -153,6 +175,6 @@ class AccountJournal(models.Model):
                  result of the standard implementation.
         :rtype: bool
         """
-        if payment_method_code == 'iso20022_se' and partner_bank.acc_type in ('bankgiro', 'plusgiro'):
+        if payment_method_code == 'iso20022_se':
             return False
         return super()._skip_CdtrAgt(partner_bank, payment_method_code)

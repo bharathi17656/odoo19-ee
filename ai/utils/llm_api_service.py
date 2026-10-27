@@ -13,6 +13,7 @@ from odoo.api import Environment
 from odoo.exceptions import UserError
 
 from .ai_logging import ai_response_logging, api_call_logging, get_ai_logging_session
+from .llm_providers import get_llm_model_and_reasoning
 
 _logger = getLogger(__name__)
 
@@ -119,6 +120,17 @@ class LLMApiService:
             headers=self._get_base_headers(),
             body=body,
         )
+
+    def _format_for_embedding(self, content: str, mode: str, title: str | None = None) -> str:
+        if self.provider != 'google':
+            return content
+
+        # https://ai.google.dev/gemini-api/docs/embeddings#task-types-embeddings-2
+        if mode == 'query':
+            return f'task: question answering | query: {content}'
+
+        if mode == 'document':
+            return f'title: {title} | text: {content}'
 
     def get_transcription(
             self,
@@ -249,10 +261,13 @@ class LLMApiService:
             if e.response is not None:
                 try:
                     response = e.response.json()
+                    status_code = e.response.status_code
                     if isinstance(response, list) and response:
                         # Gemini return error in a list
                         response = response[0]
-                    if isinstance(response, dict) and (json_error := response.get('error', {}).get('message')):
+                    if custom_msg := self._handle_api_errors(status_code, response):
+                        error = custom_msg
+                    elif isinstance(response, dict) and (json_error := response.get('error', {}).get('message')):
                         error = json_error
                     else:
                         error = json.dumps(response, indent=2)
@@ -266,7 +281,7 @@ class LLMApiService:
 
     def _request_llm_openai(
         self, llm_model, system_prompts, user_prompts, tools=None,
-        files=None, schema=None, temperature=0.2, inputs=(), web_grounding=False
+        files=None, schema=None, temperature=0.5, inputs=(), web_grounding=False
     ):
         """Make a single request to the LLM.
 
@@ -280,6 +295,7 @@ class LLMApiService:
             [(tool_name, call_id, {argument_1: True, argument_2: 3})]
         - a list of inputs to include in the next call in addition to the tool response
         """
+        llm_model, reasoning = get_llm_model_and_reasoning(llm_model, temperature)
         user_content = [{"type": "input_text", "text": prompt} for prompt in user_prompts]
 
         if files:
@@ -318,9 +334,14 @@ class LLMApiService:
             ],
             "store": False,
         }
-        if llm_model not in ('gpt-5', 'gpt-5-mini'):
-            # temperature in not supported with openai reasoning models
+
+        if reasoning is None:
             body["temperature"] = temperature
+        elif not tools and web_grounding:
+            body["reasoning"] = {"effort": "none"}  # so that it's fast and can only retrieve top results, not open urls
+        else:
+            body["include"] = ["reasoning.encrypted_content"]
+            body["reasoning"] = {"effort": reasoning}
 
         if schema:
             body["text"] = {
@@ -356,9 +377,9 @@ class LLMApiService:
             body.setdefault("tools", []).append(search_tool)
 
         with api_call_logging(body["input"], tools) as record_response:
-            response, to_call, next_inputs = self._request_llm_openai_helper(body, tools, inputs)
+            response, to_call, next_inputs, request_token_usage = self._request_llm_openai_helper(body, tools, inputs)
             if record_response:
-                record_response(to_call, response)
+                record_response(to_call, response, request_token_usage)
             return response, to_call, next_inputs
 
     def _request_llm_openai_helper(self, body, tools=None, inputs=()):
@@ -394,11 +415,18 @@ class LLMApiService:
                     response.append(text)
                 elif line.get('type') == 'message':
                     response.extend(t for c in line.get('content', ()) if (t := c.get('text')))
-        return response, to_call, next_inputs
+
+        request_token_usage = {}
+        if usage := llm_response.get('usage'):
+            request_token_usage["input_tokens"] = usage.get("input_tokens", 0)
+            request_token_usage["cached_tokens"] = usage.get('input_tokens_details', {}).get('cached_tokens', 0)
+            request_token_usage["output_tokens"] = usage.get("output_tokens", 0)
+
+        return response, to_call, next_inputs, request_token_usage
 
     def _request_llm_google(
         self, llm_model, system_prompts, user_prompts, tools=None,
-        files=None, schema=None, temperature=0.2, inputs=(), web_grounding=False,
+        files=None, schema=None, temperature=0.5, inputs=(), web_grounding=False,
     ):
         """Make a single request to the LLM.
 
@@ -409,6 +437,7 @@ class LLMApiService:
         > https://ai.google.dev/gemini-api/docs/function-calling
         > https://ai.google.dev/gemini-api/docs/document-processing
         """
+        llm_model, reasoning = get_llm_model_and_reasoning(llm_model, temperature)
         if (tools or web_grounding) and schema:
             # https://discuss.ai.google.dev/t/why-is-using-a-response-schema-not-supported-when-using-grounded-search/92327
             raise NotImplementedError("Gemini does not support structured output with tools")
@@ -418,10 +447,13 @@ class LLMApiService:
             raise NotImplementedError("Gemini does not support tools with web grounding")
         body = {
             "contents": [],
-            "generationConfig": {
-                "temperature": temperature,
-            },
+            "generationConfig": {}
         }
+        if reasoning is None:
+            body["generationConfig"]["temperature"] = temperature
+        else:
+            body["generationConfig"]["thinkingConfig"] = {"thinkingLevel": reasoning}
+
         if system_prompts:
             body["systemInstruction"] = {
                 "parts": [
@@ -465,19 +497,35 @@ class LLMApiService:
         if web_grounding:
             body["tools"] = {'google_search': {}}
 
+        if llm_model == "gemini-2.5-flash":
+            # from testing, increasing thinking budget results in the LLM actually replying ¯\_(ツ)_/¯
+            body['generationConfig']["thinkingConfig"] = {
+                "thinkingBudget": 512,
+            }
+
         with api_call_logging(body["contents"], tools) as record_response:
-            response, to_call, next_inputs = self._request_llm_google_helper(body, llm_model, inputs)
+            response = None
+            to_call = []
+            next_inputs = inputs
+            request_token_usage = {}
+            for attempt in range(3):
+                response, to_call, next_inputs, request_token_usage = self._request_llm_google_helper(body, llm_model, inputs)
+                if response or to_call:
+                    break
+                _logger.warning("Gemini failed to generate a response, retrying...")
+            if not (response or to_call):
+                response = "Error: failed to generate a response, try again later."
             if record_response:
-                record_response(to_call, response)
+                record_response(to_call, response, request_token_usage)
             return response, to_call, next_inputs
 
     def _request_llm_google_helper(self, body, llm_model, inputs=()):
         llm_response = self._request(
             method="post",
             base_url="https://generativelanguage.googleapis.com/v1beta",
-            headers={},
+            headers={"x-goog-api-key": self._get_api_token()},
             endpoint=f"/models/{llm_model}:generateContent",
-            params={"key": self._get_api_token()},
+            params={},
             body=body,
         )
 
@@ -503,7 +551,13 @@ class LLMApiService:
                     else:
                         _logger.warning("Gemini: could not parse %s", line)
 
-        return response, to_call, next_inputs
+        request_token_usage = {}
+        if usage := llm_response.get("usageMetadata"):
+            request_token_usage["input_tokens"] = usage.get("promptTokenCount", 0)
+            request_token_usage["cached_tokens"] = usage.get("cachedContentTokenCount", 0)
+            request_token_usage["output_tokens"] = usage.get("candidatesTokenCount", 0)
+
+        return response, to_call, next_inputs, request_token_usage
 
     def _request_llm(self, *args, **kwargs):
         if self.provider == 'openai':
@@ -517,7 +571,7 @@ class LLMApiService:
     def request_llm(
         self, llm_model: str, system_prompts: list[str], user_prompts: list[str],
         tools: dict[str, tuple[str, bool, Callable[[dict[str, Any]], Any], dict]] | None = None,
-        files: list[dict] | None = None, schema: dict | None = None, temperature: float = 0.2,
+        files: list[dict] | None = None, schema: dict | None = None, temperature: float = 0.5,
         inputs: list[dict] | None = None, web_grounding: bool = False,
     ) -> list[str]:
         """Same as `_request_llm`, but will call the tools until we are done.
@@ -538,7 +592,7 @@ class LLMApiService:
         >>> }
         > https://json-schema.org/
         """
-        with ai_response_logging(llm_model):
+        with ai_response_logging(get_llm_model_and_reasoning(llm_model, temperature)[0]):
             return self._request_llm_silent(
                 llm_model=llm_model,
                 system_prompts=system_prompts,
@@ -554,7 +608,7 @@ class LLMApiService:
     def _request_llm_silent(
         self, llm_model: str, system_prompts: list[str], user_prompts: list[str],
         tools: dict[str, tuple[str, bool, Callable[[dict[str, Any]], Any], dict]] | None = None,
-        files: list[dict] | None = None, schema: dict | None = None, temperature: float = 0.2,
+        files: list[dict] | None = None, schema: dict | None = None, temperature: float = 0.5,
         inputs: list[dict] | None = None, web_grounding: bool = False,
     ):
         """Wraps the `_request_llm` method to handle multiple calls and tool execution."""
@@ -694,3 +748,15 @@ class LLMApiService:
             }
 
         raise NotImplementedError(f"Unsupported provider: {self.provider}")
+
+    def _handle_api_errors(self, status_code: int, response: dict) -> str | None:
+        if self.provider == "openai" and status_code == 401:
+            return self.env._("Oops! Your API key seems incorrect. Update it from the Settings.")
+
+        if self.provider == "google" and status_code == 400:
+            error = response.get("error") or {}
+            reasons = {detail.get("reason") for detail in error.get("details", []) if isinstance(detail, dict)}
+            if error.get("status") == "INVALID_ARGUMENT" and "API_KEY_INVALID" in reasons:
+                return self.env._("Oops! Your API key seems incorrect. Update it from the Settings.")
+
+        return None

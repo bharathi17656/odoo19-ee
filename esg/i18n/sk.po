@@ -2,22 +2,23 @@
 # This file contains the translation of the following modules:
 # * esg
 #
-# Odoo Translation Bot <c3p@odoo.com>, 2025.
+# Odoo Translation Bot <c3p@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Tomáš Píšek <Tomas.Pisek@seznam.cz>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:41+0000\n"
-"PO-Revision-Date: 2025-11-16 13:49+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-05-08 17:41+0000\n"
+"PO-Revision-Date: 2026-04-09 11:29+0000\n"
+"Last-Translator: Odoo Translation Bot <c3p@odoo.com>\n"
 "Language-Team: Slovak <https://translate.odoo.com/projects/odoo-19/esg/sk/>\n"
 "Language: sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: esg
 #. odoo-python
@@ -35,8 +36,10 @@ msgstr "%s (kópia)"
 #: model_terms:ir.ui.view,arch_db:esg.emission_factor_form_view
 msgid ""
 "<i class=\"fa fa-exclamation-triangle me-2\"/>\n"
-"                    You are modifying an emission factor already assigned to emissions.\n"
-"                    Changing it will update these emissions. To keep the old value, duplicate the factor."
+"                    You are modifying an emission factor already assigned to "
+"emissions.\n"
+"                    Changing it will update these emissions. To keep the old "
+"value, duplicate the factor."
 msgstr ""
 
 #. module: esg
@@ -57,7 +60,7 @@ msgstr ""
 #. module: esg
 #: model:ir.model.constraint,message:esg.constraint_esg_activity_type_name_uniq
 msgid "A tag with the same name already exists."
-msgstr "Značka s rovnakým názvom už existuje."
+msgstr "Štítok s rovnakým názvom už existuje."
 
 #. module: esg
 #. odoo-python
@@ -113,10 +116,14 @@ msgid "Activity Flow"
 msgstr ""
 
 #. module: esg
-#: model:ir.model,name:esg.model_esg_activity_type
 #: model:ir.model.fields,field_description:esg.field_esg_emission_factor_line__activity_type_id
 msgid "Activity Type"
 msgstr "Typ aktivity"
+
+#. module: esg
+#: model:ir.model,name:esg.model_esg_activity_type
+msgid "Activity Type ESG"
+msgstr ""
 
 #. module: esg
 #: model:ir.model.fields,field_description:esg.field_esg_carbon_emission_report__activity_type_ids
@@ -138,8 +145,8 @@ msgstr "Suma"
 #. odoo-python
 #: code:addons/esg/models/esg_assignation_line.py:0
 msgid ""
-"An assignation with the rules (%(account_id)s, %(partner_id)s, "
-"%(product_id)s) already exists in the emission factor '%(factor_name)s'."
+"An assignation with the rules (%(account_id)s, %(partner_id)s, %"
+"(product_id)s) already exists in the emission factor '%(factor_name)s'."
 msgstr ""
 
 #. module: esg
@@ -285,7 +292,7 @@ msgstr ""
 #. module: esg
 #: model_terms:ir.ui.view,arch_db:esg.factors_auto_assignment_wizard_form_view
 msgid "Cancel"
-msgstr "Zrušené"
+msgstr "Zrušiť"
 
 #. module: esg
 #. odoo-javascript
@@ -362,8 +369,11 @@ msgstr "Kategória"
 #. odoo-python
 #: code:addons/esg/models/account_account.py:0
 msgid ""
-"Changing the account type to anything other than %(valid_account_type_names)s will reset all emission factors linked to journal items using this account.\n"
-"In addition, it will remove all the ESG assignations lines linked to that account.\n"
+"Changing the account type to anything other than %"
+"(valid_account_type_names)s will reset all emission factors linked to "
+"journal items using this account.\n"
+"In addition, it will remove all the ESG assignations lines linked to that "
+"account.\n"
 "Are you sure you want to continue?"
 msgstr ""
 
@@ -733,8 +743,10 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:esg.action_emitted_emission_report_views
 #: model_terms:ir.actions.act_window,help:esg.action_offset_emission_report_views
 msgid ""
-"Emissions data will sync automatically from accounting when you receive supplier invoices.<br>\n"
-"                You can also manually add other emission not linked to journal entries."
+"Emissions data will sync automatically from accounting when you receive "
+"supplier invoices.<br>\n"
+"                You can also manually add other emission not linked to "
+"journal entries."
 msgstr ""
 
 #. module: esg
@@ -1068,8 +1080,8 @@ msgstr ""
 #: model:ir.model.fields,help:esg.field_factors_auto_assignment_wizard__replace_previous_factors
 msgid ""
 "If checked, any emission lines that already have an emission factor "
-"(manually or automatically assigned) will be reassigned if a matching factor"
-" is found based on your configuration."
+"(manually or automatically assigned) will be reassigned if a matching factor "
+"is found based on your configuration."
 msgstr ""
 
 #. module: esg
@@ -1147,7 +1159,7 @@ msgstr ""
 #: model:ir.model,name:esg.model_account_move
 #: model:ir.model.fields,field_description:esg.field_esg_carbon_emission_report__move_id
 msgid "Journal Entry"
-msgstr "Vstup účtovnej knihy"
+msgstr "Účtovný záznam"
 
 #. module: esg
 #: model:ir.model,name:esg.model_account_move_line
@@ -1244,7 +1256,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:esg.field_esg_emission_factor__message_has_error
 #: model:ir.model.fields,field_description:esg.field_esg_emission_factor_line__message_has_error
 msgid "Message Delivery error"
-msgstr "Chyba zobrazovania správ"
+msgstr "Chyba doručenia správy"
 
 #. module: esg
 #: model:ir.model.fields,field_description:esg.field_esg_emission_factor__message_ids
@@ -1550,8 +1562,7 @@ msgstr ""
 
 #. module: esg
 #: model:ir.model.fields,help:esg.field_esg_gas__global_warming_potential
-msgid ""
-"Relative impact of gas on global warming compared to CO₂ over 100 years"
+msgid "Relative impact of gas on global warming compared to CO₂ over 100 years"
 msgstr ""
 
 #. module: esg
@@ -1900,6 +1911,11 @@ msgid "Valid To"
 msgstr ""
 
 #. module: esg
+#: model_terms:ir.ui.view,arch_db:esg.emission_factor_form_view
+msgid "Validity Period"
+msgstr ""
+
+#. module: esg
 #: model:esg.emission.source,name:esg.esg_emission_source_direct_2_1
 msgid "Vehicle Type 1"
 msgstr ""
@@ -1948,9 +1964,8 @@ msgstr "História komunikácie webstránok"
 #. odoo-python
 #: code:addons/esg/models/account_account.py:0
 msgid ""
-"You can only create accounts of type %(valid_account_type_names)s in the ESG"
-" module, as emission factors can only be linked to expense or asset "
-"accounts."
+"You can only create accounts of type %(valid_account_type_names)s in the ESG "
+"module, as emission factors can only be linked to expense or asset accounts."
 msgstr ""
 
 #. module: esg

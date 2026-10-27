@@ -91,7 +91,7 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         })
         cls.base_tag = base_report_line.expression_ids._get_matching_tags()
 
-    def _create_invoice(self, taxes_per_line, inv_type='out_invoice', currency_id=False, invoice_payment_term_id=False):
+    def _create_invoice_taxes_per_line(self, taxes_per_line, inv_type='out_invoice', currency_id=False, invoice_payment_term_id=False):
         ''' Create an invoice on the fly.
 
         :param taxes_per_line: A list of tuple (price_unit, account.tax recordset)
@@ -122,7 +122,7 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         --------------------------------------------
         21%         | /         | 100       | 21
         '''
-        invoice = self._create_invoice([(100, self.env['account.tax'])])
+        invoice = self._create_invoice_taxes_per_line([(100, self.env['account.tax'])])
         invoice.invoice_line_ids[0].tax_ids = self.percent_tax_1
         self.assertRecordValues(invoice.line_ids.filtered('tax_line_id'), [
             {'name': self.percent_tax_1.name, 'tax_base_amount': -100, 'balance': -21, 'tax_ids': []},
@@ -143,7 +143,7 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         21% incl    | /         | 100       | 21
         12%         | /         | 100       | 12
         '''
-        invoice = self._create_invoice([
+        invoice = self._create_invoice_taxes_per_line([
             (100, self.percent_tax_1),
             (121, self.percent_tax_1_incl),
             (100, self.percent_tax_2),
@@ -169,7 +169,7 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         12%         | /         | 121       | 14.52
         12%         | /         | 100       | 12
         '''
-        invoice = self._create_invoice([
+        invoice = self._create_invoice_taxes_per_line([
             (121, self.percent_tax_1_incl + self.percent_tax_2),
             (100, self.percent_tax_2),
         ])
@@ -193,7 +193,7 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         12%         | 21% incl  | 121       | 14.52
         12%         | /         | 100       | 12
         '''
-        invoice = self._create_invoice([
+        invoice = self._create_invoice_taxes_per_line([
             (121, self.group_tax),
             (100, self.percent_tax_2),
         ])
@@ -268,7 +268,7 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         })
 
         # Test invoice repartition
-        invoice = self._create_invoice([(100, tax)], inv_type='out_invoice')
+        invoice = self._create_invoice_taxes_per_line([(100, tax)], inv_type='out_invoice')
         invoice.action_post()
 
         self.assertEqual(len(invoice.line_ids), 4, "There should be 4 account move lines created for the invoice: payable, base and 2 tax lines")
@@ -284,7 +284,7 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         self.assertEqual(inv_tax_lines.filtered(lambda x: x.account_id == account_2).tax_tag_ids, inv_tax_tag_90, "Tax line on account 2 should have 90% tag")
 
         # Test refund repartition
-        refund = self._create_invoice([(100, tax)], inv_type='out_refund')
+        refund = self._create_invoice_taxes_per_line([(100, tax)], inv_type='out_refund')
         refund.action_post()
 
         self.assertEqual(len(refund.line_ids), 4, "There should be 4 account move lines created for the refund: payable, base and 2 tax lines")
@@ -319,7 +319,7 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
             'price_include_override': 'tax_included',
             'include_base_amount': True,
         })
-        invoice = self._create_invoice([(100, sale_tax)])
+        invoice = self._create_invoice_taxes_per_line([(100, sale_tax)])
         self.assertRecordValues(invoice.line_ids.filtered('tax_line_id'), [{
             'name': sale_tax.name,
             'tax_base_amount': 0.0,
@@ -662,7 +662,7 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         })
         self.other_currency.rounding = 0.05
 
-        invoice = self._create_invoice([
+        invoice = self._create_invoice_taxes_per_line([
             (5, self.percent_tax_3_incl),
             (10, self.percent_tax_3_incl),
             (50, self.percent_tax_3_incl),
@@ -719,7 +719,7 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
             'amount_type': 'fixed',
             'amount': 5,
         })
-        invoice = self._create_invoice([
+        invoice = self._create_invoice_taxes_per_line([
             (0, fixed_tax),
         ])
         self.assertRecordValues(invoice.line_ids.filtered('tax_line_id'), [{
@@ -747,7 +747,7 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
             'invoice_repartition_line_ids': [base_tax_rep] + tax_reps,
             'refund_repartition_line_ids': [base_tax_rep] + tax_reps,
         })
-        invoice = self._create_invoice([(1, tax)])
+        invoice = self._create_invoice_taxes_per_line([(1, tax)])
         self.assertRecordValues(invoice, [{
             'amount_untaxed': 1.0,
             'amount_tax': 0.05,
@@ -779,7 +779,7 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
             'invoice_repartition_line_ids': [base_tax_rep] + plus_tax_reps + neg_tax_reps,
             'refund_repartition_line_ids': [base_tax_rep] + plus_tax_reps + neg_tax_reps,
         })
-        invoice = self._create_invoice([(1, tax)], inv_type='out_refund')
+        invoice = self._create_invoice_taxes_per_line([(1, tax)], inv_type='out_refund')
         self.assertRecordValues(invoice, [{
             'amount_untaxed': 1.0,
             'amount_tax': 0.0,
@@ -903,3 +903,50 @@ class TestInvoiceTaxes(AccountTestInvoicingCommon):
         move = self.init_invoice('out_invoice', self.partner_a, post=True, products=[self.product])
         line = move.invoice_line_ids
         self.assertEqual(line.tax_ids, active_tax, f"The tax should be {active_tax.name}, but is is currently {line.tax_ids.name}")
+
+    def test_multiple_onchange_product_and_price(self):
+        """
+        This test checks that the totals are computed correctly when an onchange is executed
+        with "price_unit" before "product_id" in the values.
+        This test covers a UI issue where the totals were not updated when the price was changed,
+        then the product and finally the price again.
+        The issue was only occuring between the change of value and the next save.
+        That's why the test is using the onchange method directly instead of using a Form.
+        """
+        invoice = self.init_invoice('out_invoice', products=self.product_a)
+        self.assertEqual(invoice.tax_totals['base_amount'], 1000.0)
+        self.assertEqual(invoice.tax_totals['total_amount'], 1150.0)
+        # The onchange is executed directly to simulate the following flow:
+        # 1) unit price is changed to any value
+        # 2) product is changed to "Product B"
+        # 3) unit price is changed to 2000.0
+        results = invoice.onchange(
+            {'invoice_line_ids': [Command.update(invoice.invoice_line_ids[0].id, {'price_unit': 2000.0, 'product_id': self.product_b.id})]},
+            ['invoice_line_ids'],
+            {"invoice_line_ids": {}, 'tax_totals': {}}
+        )
+        self.assertEqual(results['value']['tax_totals']['base_amount'], 2000.0)
+        self.assertEqual(results['value']['tax_totals']['total_amount'], 2600.0)
+
+    def test_tax_mapping_with_tax_fiscal_position_set_to_all(self):
+        """
+        A tax without any fiscal positions assigned should be applicable to
+        any fiscal position.
+        This test ensures that when a single fiscal position exists and a tax
+        has no fiscal position restriction, the tax is correctly applied to
+        invoice lines.
+        """
+        self.env['account.fiscal.position'].search([]).action_archive()
+        default_tax = self.company_data['default_tax_sale']
+        self.env['account.fiscal.position'].create({
+            'name': 'FP',
+            'auto_apply': True,
+            'country_id': self.env.company.country_id.id,
+            'tax_ids': default_tax.ids,
+        })
+        self.assertEqual(self.product.taxes_id, default_tax)
+        default_tax.fiscal_position_ids = False
+        self.partner_a.country_id = self.env.company.country_id.id
+        move = self._create_invoice_one_line(product_id=self.product, partner_id=self.partner_a, post=True)
+        line = move.invoice_line_ids
+        self.assertEqual(line.tax_ids, default_tax)

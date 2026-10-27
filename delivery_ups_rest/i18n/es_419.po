@@ -3,13 +3,13 @@
 # * delivery_ups_rest
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Fernanda Alvarez (mfar)" <mfar@odoo.com>, 2025.
+# "Fernanda Alvarez (mfar)" <mfar@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.4+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-10-07 02:40+0000\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2026-10-12 16:15+0000\n"
 "Last-Translator: \"Fernanda Alvarez (mfar)\" <mfar@odoo.com>\n"
 "Language-Team: Spanish (Latin America) <https://translate.odoo.com/projects/"
 "odoo-19/delivery_ups_rest/es_419/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_delivery_carrier__ups_bill_my_account
@@ -78,6 +78,23 @@ msgstr "Cree una cuenta en"
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
 msgid "Create an app"
 msgstr "Cree una aplicación"
+
+#. module: delivery_ups_rest
+#. odoo-python
+#: code:addons/delivery_ups_rest/models/ups_request.py:0
+msgid ""
+"Detected a problem when validating delivery %(delivery_name)s. Invoicing "
+"address of the commercial invoice has been defaulted to %(ship_to_partner)s "
+"instead of %(sold_to_partner)s to avoid the following error from UPS: \"The "
+"Sold To party's country code must be the same as the Ship To party's country "
+"code with the exception of Canada and satellite countries.\""
+msgstr ""
+"Detectamos un problema al validar la entrega de %(delivery_name)s. La "
+"dirección de facturación de la factura comercial se configuró de forma "
+"predeterminada como %(ship_to_partner)s en lugar de %(sold_to_partner)s para "
+"evitar el siguiente error de UPS: \"El código de país de la parte "
+"destinataria debe coincidir con el código de país de la parte de envío, con "
+"excepción de Canadá y los países satélite\"."
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_delivery_carrier__display_name
@@ -255,9 +272,9 @@ msgstr "Destinatario"
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
-msgid "Recipient Phone must be at least 10 alphanumeric characters."
+msgid "Recipient Phone must be between 1 and 15 alphanumeric characters."
 msgstr ""
-"El número de teléfono del destinatario debe tener por lo menos 10 caracteres "
+"El teléfono del destinatario debe tener entre 1 y 15 caracteres "
 "alfanuméricos."
 
 #. module: delivery_ups_rest
@@ -319,10 +336,9 @@ msgstr ""
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
-msgid "Shipper Phone must be at least 10 alphanumeric characters."
+msgid "Shipper Phone must be between 1 and 15 alphanumeric characters."
 msgstr ""
-"El teléfono del remitente debe contener por lo menos 10 caracteres "
-"alfanuméricos."
+"El teléfono del remitente debe tener entre 1 y 15 caracteres alfanuméricos."
 
 #. module: delivery_ups_rest
 #: model:ir.model,name:delivery_ups_rest.model_delivery_carrier
@@ -375,7 +391,7 @@ msgid ""
 "missing for the following product(s): \n"
 " %s"
 msgstr ""
-"No se puede calcular el precio estimado de envío porque falta el peso de los "
+"No se puede calcular el precio estimado de envío, falta el peso de los "
 "siguientes productos: \n"
 " %s"
 
@@ -461,9 +477,19 @@ msgid "UPS Configuration"
 msgstr "Configuración de UPS"
 
 #. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__74
+msgid "UPS Express Midday"
+msgstr "UPS Express Midday"
+
+#. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__03
 msgid "UPS Ground"
 msgstr "UPS Ground"
+
+#. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__75
+msgid "UPS Heavy Goods"
+msgstr "UPS Heavy Goods"
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_delivery_carrier__ups_label_file_type
@@ -511,6 +537,16 @@ msgid "UPS Standard"
 msgstr "UPS Standard"
 
 #. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__72
+msgid "UPS Worldwide Economy DDP"
+msgstr "UPS Worldwide Economy DDP"
+
+#. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__17
+msgid "UPS Worldwide Economy DDU"
+msgstr "UPS Worldwide Economy DDU"
+
+#. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__08
 msgid "UPS Worldwide Expedited"
 msgstr "UPS Worldwide Expedited"
@@ -524,6 +560,11 @@ msgstr "UPS Worldwide Express"
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__96
 msgid "UPS Worldwide Express Freight"
 msgstr "UPS Worldwide Express Freight"
+
+#. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__71
+msgid "UPS Worldwide Express Freight Midday"
+msgstr "UPS Worldwide Express Freight Midday"
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__54
@@ -565,9 +606,9 @@ msgstr "Unidad de peso del paquete de UPS"
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
-msgid "Warehouse Phone must be at least 10 alphanumeric characters."
+msgid "Warehouse Phone must be between 1 and 15 alphanumeric characters."
 msgstr ""
-"El teléfono del almacén debe tener por lo menos 10 caracteres alfanuméricos."
+"El teléfono del almacén debe tener entre 1 y 15 caracteres alfanuméricos."
 
 #. module: delivery_ups_rest
 #. odoo-python
@@ -655,3 +696,18 @@ msgstr "ups.com"
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
 msgid "you're ready to go!"
 msgstr "¡Listo!"
+
+#~ msgid "Recipient Phone must be at least 10 alphanumeric characters."
+#~ msgstr ""
+#~ "El número de teléfono del destinatario debe tener por lo menos 10 "
+#~ "caracteres alfanuméricos."
+
+#~ msgid "Shipper Phone must be at least 10 alphanumeric characters."
+#~ msgstr ""
+#~ "El teléfono del remitente debe contener por lo menos 10 caracteres "
+#~ "alfanuméricos."
+
+#~ msgid "Warehouse Phone must be at least 10 alphanumeric characters."
+#~ msgstr ""
+#~ "El teléfono del almacén debe tener por lo menos 10 caracteres "
+#~ "alfanuméricos."

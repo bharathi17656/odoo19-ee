@@ -50,8 +50,8 @@ class SodaImportWizard(models.TransientModel):
         suspense_account = self.journal_id.company_id.account_journal_suspense_account_id
         non_mapped_soda_accounts = set()
         moves = self.env['account.move']
-        line_ids = []
         for ref, soda_file in self.soda_files.items():
+            line_ids = []
             # Every SODA file is linked to a move containing the entries according to the mapping
             for entry in soda_file['entries']:
                 account_id = soda_account_mapping[entry['code']]['account_id']

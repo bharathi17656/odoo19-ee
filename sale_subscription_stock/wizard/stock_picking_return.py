@@ -11,5 +11,5 @@ class StockReturnPickingLine(models.TransientModel):
         # copy the deadline from the original move so the return counts as an incoming move
         # for the subscription period
         if self.move_id.sale_line_id.recurring_invoice:
-            vals['date_deadline'] = self.move_id.date_deadline
+            vals['date'] = self.move_id.date
         return vals

@@ -1,9 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from collections import defaultdict
-import re
 from odoo import fields, models, _
 from ..api.swissdec_declarations import SwissdecDeclaration, SwissdecInstitution
 import math
+import time
 
 
 class L10nChSalaryCertificate(models.Model):
@@ -37,6 +37,12 @@ class L10nChSalaryCertificate(models.Model):
 
         declaration, _institutions = self.env["l10n.ch.employee.yearly.values"]._get_salary_rectificates(year=self.previous_declaration.year, month=int(self.previous_declaration.month), company_id=self.company_id, to_replace=mapped_certificates, original_date=self.original_date)
         self.l10n_ch_declare_salary_data = declaration
+
+    def _get_employee_snapshots(self):
+        return self.previous_declaration._get_employee_snapshots()
+
+    def _get_wage_statement_filename(self, employee):
+        return _("Wage_statement_correction_%(year)s_%(name)s_%(timestamp)s", year=self.year, name=employee.name, timestamp=time.time_ns())
 
     def generate_tax_accounting_reports(self):
         self.ensure_one()
@@ -85,48 +91,7 @@ class L10nChSalaryCertificate(models.Model):
 
             tax_accounting_reports.update(report.get("tax_accounting_reports", {}))
 
-        pattern = re.compile(r"_pers_([A-Za-z0-9_]+)\.pdf$")
-
-        # Let's assume we have employees grouped by registration_number
-        employees_mapped_by_registration_number = dict(
-            self.env['hr.employee']._read_group(
-                domain=[],
-                groupby=['registration_number'],
-                aggregates=['id:recordset']
-            )
-        )
-
-        employee_declaration_vals = []
-
-        for file_name, pdf_b64 in tax_accounting_reports.items():
-
-            match = pattern.search(file_name)
-            if not match:
-                continue
-            registration = match.group(1)
-
-            employee = employees_mapped_by_registration_number.get(registration, self.env['hr.employee'])
-
-            if employee:
-                employee_declaration_vals.append({
-                    'employee_id': employee.id,
-                    'res_model': self._name,
-                    'res_id': self.id,
-                    'pdf_filename': _("Wage_statement_%(year)s_%(name)s", year=self.year, name=employee.name),
-                    'pdf_to_generate': False,
-                    'state': 'pdf_generated',
-                    'pdf_file': pdf_b64
-                })
-            else:
-                attachment = self.env['ir.attachment'].create({
-                    'name': f"Tax_Accounting_Report_{self.year}_{registration}.pdf",
-                    'datas': pdf_b64,
-                    'res_id': self.id,
-                    'res_model': self._name,
-                })
-                self.message_post(body=_("Employee with number %s was either archived or deleted. Wage statement will not be sent automatically.", registration), attachment_ids=[attachment.id])
-
-        self.env['hr.payroll.employee.declaration'].create(employee_declaration_vals)
+        self._save_wage_statements(tax_accounting_reports)
 
     def _compute_wage_statement_count(self):
         mapped_employee_declarations = dict(self.env['hr.payroll.employee.declaration']._read_group(domain=[('res_model', '=', self._name)], groupby=['res_id'], aggregates=['__count']))
@@ -159,3 +124,9 @@ class L10nChSalaryCertificate(models.Model):
             substitution_declaration_id=self.substituted_declaration_id.swissdec_declaration_id,
             CurrentMonth=(self.year, int(self.month), False)
         )
+
+    def _get_posted_mail_template(self):
+        return self.env.ref('documents_hr_payroll.mail_template_new_declaration', raise_if_not_found=False)
+
+    def _get_posted_document_owner(self, employee):
+        return employee.user_id

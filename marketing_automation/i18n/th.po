@@ -10,13 +10,14 @@
 # Martin Trigaux, 2022
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Nusara Boonma <nuboo@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-16 17:56+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2026-07-04 09:55+0000\n"
+"Last-Translator: Nusara Boonma <nuboo@odoo.com>\n"
 "Language-Team: Thai <https://translate.odoo.com/projects/odoo-19/"
 "marketing_automation/th/>\n"
 "Language: th\n"
@@ -24,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_summary_template
@@ -382,8 +383,7 @@ msgstr "เก็บถาวรแล้ว"
 msgid ""
 "Are you sure you want to create a new participant for each matching record "
 "that has not been used yet?"
-msgstr ""
-"คุณแน่ใจหรือไม่ว่าต้องการสร้างผู้เข้าร่วมใหม่สำหรับบันทึกที่ตรงกันแต่ละรายการที่ยังไม่ได้ใช้"
+msgstr "คุณแน่ใจหรือไม่ว่าต้องการสร้างผู้เข้าร่วมใหม่สำหรับบันทึกที่ตรงกันแต่ละรายการที่ยังไม่ได้ใช้"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__is_auto_campaign
@@ -723,6 +723,12 @@ msgstr "ข้อความผิดพลาด"
 #: code:addons/marketing_automation/models/marketing_activity.py:0
 msgid "Error! You can't create recursive hierarchy of Activity."
 msgstr "เกิดข้อผิดพลาด! คุณไม่สามารถสร้างลำดับชั้นแบบเรียกซ้ำของกิจกรรมได้"
+
+#. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/marketing_activity.py:0
+msgid "Error! You can't modify the hierarchy of an active Activity."
+msgstr ""
 
 #. module: marketing_automation
 #. odoo-python
@@ -1218,6 +1224,14 @@ msgid "Offer free catalog"
 msgstr "เสนอแคตตาล็อกฟรี"
 
 #. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/mailing_mailing.py:0
+msgid ""
+"Oops! You can't retry sending emails from inside a Marketing Automation "
+"campaign."
+msgstr ""
+
+#. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
 msgid "Opened"
 msgstr "เปิดแล้ว"
@@ -1361,6 +1375,12 @@ msgstr "รูปแบบการบันทึก"
 
 #. module: marketing_automation
 #. odoo-python
+#: code:addons/marketing_automation/models/marketing_campaign.py:0
+msgid "Record no longer matches campaign filter"
+msgstr ""
+
+#. module: marketing_automation
+#. odoo-python
 #: code:addons/marketing_automation/models/marketing_activity.py:0
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_activity__rejected
 #: model:ir.model.fields.selection,name:marketing_automation.selection__marketing_trace__state__rejected
@@ -1431,9 +1451,13 @@ msgstr "เริ่มทำงาน"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
-msgid "Run the next scheduled activity for each participant of this campaign?"
+msgid "Run Activities"
 msgstr ""
-"ดำเนินกิจกรรมตามกำหนดการครั้งถัดไปสำหรับผู้เข้าร่วมแคมเปญนี้แต่ละคนหรือไม่"
+
+#. module: marketing_automation
+#: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
+msgid "Run the next scheduled activity for each participant of this campaign?"
+msgstr "ดำเนินกิจกรรมตามกำหนดการครั้งถัดไปสำหรับผู้เข้าร่วมแคมเปญนี้แต่ละคนหรือไม่"
 
 #. module: marketing_automation
 #: model:ir.model.fields.selection,name:marketing_automation.selection__marketing_campaign__state__running
@@ -1586,7 +1610,7 @@ msgstr "เริ่มต้นจากศูนย์"
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_trace__state
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_search
 msgid "State"
-msgstr "รัฐ"
+msgstr "สถานะ"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_form
@@ -1683,6 +1707,12 @@ msgstr "การติดตามทดสอบ"
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
 msgid "Tests"
 msgstr "ทดสอบ"
+
+#. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/marketing_campaign.py:0
+msgid "The filter domain is using unauthorized fields."
+msgstr ""
 
 #. module: marketing_automation
 #. odoo-python
@@ -1920,8 +1950,8 @@ msgid ""
 "after the Participant <strong>clicked</strong>,<br/>on any link included in "
 "the <strong>Mailing</strong> sent by the Activity \""
 msgstr ""
-"หลังจากที่ผู้เข้าร่วม<strong>คลิก</strong>ลิงก์ <br/"
-">ที่รวมอยู่ใน<strong>จดหมาย</strong>ที่ส่งโดยกิจกรรม"
+"หลังจากที่ผู้เข้าร่วม<strong>คลิก</strong>ลิงก์ <br/>ที่รวมอยู่ใน<strong>จดหมาย</"
+"strong>ที่ส่งโดยกิจกรรม"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_summary_template

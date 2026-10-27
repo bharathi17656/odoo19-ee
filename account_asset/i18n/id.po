@@ -10,13 +10,14 @@
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
 # "Abe Manyo (abem)" <abem@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Nurul Aini Akrima Sabila (nuaas)" <nuaas@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-16 05:24+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-08-21 17:44+0000\n"
+"PO-Revision-Date: 2026-09-23 05:34+0000\n"
+"Last-Translator: \"Nurul Aini Akrima Sabila (nuaas)\" <nuaas@odoo.com>\n"
 "Language-Team: Indonesian <https://translate.odoo.com/projects/odoo-19/"
 "account_asset/id/>\n"
 "Language: id\n"
@@ -24,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__total_depreciation_entries_count
@@ -117,8 +118,8 @@ msgid ""
 "> %(extra_text)s Future entries will be recomputed to depreciate the asset "
 "following the changes."
 msgstr ""
-"Entri depresiasi akan dipost pada dan termasuk tanggal %(date)s. <br/> "
-"%(extra_text)s Entri-entri masa depan akan dihitung ulang untuk melakukan "
+"Entri depresiasi akan dipost pada dan termasuk tanggal %(date)s. <br/> %"
+"(extra_text)s Entri-entri masa depan akan dihitung ulang untuk melakukan "
 "depresiasi ke aset mengikuti perubahannya."
 
 #. module: account_asset
@@ -267,7 +268,7 @@ msgstr "Akuntansi SPT"
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__acquisition_date
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_kanban
 msgid "Acquisition Date"
-msgstr "Akuisisi Tanggal"
+msgstr "Tanggal Akuisisi"
 
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_asset_modify__modify_action
@@ -302,7 +303,7 @@ msgstr "Status Aktivitas"
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__activity_type_icon
 msgid "Activity Type Icon"
-msgstr "Ikon Jenis Aktifitas"
+msgstr "Ikon Jenis Aktivitas"
 
 #. module: account_asset
 #: model_terms:ir.ui.view,arch_db:account_asset.asset_modify_form
@@ -492,13 +493,13 @@ msgstr "Aset dibuat dari faktur: %s"
 #. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
-msgid "Asset disposed. %s"
-msgstr "Asset Dibuang. %s"
+msgid "Asset disposed. %(message)s"
+msgstr ""
 
 #. module: account_asset
 #: model:account.return.check.template,name:account_asset.account_return_check_template_asset_movement_and_accounting_treatment
 msgid "Asset movement and accounting treatment"
-msgstr ""
+msgstr "Pergerakan aset dan penanganan akuntansi"
 
 #. module: account_asset
 #. odoo-python
@@ -509,8 +510,14 @@ msgstr "Aset Dipause. %s"
 #. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
-msgid "Asset sold. %s"
-msgstr "Aset dijual. %s"
+msgid "Asset sold. %(message)s See %(invoice_links)s"
+msgstr ""
+
+#. module: account_asset
+#. odoo-python
+#: code:addons/account_asset/models/account_asset.py:0
+msgid "Asset sold: %s"
+msgstr ""
 
 #. module: account_asset
 #. odoo-python
@@ -589,7 +596,7 @@ msgstr "Otomatisasi"
 #. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__prorata_computation_type__daily_computation
 msgid "Based on days per period"
-msgstr "Berdasarkan hari-hari per periode"
+msgstr "Berdasarkan hari per periode"
 
 #. module: account_asset
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_form
@@ -635,6 +642,9 @@ msgid ""
 "Check depreciation periods for new acquisitions and ensure consistency with "
 "similar assets. Document any changes in accounting methods."
 msgstr ""
+"Periksa periode penyusutan untuk akuisisi baru dan pastikan konsistensi "
+"dengan aset-aset serupa. Dokumentasikan perubahan apa pun di metode "
+"akuntansi."
 
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__children_ids
@@ -651,10 +661,10 @@ msgid ""
 "depreciation value equal to the straight line value."
 msgstr ""
 "Pilih metode yang digunakan untuk menghitung jumlah baris depresiasi.\n"
-"  * Straight Line: Dihitung berdasarkan basis: Gross Value / Duration\n"
-"  * Declining: Dihitung berdasarkan: Residual Value * Declining Factor\n"
-"  * Declining then Straight Line: Seperti Declining tapi dengan nilai "
-"depresiasi sama dengan nilai straight line value."
+"  * Garis Lurus: Dihitung berdasarkan: Gross Value / Duration\n"
+"  * Menurun: Dihitung berdasarkan: Residual Value * Declining Factor\n"
+"  * Menurun lalu Garis Lurus: Seperti Menurun, tapi dengan nilai depresiasi "
+"sama dengan nilai garis lurus."
 
 #. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__state__close
@@ -736,7 +746,7 @@ msgstr "Buat dan Validasi"
 #. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_account__create_asset__draft
 msgid "Create in draft"
-msgstr "Buat dalam Konsep"
+msgstr "Buat sebagai draft"
 
 #. module: account_asset
 #: model_terms:ir.actions.act_window,help:account_asset.action_account_asset_model_form
@@ -807,19 +817,19 @@ msgstr "Dec. then Straight"
 #: code:addons/account_asset/models/account_assets_report.py:0
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__method__degressive
 msgid "Declining"
-msgstr "Declining"
+msgstr "Menurun"
 
 #. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/controller/asset_template_controller.py:0
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__method_progress_factor
 msgid "Declining Factor"
-msgstr "Declining Factor"
+msgstr "Faktor Penurunan"
 
 #. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__method__degressive_then_linear
 msgid "Declining then Straight Line"
-msgstr "Declining then Straight Line"
+msgstr "Menurun lalu Garis Lurus"
 
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_asset_modify__value_residual
@@ -962,7 +972,7 @@ msgstr "Distribution Analytic Account"
 #. module: account_asset
 #: model:ir.actions.server,name:account_asset.action_server_download_asset_template
 msgid "Download Asset Import Template"
-msgstr ""
+msgstr "Unduh Templat Impor Aset"
 
 #. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__state__draft
@@ -999,6 +1009,15 @@ msgid ""
 msgstr ""
 "Antara \"Bulan\" atau \"Tahunan\" (sensitif kapital). Menentukan satuan "
 "durasi."
+
+#. module: account_asset
+#: model:account.return.check.template,description:account_asset.account_return_check_template_monitoring_of_depreciation
+msgid ""
+"Ensure compliance with local tax rules on depreciation.\n"
+"Verify that the depreciation methods, depreciation period, and start dates "
+"align with tax requirements (e.g. linear depreciation, pro rata temporis "
+"application, no double declining for tax purposes)."
+msgstr ""
 
 #. module: account_asset
 #. odoo-python
@@ -1046,7 +1065,7 @@ msgstr "Referensi Tampilan Bagan"
 #. module: account_asset
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_search
 msgid "Future Activities"
-msgstr "Kegiatan - Kegiatan Mendatang"
+msgstr "Aktivitas Mendatang"
 
 #. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__asset_modify__gain_or_loss__gain
@@ -1146,6 +1165,8 @@ msgid ""
 "Identify acquisitions, disposals, write-offs, etc. Ensure correct accounting "
 "treatment, depreciation, and capital gains processing."
 msgstr ""
+"Identifikasi akuisisi, pelepasan, penghapusan, dsb. Pastikan perlakuan "
+"akuntansi yang tepat, penyusutan, dan pemrosesan keuntungan modal."
 
 #. module: account_asset
 #: model:ir.model.fields,help:account_asset.field_account_asset__message_needaction
@@ -1254,7 +1275,7 @@ msgstr "Terakhir Diperbarui pada"
 #. module: account_asset
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_search
 msgid "Late Activities"
-msgstr "Aktifitas terakhir"
+msgstr "Aktivitas Terlambat"
 
 #. module: account_asset
 #. odoo-python
@@ -1317,7 +1338,7 @@ msgstr "Model"
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__asset_properties_definition
 msgid "Model Properties"
-msgstr "Properti-Properti Model"
+msgstr "Properti Model"
 
 #. module: account_asset
 #: model_terms:ir.ui.view,arch_db:account_asset.asset_modify_form
@@ -1336,6 +1357,11 @@ msgstr "Ubah Aktiva"
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_form
 msgid "Modify Depreciation"
 msgstr "Penyusutan Bulanan"
+
+#. module: account_asset
+#: model:account.return.check.template,name:account_asset.account_return_check_template_monitoring_of_depreciation
+msgid "Monitoring of Depreciation "
+msgstr ""
 
 #. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__method_period__1
@@ -1381,7 +1407,7 @@ msgstr "Aktivitas Saya"
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr "Deadline Kegiatan Saya"
+msgstr "Tenggat Aktivitas Saya"
 
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset_group__name
@@ -1421,7 +1447,7 @@ msgstr "Kalender Acara Aktivitas Berikutnya"
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr "Batas Waktu Aktivitas Berikutnya"
+msgstr "Tenggat Aktivitas Berikutnya"
 
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__activity_summary
@@ -1549,8 +1575,8 @@ msgid ""
 "Only applicable for Declining Balance method (e.g., 2 for double declining). "
 "Ignored for Straight Line."
 msgstr ""
-"Hanya berlaku untuk metode Declining Balance (contoh, 2 untuk double "
-"declining). Diabaikan untuk Straight Line."
+"Hanya berlaku untuk metode Saldo Menurun (misalnya 2 untuk menurun ganda). "
+"Diabaikan untuk Garis Lurus."
 
 #. module: account_asset
 #. odoo-python
@@ -1565,8 +1591,8 @@ msgid ""
 "Optional. The name or external ID of the asset group. Must exist in Odoo "
 "(e.g., Office Equipment, Vehicles, Machinery)."
 msgstr ""
-"Opsional. Nama atau ID eksternal dari kelompok aset. Harus ada di Odoo ("
-"contoh, Peralatan Kantor, Kendaraan, Mesin)."
+"Opsional. Nama atau ID eksternal dari kelompok aset. Harus ada di Odoo "
+"(contoh, Peralatan Kantor, Kendaraan, Mesin)."
 
 #. module: account_asset
 #. odoo-python
@@ -1692,7 +1718,7 @@ msgstr ""
 #. module: account_asset
 #: model:account.return.check.template,name:account_asset.account_return_check_template_review_depreciation_periods_new_acquisitions
 msgid "Review depreciation periods for new acquisitions"
-msgstr ""
+msgstr "Tinjau periode penyusutan untuk akuisisi baru"
 
 #. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__state__open
@@ -1827,9 +1853,9 @@ msgid ""
 "account %(dep_acc)s has been debited by %(dep_delta)s. This corresponds to %"
 "(move_count)s cancelled %(word)s:"
 msgstr ""
-"Akun %(exp_acc)s telah dikredit oleh %(exp_delta)s, sementara akun %(dep_acc)"
-"s telah didebet oleh %(dep_delta)s. Ini sesuai dengan %(move_count)s yang "
-"dibatalkan %(word)s:"
+"Akun %(exp_acc)s telah dikredit oleh %(exp_delta)s, sementara akun %"
+"(dep_acc)s telah didebet oleh %(dep_delta)s. Ini sesuai dengan %"
+"(move_count)s yang dibatalkan %(word)s:"
 
 #. module: account_asset
 #. odoo-python
@@ -1838,8 +1864,8 @@ msgid ""
 "The accumulated depreciation account (contra-asset account). Must exist in "
 "Odoo and be of \"Fixed Asset\" or \"Non-current Assets\" type."
 msgstr ""
-"Akun depresiasi yang terkumpul (akun contra-asset). Harus tersedia di Odo "
-"dan merupakan tipe \"Aset tetap\" atau \"Aset non-current\"."
+"Akun penyusutan yang terkumpul (akun contra-asset). Harus ada di Odoo dan "
+"merupakan tipe \"Aktiva Tetap\" atau \"Aktiva Tidak Lancar\"."
 
 #. module: account_asset
 #: model:ir.model.fields,help:account_asset.field_account_asset__method_period
@@ -1878,8 +1904,8 @@ msgid ""
 "Asset\"). Must exist in Odoo and be of \"Fixed Asset\" or \"Non-current "
 "Assets\" type."
 msgstr ""
-"Akun neraca keuangan untuk aset itu sendiri (contoh, \"151000 Fixed Asset\")"
-". Harus tersedia di Odoo dan merupakan tipe \"Aset Tetap\" atau "
+"Akun neraca keuangan untuk aset itu sendiri (contoh, \"151000 Fixed "
+"Asset\"). Harus tersedia di Odoo dan merupakan tipe \"Aset Tetap\" atau "
 "\"Aset Non-current\"."
 
 #. module: account_asset
@@ -1924,9 +1950,15 @@ msgid ""
 "\"630000 Depreciation Expenses\"). Must exist in Odoo and be of "
 "\"Depreciation\" or \"Expense\" type."
 msgstr ""
-"Akun pengeluaran untuk memposting entri depresiasi perioddik (contoh, "
-"\"630000 Pengeluaran Depresiasi\"). Harus tersedia di Odoo dan merupakan "
-"tipe \"Depresiasi\" atau \"Pengeluaran\"."
+"Akun pengeluaran untuk merekam entri penyusutan periodik (contohnya \"630000 "
+"Beban Penyusutan\"). Harus ada di Odoo dan merupakan tipe \"Penyusutan\" "
+"atau \"Beban\"."
+
+#. module: account_asset
+#. odoo-javascript
+#: code:addons/account_asset/static/src/components/depreciation_schedule/warnings.xml:0
+msgid "The fixed asset account differs from the account on the bill. Click"
+msgstr ""
 
 #. module: account_asset
 #: model:ir.model.fields,help:account_asset.field_account_asset__method_number
@@ -2043,7 +2075,7 @@ msgstr "Pesan situs"
 #. module: account_asset
 #: model:ir.model.fields,help:account_asset.field_account_asset__website_message_ids
 msgid "Website communication history"
-msgstr "Sejarah komunikasi situs"
+msgstr "Riwayat komunikasi situs"
 
 #. module: account_asset
 #: model:ir.model.fields,help:account_asset.field_account_asset__state
@@ -2284,8 +2316,7 @@ msgid ""
 "e.g. Straight Line, Declining Balance. Determines how depreciation is "
 "calculated."
 msgstr ""
-"contoh. Straight Line, Declining Balance. Menentukan bagaimana depresiasi "
-"dihitung."
+"Contoh: Garis Lurus, Saldo Menurun. Menentukan cara depresiasi dihitung."
 
 #. module: account_asset
 #. odoo-python
@@ -2310,6 +2341,12 @@ msgstr "laba"
 #: code:addons/account_asset/wizard/asset_modify.py:0
 msgid "gain/loss"
 msgstr "laba/rugi"
+
+#. module: account_asset
+#. odoo-javascript
+#: code:addons/account_asset/static/src/components/depreciation_schedule/warnings.xml:0
+msgid "here"
+msgstr ""
 
 #. module: account_asset
 #. odoo-python
@@ -2388,6 +2425,12 @@ msgstr "salvage_value"
 #: code:addons/account_asset/wizard/asset_modify.py:0
 msgid "sell"
 msgstr "jual"
+
+#~ msgid "Asset disposed. %s"
+#~ msgstr "Asset Dibuang. %s"
+
+#~ msgid "Asset sold. %s"
+#~ msgstr "Aset dijual. %s"
 
 #~ msgid " (%s of %s)"
 #~ msgstr " (%s dari %s)"

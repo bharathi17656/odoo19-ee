@@ -1,11 +1,12 @@
 import { test, expect } from "@odoo/hoot";
 import { definePosModels } from "@point_of_sale/../tests/unit/data/generate_model_definitions";
-import { setupPosEnv, getFilledOrder } from "@point_of_sale/../tests/unit/utils";
+import { getFilledOrder } from "@point_of_sale/../tests/unit/utils";
+import { setupPosEnvForPrepDisplay } from "@pos_enterprise/../tests/unit/utils";
 
 definePosModels();
 
 test("sendOrderInPreparation", async () => {
-    const store = await setupPosEnv();
+    const store = await setupPosEnvForPrepDisplay();
     const order = await getFilledOrder(store);
 
     expect(store.getPendingOrder().orderToCreate).toHaveLength(1);

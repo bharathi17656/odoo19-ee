@@ -27,6 +27,7 @@ class TestPayrollOnboardingAPI(L10nPayrollAccountCommon, TestL10nAUPayrollAPICom
                 "zip": "2000",
                 'l10n_au_branch_code': '100',
         })
+        cls.employee_1.l10n_au_super_account_ids.fund_id.is_valid = True
 
         cls.env['ir.config_parameter'].sudo().set_param('l10n_au_payroll_iap.test_endpoint', 'http://127.0.0.1:8070')
         cls.proxy_user = cls.env['account_edi_proxy_client.user']._register_proxy_user(cls.company, 'l10n_au_payroll', 'demo')

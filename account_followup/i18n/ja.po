@@ -8,15 +8,15 @@
 # Andy Yiu, 2023
 # Ryoko Tsuda <ryoko@quartile.co>, 2023
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Junko Augias (juau)" <juau@odoo.com>, 2025.
+# "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:45+0000\n"
-"PO-Revision-Date: 2025-11-16 05:23+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-04-10 18:46+0000\n"
+"PO-Revision-Date: 2026-10-14 10:33+0000\n"
+"Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
 "Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/"
 "account_followup/ja/>\n"
 "Language: ja\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: account_followup
 #. odoo-python
@@ -41,17 +41,12 @@ msgstr "%(delay)s 日 (%(name)sのコピー)"
 #. module: account_followup
 #: model:ir.actions.report,print_report_name:account_followup.action_report_followup
 msgid "'Follow-up ' + object.display_name"
-msgstr "'フォローアップ ' + object.display_name"
+msgstr "'督促' + object.display_name"
 
 #. module: account_followup
 #: model:account_followup.followup.line,name:account_followup.demo_followup_line1
 msgid "15 Days"
 msgstr "15日以内"
-
-#. module: account_followup
-#: model_terms:ir.ui.view,arch_db:account_followup.followup_filter_info_template
-msgid "2023-09-06"
-msgstr "2023-09-06"
 
 #. module: account_followup
 #: model:account_followup.followup.line,name:account_followup.demo_followup_line2
@@ -115,39 +110,35 @@ msgid ""
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
 "                    <p>\n"
-"                        <t t-if="
-"\"object.id != object.commercial_partner_id.id\"> <t t-out="
-"\"object.name or ''\"/> (<t t-out=\"object.commercial_partner_id.name or ''\""
-"/>)様</t>\n"
-"                        <t t-else=\"\"> <t t-out=\"object.name or ''\""
-"/>様</t>\n"
+"                        <t t-if=\"object.id != "
+"object.commercial_partner_id.id\"> <t t-out=\"object.name or ''\"/> (<t t-"
+"out=\"object.commercial_partner_id.name or ''\"/>)様</t>\n"
+"                        <t t-else=\"\"> <t t-out=\"object.name or ''\"/>様</"
+"t>\n"
 "                        <br/>\n"
-"                        "
-"平素は大変お世話になっております。何度かご連絡させて頂いておりますが、お支払"
-"いの確認が取れておりません。\n"
-"                        "
-"8日以内にお支払い頂けない場合、今後の予告なく債権回収のための法的措置を取らせ"
-"て頂きます。\n"
-"                        "
-"こちらとしても、そのような措置は回避したく、支払内容の詳細について下記をご確"
-"認頂きますようお願い申し上げます。\n"
-"                        "
-"本件についてご不明な点がございましたら、弊社経理部宛にご連絡下さい。\n"
+"                        平素は大変お世話になっております。何度かご連絡させて"
+"頂いておりますが、お支払いの確認が取れておりません。\n"
+"                        8日以内にお支払い頂けない場合、今後の予告なく債権回収"
+"のための法的措置を取らせて頂きます。\n"
+"                        こちらとしても、そのような措置は回避したく、支払内容"
+"の詳細について下記をご確認頂きますようお願い申し上げます。\n"
+"                        本件についてご不明な点がございましたら、弊社経理部宛"
+"にご連絡下さい。\n"
 "                        <br/>\n"
 "                        何卒宜しくお願い致します。\n"
 "                        <br/>\n"
-"                        <t t-if="
-"\"not is_html_empty(object._get_followup_responsible().signature)\">\n"
+"                        <t t-if=\"not "
+"is_html_empty(object._get_followup_responsible().signature)\">\n"
 "                            <br/>\n"
-"                            <t t-out="
-"\"object._get_followup_responsible().signature\"/>\n"
+"                            <t t-"
+"out=\"object._get_followup_responsible().signature\"/>\n"
 "                        </t>\n"
 "                        <t t-else=\"\">\n"
 "                            <br/>\n"
 "                            --\n"
 "                            <br/>\n"
-"                            <t t-out="
-"\"object._get_followup_responsible().name\"/>\n"
+"                            <t t-"
+"out=\"object._get_followup_responsible().name\"/>\n"
 "                        </t>\n"
 "                    </p>\n"
 "                </div>\n"
@@ -199,42 +190,39 @@ msgid ""
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
 "                    <p>\n"
-"                        <t t-if="
-"\"object.id != object.commercial_partner_id.id\"><t t-out="
-"\"object.name or ''\"/> (<t t-out=\"object.commercial_partner_id.name or ''\""
-"/>)様、</t>\n"
-"                        <t t-else=\"\"><t t-out=\"object.name or ''\"/>様</t>"
-"\n"
+"                        <t t-if=\"object.id != "
+"object.commercial_partner_id.id\"><t t-out=\"object.name or ''\"/> (<t t-"
+"out=\"object.commercial_partner_id.name or ''\"/>)様、</t>\n"
+"                        <t t-else=\"\"><t t-out=\"object.name or ''\"/>様</"
+"t>\n"
 "                        <br/>\n"
-"                        "
-"いつもお世話になっております。これまで督促をお送りしたにもかかわらず、お客様"
-"のお支払いが長期に渡り延滞していること、大変残念に思っております。\n"
+"                        いつもお世話になっております。これまで督促をお送りし"
+"たにもかかわらず、お客様のお支払いが長期に渡り期限超過していること、大変残念"
+"に思っております。\n"
 "                        <br/>\n"
-"                        "
-"早急にお支払い頂きますようお願い申し上げます。お支払い頂けない場合、弊社はお"
-"客様のアカウント停止を検討せざるを得なくなり、御社への(商品/サービスの)ご提供"
-"ができなくなります。8日以内に支払いを完了できるよう、適切な措置を講じて頂きま"
-"すよう、お願い申し上げます。\n"
+"                        早急にお支払い頂きますようお願い申し上げます。お支払"
+"い頂けない場合、弊社はお客様のアカウント停止を検討せざるを得なくなり、御社へ"
+"の(商品/サービスの)ご提供ができなくなります。8日以内に支払いを完了できるよ"
+"う、適切な措置を講じて頂きますよう、お願い申し上げます。\n"
 "                        <br/>\n"
-"                        "
-"請求書のお支払いに関して、弊社で把握してない問題等ございましたら、弊社の経理"
-"部宛にご連絡頂ければ、早急に対応させて頂きます。\n"
+"                        請求書のお支払いに関して、弊社で把握してない問題等ご"
+"ざいましたら、弊社の経理部宛にご連絡頂ければ、早急に対応させて頂きます。\n"
 "                        <br/>\n"
 "                        お支払いの詳細は以下となります。\n"
 "                        <br/>\n"
 "                        何卒よろしくお願い致します。\n"
-"                        <t t-if="
-"\"not is_html_empty(object._get_followup_responsible().signature)\">\n"
+"                        <t t-if=\"not "
+"is_html_empty(object._get_followup_responsible().signature)\">\n"
 "                            <br/>\n"
-"                            <t t-out="
-"\"object._get_followup_responsible().signature\"/>\n"
+"                            <t t-"
+"out=\"object._get_followup_responsible().signature\"/>\n"
 "                        </t>\n"
 "                        <t t-else=\"\">\n"
 "                            <br/>\n"
 "                            --\n"
 "                            <br/>\n"
-"                            <t t-out="
-"\"object._get_followup_responsible().name\"/>\n"
+"                            <t t-"
+"out=\"object._get_followup_responsible().name\"/>\n"
 "                        </t>\n"
 "                    </p>\n"
 "                </div>\n"
@@ -294,33 +282,30 @@ msgid ""
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
 "                    <p>\n"
-"                        <t t-if="
-"\"object.id != object.commercial_partner_id.id\"><t t-out="
-"\"object.name or ''\"/> (<t t-out=\"object.commercial_partner_id.name or ''\""
-"/>)様</t>\n"
-"                        <t t-else=\"\"><t t-out=\"object.name or ''\"/>様</t>"
-"\n"
+"                        <t t-if=\"object.id != "
+"object.commercial_partner_id.id\"><t t-out=\"object.name or ''\"/> (<t t-"
+"out=\"object.commercial_partner_id.name or ''\"/>)様</t>\n"
+"                        <t t-else=\"\"><t t-out=\"object.name or ''\"/>様</"
+"t>\n"
 "                    </p>\n"
 "                    <p>\n"
-"                        "
-"いつもお世話になっております。以下のお支払いが確認できておりません： <b><t "
-"t-out="
-"\"format_amount(object.total_overdue_followup, object.currency_id) or ''\""
-"/></b>.\n"
-"                        "
-"つきましては<b>8日</b>以内にお支払いお手続きをお願いいたします。\n"
+"                        いつもお世話になっております。以下のお支払いが確認で"
+"きておりません： <b><t t-out=\"format_amount(object.total_overdue_followup, "
+"object.currency_id) or ''\"/></b>.\n"
+"                        つきましては<b>8日</b>以内にお支払いお手続きをお願い"
+"いたします。\n"
 "                    </p>\n"
 "                    <p t-if=\"object._show_pay_now_button()\">\n"
-"                        <a t-att-href=\"'/my/invoices/overdue'\" style="
-"\"padding: 8px 12px; font-size: 12px; color: #FFFFFF; text-decoration: none "
-"!important; font-weight: 400; background-color: #875A7B; border: 0px solid "
-"#875A7B; border-radius:3px\">今すぐ支払う</a>\n"
+"                        <a t-att-href=\"'/my/invoices/overdue'\" "
+"style=\"padding: 8px 12px; font-size: 12px; color: #FFFFFF; text-decoration: "
+"none !important; font-weight: 400; background-color: #875A7B; border: 0px "
+"solid #875A7B; border-radius:3px\">今すぐ支払う</a>\n"
 "                    </p>\n"
 "                    <p>\n"
-"                        "
-"なお、行き違いでお支払を頂いておりました場合には、何卒ご容赦下さい。\n"
-"                        "
-"何かご質問などございましたら、弊社の経理部宛にご連絡下さい。\n"
+"                        なお、行き違いでお支払を頂いておりました場合には、何"
+"卒ご容赦下さい。\n"
+"                        何かご質問などございましたら、弊社の経理部宛にご連絡"
+"下さい。\n"
 "                    </p>\n"
 "                    <p>\n"
 "                        ご理解のほど、よろしくお願いいたします。\n"
@@ -329,14 +314,14 @@ msgstr ""
 "                        何卒よろしくお願いいたします。\n"
 "                    </p>\n"
 "                    <p>\n"
-"                        <t t-if="
-"\"not is_html_empty(object._get_followup_responsible().signature)\">\n"
-"                            <t t-out="
-"\"object._get_followup_responsible().signature\"/>\n"
+"                        <t t-if=\"not "
+"is_html_empty(object._get_followup_responsible().signature)\">\n"
+"                            <t t-"
+"out=\"object._get_followup_responsible().signature\"/>\n"
 "                        </t>\n"
 "                        <t t-else=\"\">\n"
-"                            <t t-out="
-"\"object._get_followup_responsible().name\"/>\n"
+"                            <t t-"
+"out=\"object._get_followup_responsible().name\"/>\n"
 "                        </t>\n"
 "                    </p>\n"
 "                </div>\n"
@@ -375,7 +360,7 @@ msgstr "アカウントマネージャー"
 #. module: account_followup
 #: model:ir.actions.server,name:account_followup.ir_cron_follow_up_ir_actions_server
 msgid "Account Report Followup; Execute followup"
-msgstr "アカウントレポートフォローアップ；フォローアップを実施する"
+msgstr "会計レポート督促；督促処理"
 
 #. module: account_followup
 #: model_terms:ir.ui.view,arch_db:account_followup.view_account_followup_followup_line_form
@@ -651,7 +636,7 @@ msgstr "フォローアップ %(partner)s - %(date)s.pdf"
 #. module: account_followup
 #: model:ir.model,name:account_followup.model_account_followup_followup_line
 msgid "Follow-up Criteria"
-msgstr "フォローアップ基準"
+msgstr "督促条件"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_account_move_line__followup_line_id
@@ -669,7 +654,7 @@ msgstr "フォローアップレベル"
 #. module: account_followup
 #: model:ir.model,name:account_followup.model_account_followup_report
 msgid "Follow-up Report"
-msgstr "フォローアップレポート"
+msgstr "督促レポート"
 
 #. module: account_followup
 #: model:ir.model.fields.selection,name:account_followup.selection__account_followup_followup_line__activity_default_responsible_type__followup
@@ -702,7 +687,7 @@ msgstr "フォローアップレターは生成されました"
 #. module: account_followup
 #: model:ir.model,name:account_followup.model_account_followup_missing_information_wizard
 msgid "Followup missing information wizard"
-msgstr "フォローアップ不足情報ウィザード"
+msgstr "督促に必要な情報の不足ウィザード"
 
 #. module: account_followup
 #: model_terms:ir.actions.act_window,help:account_followup.action_account_followup_line_definition_form
@@ -718,7 +703,7 @@ msgstr ""
 #. module: account_followup
 #: model:mail.template,name:account_followup.demo_followup_email_template_4
 msgid "Fourth reminder followup"
-msgstr "四回目のリマインダフォローアップ"
+msgstr "4回目の督促通知"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__has_moves
@@ -782,7 +767,7 @@ msgstr "仕訳明細"
 #. module: account_followup
 #: model_terms:ir.ui.view,arch_db:account_followup.manual_reminder_view_form
 msgid "Kind reminder!"
-msgstr "念押しのお知らせ!"
+msgstr "お支払いのご案内"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_account_followup_manual_reminder__lang
@@ -858,9 +843,8 @@ msgid ""
 "levels configuration, and you can change it manually."
 msgstr ""
 "この期日までは、追加のフォローアップは行われません。\n"
-"                "
-"リマインダを送信すると、レベル設定に応じてこの期日が設定されます。また、手動"
-"で変更することもできます。"
+"                リマインダを送信すると、レベル設定に応じてこの期日が設定され"
+"ます。また、手動で変更することもできます。"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_account_followup_followup_line__activity_note
@@ -881,8 +865,8 @@ msgid ""
 "e.g. {{ object.partner_id.lang }}."
 msgstr ""
 "メール送信時に選択できる任意の翻訳言語(ISOコード)。未設定の場合は、関連する取"
-"引先の言語が使用されます。通常は、たとえば {{ object.partner_id.lang }} "
-"のような、適切な言語を指定するプレースホルダー式を使用します。"
+"引先の言語が使用されます。通常は、たとえば {{ object.partner_id.lang }} のよ"
+"うな、適切な言語を指定するプレースホルダー式を使用します。"
 
 #. module: account_followup
 #: model_terms:ir.ui.view,arch_db:account_followup.view_account_followup_followup_line_form
@@ -894,12 +878,16 @@ msgstr "オプション"
 #: code:addons/account_followup/models/account_followup_report.py:0
 #: model:ir.model.fields,field_description:account_followup.field_account_move_line__invoice_origin
 msgid "Origin"
-msgstr "移動元"
+msgstr "参照元"
+
+#. module: account_followup
+#: model_terms:ir.ui.view,arch_db:account_followup.customer_statements_search_view
+msgid "Overdue Customer Invoices"
+msgstr "未払いの顧客請求書"
 
 #. module: account_followup
 #. odoo-python
 #: code:addons/account_followup/models/res_partner.py:0
-#: model_terms:ir.ui.view,arch_db:account_followup.customer_statements_search_view
 msgid "Overdue Invoices"
 msgstr "期限超過請求書"
 
@@ -992,7 +980,7 @@ msgstr "フォローアップを検索"
 #. module: account_followup
 #: model:mail.template,name:account_followup.demo_followup_email_template_2
 msgid "Second reminder followup"
-msgstr "二回目のリマインダフォローアップ"
+msgstr "2回目の督促通知"
 
 #. module: account_followup
 #: model_terms:ir.ui.view,arch_db:account_followup.manual_reminder_view_form
@@ -1003,7 +991,7 @@ msgstr "送信"
 #. module: account_followup
 #: model_terms:ir.ui.view,arch_db:account_followup.manual_reminder_view_form
 msgid "Send & Print"
-msgstr "送信 & 印刷"
+msgstr "送信して印刷"
 
 #. module: account_followup
 #: model:ir.actions.act_window,name:account_followup.manual_reminder_action
@@ -1082,8 +1070,7 @@ msgstr ""
 msgid ""
 "The responsible assigned to manual followup activities, if defined in the "
 "level."
-msgstr ""
-"レベルで定義されている場合に手動フォローアップ活動に割り当てられた担当者。"
+msgstr "レベルで定義されている場合に、手動の督促活動を担当するユーザ。"
 
 #. module: account_followup
 #: model_terms:ir.ui.view,arch_db:account_followup.customer_statements_tree_view
@@ -1100,7 +1087,7 @@ msgstr "合計全体未払金額"
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__total_all_overdue
 #: model:ir.model.fields,field_description:account_followup.field_res_users__total_all_overdue
 msgid "Total All Overdue"
-msgstr "合計全体延滞金額"
+msgstr "合計全体期限超過金額"
 
 #. module: account_followup
 #. odoo-python
@@ -1108,7 +1095,7 @@ msgstr "合計全体延滞金額"
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__total_due
 #: model:ir.model.fields,field_description:account_followup.field_res_users__total_due
 msgid "Total Due"
-msgstr "合計未払金額"
+msgstr "未収合計"
 
 #. module: account_followup
 #. odoo-python
@@ -1116,19 +1103,19 @@ msgstr "合計未払金額"
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__total_overdue
 #: model:ir.model.fields,field_description:account_followup.field_res_users__total_overdue
 msgid "Total Overdue"
-msgstr "合計延滞金額"
+msgstr "合計期限超過金額"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__total_overdue_followup
 #: model:ir.model.fields,field_description:account_followup.field_res_users__total_overdue_followup
 msgid "Total Overdue Followup"
-msgstr ""
+msgstr "督促対象の期限超過合計"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__unpaid_invoice_ids
 #: model:ir.model.fields,field_description:account_followup.field_res_users__unpaid_invoice_ids
 msgid "Unpaid Invoice"
-msgstr "未払請求書"
+msgstr "未入金請求書"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__unpaid_invoices_count
@@ -1152,18 +1139,19 @@ msgstr "取引先を表示"
 msgid ""
 "We were not able to process some of the automated follow-up actions due to "
 "missing information on the partners."
-msgstr "取引先の情報が不足していたため、自動化されたフォローアップアクションのいくつ"
+msgstr ""
+"取引先の情報が不足していたため、自動化されたフォローアップアクションのいくつ"
 "かを処理することができませんでした。"
 
 #. module: account_followup
 #: model:ir.model.fields.selection,name:account_followup.selection__res_partner__followup_status__with_overdue_invoices
 msgid "With overdue invoices"
-msgstr "滞納請求書あり"
+msgstr "期限超過請求書あり"
 
 #. module: account_followup
 #: model:ir.model,name:account_followup.model_account_followup_manual_reminder
 msgid "Wizard for sending manual reminders to clients"
-msgstr "顧客に手動リマインダを送信するアシスタント"
+msgstr "顧客に手動で督促通知を送信するためのウィザード"
 
 #. module: account_followup
 #: model_terms:ir.ui.view,arch_db:account_followup.manual_reminder_view_form
@@ -1224,6 +1212,9 @@ msgstr ""
 "{{ (object.company_id or "
 "object._get_followup_responsible().company_id).name }} 支払リマインダ - "
 "{{ object.commercial_company_name }}"
+
+#~ msgid "2023-09-06"
+#~ msgstr "2023-09-06"
 
 #~ msgid "%s (copy)"
 #~ msgstr "%s (コピー)"

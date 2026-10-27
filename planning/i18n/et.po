@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:41+0000\n"
+"POT-Creation-Date: 2026-07-17 17:43+0000\n"
 "PO-Revision-Date: 2025-11-08 20:23+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Estonian <https://translate.odoo.com/projects/odoo-19/"
@@ -74,7 +74,8 @@ msgstr "4 päeva pärast invervjuud"
 #. module: planning
 #: model_terms:digest.tip,tip_description:planning.digest_tip_planning_0
 msgid "<b class=\"tip_title\">Tip: Record your planning faster</b>"
-msgstr "<b class=\"tip_title\">Soovitus: pane oma töögrafik kiiremini paika</b>"
+msgstr ""
+"<b class=\"tip_title\">Soovitus: pane oma töögrafik kiiremini paika</b>"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_shift_ics_description
@@ -183,70 +184,68 @@ msgid ""
 "            "
 msgstr ""
 "<div>\n"
-"                    <p t-if=\"ctx.get('old_assignee_name')\">Lugupeetud <t "
-"t-out=\"ctx['old_assignee_name']\">Anita Oliver</t>,</p>\n"
+"                    <p t-if=\"ctx.get('old_assignee_name')\">Lugupeetud <t t-"
+"out=\"ctx['old_assignee_name']\">Anita Oliver</t>,</p>\n"
 "                    <p t-else=\"\">Tere,</p>\n"
 "                    <br/>\n"
 "                    <p>\n"
 "                        Teie taotletud vahetus on ümber määratud töötajale.\n"
-"                        <t t-if=\"ctx.get('new_assignee_name')\">  <t t-out="
-"\"ctx['new_assignee_name']\">Marc Demo</t></t>.\n"
+"                        <t t-if=\"ctx.get('new_assignee_name')\">  <t t-"
+"out=\"ctx['new_assignee_name']\">Marc Demo</t></t>.\n"
 "                    </p>\n"
 "                    <table style=\"margin-left: 30px;\">\n"
 "                        <tr t-if=\"(ctx.get('start_datetime') and "
 "ctx.get('end_datetime'))                                   or "
 "ctx.get('allocated_hours')                                   or "
 "ctx.get('allocated_percentage')\">\n"
-"                            <th style=\"padding: 5px; text-align: left;\""
-">Kuupäev</th>\n"
+"                            <th style=\"padding: 5px; text-align: left;"
+"\">Kuupäev</th>\n"
 "                            <td style=\"padding: 5px;\">\n"
-"                                <span t-if="
-"\"ctx.get('start_datetime') and ctx.get('end_datetime')\" t-out=\"'%s ⟶ %s' "
-"% (                                     ctx['start_datetime']"
-",                                     ctx['end_datetime']"
-",                                 )\">\n"
+"                                <span t-if=\"ctx.get('start_datetime') and "
+"ctx.get('end_datetime')\" t-out=\"'%s ⟶ %s' % "
+"(                                     ctx['start_datetime'],                                     "
+"ctx['end_datetime'],                                 )\">\n"
 "                                    05/31/2021, 8:00 AM ⟶ 05/31/2021, 4:00 "
 "PM\n"
 "                                </span>\n"
 "                                <span t-if=\"ctx.get('allocated_hours')\" "
 "style=\"opacity: 0.5;\">\n"
-"                                    (<t t-out=\"ctx['allocated_hours']\""
-">4:00</t>h)\n"
+"                                    (<t t-out=\"ctx['allocated_hours']"
+"\">4:00</t>h)\n"
 "                                </span>\n"
-"                                <span t-if="
-"\"ctx.get('allocated_percentage') and ctx['allocated_percentage'] != '100'\" "
-"style=\"opacity: 0.5;\">\n"
-"                                    (<t t-out=\"ctx['allocated_percentage']\""
-">50</t>%)\n"
+"                                <span t-if=\"ctx.get('allocated_percentage') "
+"and ctx['allocated_percentage'] != '100'\" style=\"opacity: 0.5;\">\n"
+"                                    (<t t-out=\"ctx['allocated_percentage']"
+"\">50</t>%)\n"
 "                                </span>\n"
 "                            </td>\n"
 "                        </tr>\n"
 "                        <tr t-if=\"object.role_id\">\n"
-"                            <th style=\"padding: 5px; text-align: left;\""
-">Roll</th>\n"
-"                            <td style=\"padding: 5px;\" t-out="
-"\"object.role_id.name or ''\">Baari teenindaja</td>\n"
+"                            <th style=\"padding: 5px; text-align: left;"
+"\">Roll</th>\n"
+"                            <td style=\"padding: 5px;\" t-"
+"out=\"object.role_id.name or ''\">Baari teenindaja</td>\n"
 "                        </tr>\n"
-"                        <tr t-if="
-"\"hasattr(object, 'project_id') and object.project_id\">\n"
-"                            <th style=\"padding: 5px; text-align: left;\""
-">Projekt</th>\n"
-"                            <td style=\"padding: 5px;\" t-out="
-"\"object.sudo().project_id.name or ''\">Kogunemine</td>\n"
+"                        <tr t-if=\"hasattr(object, 'project_id') and "
+"object.project_id\">\n"
+"                            <th style=\"padding: 5px; text-align: left;"
+"\">Projekt</th>\n"
+"                            <td style=\"padding: 5px;\" t-"
+"out=\"object.sudo().project_id.name or ''\">Kogunemine</td>\n"
 "                        </tr>\n"
-"                        <tr t-if="
-"\"hasattr(object, 'sale_line_id') and object.sale_line_id\">\n"
-"                            <th style=\"padding: 5px; text-align: left;\""
-">Müügitellimuse toode</th>\n"
-"                            <td style=\"padding: 5px;\" t-out="
-"\"object.sudo().sale_line_id.name or ''\">Kohv</td>\n"
+"                        <tr t-if=\"hasattr(object, 'sale_line_id') and "
+"object.sale_line_id\">\n"
+"                            <th style=\"padding: 5px; text-align: left;"
+"\">Müügitellimuse toode</th>\n"
+"                            <td style=\"padding: 5px;\" t-"
+"out=\"object.sudo().sale_line_id.name or ''\">Kohv</td>\n"
 "                        </tr>\n"
-"                        <tr t-if=\"hasattr(object, 'name') and object.name\">"
-"\n"
-"                            <th style=\"padding: 5px; text-align: left;\""
-">Märkus</th>\n"
-"                            <td style=\"padding: 5px;\" t-out="
-"\"object.name or ''\">/</td>\n"
+"                        <tr t-if=\"hasattr(object, 'name') and "
+"object.name\">\n"
+"                            <th style=\"padding: 5px; text-align: left;"
+"\">Märkus</th>\n"
+"                            <td style=\"padding: 5px;\" t-out=\"object.name "
+"or ''\">/</td>\n"
 "                        </tr>\n"
 "                    </table>\n"
 "                    <br/>\n"
@@ -295,8 +294,8 @@ msgid ""
 "<i class=\"fa fa-clock-o\" role=\"img\" aria-label=\"Hours\" title=\"Hours\"/"
 ">"
 msgstr ""
-"<i class=\"fa fa-clock-o\" role=\"img\" aria-label=\"Hours\" title=\"Hours\""
-"/>"
+"<i class=\"fa fa-clock-o\" role=\"img\" aria-label=\"Hours\" title=\"Hours\"/"
+">"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_assignee_contact_popover
@@ -340,8 +339,8 @@ msgid ""
 "<i class=\"fa fa-long-arrow-right\" aria-label=\"Arrow icon\" "
 "title=\"Arrow\"/>"
 msgstr ""
-"<i class=\"fa fa-long-arrow-right\" aria-label=\"Arrow icon\" title=\"Arrow\""
-"/>"
+"<i class=\"fa fa-long-arrow-right\" aria-label=\"Arrow icon\" "
+"title=\"Arrow\"/>"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_assignee_contact_popover
@@ -416,7 +415,8 @@ msgstr "<span>Luba töötajatel:</span>"
 msgid ""
 "<span>The employee assigned would like to switch shifts with someone else.</"
 "span>"
-msgstr "<span>Määratud töötaja soovib kellegi teisega vahetust vahetada.</span>"
+msgstr ""
+"<span>Määratud töötaja soovib kellegi teisega vahetust vahetada.</span>"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.res_config_settings_view_form
@@ -1060,6 +1060,7 @@ msgstr "Loobu"
 #: model:ir.model.fields,field_description:planning.field_hr_departure_wizard__display_name
 #: model:ir.model.fields,field_description:planning.field_hr_employee__display_name
 #: model:ir.model.fields,field_description:planning.field_hr_employee_public__display_name
+#: model:ir.model.fields,field_description:planning.field_ir_actions_report__display_name
 #: model:ir.model.fields,field_description:planning.field_planning_analysis_report__display_name
 #: model:ir.model.fields,field_description:planning.field_planning_calendar_resource__display_name
 #: model:ir.model.fields,field_description:planning.field_planning_planning__display_name
@@ -1078,7 +1079,8 @@ msgstr "Kuvatav nimi"
 #. module: planning
 #: model_terms:ir.actions.act_window,help:planning.planning_action_resources
 msgid "Distribute your material resources across projects and sales orders."
-msgstr "Jaotage oma materiaalsed ressursid projektide ja müügitellimuste vahel."
+msgstr ""
+"Jaotage oma materiaalsed ressursid projektide ja müügitellimuste vahel."
 
 #. module: planning
 #. odoo-javascript
@@ -1321,6 +1323,7 @@ msgstr "Ma ei ole saadaval"
 #: model:ir.model.fields,field_description:planning.field_hr_departure_wizard__id
 #: model:ir.model.fields,field_description:planning.field_hr_employee__id
 #: model:ir.model.fields,field_description:planning.field_hr_employee_public__id
+#: model:ir.model.fields,field_description:planning.field_ir_actions_report__id
 #: model:ir.model.fields,field_description:planning.field_planning_analysis_report__id
 #: model:ir.model.fields,field_description:planning.field_planning_calendar_resource__id
 #: model:ir.model.fields,field_description:planning.field_planning_planning__id
@@ -2057,6 +2060,11 @@ msgid "Repetitions"
 msgstr "Kordused"
 
 #. module: planning
+#: model:ir.model,name:planning.model_ir_actions_report
+msgid "Report Action"
+msgstr ""
+
+#. module: planning
 #: model:ir.ui.menu,name:planning.planning_menu_reporting
 msgid "Reporting"
 msgstr "Aruandlus"
@@ -2383,6 +2391,12 @@ msgstr "Teie meeskonnaliikme vahetused"
 
 #. module: planning
 #. odoo-python
+#: code:addons/planning/wizard/planning_send.py:0
+msgid "Shifts published — employees without a work email were skipped"
+msgstr ""
+
+#. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning_slot.py:0
 msgid "Shifts reset to draft"
 msgstr "Vahetused lähtestatud mustandiks"
@@ -2436,6 +2450,22 @@ msgstr "Lõpetamise kuupäev"
 #: model:ir.model.fields.selection,name:planning.selection__res_company__planning_employee_unavailabilities__switch
 msgid "Switch shifts with other employees"
 msgstr "Vaheta vahetusi teiste töötajatega"
+
+#. module: planning
+#. odoo-python
+#: code:addons/planning/models/ir_actions_report.py:0
+msgid ""
+"The Planning report cannot be added to the print menu. Please use the Print "
+"action available in the Planning calendar and Gantt views."
+msgstr ""
+
+#. module: planning
+#. odoo-python
+#: code:addons/planning/models/ir_actions_report.py:0
+msgid ""
+"The Planning report cannot be printed from here. Please use the Print action "
+"available in the Planning calendar and Gantt views."
+msgstr ""
 
 #. module: planning
 #: model:ir.model.constraint,message:planning.constraint_res_company_planning_self_unassign_days_before_positive
@@ -2522,14 +2552,8 @@ msgstr "Algustund ei saa olla negatiivne."
 #. odoo-python
 #: code:addons/planning/models/planning_template.py:0
 msgid ""
-"The start hour cannot be before the end hour for a one-day shift template."
-msgstr "Algustund ei saa olla enne lõpptundi ühepäevase vahetuse mallil."
-
-#. module: planning
-#. odoo-python
-#: code:addons/planning/wizard/planning_send.py:0
-msgid "The work email is missing for the following employees:"
-msgstr "Töö email on puudu järgnevatel töötajatel:"
+"The start hour cannot be after the end hour for a one-day shift template."
+msgstr ""
 
 #. module: planning
 #. odoo-python
@@ -2870,8 +2894,8 @@ msgid ""
 "Your planning from {{ format_date(ctx.get('start_datetime')) }} to "
 "{{ format_date(ctx.get('end_datetime')) }}"
 msgstr ""
-"Teie planeerimise vorm {{ format_date(ctx.get('start_datetime')) }} kuni {{ "
-"format_date(ctx.get('end_datetime')) }}"
+"Teie planeerimise vorm {{ format_date(ctx.get('start_datetime')) }} kuni "
+"{{ format_date(ctx.get('end_datetime')) }}"
 
 #. module: planning
 #: model:mail.template,subject:planning.email_template_shift_switch_email
@@ -2879,8 +2903,8 @@ msgid ""
 "Your shift on {{ ctx.get('start_datetime') }} was re-assigned to "
 "{{ ctx.get('new_assignee_name', 'Marc Demo') }}"
 msgstr ""
-"Teie vahetus kuupäeval {{ ctx.get('start_datetime') }} muudeti nimele {{ "
-"ctx.get('new_assignee_name', 'Marc Demo') }}"
+"Teie vahetus kuupäeval {{ ctx.get('start_datetime') }} muudeti nimele "
+"{{ ctx.get('new_assignee_name', 'Marc Demo') }}"
 
 #. module: planning
 #. odoo-javascript
@@ -2923,6 +2947,11 @@ msgid "e.g. John Doe"
 msgstr "nt Jaan Tamm"
 
 #. module: planning
+#: model_terms:ir.ui.view,arch_db:planning.planning_view_kanban
+msgid "h"
+msgstr ""
+
+#. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_kanban_inherit
 msgid "other shift(s) in conflict."
 msgstr "muu(d) konfliktis olev(ad) vahetus(ed)."
@@ -2959,3 +2988,10 @@ msgstr "kuni"
 #: model:mail.template,subject:planning.email_template_slot_single
 msgid "{{ ctx.get('mail_subject', '') }} {{ ctx.get('start_datetime' , '') }}"
 msgstr "{{ ctx.get('mail_subject', '') }} {{ ctx.get('start_datetime' , '') }}"
+
+#~ msgid ""
+#~ "The start hour cannot be before the end hour for a one-day shift template."
+#~ msgstr "Algustund ei saa olla enne lõpptundi ühepäevase vahetuse mallil."
+
+#~ msgid "The work email is missing for the following employees:"
+#~ msgstr "Töö email on puudu järgnevatel töötajatel:"

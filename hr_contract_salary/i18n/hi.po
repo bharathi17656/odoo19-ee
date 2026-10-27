@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:44+0000\n"
+"POT-Creation-Date: 2026-05-22 17:49+0000\n"
 "PO-Revision-Date: 2025-11-16 13:42+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Hindi <https://translate.odoo.com/projects/odoo-19/"
@@ -46,15 +46,15 @@ msgid "(Lastname Firstname)"
 msgstr "(आखिरीनाम पहलानाम)"
 
 #. module: hr_contract_salary
+#: model_terms:ir.ui.view,arch_db:hr_contract_salary.hr_contract_salary_offer_view_form
+msgid ". Signing this offer will archive it."
+msgstr ""
+
+#. module: hr_contract_salary
 #: model_terms:ir.ui.view,arch_db:hr_contract_salary.hr_contract_salary_view_employee_form
 #: model_terms:ir.ui.view,arch_db:hr_contract_salary.hr_contract_template_form_view
 msgid "/ month"
 msgstr "/ महीना"
-
-#. module: hr_contract_salary
-#: model:hr.contract.salary.personal.info,placeholder:hr_contract_salary.hr_contract_salary_personal_info_identification_id
-msgid "00.00.00-000.00"
-msgstr ""
 
 #. module: hr_contract_salary
 #: model:mail.template,body_html:hr_contract_salary.mail_template_send_offer
@@ -178,6 +178,13 @@ msgid "<span class=\"text-muted mr4 ml4\">|</span>"
 msgstr ""
 
 #. module: hr_contract_salary
+#: model_terms:ir.ui.view,arch_db:hr_contract_salary.hr_contract_salary_offer_view_form
+msgid ""
+"<span class=\"text-muted\" invisible=\"contract_end_date or not "
+"is_contract_amendment\">No limit</span>"
+msgstr ""
+
+#. module: hr_contract_salary
 #: model_terms:ir.ui.view,arch_db:hr_contract_salary.hr_contract_template_form_view
 msgid "<span class=\"text-muted\">/ month</span>"
 msgstr ""
@@ -196,11 +203,11 @@ msgid ""
 "                                </span>"
 msgstr ""
 "<span>\n"
-"                                    इस फ़ील्ड को केवल सर्वर एडमिनिस्ट्रेटर बदल सकते हैं"
-". अगर बदलाव की ज़रूरत हो तो उनसे संपर्क करें.\n"
+"                                    इस फ़ील्ड को केवल सर्वर एडमिनिस्ट्रेटर बदल सकते "
+"हैं. अगर बदलाव की ज़रूरत हो तो उनसे संपर्क करें.\n"
 "                                </span>\n"
-"                                <span invisible="
-"\"requested_documents_fields_string\">\n"
+"                                <span "
+"invisible=\"requested_documents_fields_string\">\n"
 "                                    फ़िलहाल, अनुरोध किया गया कोई फ़ील्ड नहीं है.\n"
 "                                </span>"
 
@@ -220,6 +227,12 @@ msgstr "<span>/ महीना</span>"
 #: model_terms:ir.ui.view,arch_db:hr_contract_salary.hr_contract_salary_view_employee_form
 #: model_terms:ir.ui.view,arch_db:hr_contract_salary.hr_contract_template_form_view
 msgid "<span>/ year</span>"
+msgstr ""
+
+#. module: hr_contract_salary
+#. odoo-python
+#: code:addons/hr_contract_salary/models/hr_contract_salary_offer.py:0
+msgid "A contract start date is required."
 msgstr ""
 
 #. module: hr_contract_salary
@@ -427,6 +440,11 @@ msgstr "क्या आप वाकई इस फ़ाइल को हमे
 #: model:ir.model.fields,field_description:hr_contract_salary.field_hr_contract_salary_benefit__activity_responsible_id
 msgid "Assigned to"
 msgstr "इनको असाइन किया गया"
+
+#. module: hr_contract_salary
+#: model_terms:ir.ui.view,arch_db:hr_contract_salary.hr_contract_salary_offer_view_form
+msgid "At least one contract is scheduled to start on"
+msgstr ""
 
 #. module: hr_contract_salary
 #: model:ir.model.fields,field_description:hr_contract_salary.field_hr_contract_salary_offer__message_attachment_count
@@ -650,6 +668,7 @@ msgstr "कॉन्ट्रैक्ट टेम्प्लेट"
 #. module: hr_contract_salary
 #. odoo-python
 #: code:addons/hr_contract_salary/controllers/main.py:0
+#: model:ir.model.fields,field_description:hr_contract_salary.field_hr_contract_salary_offer__contract_type_id
 msgid "Contract Type"
 msgstr "कॉन्ट्रैक्ट टाइप"
 
@@ -730,8 +749,8 @@ msgstr "जन्म का देश"
 
 #. module: hr_contract_salary
 #: model_terms:ir.actions.act_window,help:hr_contract_salary.hr_contract_salary_offer_action
-msgid "Create a Offer"
-msgstr "ऑफ़र बनाएं"
+msgid "Create an Offer"
+msgstr ""
 
 #. module: hr_contract_salary
 #: model_terms:ir.actions.act_window,help:hr_contract_salary.hr_contract_salary_offer_recruitment_action
@@ -819,8 +838,8 @@ msgid ""
 "Default contract used to generate an offer. If empty, benefits will be taken "
 "from current contract of the employee/nothing for an applicant."
 msgstr ""
-"ऑफ़र बनाने के लिए उपयोग किया जाने वाला डिफ़ॉल्ट कॉन्ट्रैक्ट. अगर खाली है, तो लाभ कर्मचारी"
-" के मौजूदा कॉन्ट्रैक्ट से लिए जाएंगे/आवेदक के लिए कुछ भी नहीं लिया जाएगा।"
+"ऑफ़र बनाने के लिए उपयोग किया जाने वाला डिफ़ॉल्ट कॉन्ट्रैक्ट. अगर खाली है, तो लाभ "
+"कर्मचारी के मौजूदा कॉन्ट्रैक्ट से लिए जाएंगे/आवेदक के लिए कुछ भी नहीं लिया जाएगा।"
 
 #. module: hr_contract_salary
 #: model:ir.model.fields,help:hr_contract_salary.field_hr_contract_salary_offer__sign_template_id
@@ -1179,12 +1198,26 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr "फॉन्ट के बेहतरीन आइकॉन जैसे, फा-टॉस्क"
 
 #. module: hr_contract_salary
+#: model:ir.model.fields,help:hr_contract_salary.field_hr_contract_salary_offer__contract_start_date
+msgid ""
+"For employees, The contract start date determines whether this offer creates "
+"a new contract or amends an existing one. If the selected start date falls "
+"within the period of an existing contract for the employee, it will be "
+"treated as an amendment rather than a new contract."
+msgstr ""
+
+#. module: hr_contract_salary
 #: model:ir.model.fields,field_description:hr_contract_salary.field_hr_contract_recruitment_report__fully_signed
 #: model:ir.model.fields.selection,name:hr_contract_salary.selection__hr_contract_recruitment_report__offer_state__full_signed
 #: model:ir.model.fields.selection,name:hr_contract_salary.selection__hr_contract_salary_offer__state__full_signed
 #: model_terms:ir.ui.view,arch_db:hr_contract_salary.contract_recruitment_report_view_search
 msgid "Fully Signed"
 msgstr "पूरी तरह हस्ताक्षरित"
+
+#. module: hr_contract_salary
+#: model:ir.model.fields,field_description:hr_contract_salary.field_hr_contract_salary_offer__future_version_date
+msgid "Future Version Date"
+msgstr ""
 
 #. module: hr_contract_salary
 #: model_terms:ir.ui.view,arch_db:hr_contract_salary.hr_applicant_view_form
@@ -1231,6 +1264,11 @@ msgstr "एडमिन ऐक्सेस है"
 #: model:ir.model.fields,field_description:hr_contract_salary.field_hr_contract_salary_offer__has_message
 msgid "Has Message"
 msgstr "मैसेज है"
+
+#. module: hr_contract_salary
+#: model:ir.model.fields,field_description:hr_contract_salary.field_hr_contract_salary_offer__has_sign_template
+msgid "Has Sign Template"
+msgstr ""
 
 #. module: hr_contract_salary
 #: model:ir.model.fields,field_description:hr_contract_salary.field_hr_contract_salary_personal_info__helper
@@ -1307,8 +1345,8 @@ msgid ""
 "If checked, the value of this information will be computed in all "
 "information set as Monthly Total"
 msgstr ""
-"अगर चुना गया, तो इस जानकारी का मान 'मासिक कुल' के तौर पर सेट सभी जानकारियों में गिना"
-" जाएगा"
+"अगर चुना गया, तो इस जानकारी का मान 'मासिक कुल' के तौर पर सेट सभी जानकारियों में "
+"गिना जाएगा"
 
 #. module: hr_contract_salary
 #: model:ir.model.fields,help:hr_contract_salary.field_hr_contract_salary_benefit__always_show_description
@@ -1354,8 +1392,8 @@ msgid ""
 "annual time off (legal leaves)."
 msgstr ""
 "अपनी कानूनी छुट्टियों के अलावा, आप 30 अतिरिक्त दिनों की छुट्टी चुन सकते हैं.\n"
-"            आपको मिलने वाली वार्षिक छुट्टियों (कानूनी छुट्टी) की संख्या पिछले साल आपके का"
-"म के शेड्यूल पर निर्भर करती है. आपके कॉन्ट्रैक्ट के तहत, पिछले 12 महीनों के दौरान पूरे समय "
+"            आपको मिलने वाली वार्षिक छुट्टियों (कानूनी छुट्टी) की संख्या पिछले साल आपके "
+"काम के शेड्यूल पर निर्भर करती है. आपके कॉन्ट्रैक्ट के तहत, पिछले 12 महीनों के दौरान पूरे समय "
 "(फुल-टाइम) काम करने पर आपको 20 वार्षिक छुट्टियां (कानूनी छुट्टी) मिलेंगी।"
 
 #. module: hr_contract_salary
@@ -1388,6 +1426,11 @@ msgstr "जानकारी"
 #: model:ir.model.fields.selection,name:hr_contract_salary.selection__hr_contract_salary_personal_info__display_type__integer
 msgid "Integer"
 msgstr "पूर्णांक"
+
+#. module: hr_contract_salary
+#: model:ir.model.fields,field_description:hr_contract_salary.field_hr_contract_salary_offer__is_contract_amendment
+msgid "Is Contract Amendment"
+msgstr ""
 
 #. module: hr_contract_salary
 #: model:ir.model.fields,field_description:hr_contract_salary.field_hr_contract_salary_offer__message_is_follower
@@ -1703,8 +1746,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/hr_contract_salary/models/hr_version.py:0
 msgid "No templates are configured yet. Do you want to set up first one?"
-msgstr ""
-"अभी तक कोई टेंप्लेट कॉन्फ़िगर नहीं किया गया है. क्या आप पहला सेट अप करना चाहते हैं?"
+msgstr "अभी तक कोई टेंप्लेट कॉन्फ़िगर नहीं किया गया है. क्या आप पहला सेट अप करना चाहते हैं?"
 
 #. module: hr_contract_salary
 #: model:hr.contract.salary.benefit.type,name:hr_contract_salary.l10n_be_non_financial_benefits
@@ -2297,8 +2339,8 @@ msgid ""
 "        "
 msgstr ""
 "सिर्फ़ 1 या 2 अलग हस्ताक्षरकर्ता वाले दस्तावेज़ चुनें.\n"
-"        1 हस्ताक्षरकर्ता वाले दस्तावेज़ों के लिए सिर्फ़ कर्मचारी के हस्ताक्षर की ज़रूरत होती है"
-", जबकि 2 हस्ताक्षरकर्ता वाले दस्तावेज़ों के लिए कर्मचारी और एचआर ज़िम्मेदार व्यक्ति दोनों के "
+"        1 हस्ताक्षरकर्ता वाले दस्तावेज़ों के लिए सिर्फ़ कर्मचारी के हस्ताक्षर की ज़रूरत होती "
+"है, जबकि 2 हस्ताक्षरकर्ता वाले दस्तावेज़ों के लिए कर्मचारी और एचआर ज़िम्मेदार व्यक्ति दोनों के "
 "हस्ताक्षर ज़रूरी हैं.\n"
 "        "
 
@@ -2565,6 +2607,12 @@ msgstr "वह कॉन्ट्रैक्ट जिससे इस कॉ�
 
 #. module: hr_contract_salary
 #. odoo-python
+#: code:addons/hr_contract_salary/models/hr_contract_salary_offer.py:0
+msgid "The contract start date cannot be after the contract end date."
+msgstr ""
+
+#. module: hr_contract_salary
+#. odoo-python
 #: code:addons/hr_contract_salary/models/hr_job.py:0
 msgid "The contract template's company must match the job's company."
 msgstr ""
@@ -2586,8 +2634,7 @@ msgstr ""
 #: model:ir.model.fields,help:hr_contract_salary.field_hr_contract_salary_benefit__fold_res_field_id
 msgid ""
 "The field here needs to be set for this benefit to be folded by default."
-msgstr ""
-"इस लाभ को डिफ़ॉल्ट रूप से फोल्ड करने के लिए यहां का फ़ील्ड सेट होना ज़रूरी है।"
+msgstr "इस लाभ को डिफ़ॉल्ट रूप से फोल्ड करने के लिए यहां का फ़ील्ड सेट होना ज़रूरी है।"
 
 #. module: hr_contract_salary
 #. odoo-python
@@ -2600,8 +2647,7 @@ msgstr "स्लाइडर के लिए न्यूनतम मान �
 #: model:ir.model.fields,help:hr_contract_salary.field_hr_employee__signatures_count
 #: model:ir.model.fields,help:hr_contract_salary.field_hr_version__signatures_count
 msgid "The number of signatures on the pdf contract with the most signatures."
-msgstr ""
-"सबसे ज़्यादा हस्ताक्षर वाले पीडीएफ़ कॉन्ट्रैक्ट पर हस्ताक्षरों की संख्या।"
+msgstr "सबसे ज़्यादा हस्ताक्षर वाले पीडीएफ़ कॉन्ट्रैक्ट पर हस्ताक्षरों की संख्या।"
 
 #. module: hr_contract_salary
 #. odoo-python
@@ -2661,8 +2707,7 @@ msgstr ""
 #: code:addons/hr_contract_salary/controllers/main.py:0
 msgid ""
 "This link is invalid. Please contact the HR Responsible to get a new one..."
-msgstr ""
-"यह लिंक अमान्य है. नया लिंक पाने के लिए एचआर ज़िम्मेदार व्यक्ति से संपर्क करें..।"
+msgstr "यह लिंक अमान्य है. नया लिंक पाने के लिए एचआर ज़िम्मेदार व्यक्ति से संपर्क करें..।"
 
 #. module: hr_contract_salary
 #: model_terms:ir.ui.view,arch_db:hr_contract_salary.hr_contract_salary_offer_view_form
@@ -2676,9 +2721,14 @@ msgstr ""
 #. module: hr_contract_salary
 #. odoo-python
 #: code:addons/hr_contract_salary/controllers/main.py:0
-msgid "This offer has been updated, please request an updated link.."
+msgid "This offer has been fully signed, you can not sign it again.."
 msgstr ""
-"इस ऑफ़र को अपडेट कर दिया गया है, कृपया अपडेट किए गए लिंक का अनुरोध करें.।"
+
+#. module: hr_contract_salary
+#. odoo-python
+#: code:addons/hr_contract_salary/controllers/main.py:0
+msgid "This offer has been updated, please request an updated link.."
+msgstr "इस ऑफ़र को अपडेट कर दिया गया है, कृपया अपडेट किए गए लिंक का अनुरोध करें.।"
 
 #. module: hr_contract_salary
 #. odoo-python
@@ -2913,12 +2963,13 @@ msgid ""
 "{{ object.company_id.name }}: Job Offer - "
 "{{ object.applicant_id.partner_name }}"
 msgstr ""
-"{{ object.company_id.name }}: जॉब ऑफ़र - {{ object.applicant_id.partner_name "
-"}}"
+"{{ object.company_id.name }}: जॉब ऑफ़र - "
+"{{ object.applicant_id.partner_name }}"
 
 #. module: hr_contract_salary
 #: model:mail.template,subject:hr_contract_salary.mail_template_send_offer
-msgid ""
-"{{ object.company_id.name }}: Job Offer - "
-"{{ object.employee_version_id.name }}"
+msgid "{{ object.company_id.name }}: Job Offer - {{ object.employee_id.name }}"
 msgstr ""
+
+#~ msgid "Create a Offer"
+#~ msgstr "ऑफ़र बनाएं"

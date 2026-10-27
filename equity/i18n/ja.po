@@ -2,14 +2,16 @@
 # This file contains the translation of the following modules:
 # * equity
 #
-# "Junko Augias (juau)" <juau@odoo.com>, 2025.
+# "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Odoo Translation Bot <c3p@odoo.com>, 2025.
+# Ryoko Tsuda <ryoko@quartile.co>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:40+0000\n"
-"PO-Revision-Date: 2025-11-28 03:15+0000\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2026-09-23 01:54+0000\n"
 "Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
 "Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/equity/"
 "ja/>\n"
@@ -18,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__securities
@@ -30,7 +32,7 @@ msgstr "# 証券"
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_valuation__shares
 msgid "# Shares"
-msgstr "共有数"
+msgstr "株式数"
 
 #. module: equity
 #. odoo-python
@@ -99,7 +101,7 @@ msgstr "(object._get_ubo_report_filename())"
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_form
 msgid "/ Security"
-msgstr "/ セキュリティ"
+msgstr "/ 証券"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
@@ -319,11 +321,18 @@ msgstr ""
 "                            取引されている企業、または"
 
 #. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_transaction.py:0
+msgid "A partner cannot have transactions in different currencies."
+msgstr ""
+
+#. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
 msgid ""
 "According to laws related to anti money laundering, the notary must identify "
 "the beneficial owners of their customer."
-msgstr "マネーロンダリング防止に関する法律に従い、公証人は顧客の実質的支配者を特定し"
+msgstr ""
+"マネーロンダリング防止に関する法律に従い、公証人は顧客の実質的支配者を特定し"
 "なければなりません。"
 
 #. module: equity
@@ -344,7 +353,8 @@ msgstr "実質的所有者を追加"
 #. odoo-javascript
 #: code:addons/equity/static/src/components/valuation_chart_action/valuation_chart_action.js:0
 msgid "Add some valuations over the past year to see some data here."
-msgstr "過去1年間のバリュエーションを追加して、ここでいくつかのデータを見ることができ"
+msgstr ""
+"過去1年間のバリュエーションを追加して、ここでいくつかのデータを見ることができ"
 "ます。"
 
 #. module: equity
@@ -406,11 +416,10 @@ msgid ""
 msgstr ""
 "実質的支配者とは、最終的に顧客を所有または支配している自然人、またはその取引"
 "や取引関係がその者のため、\n"
-"                    あるいはその者の代理として行われている自然人を指します。"
-"\n"
-"                    "
-"これには、会社において支配的持分を有していない者や、正式な権限を持たない者で"
-"あっても、\n"
+"                    あるいはその者の代理として行われている自然人を指しま"
+"す。\n"
+"                    これには、会社において支配的持分を有していない者や、正式"
+"な権限を持たない者であっても、\n"
 "                    事実上会社を同様に支配している自然人が含まれます。"
 
 #. module: equity
@@ -443,6 +452,11 @@ msgid "CEO"
 msgstr "CEO"
 
 #. module: equity
+#: model:ir.model.fields,field_description:equity.field_equity_transaction__can_change_currency
+msgid "Can Change Currency"
+msgstr ""
+
+#. module: equity
 #. odoo-python
 #: code:addons/equity/models/equity_transaction.py:0
 msgid "Can only exercise options, please select an options class"
@@ -458,7 +472,14 @@ msgstr "取消"
 #. odoo-python
 #: code:addons/equity/models/equity_security_class.py:0
 msgid "Cannot change security class type because it has linked transactions"
-msgstr "リンクされた取引があるため、セキュリティ・クラスのタイプを変更できません"
+msgstr ""
+"リンクされた取引があるため、セキュリティ・クラスのタイプを変更できません"
+
+#. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_ubo.py:0
+msgid "Cannot create new UBO for an existing holder"
+msgstr ""
 
 #. module: equity
 #. odoo-python
@@ -495,6 +516,7 @@ msgid "Clear"
 msgstr "クリア"
 
 #. module: equity
+#: model:ir.model.fields,field_description:equity.field_equity_cap_table__company_id
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__partner_id
 #: model:ir.model.fields,field_description:equity.field_equity_ubo__partner_id
 #: model:ir.model.fields,field_description:equity.field_equity_valuation__partner_id
@@ -507,7 +529,7 @@ msgstr "会社"
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_ubo__control_method__co_1
 msgid "Company - Cat 1. Capital Ownership or voting rights"
-msgstr "会社 - カテゴリー1. 資本所有権または議決権"
+msgstr "会社 - 第1類：資本所有権または議決権"
 
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_ubo__control_method__co_2
@@ -518,6 +540,13 @@ msgstr "会社 - 第2類：他の手段により関与"
 #: model:ir.model.fields.selection,name:equity.selection__equity_ubo__control_method__co_3
 msgid "Company - Cat 3. Executive officer"
 msgstr "会社 - 第3類：経営者による関与"
+
+#. module: equity
+#: model:ir.model.fields,help:equity.field_equity_transaction__company_id
+#: model:ir.model.fields,help:equity.field_equity_ubo__company_id
+#: model:ir.model.fields,help:equity.field_equity_valuation__company_id
+msgid "Company to which this record is visible"
+msgstr ""
 
 #. module: equity
 #: model:ir.ui.menu,name:equity.menu_equity_configuration
@@ -570,8 +599,8 @@ msgid ""
 msgstr ""
 "「支配」とは、取締役または経営者の過半数の任命、または会社の事業運営の方向性"
 "に対して、\n"
-"                    法的または事実上の決定的な影響力を行使する権利を指します"
-"。"
+"                    法的または事実上の決定的な影響力を行使する権利を指しま"
+"す。"
 
 #. module: equity
 #. odoo-javascript
@@ -632,7 +661,8 @@ msgstr "意思決定者"
 msgid ""
 "Definitions: \"beneficial owners\", \"control\", \"shareholder holding 25% "
 "or more\", \"decision makers\""
-msgstr "定義：「実質的所有者」、「支配権」、「% o以上を保有する株主」、「意思決定者」"
+msgstr ""
+"定義：「実質的所有者」、「支配権」、「% o以上を保有する株主」、「意思決定者」"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__destination_class_id
@@ -703,7 +733,7 @@ msgstr "受益者を編集"
 #: model_terms:ir.ui.view,arch_db:equity.portal_my_company_equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_my_home_equity
 msgid "Equity"
-msgstr "資本"
+msgstr "エクイティ"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_res_partner__equity_access_token
@@ -919,8 +949,8 @@ msgstr ""
 "事会の構成員、\n"
 "                        大使、公使および高級軍幹部、国有企業の管理、経営また"
 "は\n"
-"                        監督機関の構成員、国際機関の理事、次長および理事会の\"
-"n"
+"                        監督機関の構成員、国際機関の理事、次長および理事会"
+"の\n"
 "                        構成員またはこれに相当する職務の者"
 
 #. module: equity
@@ -975,7 +1005,7 @@ msgstr "チェックした場合は、新しいメッセージに注意が必要
 #: model:ir.model.fields,help:equity.field_equity_valuation__message_has_error
 #: model:ir.model.fields,help:equity.field_equity_valuation__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr "選択されている場合、一部のメッセージで配信エラーが発生しています。"
+msgstr "有効にすると、一部のメッセージに配信エラーが発生します。"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
@@ -998,14 +1028,16 @@ msgstr "25% 以上を保有する株主の場合"
 msgid ""
 "If you are returning to an already submitted form, please note that your "
 "information has been securely stored."
-msgstr "すでに提出済みのフォームを開く場合は、入力内容が安全に保存されています。"
+msgstr ""
+"すでに提出済みのフォームを開く場合は、入力内容が安全に保存されています。"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_submit
 msgid ""
 "If your form has been successfully submitted, our team will review it and "
 "keep you informed of any updates."
-msgstr "フォームが正常に送信された場合、弊社チームが内容を確認し、進捗や更新状況をお"
+msgstr ""
+"フォームが正常に送信された場合、弊社チームが内容を確認し、進捗や更新状況をお"
 "知らせします。"
 
 #. module: equity
@@ -1129,7 +1161,7 @@ msgstr "自分の会社"
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_ubo__control_method__ngo_1
 msgid "NGO - Cat 1. Directors"
-msgstr "NGO(非政府組織) - 第1類：役員"
+msgstr "非政府組織(NGO) - 第1類：役員"
 
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_ubo__control_method__ngo_2
@@ -1151,7 +1183,8 @@ msgstr "非政府組織(NGO) - 第4類：財団の設立者"
 msgid ""
 "NGO - Cat 5. Individuals or categories of individuals in whose main interest "
 "the association or foundation has been established or operates"
-msgstr "非政府組織(NGO) - 第5類：その設立または運営が主として利益となる個人または個人"
+msgstr ""
+"非政府組織(NGO) - 第5類：その設立または運営が主として利益となる個人または個人"
 "のカテゴリ"
 
 #. module: equity
@@ -1159,7 +1192,8 @@ msgstr "非政府組織(NGO) - 第5類：その設立または運営が主とし
 msgid ""
 "NGO - Cat 6. Any other individual who ultimately exercises control by other "
 "means"
-msgstr "非政府組織(NGO) - 第6類：その他、他の手段によって最終的に支配を行使する個人"
+msgstr ""
+"非政府組織(NGO) - 第6類：その他、他の手段によって最終的に支配を行使する個人"
 
 #. module: equity
 #. odoo-javascript
@@ -1197,11 +1231,11 @@ msgid ""
 "formal mandate of any kind but who are de facto exercising similar control "
 "over the company."
 msgstr ""
-"会社の取締役会において正式な任命を受けた自然人。たとえば、最高経営責任者(CEO)"
-"、最高財務責任者(CFO)、または財務担当者(会計係)などがこれに該当します。法人が"
-"会社の取締役会で任務を行使している場合は、取締役会レベルのすべての任命者とそ"
-"の職務を記載する必要があります。<br/>会社において支配的持分や正式な任命を持た"
-"ないものの、事実上同様の支配を行使している自然人も含まれます。"
+"会社の取締役会において正式な任命を受けた自然人。たとえば、最高経営責任者"
+"(CEO)、最高財務責任者(CFO)、または財務担当者(会計係)などがこれに該当します。"
+"法人が会社の取締役会で任務を行使している場合は、取締役会レベルのすべての任命"
+"者とその職務を記載する必要があります。<br/>会社において支配的持分や正式な任命"
+"を持たないものの、事実上同様の支配を行使している自然人も含まれます。"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_help
@@ -1232,7 +1266,6 @@ msgstr "%sは設定されませんでした!"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
-#, fuzzy
 msgid "No UBOs recorded for this company."
 msgstr "この会社には実質的な最終受益所有者の記録がありません。"
 
@@ -1288,7 +1321,8 @@ msgstr "配信エラーが発生したメッセージ数"
 msgid ""
 "Only %(seller_options)s %(security_class_name)s options available for "
 "transfer"
-msgstr "譲渡可能なのは %(seller_options)s 件の %(security_class_name)s オプションのみ"
+msgstr ""
+"譲渡可能なのは %(seller_options)s 件の %(security_class_name)s オプションのみ"
 "です"
 
 #. module: equity
@@ -1296,7 +1330,8 @@ msgstr "譲渡可能なのは %(seller_options)s 件の %(security_class_name)s 
 #: code:addons/equity/models/equity_transaction.py:0
 msgid ""
 "Only %(seller_shares)s %(security_class_name)s shares available for transfer"
-msgstr "譲渡可能なのは %(seller_shares)s 件の %(security_class_name)s 株のみです"
+msgstr ""
+"譲渡可能なのは %(seller_shares)s 件の %(security_class_name)s 株のみです"
 
 #. module: equity
 #. odoo-python
@@ -1304,7 +1339,8 @@ msgstr "譲渡可能なのは %(seller_shares)s 件の %(security_class_name)s �
 msgid ""
 "Only %(subscriber_options)s %(security_class_name)s options available for "
 "cancellation"
-msgstr "取消可能なのは %(subscriber_options)s 件の %(security_class_name)s オプション"
+msgstr ""
+"取消可能なのは %(subscriber_options)s 件の %(security_class_name)s オプション"
 "のみです"
 
 #. module: equity
@@ -1313,8 +1349,9 @@ msgstr "取消可能なのは %(subscriber_options)s 件の %(security_class_nam
 msgid ""
 "Only %(subscriber_options)s %(security_class_name)s options available for "
 "exercise"
-msgstr "権利行使可能なのは %(subscriber_options)s 件の %(security_class_name)s オプシ"
-"ョンのみです"
+msgstr ""
+"権利行使可能なのは %(subscriber_options)s 件の %(security_class_name)s オプ"
+"ションのみです"
 
 #. module: equity
 #. odoo-python
@@ -1322,7 +1359,8 @@ msgstr "権利行使可能なのは %(subscriber_options)s 件の %(security_cla
 msgid ""
 "Only %(subscriber_shares)s %(security_class_name)s shares available for "
 "cancellation"
-msgstr "取消可能なのは %(subscriber_shares)s 件の %(security_class_name)s 株のみです"
+msgstr ""
+"取消可能なのは %(subscriber_shares)s 件の %(security_class_name)s 株のみです"
 
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_transaction__transaction_type__exercise
@@ -1343,7 +1381,7 @@ msgstr "オプション"
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_search
 msgid "Options Exercise"
-msgstr ""
+msgstr "オプション行使"
 
 #. module: equity
 #. odoo-javascript
@@ -1361,12 +1399,12 @@ msgstr "所有権"
 #: model:ir.model.fields,field_description:equity.field_res_partner__ubo_pep
 #: model:ir.model.fields,field_description:equity.field_res_users__ubo_pep
 msgid "PEP"
-msgstr ""
+msgstr "PEP(政治的要人)"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid "PEP - Politically Exposed Person"
-msgstr ""
+msgstr "PEP - 政治的要人"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__partner_id
@@ -1374,12 +1412,18 @@ msgid "Partner"
 msgstr "取引先"
 
 #. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_ubo.py:0
+msgid "Partner is not allowed to fill UBO form"
+msgstr ""
+
+#. module: equity
 #. odoo-javascript
 #: code:addons/equity/static/src/components/ubo_form/holder_edit_dialog.xml:0
 #: model:ir.model.fields,help:equity.field_res_partner__ubo_pep
 #: model:ir.model.fields,help:equity.field_res_users__ubo_pep
 msgid "Politically Exposed Person"
-msgstr ""
+msgstr "政治的要人"
 
 #. module: equity
 #. odoo-javascript
@@ -1395,28 +1439,28 @@ msgstr "価格"
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_list
 msgid "Price FD"
-msgstr ""
+msgstr "価格FD(完全希薄化ベース)"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_list
 msgid "Price ND"
-msgstr ""
+msgstr "価格ND(非希薄化ベース)"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__security_price
 #: model:ir.model.fields,field_description:equity.field_equity_valuation__security_price
 msgid "Price per Security"
-msgstr ""
+msgstr "1証券あたりの価格"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_valuation__share_price
 msgid "Price per Share"
-msgstr ""
+msgstr "1株あたりの価格"
 
 #. module: equity
 #: model:ir.actions.report,name:equity.action_equity_ubo_report
 msgid "Print UBO"
-msgstr ""
+msgstr "UBOを印刷"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__rating_ids
@@ -1428,19 +1472,19 @@ msgstr "評価"
 #. module: equity
 #: model:ir.model.fields,help:equity.field_equity_transaction__subscriber_id
 msgid "Recipient of the securities of the transaction."
-msgstr ""
+msgstr "取引の証券の受取人。"
 
 #. module: equity
 #. odoo-javascript
 #: code:addons/equity/static/src/components/ubo_form/holder_end_dialog.xml:0
 msgid "Remove Shareholder"
-msgstr ""
+msgstr "株主を削除"
 
 #. module: equity
 #. odoo-javascript
 #: code:addons/equity/static/src/components/ubo_form/ubo_form.xml:0
 msgid "Remove holder exit date."
-msgstr ""
+msgstr "保有者の退出日を削除。"
 
 #. module: equity
 #: model:ir.ui.menu,name:equity.menu_equity_reporting
@@ -1450,7 +1494,7 @@ msgstr "レポーティング"
 #. module: equity
 #: model:ir.actions.act_window,name:equity.action_equity_request_ubo_form
 msgid "Request UBO Form"
-msgstr ""
+msgstr "UBOフォームを依頼"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_ubo__auth_rep_role
@@ -1462,12 +1506,12 @@ msgstr "役割"
 #: model:ir.model.fields,field_description:equity.field_equity_ubo__message_has_sms_error
 #: model:ir.model.fields,field_description:equity.field_equity_valuation__message_has_sms_error
 msgid "SMS Delivery error"
-msgstr "SMS送信エラー"
+msgstr "SMS配信エラー"
 
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_ubo__auth_rep_role__secretary
 msgid "Secretary"
-msgstr ""
+msgstr "会社秘書"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__securities
@@ -1479,31 +1523,31 @@ msgstr "証券"
 #. odoo-python
 #: code:addons/equity/models/equity_transaction.py:0
 msgid "Securities must be positive"
-msgstr ""
+msgstr "証券数は正の値でなければなりません"
 
 #. module: equity
 #: model:ir.model,name:equity.model_equity_security_class
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__security_class_id
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_security_class_form
 msgid "Security Class"
-msgstr ""
+msgstr "証券クラス"
 
 #. module: equity
 #: model:ir.actions.act_window,name:equity.action_equity_security_class
 #: model:ir.ui.menu,name:equity.menu_equity_configuration_security_classes
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_security_class_list
 msgid "Security Classes"
-msgstr ""
+msgstr "証券クラス"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_my_company_equity
 msgid "Security Price"
-msgstr ""
+msgstr "証券価格"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_my_home_equity
 msgid "See your shares and transactions"
-msgstr ""
+msgstr "株式と取引を見る"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__seller_id
@@ -1513,19 +1557,19 @@ msgstr "売主"
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__seller_name
 msgid "Seller Name"
-msgstr ""
+msgstr "譲渡者名"
 
 #. module: equity
 #. odoo-python
 #: code:addons/equity/models/equity_transaction.py:0
 msgid "Seller and Buyer must be different."
-msgstr ""
+msgstr "譲渡者と譲受者は同一人物であってはなりません。"
 
 #. module: equity
 #. odoo-python
 #: code:addons/equity/models/equity_transaction.py:0
 msgid "Seller id can only be set in transfer transactions."
-msgstr ""
+msgstr "譲渡者IDは、譲渡取引でのみ設定できます。"
 
 #. module: equity
 #. odoo-javascript
@@ -1536,12 +1580,12 @@ msgstr "送信"
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_form
 msgid "Send to Seller"
-msgstr ""
+msgstr "譲渡者へ送信"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_form
 msgid "Send to Subscriber"
-msgstr ""
+msgstr "引受者へ送信"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_security_class__sequence
@@ -1551,29 +1595,29 @@ msgstr "シーケンス"
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid "Shareholders who hold more than 25%"
-msgstr ""
+msgstr "25％を超える持分を有する株主"
 
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_security_class__class_type__shares
 msgid "Shares"
-msgstr "共有"
+msgstr "株式"
 
 #. module: equity
 #. odoo-python
 #: code:addons/equity/models/equity_transaction.py:0
 msgid "Shares transactions must have a subscriber"
-msgstr ""
+msgstr "株式取引には引受者が必要です"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
 msgid "Signature date:"
-msgstr ""
+msgstr "署名日付："
 
 #. module: equity
 #. odoo-javascript
 #: code:addons/equity/static/src/components/ubo_form/ubo_form.xml:0
 msgid "Signature of Representative"
-msgstr ""
+msgstr "代表者の署名"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
@@ -1583,7 +1627,7 @@ msgstr "署名："
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_form
 msgid "Strike Price"
-msgstr ""
+msgstr "行使価格"
 
 #. module: equity
 #. odoo-javascript
@@ -1594,17 +1638,17 @@ msgstr "提出"
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__subscriber_id
 msgid "Subscriber"
-msgstr "サブスク会員"
+msgstr "引受者"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__subscriber_id_placeholder
 msgid "Subscriber Id Placeholder"
-msgstr ""
+msgstr "引受者 ID プレースホルダ"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__subscriber_name
 msgid "Subscriber Name"
-msgstr ""
+msgstr "引受者名"
 
 #. module: equity
 #. odoo-javascript
@@ -1616,7 +1660,7 @@ msgstr "参考資料"
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_submit
 msgid ""
 "Thank you for providing your Ultimate Beneficial Owner (UBO) information."
-msgstr ""
+msgstr "最終受益所有者（UBO）情報をご提供いただき、ありがとうございます。"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_my_company_equity
@@ -1626,6 +1670,10 @@ msgid ""
 "The \"Transaction Price\" total is not counting the prices of options "
 "issuance transactions because that is a strike price."
 msgstr ""
+"「#証券」の合計には「オプション行使」取引は含まれていません（それらは「オプ"
+"ション発行」時にすでに計上されているためです）。また、「取引価格」の合計には"
+"オプション発行取引の価格は含まれていません。これは行使価格（ストライク価格）"
+"であるためです。"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
@@ -1633,6 +1681,8 @@ msgid ""
 "The declaration must be completed by the persons authorized to represent the "
 "company or entity according to its Articles of Association."
 msgstr ""
+"この申告書は、定款に基づき会社または法人を代表する権限を有する者が記入しなけ"
+"ればなりません。"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
@@ -1645,33 +1695,38 @@ msgid ""
 "is considered as shareholder holding more than 25% of A, for Z holds - "
 "indirectly - 36 % of the shares in A."
 msgstr ""
+"この法人を、株式または議決権の25％を超える直接的または間接的な所有または支配"
+"を通じて最終的に所有または支配している自然人。<br/> 例：会社Bおよび会社Cがそ"
+"れぞれ会社Aの20％の持分を保有している場合、個人Zが会社Bおよび会社Cの株式をそ"
+"れぞれ90％保有しているとすると、Zは会社Aの株式を間接的に36％保有していること"
+"になり、会社Aの25％超の株式を保有する株主と見なされます。"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
 msgid ""
 "The undersigned (executive officer or administrator) acting as a "
 "representative of the company:"
-msgstr ""
+msgstr "会社の代表として行動する署名者(業務執行役員または管理者)："
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_my_company_equity
 msgid "There are currently no transactions for your account."
-msgstr ""
+msgstr "現在、お客様のアカウントでのお取引はございません。"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid "There are two classes of beneficial owners:"
-msgstr ""
+msgstr "受益者には２つのクラスがあります："
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_my_equity
 msgid "There is currently no equity for your account."
-msgstr ""
+msgstr "現在、あなたのアカウントにはエクイティがありません。"
 
 #. module: equity
 #: model:ir.model.constraint,message:equity.constraint_equity_ubo_unique_ubo
 msgid "This contact is already a holder of this company"
-msgstr ""
+msgstr "この連絡先はすでにこの会社の所有者です"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
@@ -1679,6 +1734,8 @@ msgid ""
 "This said, where a shareholder holding more than 25% is a legal arrangement "
 "other than a registered company, beneficial owners are:"
 msgstr ""
+"なお、25％を超える持分を有する株主が登記された会社以外の法的構成体である場"
+"合、実質的支配者は次のとおりです："
 
 #. module: equity
 #. odoo-javascript
@@ -1698,7 +1755,6 @@ msgstr "合計金額"
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_valuation__event__transaction
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_form
-#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_form
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_search
 msgid "Transaction"
 msgstr "取引"
@@ -1706,12 +1762,12 @@ msgstr "取引"
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_my_company_equity
 msgid "Transaction Price"
-msgstr ""
+msgstr "取引価格"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__transaction_type
 msgid "Transaction Type"
-msgstr "トランザクションタイプ"
+msgstr "取引タイプ"
 
 #. module: equity
 #. odoo-javascript
@@ -1719,7 +1775,6 @@ msgstr "トランザクションタイプ"
 #: model:ir.actions.act_window,name:equity.action_equity_transaction
 #: model:ir.ui.menu,name:equity.menu_equity_ownership_transactions
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_list
-#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_list
 msgid "Transactions"
 msgstr "取引"
 
@@ -1727,12 +1782,12 @@ msgstr "取引"
 #: model:ir.model.fields.selection,name:equity.selection__equity_transaction__transaction_type__transfer
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_search
 msgid "Transfer"
-msgstr "転送"
+msgstr "譲渡"
 
 #. module: equity
 #: model:ir.model.fields.selection,name:equity.selection__equity_ubo__auth_rep_role__treasurer
 msgid "Treasurer"
-msgstr ""
+msgstr "財務責任者"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__securities_type
@@ -1746,23 +1801,23 @@ msgstr "タイプ"
 #: model:ir.ui.menu,name:equity.menu_equity_ownership_ubos
 #: model_terms:ir.ui.view,arch_db:equity.equity_view_partner_form
 msgid "UBO"
-msgstr ""
+msgstr "最終受益所有者（UBO）"
 
 #. module: equity
 #: model:mail.activity.type,name:equity.equity_ubo_form_mail_activity
 msgid "UBO Form Request"
-msgstr ""
+msgstr "UBOフォーム依頼"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_res_partner__ubo_national_identifier
 #: model:ir.model.fields,field_description:equity.field_res_users__ubo_national_identifier
 msgid "UBO ID Number"
-msgstr ""
+msgstr "UBO ID番号"
 
 #. module: equity
 #: model:mail.template,subject:equity.equity_ubo_form_email_template
 msgid "UBO form"
-msgstr ""
+msgstr "UBOフォーム"
 
 #. module: equity
 #. odoo-python
@@ -1771,33 +1826,35 @@ msgid ""
 "UBO portal form will become unavailable once this activity will be marked as "
 "done"
 msgstr ""
+"このアクティビティが完了済とマークされると、UBOポータルフォームは利用できなく"
+"なります"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_res_partner__ubo_owned_company_ids
 #: model:ir.model.fields,field_description:equity.field_res_users__ubo_owned_company_ids
 msgid "Ubo Owned Company"
-msgstr ""
+msgstr "UBO保有企業"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_res_partner__ubo_owner_ids
 #: model:ir.model.fields,field_description:equity.field_res_users__ubo_owner_ids
 msgid "Ubo Owner"
-msgstr ""
+msgstr "最終受益所有者(UBO)"
 
 #. module: equity
 #: model:ir.model,name:equity.model_equity_ubo
 msgid "Ultimate Beneficial Owner"
-msgstr ""
+msgstr "最終受益所有者(UBO)"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid "Ultimate Beneficial Owners (UBO) Request"
-msgstr ""
+msgstr "最終受益所有者(UBO)情報の依頼"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
 msgid "Ultimate Beneficial Owners (UBO) statement"
-msgstr ""
+msgstr "最終受益者（UBO）ステートメント"
 
 #. module: equity
 #. odoo-javascript
@@ -1814,13 +1871,13 @@ msgstr "アップロード"
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_form
 msgid "Upload Files"
-msgstr ""
+msgstr "ファイルをアップロード"
 
 #. module: equity
 #. odoo-python
 #: code:addons/equity/models/res_partner.py:0
 msgid "Upload UBO Form"
-msgstr ""
+msgstr "UBOフォームをアップロード"
 
 #. module: equity
 #. odoo-javascript
@@ -1833,24 +1890,33 @@ msgstr ""
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__valuation
 #: model:ir.model.fields,field_description:equity.field_equity_valuation__valuation
 #: model:ir.ui.menu,name:equity.menu_equity_reporting_valuation
+#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_form
 msgid "Valuation"
 msgstr "評価"
 
 #. module: equity
 #: model:ir.actions.act_window,name:equity.action_equity_valuation
 #: model:ir.ui.menu,name:equity.menu_equity_ownership_valuations
+#: model_terms:ir.ui.view,arch_db:equity.view_equity_valuation_list
 msgid "Valuations"
-msgstr ""
+msgstr "評価"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_form
 msgid "Vesting period, exercise deadline, etc."
-msgstr ""
+msgstr "権利確定期間、行使期限など。"
 
 #. module: equity
 #: model:res.groups,name:equity.group_equity_viewer
 msgid "Viewer"
 msgstr "ビューア"
+
+#. module: equity
+#: model:ir.model.fields,field_description:equity.field_equity_transaction__company_id
+#: model:ir.model.fields,field_description:equity.field_equity_ubo__company_id
+#: model:ir.model.fields,field_description:equity.field_equity_valuation__company_id
+msgid "Visible to"
+msgstr ""
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__votes
@@ -1861,7 +1927,7 @@ msgstr "投票"
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_security_class__share_votes
 msgid "Votes per Share"
-msgstr ""
+msgstr "1株あたりの議決権"
 
 #. module: equity
 #. odoo-javascript
@@ -1872,7 +1938,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:equity.field_equity_cap_table__voting_rights
 #: model:ir.model.fields,field_description:equity.field_equity_ubo__voting_rights
 msgid "Voting Rights"
-msgstr ""
+msgstr "投票権"
 
 #. module: equity
 #: model:ir.model.fields,field_description:equity.field_equity_transaction__website_message_ids
@@ -1892,7 +1958,7 @@ msgstr "ウェブサイト通信履歴"
 #. odoo-javascript
 #: code:addons/equity/static/src/components/ubo_form/holder_end_dialog.xml:0
 msgid "When did the shareholder lose its 25% stake in control or in votes?"
-msgstr ""
+msgstr "その株主が支配権または議決権の25％の持分を失ったのはいつですか?"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
@@ -1902,11 +1968,13 @@ msgid ""
 "                                    more of the property of a legal "
 "arrangement or entity or"
 msgstr ""
+"将来の受益者がすでに特定されている場合、その法的構成体または法人の\n"
+"                                    財産の25％以上を受益する自然人"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
 msgid "Who should complete and sign the declaration?"
-msgstr ""
+msgstr "誰がこの申告書を記入し、署名すべきですか?"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
@@ -1919,13 +1987,21 @@ msgstr "はい"
 msgid ""
 "You can remove any shareholder holding less than 25% of the shares or voting "
 "rights."
+msgstr "株式または議決権の25％未満を保有する株主は削除できます。"
+
+#. module: equity
+#. odoo-python
+#: code:addons/equity/models/equity_transaction.py:0
+msgid ""
+"You cannot change the equity currency because this partner already has "
+"existing transactions."
 msgstr ""
 
 #. module: equity
 #. odoo-javascript
 #: code:addons/equity/static/src/components/ubo_form/holder_edit_dialog.js:0
 msgid "You must provide either the date of birth, or the ID number"
-msgstr ""
+msgstr "生年月日またはID番号のいずれかを入力してください"
 
 #. module: equity
 #. odoo-javascript
@@ -1937,18 +2013,18 @@ msgstr "お名前"
 #. odoo-javascript
 #: code:addons/equity/static/src/components/ubo_form/ubo_form.xml:0
 msgid "Your Position"
-msgstr ""
+msgstr "役職"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_submit
 msgid "Your UBO Declaration Has Been Submitted!"
-msgstr ""
+msgstr "UBO申告書が提出されました!"
 
 #. module: equity
 #. odoo-python
 #: code:addons/equity/controllers/portal.py:0
 msgid "Your Value ND"
-msgstr ""
+msgstr "評価額(非希薄化ベース)"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
@@ -1957,6 +2033,9 @@ msgid ""
 "legal arrangement which is known to have\n"
 "                        been set up for the benefit de facto of a PEP."
 msgstr ""
+"PEP(政治的要人)の実質的な利益のために設立されたことが知られている法人または法"
+"的構成体を\n"
+"                        、単独で受益所有している自然人。"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.portal_ubo_form
@@ -1965,6 +2044,9 @@ msgid ""
 "entities or legal arrangements, or any\n"
 "                        other close business relations, with a PEP;"
 msgstr ""
+"PEP(政治的要人)と共同で法人または法的構成体を受益所有している、またはPEPと密"
+"接な事業関係を\n"
+"                        有していることが知られている自然人;"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
@@ -1972,6 +2054,8 @@ msgid ""
 "are the following individuals who have control by other means on the "
 "direction of the company (administrators)"
 msgstr ""
+"は、他の手段によって会社の経営を支配している(管理者としての)以下にあげる個人"
+"である"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
@@ -1980,16 +2064,18 @@ msgid ""
 "or indirectly more than 25% of the shares or of the voting rights of this "
 "company"
 msgstr ""
+"は、当該会社の株式または議決権の25％超を、最終的に直接または間接的に所有また"
+"は支配している以下に挙げる個人である"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
 msgid "are the following publicly traded companies."
-msgstr ""
+msgstr "は、以下の上場企業である。"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
 msgid "born"
-msgstr ""
+msgstr "生年月日"
 
 #. module: equity
 #. odoo-python
@@ -2006,12 +2092,12 @@ msgstr "日"
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
 msgid "declares that the beneficial owners of the company:"
-msgstr ""
+msgstr "当該会社の受益所有者は次のとおりであることを宣言する："
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_security_class_form
 msgid "e.g. Seed, Series A, ..."
-msgstr ""
+msgstr "例：シード、シリーズA、..."
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.equity_ubo_report
@@ -2045,7 +2131,7 @@ msgstr "又は"
 #. odoo-javascript
 #: code:addons/equity/static/src/components/ubo_form/holder_edit_dialog.js:0
 msgid "please keep percentages between 0 and 100"
-msgstr ""
+msgstr "パーセンテージは0から100の間にしてください"
 
 #. module: equity
 #. odoo-python
@@ -2057,13 +2143,13 @@ msgstr "残"
 #. odoo-python
 #: code:addons/equity/models/equity_transaction.py:0
 msgid "seller"
-msgstr ""
+msgstr "譲渡者"
 
 #. module: equity
 #. odoo-python
 #: code:addons/equity/models/equity_transaction.py:0
 msgid "subscriber"
-msgstr ""
+msgstr "引受者"
 
 #. module: equity
 #: model_terms:ir.ui.view,arch_db:equity.view_equity_transaction_form

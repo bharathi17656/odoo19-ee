@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
 "PO-Revision-Date: 2025-11-17 07:04+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Bosnian <https://translate.odoo.com/projects/odoo-19/"
@@ -78,6 +78,17 @@ msgstr ""
 #. module: delivery_ups_rest
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
 msgid "Create an app"
+msgstr ""
+
+#. module: delivery_ups_rest
+#. odoo-python
+#: code:addons/delivery_ups_rest/models/ups_request.py:0
+msgid ""
+"Detected a problem when validating delivery %(delivery_name)s. Invoicing "
+"address of the commercial invoice has been defaulted to %(ship_to_partner)s "
+"instead of %(sold_to_partner)s to avoid the following error from UPS: \"The "
+"Sold To party's country code must be the same as the Ship To party's country "
+"code with the exception of Canada and satellite countries.\""
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -185,8 +196,7 @@ msgstr ""
 #. module: delivery_ups_rest
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
 msgid ""
-"Now open your app, you'll have your <b>Client ID</b> and <b>Client "
-"Secret</b>"
+"Now open your app, you'll have your <b>Client ID</b> and <b>Client Secret</b>"
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -244,7 +254,7 @@ msgstr "Primalac"
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
-msgid "Recipient Phone must be at least 10 alphanumeric characters."
+msgid "Recipient Phone must be between 1 and 15 alphanumeric characters."
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -256,8 +266,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/delivery_ups.py:0
 msgid ""
-"Return label generated<br/><b>Tracking Numbers:</b> "
-"%(tracking_numbers)s<br/><b>Packages:</b> %(packages)s"
+"Return label generated<br/><b>Tracking Numbers:</b> %(tracking_numbers)s<br/"
+"><b>Packages:</b> %(packages)s"
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -295,14 +305,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/delivery_ups.py:0
 msgid ""
-"Shipment created into UPS<br/><b>Tracking Numbers:</b> "
-"%(tracking_numbers)s<br/><b>Packages:</b> %(packages)s"
+"Shipment created into UPS<br/><b>Tracking Numbers:</b> %"
+"(tracking_numbers)s<br/><b>Packages:</b> %(packages)s"
 msgstr ""
 
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
-msgid "Shipper Phone must be at least 10 alphanumeric characters."
+msgid "Shipper Phone must be between 1 and 15 alphanumeric characters."
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -341,15 +351,15 @@ msgstr ""
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
 msgid ""
-"The delivery cannot be done because the weight of your product %s is "
-"missing."
+"The delivery cannot be done because the weight of your product %s is missing."
 msgstr ""
 
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
 msgid ""
-"The estimated shipping price cannot be computed because the weight is missing for the following product(s): \n"
+"The estimated shipping price cannot be computed because the weight is "
+"missing for the following product(s): \n"
 " %s"
 msgstr ""
 
@@ -377,8 +387,7 @@ msgstr ""
 #. module: delivery_ups_rest
 #: model:ir.model.fields,help:delivery_ups_rest.field_delivery_carrier__ups_saturday_delivery
 msgid ""
-"This value added service will allow you to ship the package on saturday "
-"also."
+"This value added service will allow you to ship the package on saturday also."
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -430,8 +439,18 @@ msgid "UPS Configuration"
 msgstr ""
 
 #. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__74
+msgid "UPS Express Midday"
+msgstr ""
+
+#. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__03
 msgid "UPS Ground"
+msgstr ""
+
+#. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__75
+msgid "UPS Heavy Goods"
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -480,6 +499,16 @@ msgid "UPS Standard"
 msgstr ""
 
 #. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__72
+msgid "UPS Worldwide Economy DDP"
+msgstr ""
+
+#. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__17
+msgid "UPS Worldwide Economy DDU"
+msgstr ""
+
+#. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__08
 msgid "UPS Worldwide Expedited"
 msgstr ""
@@ -492,6 +521,11 @@ msgstr ""
 #. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__96
 msgid "UPS Worldwide Express Freight"
+msgstr ""
+
+#. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__71
+msgid "UPS Worldwide Express Freight Midday"
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -508,8 +542,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
 msgid ""
-"UPS address lines can only contain a maximum of 35 characters. You can split"
-" the contacts addresses on multiple lines to try to avoid this limitation."
+"UPS address lines can only contain a maximum of 35 characters. You can split "
+"the contacts addresses on multiple lines to try to avoid this limitation."
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -531,7 +565,7 @@ msgstr ""
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
-msgid "Warehouse Phone must be at least 10 alphanumeric characters."
+msgid "Warehouse Phone must be between 1 and 15 alphanumeric characters."
 msgstr ""
 
 #. module: delivery_ups_rest

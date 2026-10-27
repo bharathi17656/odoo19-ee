@@ -3,13 +3,14 @@
 # * delivery_ups_rest
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Armīns Jeltajevs <armins.jeltajevs@gmail.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.4+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-17 03:45+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2025-12-22 05:48+0000\n"
+"Last-Translator: Armīns Jeltajevs <armins.jeltajevs@gmail.com>\n"
 "Language-Team: Latvian <https://translate.odoo.com/projects/odoo-19/"
 "delivery_ups_rest/lv/>\n"
 "Language: lv\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n % 10 == 0 || n % 100 >= 11 && n % 100 <= "
 "19) ? 0 : ((n % 10 == 1 && n % 100 != 11) ? 1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_delivery_carrier__ups_bill_my_account
@@ -26,7 +27,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_res_users__bill_my_account
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_sale_order__ups_bill_my_account
 msgid "Bill My Account"
-msgstr ""
+msgstr "Maksāt ar manu kontu"
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_delivery_carrier__ups_cod_funds_code
@@ -46,7 +47,7 @@ msgstr ""
 #. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_package_dimension_unit__cm
 msgid "Centimeters"
-msgstr ""
+msgstr "Centimetri"
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_cod_funds_code__0
@@ -67,7 +68,7 @@ msgstr ""
 #. module: delivery_ups_rest
 #: model:ir.model,website_form_label:delivery_ups_rest.model_res_partner
 msgid "Create a Customer"
-msgstr ""
+msgstr "Izveidot klientu"
 
 #. module: delivery_ups_rest
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
@@ -77,6 +78,17 @@ msgstr ""
 #. module: delivery_ups_rest
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
 msgid "Create an app"
+msgstr ""
+
+#. module: delivery_ups_rest
+#. odoo-python
+#: code:addons/delivery_ups_rest/models/ups_request.py:0
+msgid ""
+"Detected a problem when validating delivery %(delivery_name)s. Invoicing "
+"address of the commercial invoice has been defaulted to %(ship_to_partner)s "
+"instead of %(sold_to_partner)s to avoid the following error from UPS: \"The "
+"Sold To party's country code must be the same as the Ship To party's country "
+"code with the exception of Canada and satellite countries.\""
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -154,6 +166,8 @@ msgid ""
 "Invalid Authentication Information: Please check your credentials and "
 "configuration within UPS's system."
 msgstr ""
+"Nederīga autentifikāciajs informācija: Lūdzu, pārbaudiet Jūsu pierakstīšanas "
+"datus un konfigurāciju UPS sistēmā."
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_package_weight_unit__kgs
@@ -168,12 +182,12 @@ msgstr "Uzlīmes formāts"
 #. module: delivery_ups_rest
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
 msgid "Log in with your account on"
-msgstr ""
+msgstr "Pierakstīties ar Jūsu kontu"
 
 #. module: delivery_ups_rest
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
 msgid "Name your app,"
-msgstr ""
+msgstr "Nosauciet Jūsu aplikāciju,"
 
 #. module: delivery_ups_rest
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
@@ -182,12 +196,18 @@ msgid ""
 "(step2) and Client ID + Client Secret (step 8). Also ensure you use correct "
 "dimensions and weight unit for your country"
 msgstr ""
+"Tagad dodieties uz Odoo un izveidojiet piegādes metodi priekš UPS, "
+"izmantojot konta numuru (solis 2) un klienta ID + klienta noslēpumu (solis "
+"8). Kā arī pārliecinieties, ka Jūs izmantojat pareizus izmērus un svara "
+"mērvienību Jūsu valstij"
 
 #. module: delivery_ups_rest
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
 msgid ""
 "Now open your app, you'll have your <b>Client ID</b> and <b>Client Secret</b>"
 msgstr ""
+"Tagad atveriet Jūsu aplikāciju, un jūs saņemsiet <b>Klienta ID</b> un "
+"<b>Klienta noslēpumu</b>"
 
 #. module: delivery_ups_rest
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
@@ -202,18 +222,18 @@ msgstr "PDF"
 #. module: delivery_ups_rest
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_delivery_carrier__ups_package_dimension_unit
 msgid "Package Size Unit"
-msgstr ""
+msgstr "Iepakojuma izmēra mērvienība"
 
 #. module: delivery_ups_rest
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
 msgid "Package Weight Unit"
-msgstr "Paciņas svara vienība"
+msgstr "Iepakojuma svara mērvienība"
 
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
 msgid "Packages %s do not have a positive shipping weight."
-msgstr "Pakai %s nav pozitīvs svars."
+msgstr "Iepakojumam %s nav pozitīvs svars."
 
 #. module: delivery_ups_rest
 #: model:ir.model,name:delivery_ups_rest.model_payment_provider
@@ -224,17 +244,17 @@ msgstr "Maksājumu sniedzējs"
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
 msgid "Please provide at least one item to ship."
-msgstr ""
+msgstr "Lūdzu, norādiet kaut vai vienu preci piegādei."
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_package_weight_unit__lbs
 msgid "Pounds"
-msgstr ""
+msgstr "Mārciņas"
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_delivery_carrier__delivery_type
 msgid "Provider"
-msgstr "Maksājuma sniedzējs"
+msgstr "Pakalpojuma sniedzējs"
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_duty_payment__recipient
@@ -244,13 +264,13 @@ msgstr "Saņēmējs"
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
-msgid "Recipient Phone must be at least 10 alphanumeric characters."
+msgid "Recipient Phone must be between 1 and 15 alphanumeric characters."
 msgstr ""
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields,field_description:delivery_ups_rest.field_delivery_carrier__ups_require_signature
 msgid "Require Signature"
-msgstr ""
+msgstr "Nepieciešams paraksts"
 
 #. module: delivery_ups_rest
 #. odoo-python
@@ -259,16 +279,18 @@ msgid ""
 "Return label generated<br/><b>Tracking Numbers:</b> %(tracking_numbers)s<br/"
 "><b>Packages:</b> %(packages)s"
 msgstr ""
+"Ģenerēta atgriešanas uzlīme<br/><b>Izsekošanas numuri:</b>%"
+"(tracking_numbers)s<br/><b>Iepakojumi:</b>%(packages)s"
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_label_file_type__spl
 msgid "SPL"
-msgstr ""
+msgstr "SPL"
 
 #. module: delivery_ups_rest
 #: model:ir.model,name:delivery_ups_rest.model_sale_order
 msgid "Sales Order"
-msgstr "Pasūtījums"
+msgstr "Pirkšanas pasūtījums"
 
 #. module: delivery_ups_rest
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
@@ -279,6 +301,7 @@ msgstr "Sestdienas piegāde"
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
 msgid "Save and Accept terms and your app is created!"
 msgstr ""
+"Saglabājiet un apstipriniet nosacījumus, un Jūsu aplikācija būs izveidota!"
 
 #. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_duty_payment__sender
@@ -298,28 +321,30 @@ msgid ""
 "Shipment created into UPS<br/><b>Tracking Numbers:</b> %"
 "(tracking_numbers)s<br/><b>Packages:</b> %(packages)s"
 msgstr ""
+"Sūtījums izveidots pie UPS<br/><b>Izsekošanas numuri:</b>%"
+"(tracking_numbers)s<br/><b>Iepakojumi:</b>%(packages)s"
 
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
-msgid "Shipper Phone must be at least 10 alphanumeric characters."
+msgid "Shipper Phone must be between 1 and 15 alphanumeric characters."
 msgstr ""
 
 #. module: delivery_ups_rest
 #: model:ir.model,name:delivery_ups_rest.model_delivery_carrier
 msgid "Shipping Methods"
-msgstr "Piegādes veidi"
+msgstr "Piegādes metodes"
 
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
 msgid "Something went wrong, please try again later!!"
-msgstr ""
+msgstr "Kaut kas nogāja greizi, lūdzu, mēģiniet vēlreiz vēlāk!!"
 
 #. module: delivery_ups_rest
 #: model:ir.model,name:delivery_ups_rest.model_stock_package_type
 msgid "Stock package type"
-msgstr ""
+msgstr "Noklusējuma iepakojuma tips"
 
 #. module: delivery_ups_rest
 #. odoo-python
@@ -328,6 +353,8 @@ msgid ""
 "The address of your company is missing or wrong.\n"
 "(Missing field(s) : %s)"
 msgstr ""
+"Jūsu uzņēmuma adrese iztrūkst vai ir nepareizi norādīta.\n"
+"(Iztrūkstošie lauki : %s)"
 
 #. module: delivery_ups_rest
 #. odoo-python
@@ -336,13 +363,15 @@ msgid ""
 "The address of your warehouse is missing or wrong.\n"
 "(Missing field(s) : %s)"
 msgstr ""
+"Jūsu noliktavas adrese iztrūkst vai ir nepareizi norādīta.\n"
+"(Iztrūkstošie lauki : %s)"
 
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
 msgid ""
 "The delivery cannot be done because the weight of your product %s is missing."
-msgstr ""
+msgstr "Piegāde nevar tikt veikta, tā kā iztrūkst Jūsu preces svars %s."
 
 #. module: delivery_ups_rest
 #. odoo-python
@@ -429,8 +458,18 @@ msgid "UPS Configuration"
 msgstr ""
 
 #. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__74
+msgid "UPS Express Midday"
+msgstr ""
+
+#. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__03
 msgid "UPS Ground"
+msgstr ""
+
+#. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__75
+msgid "UPS Heavy Goods"
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -479,6 +518,16 @@ msgid "UPS Standard"
 msgstr ""
 
 #. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__72
+msgid "UPS Worldwide Economy DDP"
+msgstr ""
+
+#. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__17
+msgid "UPS Worldwide Economy DDU"
+msgstr ""
+
+#. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__08
 msgid "UPS Worldwide Expedited"
 msgstr ""
@@ -491,6 +540,11 @@ msgstr ""
 #. module: delivery_ups_rest
 #: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__96
 msgid "UPS Worldwide Express Freight"
+msgstr ""
+
+#. module: delivery_ups_rest
+#: model:ir.model.fields.selection,name:delivery_ups_rest.selection__delivery_carrier__ups_default_service_type__71
+msgid "UPS Worldwide Express Freight Midday"
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -530,7 +584,7 @@ msgstr ""
 #. module: delivery_ups_rest
 #. odoo-python
 #: code:addons/delivery_ups_rest/models/ups_request.py:0
-msgid "Warehouse Phone must be at least 10 alphanumeric characters."
+msgid "Warehouse Phone must be between 1 and 15 alphanumeric characters."
 msgstr ""
 
 #. module: delivery_ups_rest
@@ -617,3 +671,9 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:delivery_ups_rest.view_delivery_carrier_form
 msgid "you're ready to go!"
 msgstr ""
+
+#~ msgid "Recipient Phone must be at least 10 alphanumeric characters."
+#~ msgstr "Saņēmēja tālrunim jābūt vismar 10 burtciparu rakstzīmēm."
+
+#~ msgid "Shipper Phone must be at least 10 alphanumeric characters."
+#~ msgstr "Piegādātāja tālrunim jābūt vismaz 10 burtciparu rakstzīmēm."

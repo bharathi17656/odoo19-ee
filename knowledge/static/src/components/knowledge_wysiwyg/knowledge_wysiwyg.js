@@ -29,6 +29,7 @@ export class KnowledgeWysiwyg extends Wysiwyg {
             onEditorReady: () => {
                 this.articleHelperState.isVisible = isEmptyBlock(this.editor.editable);
             },
+            onTopEmbeddedViewChange: this.env.onTopEmbeddedViewChange,
         };
     }
 }

@@ -16,12 +16,13 @@ export class MrpMenuDialog extends Component {
         title: String,
         removeFromCache: Function,
         registerProduction: Function,
+        onNavigateToMO: { type: Function, optional: true },
     };
     static template = "mrp_workorder.MrpDisplayMenuDialog";
     static components = { Dialog };
     static NOTIFICATION_MESSAGE = {
-        button_scrap: "The scrap order has been successfully registered.",
-        button_quality_alert: "The quality alert has been successfully created.",
+        button_scrap: _t("The scrap order has been successfully registered."),
+        button_quality_alert: _t("The quality alert has been successfully created."),
     };
 
     setup() {
@@ -45,7 +46,7 @@ export class MrpMenuDialog extends Component {
         const message = MrpMenuDialog.NOTIFICATION_MESSAGE[method];
         if (message) {
             props.onSave = async () => {
-                this.notification.add(_t(message), { type: "success" });
+                this.notification.add(message, { type: "success" });
             };
         }
 
@@ -107,6 +108,9 @@ export class MrpMenuDialog extends Component {
                 ? this.props.record.resId
                 : this.props.record.data.production_id.id;
 
+        if (this.props.onNavigateToMO) {
+            this.props.onNavigateToMO();
+        }
         await this.action.doAction({
             type: "ir.actions.act_window",
             res_model: "mrp.production",

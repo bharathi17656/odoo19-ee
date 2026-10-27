@@ -1,7 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from freezegun import freeze_time
-from unittest import skip
 
 from odoo import Command
 from odoo.exceptions import UserError
@@ -28,6 +27,7 @@ class TestKeEdiStockMocked(TestKeEdiStock):
             ('insertStockIO', 'save_stock_io_sale_1', 'success'),
             ('saveStockMaster', 'save_stock_master_19', 'success'),
             ('saveStockMaster', 'save_stock_master_19', 'success'),
+            ('selectInvoiceDetails', 'get_invoice_details_1', 'get_invoice_details_success'),
             ('saveTrnsSalesOsdc', 'save_refund_2', 'save_sale_success'),
             ('insertStockIO', 'save_stock_io_refund', 'success'),
             ('saveStockMaster', 'save_stock_master_20', 'success'),
@@ -50,7 +50,6 @@ class TestKeEdiStockMocked(TestKeEdiStock):
         ]):
             self._test_send_invoiced_stock_moves()
 
-    @skip('Temporary to fast merge new valuation')
     def test_confirm_vendor_bill(self):
         with self.patch_session([
             ('selectTrnsPurchaseSalesList', 'get_purchases', 'get_purchases_2'),

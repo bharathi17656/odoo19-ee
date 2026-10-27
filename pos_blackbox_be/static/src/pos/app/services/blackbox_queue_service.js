@@ -4,29 +4,42 @@ import { _t } from "@web/core/l10n/translation";
 import { NumberPopup } from "@point_of_sale/app/components/popups/number_popup/number_popup";
 import { BlackboxError } from "@pos_blackbox_be/pos/app/utils/blackbox_error";
 import { makeAwaitable } from "@point_of_sale/app/utils/make_awaitable_dialog";
+import { logPosMessage } from "@point_of_sale/app/utils/pretty_console_log";
 
 export const blackboxQueueService = {
-    dependencies: ["hardware_proxy", "dialog", "pos_data", "bus_service", "iot_http"],
-    start(env, { hardware_proxy, dialog, pos_data, bus_service, iot_http }) {
+    dependencies: [
+        "hardware_proxy",
+        "dialog",
+        "pos_data",
+        "bus_service",
+        "iot_http",
+        "ui",
+        "notification",
+    ],
+    start(env, { hardware_proxy, dialog, pos_data, bus_service, iot_http, ui, notification }) {
         return new BlackboxQueueService(env, {
             hardware_proxy,
             dialog,
             pos_data,
             bus_service,
             iot_http,
+            ui,
+            notification,
         });
     },
 };
-class BlackboxQueueService {
+export class BlackboxQueueService {
     constructor(...args) {
         this.setup(...args);
     }
-    setup(env, { hardware_proxy, dialog, pos_data, bus_service, iot_http }) {
+    setup(env, { hardware_proxy, dialog, pos_data, bus_service, iot_http, ui, notification }) {
         this.hardwareProxy = hardware_proxy;
         this.dialog = dialog;
         this.data = pos_data;
         this.bus = bus_service;
         this.iotHttp = iot_http;
+        this.ui = ui;
+        this.notification = notification;
         this.queue = JSON.parse(localStorage.getItem(this.key)) || [];
         this.waitForNextRequest = false;
         this.isFlushing = false;
@@ -34,6 +47,8 @@ class BlackboxQueueService {
         this.callbacks = {
             default_callback: (data) => data,
         };
+
+        this.lastBBWarning = false;
     }
     get key() {
         return `pos_bb_queue_${odoo.access_token}`;
@@ -67,21 +82,28 @@ class BlackboxQueueService {
     async callback(blackboxResponse, callbackName, args) {
         try {
             const result = this.extractResult(blackboxResponse);
-            if (
-                !result?.error?.errorCode.startsWith("000") &&
-                !result?.error?.errorCode.startsWith("001")
-            ) {
+            const errorCode = result?.error?.errorCode?.toString() || "000";
+            if (!errorCode.startsWith("0") && !errorCode.startsWith("1")) {
                 throw result.error;
             }
+            if (errorCode.startsWith("1")) {
+                this.showBlackboxWarning(errorCode, result.error.errorMessage);
+            }
+            this.lastBBWarning = errorCode;
             return this.callbacks[callbackName](result, ...args);
         } catch (err) {
             //the catch might actually not be an error
             const result = this.extractResult(err);
-            if (
-                result?.error?.errorCode.startsWith("000") ||
-                result?.error?.errorCode.startsWith("001")
-            ) {
+            const errorCode = result?.error?.errorCode?.toString() || "";
+            if (errorCode.startsWith("0") || errorCode.startsWith("1")) {
+                if (errorCode.startsWith("1")) {
+                    this.showBlackboxWarning(errorCode, result.error.errorMessage);
+                }
+                this.lastBBWarning = errorCode;
                 return this.callbacks[callbackName](result, ...args);
+            }
+            if (this.ui.isBlocked) {
+                this.ui.unblock();
             }
             if (err.errorCode?.startsWith("202") || err.errorCode?.startsWith("204")) {
                 const num = await makeAwaitable(this.dialog, NumberPopup, {
@@ -93,6 +115,15 @@ class BlackboxQueueService {
                 this.enqueue(num, "registerPIN");
             }
             throw new BlackboxError(err.errorCode, err.errorMessage);
+        }
+    }
+
+    showBlackboxWarning(code, message) {
+        if (this.lastBBWarning != code) {
+            // Show warning only if it is different from the last code received by the blackbox
+            this.notification.add(message || _t("Unknown blackbox warning"), {
+                type: "warning",
+            });
         }
     }
 
@@ -154,13 +185,25 @@ class BlackboxQueueService {
             );
         }
 
+        logPosMessage("FDM", "pushDataToBlackbox", `sending batch, batch size: ${batch.length}`);
+
         return new Promise((resolve, reject) => {
             this.iotHttp.action(
                 fdm.iotId,
                 fdm.identifier,
                 { action: "batchAction", high_level_message: batch },
-                (message) => resolve(message),
                 (message) => {
+                    logPosMessage("FDM", "pushDataToBlackbox", `batch succeeded`);
+
+                    resolve(message);
+                },
+                (message) => {
+                    logPosMessage(
+                        "FDM",
+                        "pushDataToBlackbox",
+                        `batch failed: ${message?.status?.status ?? message?.status}`
+                    );
+
                     if (message?.status?.status === "error") {
                         reject(new BlackboxError(426));
                     } else if (typeof message.status === "string") {

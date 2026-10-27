@@ -3,6 +3,7 @@ import { Component, onWillDestroy, onWillStart, useState } from "@odoo/owl";
 import { browser } from "@web/core/browser/browser";
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
+import { isBrowserChrome } from "@web/core/browser/feature_detection";
 
 const deviceKind = new Set(["audioinput", "videoinput", "audiooutput"]);
 
@@ -23,6 +24,7 @@ export class DeviceSelect extends Component {
             userDevices: [],
         });
         this.abortController = new AbortController();
+        this.isBrowserChrome = isBrowserChrome();
         onWillStart(async () => {
             if (!browser.navigator.mediaDevices) {
                 // zxing-js: isMediaDevicesSuported or canEnumerateDevices is false.
@@ -61,6 +63,24 @@ export class DeviceSelect extends Component {
         }
     }
 
+    async showPermissionDialog(kind) {
+        if (kind === "videoinput") {
+            if (this.store.rtc.cameraPermission === "denied") {
+                this.store.rtc.showMediaUnavailableWarning({ camera: true });
+            } else {
+                this.store.rtc.showMediaPermissionDialog("camera");
+                return;
+            }
+        } else {
+            if (this.store.rtc.microphonePermission === "denied") {
+                this.store.rtc.showMediaUnavailableWarning({ microphone: true });
+            } else {
+                this.store.rtc.showMediaPermissionDialog("microphone");
+                return;
+            }
+        }
+    }
+
     isSelected(id) {
         switch (this.props.kind) {
             case "audioinput":
@@ -75,14 +95,47 @@ export class DeviceSelect extends Component {
     onChangeSelectAudioInput(ev) {
         switch (this.props.kind) {
             case "audioinput":
-                this.store.settings.setAudioInputDevice(ev.target.value);
+                this.store.rtc
+                    .askForBrowserPermission({ audio: true, deviceId: ev.target.value })
+                    .then((granted) => {
+                        if (granted) {
+                            this.store.settings.setAudioInputDevice(ev.target.value);
+                        } else {
+                            ev.target.value = this.store.settings.audioInputDeviceId;
+                        }
+                    });
                 return;
             case "videoinput":
-                this.store.settings.setCameraInputDevice(ev.target.value);
+                this.store.rtc
+                    .askForBrowserPermission({ video: true, deviceId: ev.target.value })
+                    .then((granted) => {
+                        if (granted) {
+                            this.store.settings.setCameraInputDevice(ev.target.value);
+                        } else {
+                            ev.target.value = this.store.settings.cameraInputDeviceId;
+                        }
+                    });
                 return;
             case "audiooutput":
                 this.store.settings.setAudioOutputDevice(ev.target.value);
                 return;
+        }
+    }
+
+    isPermissionGranted(kind) {
+        if (kind === "videoinput") {
+            return this.store.rtc.cameraPermission === "granted";
+        }
+        return this.store.rtc.microphonePermission === "granted";
+    }
+
+    /**
+     * @param {KeyboardEvent} ev
+     */
+    handlePermissionKeydown(ev) {
+        if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            this.showPermissionDialog(this.props.kind);
         }
     }
 }

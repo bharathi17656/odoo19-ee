@@ -7,6 +7,7 @@ from functools import reduce
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
+from odoo.tools import float_round
 
 
 class HrEmployee(models.Model):
@@ -19,7 +20,7 @@ class HrEmployee(models.Model):
 
     start_notice_period = fields.Date("Start notice period", groups="hr.group_hr_user", copy=False, tracking=True)
     end_notice_period = fields.Date("End notice period", groups="hr.group_hr_user", copy=False, tracking=True)
-    first_contract_in_company = fields.Date("First contract in company", groups="hr.group_hr_user", copy=False)
+    first_contract_in_company = fields.Date("First contract in company", groups="hr.group_hr_user", copy=False, store=True, compute='_compute_first_contract_in_company')
 
     l10n_be_scale_seniority = fields.Integer(string="Seniority at Hiring", groups="hr.group_hr_user", tracking=True)
 
@@ -33,7 +34,7 @@ class HrEmployee(models.Model):
         string="Number of days to recover (N)", tracking=True, groups="hr_payroll.group_hr_payroll_user",
         help="Number of days on which you should recover the holiday pay.")
     l10n_be_holiday_pay_recovered_n = fields.Float(
-        string="Recovered Simple Holiday Pay (N)", tracking=True,
+        string="Recovered Simple Holiday Pay (N)",
         compute='_compute_l10n_be_holiday_pay_recovered', groups="hr_payroll.group_hr_payroll_user",
         help="Amount of the holiday pay paid by the previous employer already recovered.")
     double_pay_line_n_ids = fields.Many2many(
@@ -51,7 +52,7 @@ class HrEmployee(models.Model):
         string="Number of days to recover (N-1)", tracking=True, groups="hr_payroll.group_hr_payroll_user",
         help="Number of days on which you should recover the holiday pay.")
     l10n_be_holiday_pay_recovered_n1 = fields.Float(
-        string="Recovered Simple Holiday Pay (N-1)", tracking=True,
+        string="Recovered Simple Holiday Pay (N-1)",
         compute='_compute_l10n_be_holiday_pay_recovered', groups="hr_payroll.group_hr_payroll_user",
         help="Amount of the holiday pay paid by the previous employer already recovered.")
     double_pay_line_n1_ids = fields.Many2many(
@@ -264,6 +265,22 @@ Earnings are made of professional income, remuneration, unemployment allocations
         self.other_juniors_dependent = 0.0
         self.other_disabled_juniors_dependent = 0.0
 
+    @api.onchange('has_hospital_insurance')
+    def _onchange_has_hospital_insurance(self):
+        self.version_id._onchange_has_hospital_insurance()
+
+    @api.onchange('l10n_be_has_ambulatory_insurance')
+    def _onchange_l10n_be_has_ambulatory_insurance(self):
+        self.version_id._onchange_l10n_be_has_ambulatory_insurance()
+
+    @api.onchange('transport_mode_car', 'transport_mode_train', 'transport_mode_public')
+    def _onchange_transport_mode(self):
+        self.version_id._onchange_transport_mode()
+
+    @api.onchange('transport_mode_private_car')
+    def _onchange_transport_mode_private_car(self):
+        self.version_id._onchange_transport_mode_private_car()
+
     @api.model
     def _get_invalid_niss_employee_ids(self):
         res = self.search_read([
@@ -281,17 +298,28 @@ Earnings are made of professional income, remuneration, unemployment allocations
         return versions.filtered(
             lambda c: c.company_id.country_id.code != 'BE' or (c.company_id.country_id.code == 'BE' and c.contract_type_id != pfi))
 
-    def write(self, vals):
-        res = super().write(vals)
-        if vals.get('current_version_id'):
-            self.current_version_id.sudo().filtered('contract_date_start')._trigger_l10n_be_next_activities()
-        return res
-
     @api.model_create_multi
     def create(self, vals_list):
-        employees = super().create(vals_list)
-        employees.current_version_id.sudo().filtered('contract_date_start')._trigger_l10n_be_next_activities()
-        return employees
+        employees = super(HrEmployee, self.with_context(pending_employee_creation=True)).create(vals_list)
+        updated_context = dict(employees.env.context)
+        updated_context.pop('pending_employee_creation')
+        created_employees = employees.with_context(updated_context)
+        created_employees.current_version_id.sudo().filtered(
+            lambda v: v._is_struct_from_country('BE') and v.contract_date_start
+        )._trigger_l10n_be_next_activities()
+        return created_employees
+
+    def _compute_current_version_id(self):
+        prev_current_version_id_by_employee = self.current_version_id.grouped('employee_id')
+        super()._compute_current_version_id()
+        to_trigger_next_activities = self.current_version_id.filtered(
+            lambda v: not prev_current_version_id_by_employee.get(v.employee_id) or
+                prev_current_version_id_by_employee.get(v.employee_id) != v
+        )
+        if to_trigger_next_activities:
+            to_trigger_next_activities.sudo().filtered(
+                lambda v: v._is_struct_from_country('BE') and v.contract_date_start
+            )._trigger_l10n_be_next_activities()
 
     def action_employee_work_schedule_change_wizard(self):
         if len(self) != 1:
@@ -349,7 +377,7 @@ Earnings are made of professional income, remuneration, unemployment allocations
 
     def get_l10n_be_holiday_attest_occupations(self, year):
         first_of_year = date(year, 1, 1)
-        last_of_year = min(date(year, 12, 31), date.today())
+        last_of_year = min(date(year, 12, 31), self.end_notice_period or self.departure_date or date.today())
         versions = self.version_ids.filtered(
             lambda v: v._is_overlapping_period(first_of_year, last_of_year)
         )
@@ -358,10 +386,10 @@ Earnings are made of professional income, remuneration, unemployment allocations
         occupations = []
         for idx, version in enumerate(versions):
             previous_occupation_work_time_rate = (
-                versions[idx - 1].hours_per_week, versions[idx - 1].resource_calendar_id._get_days_per_week()
+                float_round(versions[idx - 1].hours_per_week, 2), versions[idx - 1].resource_calendar_id._get_days_per_week()
             ) if idx != 0 else None
             occupation_work_time_rate = (
-                version.hours_per_week, version.resource_calendar_id._get_days_per_week()
+                float_round(version.hours_per_week, 2), version.resource_calendar_id._get_days_per_week()
             )
             if previous_occupation_work_time_rate != occupation_work_time_rate:
                 if occupations:
@@ -375,7 +403,7 @@ Earnings are made of professional income, remuneration, unemployment allocations
                     })
                 occupations.append({
                     'date_start': max(first_of_year, version.date_version),
-                    'hours_per_week': version.hours_per_week,
+                    'hours_per_week': float_round(version.hours_per_week, 2),
                     'days_per_week': version.resource_calendar_id._get_days_per_week(),
                 })
         equivalent_days, non_equivalent_days = self._get_l10n_be_holiday_attest_worked_days(
@@ -387,3 +415,17 @@ Earnings are made of professional income, remuneration, unemployment allocations
             'non_equivalent_days': non_equivalent_days
         })
         return occupations
+
+    @api.depends('version_ids', 'version_ids.contract_date_start', 'version_ids.active')
+    def _compute_first_contract_in_company(self):
+        employee_earliest_contract = self.env['hr.version']._read_group(
+            domain=[
+                ('employee_id', 'in', self.ids),
+                ('active', '!=', False),
+            ],
+            groupby=['employee_id'],
+            aggregates=['contract_date_start:min'],
+        )
+        earliest_by_employee = {employee.id: earliest for employee, earliest in employee_earliest_contract}
+        for employee in self:
+            employee.first_contract_in_company = earliest_by_employee.get(employee.id)

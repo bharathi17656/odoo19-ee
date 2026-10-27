@@ -80,6 +80,7 @@
                         sessionOwner="useEmployee.employees.admin"
                         removeFromCache.bind="removeRecordIdFromCache"
                         barcodeTarget="barcodeTargetRecord === record.resId"
+                        actionPending="state.actionPending"
                         />
                 </t>
                 <t t-if="!relevantRecords.length">

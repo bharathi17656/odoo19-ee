@@ -104,6 +104,8 @@ class L10nCHEmployeeMonthlySnapshot(models.Model):
 
         return values
 
+    def _get_swissdec_structure_rules(self):
+        return self.env.ref('l10n_ch_hr_payroll.hr_payroll_structure_ch_elm').with_context(active_test=False).rule_ids
 
     @api.depends('yearly_values_id', 'month')
     def _compute_employee_meta_data(self):
@@ -241,14 +243,14 @@ class L10nCHEmployeeMonthlySnapshot(models.Model):
             self._fill_xml_scheme(civil_status, "Status", employee._get_l10n_ch_declaration_marital(), True, res_model='hr.version', employee_id=snapshot.employee_id.id, res_id=employee.id, res_field="marital")
             self._fill_xml_scheme(civil_status, "ValidAsOf", employee.l10n_ch_marital_from, True, lambda d: format_date(self.env, d, date_format='yyyy-MM-dd'), res_model='hr.version', employee_id=snapshot.employee_id.id, res_id=employee.id, res_field="l10n_ch_marital_from")
 
-            self._fill_xml_scheme(particular, "EmployeeNumber", employee.employee_id.registration_number, True, res_model='hr.employee', res_id=employee.id, res_field="registration_number")
-            self._fill_xml_scheme(particular, "Lastname", employee.employee_id.l10n_ch_legal_last_name, True, res_model='hr.employee', res_id=employee.id, res_field="l10n_ch_legal_last_name")
-            self._fill_xml_scheme(particular, "Firstname", employee.employee_id.l10n_ch_legal_first_name, True, res_model='hr.employee', res_id=employee.id, res_field="l10n_ch_legal_first_name")
-            self._fill_xml_scheme(particular, "Sex", employee.employee_id.sex, True, lambda_f=lambda g: "M" if g == "male" else "F" if g == "female" else False, res_model='hr.employee', res_id=employee.id, res_field="sex")
-            self._fill_xml_scheme(particular, "DateOfBirth", employee.employee_id.birthday, True, lambda d: format_date(self.env, d, date_format='yyyy-MM-dd'), res_model='hr.employee', res_id=employee.id, res_field="birthday")
+            self._fill_xml_scheme(particular, "EmployeeNumber", employee.employee_id.registration_number, True, res_model='hr.employee', res_id=snapshot.employee_id.id, res_field="registration_number")
+            self._fill_xml_scheme(particular, "Lastname", employee.employee_id.l10n_ch_legal_last_name, True, res_model='hr.employee', res_id=snapshot.employee_id.id, res_field="l10n_ch_legal_last_name")
+            self._fill_xml_scheme(particular, "Firstname", employee.employee_id.l10n_ch_legal_first_name, True, res_model='hr.employee', res_id=snapshot.employee_id.id, res_field="l10n_ch_legal_first_name")
+            self._fill_xml_scheme(particular, "Sex", employee.employee_id.sex, True, lambda_f=lambda g: "M" if g == "male" else "F" if g == "female" else False, res_model='hr.employee', res_id=snapshot.employee_id.id, res_field="sex")
+            self._fill_xml_scheme(particular, "DateOfBirth", employee.employee_id.birthday, True, lambda d: format_date(self.env, d, date_format='yyyy-MM-dd'), res_model='hr.employee', res_id=snapshot.employee_id.id, res_field="birthday")
             self._fill_xml_scheme(particular, "Nationality", employee.country_id, True, lambda_f=lambda d: d.code if d else employee.l10n_ch_no_nationality or False, res_model='hr.version', employee_id=snapshot.employee_id.id, res_id=employee.id, res_field="country_id")
             self._fill_xml_scheme(particular, "ResidenceCanton", employee.l10n_ch_canton, True, res_model='hr.version', employee_id=snapshot.employee_id.id, res_id=employee.id, res_field="l10n_ch_canton")
-            self._fill_xml_scheme(particular, "LanguageCode", employee.employee_id.lang, True, lambda_f=lambda l: l[:2] if l else False, res_model='hr.employee', res_id=employee.id, res_field="lang")
+            self._fill_xml_scheme(particular, "LanguageCode", employee.employee_id.lang, True, lambda_f=lambda l: l[:2] if l else False, res_model='hr.employee', res_id=snapshot.employee_id.id, res_field="lang")
             self._fill_xml_scheme(particular, "ResidenceCategory", employee.l10n_ch_residence_category, condition=employee.l10n_ch_has_withholding_tax and employee.country_id.code != "CH", res_model='hr.version', employee_id=snapshot.employee_id.id, res_id=employee.id, res_field="l10n_ch_residence_category")
             self._fill_xml_scheme(particular, "MunicipalityID", employee.l10n_ch_municipality if employee.l10n_ch_canton != 'EX' else False, condition=employee.l10n_ch_has_withholding_tax and employee.l10n_ch_canton != 'EX', res_model='hr.version', employee_id=snapshot.employee_id.id, res_id=employee.id, res_field="l10n_ch_municipality")
 
@@ -265,7 +267,7 @@ class L10nCHEmployeeMonthlySnapshot(models.Model):
 
     @api.depends("employee_id", "year", "month")
     def _compute_bvg_lpp_annual_basis(self):
-        swissdec_structure_rules = self.env.ref('l10n_ch_hr_payroll.hr_payroll_structure_ch_elm').rule_ids
+        swissdec_structure_rules = self._get_swissdec_structure_rules()
         paid_slips = self.env["hr.payslip"]._read_group(
             domain=[("employee_id", 'in', self.employee_id.ids),
                     ('l10n_ch_lpp_not_insured', '!=', True),
@@ -316,7 +318,7 @@ class L10nCHEmployeeMonthlySnapshot(models.Model):
 
         for snapshot in self:
             existing_declaration = [r for m, r in mapped_bvg_lpp_declarations[snapshot.employee_id.company_id][snapshot.year].items() if r]
-            existing_declaration = max(existing_declaration, key=lambda r: r.month) if existing_declaration else False
+            existing_declaration = max(existing_declaration, key=lambda r: r[0].month) if existing_declaration else False
             existing_employee_declaration = False
             if existing_declaration:
                 lpp_line = existing_declaration.lpp_basis_line_ids.filtered(lambda l: l.employee_id == snapshot.employee_id)
@@ -335,11 +337,7 @@ class L10nCHEmployeeMonthlySnapshot(models.Model):
                         retroactive_basis = 0
                     previsional_basis = sum(line_values[r.code][p.id]['total'] * r.l10n_ch_lpp_factor for p in presumable_current_month_slip for r in previsional_rules)
 
-                    total = float_round(retroactive_basis + previsional_basis, precision_rounding=0.01, rounding_method="HALF-UP")
-                    if total % 0.05 >= 0.025:
-                        total = total + 0.05 - (total % 0.05)
-                    else:
-                        total = total - (total % 0.05)
+                    total = float_round(retroactive_basis + previsional_basis, precision_rounding=0.05, rounding_method="HALF-UP")
 
                     snapshot.bvg_lpp_annual_basis = total
                 else:
@@ -454,7 +452,7 @@ class L10nCHEmployeeMonthlySnapshot(models.Model):
     @api.depends("month", "year", "employee_id")
     def _compute_monthly_statistics(self):
         swissdec_declaration = SwissdecDeclaration()
-        swissdec_structure_rules = self.env.ref('l10n_ch_hr_payroll.hr_payroll_structure_ch_elm').rule_ids
+        swissdec_structure_rules = self._get_swissdec_structure_rules()
         paid_slips = self.env["hr.payslip"]._read_group(
             domain=[
                 ("employee_id", 'in', self.employee_id.ids),
@@ -838,6 +836,48 @@ class L10nCHEmployeeMonthlySnapshot(models.Model):
                 self._find_structured_missing(item, result)
         return result
 
+    def _complete_missing(self, previous, current):
+        """ Return ``previous`` where each missing value is replaced by the one ``current`` holds at the
+        same place, if any. The items of a list are completed by the only item of ``current`` holding
+        their known values. """
+        if isinstance(previous, dict) and previous.get("_missing_"):
+            return previous if current is None else current
+        if isinstance(previous, dict):
+            current = current if isinstance(current, dict) else {}
+            return {key: self._complete_missing(value, current.get(key)) for key, value in previous.items()}
+        if isinstance(previous, list):
+            current = current if isinstance(current, list) else []
+            completed = []
+            for item in previous:
+                matching_items = [current_item for current_item in current if self._match_known_values(item, current_item)]
+                completed.append(self._complete_missing(item, matching_items[0] if len(matching_items) == 1 else None))
+            return completed
+        return previous
+
+    def _match_known_values(self, previous, current):
+        """ Whether ``current`` holds all the values of ``previous`` that are not missing. """
+        if isinstance(previous, dict) and previous.get("_missing_"):
+            return True
+        if isinstance(previous, dict):
+            return isinstance(current, dict) and all(self._match_known_values(value, current.get(key)) for key, value in previous.items())
+        if isinstance(previous, list):
+            return isinstance(current, list) and len(previous) == len(current) and all(map(self._match_known_values, previous, current))
+        return previous == current
+
+    def _complete_missing_values(self):
+        """ Complete the values missing from the snapshots with the current employee data, including the
+        snapshots of closed pay periods: all their other values are kept as they were when closed. """
+        fnames = ['person', 'additional_particular', 'employee_meta_data', 'monthly_statistics']
+        self.env.flush_all()
+        snapshots = self.filtered(lambda snapshot: any(self._find_structured_missing(snapshot[fname] or {}) for fname in fnames))
+        previous_values = {snapshot: {fname: snapshot[fname] for fname in fnames} for snapshot in snapshots}
+        # in this order, as the meta data embeds the person and additional particulars
+        for fname in fnames:
+            self.env.add_to_compute(self._fields[fname], snapshots)
+            snapshots._recompute_recordset([fname])
+        for snapshot, values in previous_values.items():
+            snapshot.write({fname: self._complete_missing(value, snapshot[fname]) for fname, value in values.items()})
+
     @api.depends('employee_meta_data')
     def _compute_validation_errors(self):
         for snapshot in self:
@@ -854,7 +894,7 @@ class L10nCHEmployeeMonthlySnapshot(models.Model):
                 res_field = missing_dict.get("res_field")
                 employee_id = missing_dict.get("employee_id")
                 if res_model and res_id:
-                    field_description = self.env[res_model]._fields[res_field].string
+                    field_description = self.env[res_model]._fields[res_field].get_description(self.env, ["string"])["string"]
                     if res_model == 'hr.version' and employee_id:
                         record = self.env['hr.employee'].browse(employee_id)
                         action = record._get_records_action()

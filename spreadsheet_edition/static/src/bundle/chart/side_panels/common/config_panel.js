@@ -139,4 +139,12 @@ export class CommonOdooChartConfigPanel extends Component {
             odooMenuId: menu.xmlid || menu.id,
         });
     }
+
+    delete() {
+        const figureId = this.env.model.getters.getFigureIdFromChartId(this.props.chartId);
+        this.env.model.dispatch("DELETE_FIGURE", {
+            figureId,
+            sheetId: this.env.model.getters.getFigureSheetId(figureId),
+        });
+    }
 }

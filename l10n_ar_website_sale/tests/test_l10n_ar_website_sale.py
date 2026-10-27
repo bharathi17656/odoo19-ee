@@ -3,12 +3,12 @@ from datetime import datetime
 from odoo.fields import Command
 from odoo.tests import tagged
 
-from odoo.addons.l10n_ar.tests.common import TestAr
+from odoo.addons.l10n_ar.tests.common import TestArCommon
 from odoo.addons.website_sale.tests.common import MockRequest
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
-class TestL10nArWebsiteSale(TestAr):
+class TestL10nArWebsiteSale(TestArCommon):
 
     @classmethod
     def setUpClass(cls):
@@ -106,10 +106,19 @@ class TestL10nArWebsiteSale(TestAr):
                 Command.create({
                     'compute_price': 'formula',
                     'price_surcharge': 2.0,
+                    'min_quantity': 3.0,
+                    'applied_on': '3_global',
+                }),
+                Command.create({
+                    'compute_price': 'percentage',
+                    'percent_price': 20.0,
                     'applied_on': '3_global',
                 }),
             ],
         })
+
+        info_qty_1 = self._get_combination_info(quantity=1)
+        self.assertEqual(info_qty_1['l10n_ar_price_tax_excluded'], 800.0)
 
         info_qty_3 = self._get_combination_info(quantity=3)
         self.assertEqual(info_qty_3['l10n_ar_price_tax_excluded'], 1002.0)

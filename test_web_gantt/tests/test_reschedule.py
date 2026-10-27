@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from odoo import Command
 from odoo.tests import freeze_time
+from odoo.addons.web_gantt.models.models import Base
 from .common import TestWebGantt
 
 
@@ -51,6 +52,65 @@ class TestWebGanttReschedule(TestWebGantt):
         self.assertEqual(
             self.pill_3[self.date_stop_field_name] + timedelta(seconds=self.buffer34), self.pill_4[self.date_start_field_name],
             'Pill 4 should start after buffer12 after the end of Pill 3.'
+        )
+
+    def test_reschedule_cascading_forward_only_stop_date_consume_buffer(self):
+        """ Resizing a pill end only sends the stop date, but still needs the old start date. """
+        res = self.gantt_reschedule_consume_buffer(self.pill_1, {
+            self.date_stop_field_name: "2021-03-02 10:00:00",
+        })
+
+        moved_pills = self.pill_1 | self.pill_2
+        self.assert_old_pills_vals(res, 'success', 'Tasks rescheduled', moved_pills, self.initial_dates)
+        self.assertEqual(self.pill_1[self.date_start_field_name], self.pill_1_start_date)
+        self.assertEqual(
+            self.pill_1[self.date_stop_field_name], self.pill_2[self.date_start_field_name],
+            'Pill 2 should move forward up to the resized end of Pill 1.'
+        )
+        self.assert_not_replanned(self.pill_3 | self.pill_4, self.initial_dates)
+
+    def test_reschedule_cascading_forward_only_stop_date_maintain_buffer(self):
+        """ Resizing a pill end forward should maintain buffers with dependent pills. """
+        res = self.gantt_reschedule_maintain_buffer(self.pill_1, {
+            self.date_stop_field_name: "2021-03-02 10:00:00",
+        })
+
+        moved_pills = self.pill_1 | self.pill_2 | self.pill_3 | self.pill_4
+        self.assert_old_pills_vals(res, 'success', 'Tasks rescheduled', moved_pills, self.initial_dates)
+        self.assertEqual(self.pill_1[self.date_start_field_name], self.pill_1_start_date)
+        self.assertEqual(
+            self.pill_1[self.date_stop_field_name] + timedelta(seconds=self.buffer12), self.pill_2[self.date_start_field_name],
+            'Pill 2 should start after buffer12 after the end of Pill 1.'
+        )
+        self.assertEqual(
+            self.pill_2[self.date_stop_field_name] + timedelta(seconds=self.buffer23), self.pill_3[self.date_start_field_name],
+            'Pill 3 should start after buffer23 after the end of Pill 2.'
+        )
+        self.assertEqual(
+            self.pill_3[self.date_stop_field_name] + timedelta(seconds=self.buffer34), self.pill_4[self.date_start_field_name],
+            'Pill 4 should start after buffer34 after the end of Pill 3.'
+        )
+
+    def test_reschedule_cascading_backward_only_stop_date_maintain_buffer(self):
+        """ Resizing a pill end backward should maintain buffers with dependent pills. """
+        res = self.gantt_reschedule_maintain_buffer(self.pill_1, {
+            self.date_stop_field_name: "2021-03-01 10:00:00",
+        })
+
+        moved_pills = self.pill_1 | self.pill_2 | self.pill_3 | self.pill_4
+        self.assert_old_pills_vals(res, 'success', 'Tasks rescheduled', moved_pills, self.initial_dates)
+        self.assertEqual(self.pill_1[self.date_start_field_name], self.pill_1_start_date)
+        self.assertEqual(
+            self.pill_1[self.date_stop_field_name] + timedelta(seconds=self.buffer12), self.pill_2[self.date_start_field_name],
+            'Pill 2 should start after buffer12 after the end of Pill 1.'
+        )
+        self.assertEqual(
+            self.pill_2[self.date_stop_field_name] + timedelta(seconds=self.buffer23), self.pill_3[self.date_start_field_name],
+            'Pill 3 should start after buffer23 after the end of Pill 2.'
+        )
+        self.assertEqual(
+            self.pill_3[self.date_stop_field_name] + timedelta(seconds=self.buffer34), self.pill_4[self.date_start_field_name],
+            'Pill 4 should start after buffer34 after the end of Pill 3.'
         )
 
     def test_reschedule_cascading_backward(self):
@@ -335,3 +395,29 @@ class TestWebGanttReschedule(TestWebGantt):
             '2 moved before 3',
         )
         self.assert_not_replanned(self.pills2_1 | self.pills2_4, self.initial_dates)
+
+    def test_reschedule_dates(self):
+        pill = self.env["test.web.gantt.pill2"].create({
+            self.date_start_field_name: "2021-04-27",
+            self.date_stop_field_name: "2021-04-27",
+        })
+
+        self.env['test.web.gantt.pill2'].web_gantt_reschedule(
+            {
+                self.date_start_field_name: "2021-04-28",
+                self.date_stop_field_name: "2021-04-28",
+            },
+            Base._WEB_GANTT_RESCHEDULE_CONSUME_BUFFER,
+            pill.id,
+            self.dependency_field_name, self.dependency_inverted_field_name,
+            self.date_start_field_name, self.date_stop_field_name
+        )
+
+        self.assertEqual(
+            pill[self.date_stop_field_name],
+            date(2021, 4, 28),
+        )
+        self.assertEqual(
+            pill[self.date_start_field_name],
+            date(2021, 4, 28),
+        )

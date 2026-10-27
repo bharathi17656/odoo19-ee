@@ -40,9 +40,23 @@ class DiscussChannel(models.Model):
         return super()._get_allowed_channel_member_create_params() + ["ai_agent_id"]
 
     def _to_store_defaults(self, target):
-        return super()._to_store_defaults(target) + [Store.One("ai_agent_id", predicate=is_livechat_channel, sudo=True)]
+        return super()._to_store_defaults(target) + [
+            Store.One("ai_agent_id", predicate=is_livechat_channel, sudo=True),
+            Store.Attr(
+                "livechat_channel_has_agents",
+                value=lambda channel: bool(channel.sudo().livechat_channel_id.user_ids),
+                predicate=is_livechat_channel,
+            ),
+        ]
 
     def _sync_field_names(self):
         field_names = super()._sync_field_names()
         field_names[None].append(Store.One("ai_agent_id", predicate=is_livechat_channel, sudo=True))
+        field_names[None].append(
+            Store.Attr(
+                "livechat_channel_has_agents",
+                value=lambda channel: bool(channel.sudo().livechat_channel_id.user_ids),
+                predicate=is_livechat_channel,
+            )
+        )
         return field_names

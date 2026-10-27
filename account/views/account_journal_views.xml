@@ -36,7 +36,7 @@
                                     name="%(action_account_moves_all_a)d" icon="fa-book"
                                     context="{'search_default_journal_id':id}">
                                     <div class="o_stat_info">
-                                        <span class="o_stat_text">Journal Entries</span>
+                                        <span class="o_stat_text">Journal Items</span>
                                     </div>
                             </button>
                         </div>
@@ -158,7 +158,7 @@
                                     <group string="Automation" groups="account.group_account_manager">
                                         <field name="restrict_mode_hash_table" groups="account.group_account_readonly" invisible="type not in ['sale', 'purchase', 'general']"
                                         />
-                                        <field name="is_self_billing" invisible="type != 'purchase'"/>
+                                        <field name="is_self_billing" invisible="type not in ('sale', 'purchase')"/>
                                     </group>
                                     <group string="Emails" name="group_email_alias"
                                            invisible="type not in ('general', 'sale', 'purchase')">
@@ -173,7 +173,9 @@
                                             <field name="alias_name" placeholder="alias"/>@
                                             <field name="alias_domain_id" placeholder="e.g. mycompany.com" options="{'no_create': True, 'no_open': True}"/>
                                         </div>
-                                        <field name="incoming_einvoice_notification_email" invisible="type != 'purchase'" placeholder="Enter an email to get notified"/>
+                                        <field name="incoming_einvoice_notification_email"
+                                               placeholder="e.g. finance@example.com; accountant@example.com"
+                                               class="w-100"/>
                                     </group>
                                     <!-- edi -->
                                     <group name="group_edi_config" string="Electronic Data Interchange" invisible="1"/>

@@ -42,12 +42,17 @@ class TestCaseDocumentsBridgeHR(HttpCase, TransactionCaseDocumentsHr):
         self.assertEqual(self.employee.hr_employee_folder_id.name, "Zator",
                          "HR Employee Subfolder should be renamed when renaming the employee.")
 
+        admin_user = self.env.ref('base.user_admin')
         # Test on new Company - HR Employee folder should be created on company create.
         # and a new employee should generate a subfolder for that employee inside the company's HR Employee folder.
-        new_company = self.env['res.company'].create({
+        new_company = self.env['res.company'].with_user(admin_user).create({
             'name': 'New Company'
         })
         self.assertTrue(new_company.documents_employee_folder_id)
+        # Newly created folder, created on company creation, should be in the company root.
+        self.assertFalse(new_company.documents_employee_folder_id.owner_id)
+        self.assertEqual(new_company.documents_employee_folder_id.user_folder_id, 'COMPANY')
+
         new_company_employee = self.env['hr.employee'].create({
             'name': 'New Company Employee',
             'user_id': self.doc_user_2.id,
@@ -278,3 +283,74 @@ class TestCaseDocumentsBridgeHR(HttpCase, TransactionCaseDocumentsHr):
     def test_hr_contract_document_creation_permission_employee_only(self):
         """ Test that created hr.contract documents are only viewable by the employee and editable by hr managers. """
         self.check_document_creation_permission(self.contract)
+
+    def test_document_count_inaccessible_subfolders(self):
+        """Ensure computing document counts is correct when intermediate folder breaks "in employee folder"."""
+        employee_1 = self.env['hr.employee'].create({'name': 'Employee company_1'})
+        employee_folder = employee_1.hr_employee_folder_id
+        (employee_folder | employee_folder.folder_id).action_update_access_rights(
+            access_internal='none',
+            access_via_link='none',
+            partners={
+                self.hr_manager.partner_id: ('view', False),
+                self.hr_user.partner_id: ('view', False),
+            },
+        )
+        sub_folder, doc_ef = self.env['documents.document'].create([{
+            'folder_id': employee_folder.id,
+            'name': 'SF1',
+            'type': 'folder',
+        }, {
+            'folder_id': employee_folder.id,
+            'name': 'Doc EF',
+            'raw': b'TEST0',
+            'type': 'binary',
+        }])
+        sub_sub_folder, doc_sf = self.env['documents.document'].create([{
+            'folder_id': sub_folder.id,
+            'name': 'SF2',
+            'type': 'folder',
+        }, {
+            'folder_id': sub_folder.id,
+            'name': 'Doc SF1',
+            'raw': b'TEST1',
+            'type': 'binary',
+        }])
+        doc_ssf = self.env['documents.document'].create({
+            'folder_id': sub_sub_folder.id,
+            'name': 'Doc SF2',
+            'raw': b'TEST2',
+            'type': 'binary',
+        })
+        all_docs = sub_folder | sub_sub_folder | doc_ef | doc_sf | doc_ssf
+        self.assertEqual(employee_1.with_user(self.hr_manager).document_count, 3)
+        self.assertEqual(employee_1.with_user(self.hr_user).document_count, 3)
+
+        remove_hr_user_without_propagation = {
+            'partners': {self.hr_user.partner_id: (False, False)},
+            'no_propagation': True,
+        }
+
+        sub_sub_folder.action_update_access_rights(**remove_hr_user_without_propagation)
+        employee_1.invalidate_recordset(['document_count'])
+        self.assertEqual(employee_1.with_user(self.hr_manager).document_count, 3)
+        self.assertEqual(all_docs.with_user(self.hr_user)._filtered_access('read'),
+                         sub_folder | doc_ef | doc_sf | doc_ssf)
+        self.assertEqual(employee_1.with_user(self.hr_user).document_count, 2,
+                         "Document in inaccessible sub_sub_folder do not appear to be in Employee folder")
+
+        sub_folder.action_update_access_rights(**remove_hr_user_without_propagation)
+        employee_1.invalidate_recordset(['document_count'])
+        self.assertEqual(all_docs.with_user(self.hr_user)._filtered_access('read'), doc_ef | doc_sf | doc_ssf)
+        self.assertEqual(employee_1.with_user(self.hr_user).document_count, 1,
+                         "Documents in inaccessible (sub_)sub_folder do not appear to be in Employee folder")
+
+    def test_document_count_multi_company(self):
+        """Ensure computing document counts does not raise a singleton error in multi-company."""
+        company_2 = self.env['res.company'].create({'name': 'Test company'})
+        employee_1, employee_2 = self.env['hr.employee'].create([
+            {'name': 'Employee company_1', 'company_id': self.env.user.company_id.id},
+            {'name': 'Employee company_2', 'company_id': company_2.id},
+        ])
+        self.env.user.company_ids |= company_2
+        self.assertEqual((employee_1 | employee_2).mapped('document_count'), [0, 0], "Document count should be zero.")

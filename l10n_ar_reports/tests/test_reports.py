@@ -1,16 +1,19 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from freezegun import freeze_time
+
 from odoo import fields
-from odoo.addons.l10n_ar.tests.common import TestAr
+from odoo.addons.l10n_ar.tests.common import TestArCommon
 from odoo.addons.account_reports.tests.common import TestAccountReportsCommon
-from odoo.tests import Form, tagged
+from odoo.tests import tagged
 from odoo.tools import file_open
+from odoo.fields import Command
 import logging
 
 _logger = logging.getLogger(__name__)
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
-class TestReports(TestAr, TestAccountReportsCommon):
+class TestArReports(TestArCommon, TestAccountReportsCommon):
 
     def _create_test_credit_notes_like_demo(self):
         """ Create in the unit tests the same credit notes created in demo data """
@@ -215,26 +218,17 @@ class TestReports(TestAr, TestAccountReportsCommon):
         }
 
         for key, values in vendor_bills.items():
-            with Form(self.env['account.move'].with_context(default_move_type=values['move_type'])) as invoice_form:
-                invoice_form.ref = values['ref']
-                invoice_form.partner_id = values['partner_id']
-                invoice_form.invoice_payment_term_id = values['invoice_payment_term_id']
-                invoice_form.invoice_date = values['invoice_date']
-                if values.get('l10n_latam_document_type_id'):
-                    invoice_form.l10n_latam_document_type_id = values['l10n_latam_document_type_id']
-                invoice_form.l10n_latam_document_number = values['l10n_latam_document_number']
-                if values.get('invoice_incoterm_id'):
-                    invoice_form.invoice_incoterm_id = values['invoice_incoterm_id']
-                for line in values['invoice_line_ids']:
-                    with invoice_form.invoice_line_ids.new() as line_form:
-                        line_form.product_id = line.get('product_id')
-                        line_form.price_unit = line.get('price_unit')
-                        line_form.quantity = line.get('quantity')
-                        # TODO: check this lines, should not be necessary to add
-                        line_form.name = 'xxxx'
-                        line_form.account_id = self.company_data['default_account_revenue']
-            invoice = invoice_form.save()
-            self.demo_bills[key] = invoice
+            values['invoice_line_ids'] = [
+                self._prepare_invoice_line(
+                    product_id=line['product_id'],
+                    price_unit=line.get('price_unit', 0.0),
+                    quantity=line['quantity'],
+                    name='xxxx',
+                    account_id=self.company_data['default_account_revenue'],
+                )
+                for line in values['invoice_line_ids']
+            ]
+            self.demo_bills[key] = self._create_invoice(**values)
 
     def _vat_book_report_create_test_data(self):
         purchase_journal = self.env["account.journal"].search([('type', '=', 'purchase'), ('company_id', '=', self.env.company.id)])
@@ -303,7 +297,7 @@ class TestReports(TestAr, TestAccountReportsCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.journal = cls._create_journal(cls, 'preprinted', data={'l10n_ar_afip_pos_number': 37928})
+        cls.journal = cls._create_journal('preprinted', data={'l10n_ar_afip_pos_number': 37928})
         cls.maxDiff = None
         cls.report = cls.env.ref('l10n_ar_reports.l10n_ar_vat_book_report')
 
@@ -318,7 +312,7 @@ class TestReports(TestAr, TestAccountReportsCommon):
         })
 
         # ==== Create VAT BOOK demo data ====
-        cls._create_test_invoices_like_demo(cls, use_current_date=False)
+        cls._create_test_invoices_like_demo(use_current_date=False)
         for inv in cls.demo_invoices.values():
             inv.action_post()
 
@@ -374,6 +368,67 @@ class TestReports(TestAr, TestAccountReportsCommon):
         self.options['txt_type'] = 'goods_import'
         self._test_txt_file('IVA_Importaciones_de_Bienes.txt', 'purchase')
 
+    @freeze_time("2021-04-19")
+    def test_07_sale_vat_book_vouchers_with_branch(self):
+        parent_company = self.env.company
+        branch_A, branch_B = self.env['res.company'].create([
+            {
+                'name': "Branch_A",
+                'parent_id': self.company.id,
+            }, {
+                'name': "Branch_B",
+                'parent_id': self.company.id,
+                'vat': '/'
+            }
+        ])
+
+        # Load CoA
+        self.cr.precommit.run()
+
+        invoice_B = self.env['account.move'].with_company(company=branch_B).create([
+            {
+                "ref": "test_invoice_007: Invoice to gritti support service, vat 21",
+                "company_id": branch_B.id,
+                "partner_id": self.res_partner_adhoc.id,
+                "move_type": "out_invoice",
+                "invoice_date": "2021-03-22",
+                "invoice_line_ids": [
+                    Command.create({'product_id': self.service_iva_21.id})
+                ]
+            },
+        ])
+
+        invoice_A = self.env['account.move'].with_company(company=branch_A).create([
+            {
+                "ref": "test_invoice_007: Invoice to gritti support service, vat 21",
+                "company_id": branch_A.id,
+                "partner_id": self.res_partner_gritti_mono.id,
+                "move_type": "out_invoice",
+                "invoice_date": "2021-03-22",
+                "invoice_line_ids": [
+                    Command.create({'product_id': self.service_iva_21.id})
+                ]
+            }
+        ])
+        invoice_B.action_post()
+        invoice_A.action_post()
+
+        options = self._generate_options(
+            self.report.with_context({"allowed_company_ids": (parent_company | branch_A | branch_B).ids})
+                .with_company(company=branch_A),
+            fields.Date.from_string('2021-03-22'),
+            fields.Date.from_string('2021-05-31'))
+        options['ar_vat_book_tax_types_available']['sale']['selected'] = True
+        options['ar_vat_book_tax_types_available']['purchase']['selected'] = False
+        options['txt_type'] = 'sale'
+
+        out_txt = self.env['l10n_ar.tax.report.handler']\
+            .with_context({"allowed_company_ids": (parent_company | branch_A | branch_B).ids})\
+            .with_company(company=branch_A)\
+            ._vat_book_get_txt_files(options, 'sale')[0].decode('ISO-8859-1')
+        res_file = file_open('l10n_ar_reports/tests/Ventas_branch.txt', 'rb').read().decode('ISO-8859-1')
+        self.assertEqual(out_txt, res_file)
+
     def test_vat_book_report(self):
         options = self._generate_options(self.report, date_from=fields.Date.from_string('2022-03-01'), date_to=fields.Date.from_string('2022-03-31'))
         lines = self.report._get_lines(options)
@@ -389,3 +444,92 @@ class TestReports(TestAr, TestAccountReportsCommon):
             ],
             options,
         )
+
+    def test_vat_book_report_price_tax_included_plus_IIBB_taxes(self):
+        purchase_journal = self.env["account.journal"].search([('type', '=', 'purchase'), ('company_id', '=', self.env.company.id)])
+        self.tax_21.price_include = True
+        self.tax_21.include_base_amount = True
+        iibb_group = self.env['account.tax.group'].create({
+            'name': "IIBB Group",
+            'l10n_ar_tribute_afip_code': '07',
+        })
+
+        iibb_tax_1 = self.env['account.tax'].create({
+            'name': "IIBB Córdoba",
+            'amount_type': 'percent',
+            'amount': 1,
+            'tax_group_id': iibb_group.id,
+        })
+
+        iibb_tax_2 = self.env['account.tax'].create({
+            'name': "IIBB Buenos Aires",
+            'amount_type': 'percent',
+            'amount': 1,
+            'tax_group_id': iibb_group.id,
+        })
+
+        test_product = self.env['product.product'].create({
+            'name': "Test Product",
+            'lst_price': 100.0,
+            'standard_price': 10.0,
+            'property_account_income_id': self.company_data["default_account_revenue"].id,
+            'property_account_expense_id': self.company_data["default_account_expense"].id,
+        })
+        invoices = self.env['account.move'].create([
+            {
+                'move_type': 'in_invoice',
+                'partner_id': self.res_partner_adhoc.id,
+                'invoice_date': '2025-05-30',
+                "journal_id": purchase_journal.id,
+                "l10n_latam_document_number": "0001-00000001",
+                'invoice_line_ids': [
+                    Command.create({
+                        'product_id': test_product.id,
+                        'price_unit': 1210.0,
+                        'tax_ids': [Command.set([self.tax_21.id, iibb_tax_1.id, iibb_tax_2.id])],
+                    })],
+            },
+        ])
+        invoices.action_post()
+        options = self._generate_options(self.report, date_from=fields.Date.from_string('2025-05-29'), date_to=fields.Date.from_string('2025-05-31'))
+        lines = self.report._get_lines(options)
+        self.assertLinesValues(
+            # pylint: disable=C0326
+            lines,
+            #    Move Name              Partner Name    VAT            Taxed   VAT 21% Others Total
+            [    0,                     2,              4,             5,         8,     11,    15],
+            [
+                ('FA-A 00001-00000001', 'ADHOC SA', '30714295698', -1000,      -210, -24.20, -1234.20),
+            ],
+            options,
+        )
+
+    def test_foreign_provider_vat_book_export(self):
+        """ Test that Proveedor del Exterior (code 8) partners with ForeignID
+            use the country-level VAT, just like Cliente del Exterior (code 9).
+        """
+        foreign_partner = self.env['res.partner'].create({
+            'name': 'foreign partner',
+            'is_company': True,
+            'country_id': self.env.ref('base.ie').id,
+            'l10n_latam_identification_type_id': self.env.ref('l10n_latam_base.it_fid').id,
+            'vat': 'IE1234567T',
+            'l10n_ar_afip_responsibility_type_id': self.env.ref('l10n_ar.res_EXT_Prov').id,
+        })
+        invoice = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': foreign_partner.id,
+            'invoice_date': '2021-03-15',
+            'invoice_line_ids': [
+                Command.create({
+                    'product_id': self.product_iva_exento.id,
+                    'price_unit': 100.0,
+                    'quantity': 1,
+                }),
+            ],
+        })
+        invoice.action_post()
+        self.options['ar_vat_book_tax_type_selected'] = 'sale'
+        self.options['txt_type'] = 'sale'
+        out = self.env['l10n_ar.tax.report.handler']._vat_book_get_txt_files(self.options, 'sale')
+        self.assertTrue(out)

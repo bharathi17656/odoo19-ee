@@ -4,13 +4,14 @@
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:42+0000\n"
-"PO-Revision-Date: 2025-11-08 20:01+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-02 17:43+0000\n"
+"PO-Revision-Date: 2026-10-05 09:59+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "account_fiscal_categories/lt/>\n"
 "Language: lt\n"
@@ -20,7 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: account_fiscal_categories
 #: model:ir.model,name:account_fiscal_categories.model_account_account
@@ -30,15 +31,20 @@ msgid "Account"
 msgstr "Sąskaita"
 
 #. module: account_fiscal_categories
+#: model:ir.model,name:account_fiscal_categories.model_account_chart_template
+msgid "Account Chart Template"
+msgstr "Sąskaitų plano šablonas"
+
+#. module: account_fiscal_categories
 #: model:ir.model,name:account_fiscal_categories.model_account_fiscal_category
 msgid "Account Fiscal Category"
-msgstr ""
+msgstr "Sąskaitos fiskalinė kategorija"
 
 #. module: account_fiscal_categories
 #. odoo-python
 #: code:addons/account_fiscal_categories/report/account_fiscal_report_handler.py:0
 msgid "Account(s) with Multiple Fiscal Rates"
-msgstr ""
+msgstr "Sąskaita (-os) su keliais mokesčių tarifais"
 
 #. module: account_fiscal_categories
 #: model:ir.model.fields,field_description:account_fiscal_categories.field_account_fiscal_category__active
@@ -48,12 +54,12 @@ msgstr "Aktyvus"
 #. module: account_fiscal_categories
 #: model_terms:ir.actions.act_window,help:account_fiscal_categories.action_account_fiscal_category_list
 msgid "Add a Fiscal Category"
-msgstr ""
+msgstr "Pridėti fiskalinę kategoriją"
 
 #. module: account_fiscal_categories
 #: model:account.report.column,name:account_fiscal_categories.fiscal_report_total_amount
 msgid "Base Total"
-msgstr ""
+msgstr "Bendras skaičius"
 
 #. module: account_fiscal_categories
 #: model_terms:ir.ui.view,arch_db:account_fiscal_categories.view_account_fiscal_category_form
@@ -92,6 +98,7 @@ msgstr "Dabartinis kursas"
 #. module: account_fiscal_categories
 #: model:ir.model.fields,field_description:account_fiscal_categories.field_account_account__display_name
 #: model:ir.model.fields,field_description:account_fiscal_categories.field_account_account_fiscal_rate__display_name
+#: model:ir.model.fields,field_description:account_fiscal_categories.field_account_chart_template__display_name
 #: model:ir.model.fields,field_description:account_fiscal_categories.field_account_fiscal_category__display_name
 #: model:ir.model.fields,field_description:account_fiscal_categories.field_account_fiscal_report_handler__display_name
 msgid "Display Name"
@@ -100,51 +107,51 @@ msgstr "Rodomas pavadinimas"
 #. module: account_fiscal_categories
 #: model:account.report.column,name:account_fiscal_categories.fiscal_report_deductible_amount
 msgid "Fiscal Amount"
-msgstr ""
+msgstr "Mokesčių suma"
 
 #. module: account_fiscal_categories
 #: model:ir.actions.act_window,name:account_fiscal_categories.action_account_fiscal_category_list
 #: model:ir.ui.menu,name:account_fiscal_categories.menu_action_account_fiscal_category_list
 msgid "Fiscal Categories"
-msgstr ""
+msgstr "Fiskalinės kategorijos"
 
 #. module: account_fiscal_categories
 #: model:ir.model.fields,field_description:account_fiscal_categories.field_account_account__fiscal_category_id
 #: model_terms:ir.ui.view,arch_db:account_fiscal_categories.view_account_form
 msgid "Fiscal Category"
-msgstr ""
+msgstr "Fiskalinė kategorija"
 
 #. module: account_fiscal_categories
 #: model:ir.model,name:account_fiscal_categories.model_account_account_fiscal_rate
 msgid "Fiscal Rate"
-msgstr ""
+msgstr "Mokesčio tarifas"
 
 #. module: account_fiscal_categories
 #: model:ir.model.fields,field_description:account_fiscal_categories.field_account_account_fiscal_rate__rate
 msgid "Fiscal Rate (%)"
-msgstr ""
+msgstr "Mokesčių tarifas (%)"
 
 #. module: account_fiscal_categories
 #: model_terms:ir.ui.view,arch_db:account_fiscal_categories.view_account_form
 msgid "Fiscal Rates"
-msgstr ""
+msgstr "Mokesčių tarifai"
 
 #. module: account_fiscal_categories
 #: model:account.report,name:account_fiscal_categories.fiscal_report
 #: model:ir.actions.client,name:account_fiscal_categories.action_account_fiscal_report
 #: model:ir.ui.menu,name:account_fiscal_categories.menu_action_account_fiscal_report
 msgid "Fiscal Report"
-msgstr ""
+msgstr "Finansinė ataskaita"
 
 #. module: account_fiscal_categories
 #: model:ir.model,name:account_fiscal_categories.model_account_fiscal_report_handler
 msgid "Fiscal Report Custom Handler"
-msgstr ""
+msgstr "Mokesčių ataskaitos pritaikytas tvarkyklė"
 
 #. module: account_fiscal_categories
 #: model:ir.model.constraint,message:account_fiscal_categories.constraint_account_fiscal_category_unique_code
 msgid "Fiscal category code should be unique."
-msgstr ""
+msgstr "Fiskalinės kategorijos kodas turi būti unikalus."
 
 #. module: account_fiscal_categories
 #. odoo-python
@@ -157,10 +164,13 @@ msgstr "Didžioji knyga"
 msgid ""
 "General: Make sure the deduction for business meals is under the legal limit."
 msgstr ""
+"Bendrieji reikalavimai: Įsitikinkite, kad verslo pietų išlaidų atskaitymas "
+"neviršija įstatymu nustatytos ribos."
 
 #. module: account_fiscal_categories
 #: model:ir.model.fields,field_description:account_fiscal_categories.field_account_account__id
 #: model:ir.model.fields,field_description:account_fiscal_categories.field_account_account_fiscal_rate__id
+#: model:ir.model.fields,field_description:account_fiscal_categories.field_account_chart_template__id
 #: model:ir.model.fields,field_description:account_fiscal_categories.field_account_fiscal_category__id
 #: model:ir.model.fields,field_description:account_fiscal_categories.field_account_fiscal_report_handler__id
 msgid "ID"
@@ -187,7 +197,7 @@ msgstr "Paskutinį kartą atnaujinta"
 #. module: account_fiscal_categories
 #: model:account.return.check.template,name:account_fiscal_categories.account_return_check_template_meal_expense_adjustment
 msgid "Meal expense adjustments"
-msgstr ""
+msgstr "Maisto išlaidų koregavimai"
 
 #. module: account_fiscal_categories
 #: model:ir.model.fields,field_description:account_fiscal_categories.field_account_fiscal_category__name
@@ -204,12 +214,14 @@ msgstr "Kursas"
 #: model_terms:ir.ui.view,arch_db:account_fiscal_categories.view_account_fiscal_category_form
 #: model_terms:ir.ui.view,arch_db:account_fiscal_categories.view_account_fiscal_category_tree
 msgid "Related Account(s)"
-msgstr ""
+msgstr "Susijusios paskyros"
 
 #. module: account_fiscal_categories
 #: model:ir.model.fields,help:account_fiscal_categories.field_account_fiscal_category__active
 msgid "Set active to false to hide the category without removing it."
 msgstr ""
+"Nustatykite „active“ reikšmę „false“, kad paslėptumėte kategoriją jos "
+"nepašalindami."
 
 #. module: account_fiscal_categories
 #: model:ir.model.fields,field_description:account_fiscal_categories.field_account_account_fiscal_rate__date_from
@@ -220,7 +232,7 @@ msgstr "Darbo pradžios data"
 #. odoo-javascript
 #: code:addons/account_fiscal_categories/static/src/components/fiscal_report/warnings.xml:0
 msgid "There are"
-msgstr ""
+msgstr "Yra"
 
 #. module: account_fiscal_categories
 #. odoo-python
@@ -231,21 +243,21 @@ msgstr "Suma"
 #. module: account_fiscal_categories
 #: model_terms:ir.ui.view,arch_db:account_fiscal_categories.view_account_fiscal_category_form
 msgid "e.g. 1201"
-msgstr ""
+msgstr "pvz., 1201"
 
 #. module: account_fiscal_categories
 #: model_terms:ir.ui.view,arch_db:account_fiscal_categories.view_account_fiscal_category_form
 msgid "e.g. Non-Deductible Tax"
-msgstr ""
+msgstr "Pvz., neatskaitomas mokestis"
 
 #. module: account_fiscal_categories
 #. odoo-javascript
 #: code:addons/account_fiscal_categories/static/src/components/fiscal_report/warnings.xml:0
 msgid "in this period."
-msgstr ""
+msgstr "šiuo laikotarpiu."
 
 #. module: account_fiscal_categories
 #. odoo-javascript
 #: code:addons/account_fiscal_categories/static/src/components/fiscal_report/warnings.xml:0
 msgid "multiple fiscal rates"
-msgstr ""
+msgstr "kelios mokesčių normos"

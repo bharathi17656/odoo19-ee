@@ -120,6 +120,8 @@ class QualityCheckWizard(models.TransientModel):
         return action
 
     def action_generate_previous_window(self):
+        if self.env.context.get('hide_back_button'):
+            return
         action = self.env["ir.actions.actions"]._for_xml_id("quality_control.action_quality_check_wizard")
         action['context'] = dict(ast.literal_eval(action['context']))
         if self.env.context.get('from_failure_form'):

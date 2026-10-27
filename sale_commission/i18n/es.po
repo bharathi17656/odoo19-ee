@@ -4,13 +4,14 @@
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# "Noemi Pla Garcia (nopl)" <nopl@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:51+0000\n"
-"PO-Revision-Date: 2025-11-17 03:15+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-10 17:53+0000\n"
+"PO-Revision-Date: 2026-08-04 09:27+0000\n"
+"Last-Translator: \"Noemi Pla Garcia (nopl)\" <nopl@odoo.com>\n"
 "Language-Team: Spanish <https://translate.odoo.com/projects/odoo-19/"
 "sale_commission/es/>\n"
 "Language: es\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: sale_commission
 #. odoo-python
@@ -31,6 +32,12 @@ msgstr "%(plan)s - %(type)s %(product)s %(categ)s"
 #: code:addons/sale_commission/model/commission_plan_user.py:0
 msgid "%(user)s - %(plan)s"
 msgstr "%(user)s - %(plan)s"
+
+#. module: sale_commission
+#. odoo-python
+#: code:addons/sale_commission/model/commission_plan_achievement.py:0
+msgid "%s"
+msgstr "%s"
 
 #. module: sale_commission
 #. odoo-python
@@ -59,12 +66,14 @@ msgstr "Tasa de logrados"
 #. module: sale_commission
 #: model:ir.model.fields,help:sale_commission.field_sale_commission_achievement_report__commission_rate
 msgid "Achieved over the commission target amount"
-msgstr ""
+msgstr "Superado el objetivo de comisiones"
 
 #. module: sale_commission
 #: model:ir.model.fields,help:sale_commission.field_sale_commission_achievement_report__target_rate
 msgid "Achieved over the target of that period, meaningless in group by"
 msgstr ""
+"Logrado por encima del objetivo de ese período; no tiene sentido en "
+"agrupaciones"
 
 #. module: sale_commission
 #: model:ir.model.fields,field_description:sale_commission.field_sale_commission_plan__achievement_ids
@@ -309,7 +318,7 @@ msgstr "Planes de comisiones"
 #. module: sale_commission
 #: model:ir.model.fields,field_description:sale_commission.field_sale_commission_achievement_report__commission_rate
 msgid "Commission Rate"
-msgstr ""
+msgstr "Tasa de comisión"
 
 #. module: sale_commission
 #: model_terms:ir.ui.view,arch_db:sale_commission.sale_commission_report_view_search
@@ -319,12 +328,12 @@ msgstr "Informe de comisión"
 #. module: sale_commission
 #: model_terms:ir.ui.view,arch_db:sale_commission.sale_achievement_report_view_list
 msgid "Commission Target"
-msgstr ""
+msgstr "Objetivo de comisión"
 
 #. module: sale_commission
 #: model:ir.model.fields,field_description:sale_commission.field_sale_commission_achievement_report__commission_target_amount
 msgid "Commission Target Amount"
-msgstr ""
+msgstr "Importe del objetivo de comisión"
 
 #. module: sale_commission
 #: model:ir.model.fields,field_description:sale_commission.field_res_users__commission_plan_users_ids
@@ -530,8 +539,8 @@ msgstr ""
 #: code:addons/sale_commission/model/commission_plan.py:0
 msgid "Exporting targets is only available for plans based on targets"
 msgstr ""
-"La exportación de objetivos solo está disponible para planes basados en "
-"objetivos."
+"La opción para exportar objetivos solo está disponible para planes basados "
+"en objetivos"
 
 #. module: sale_commission
 #: model:ir.model.fields,field_description:sale_commission.field_res_users__filtered_commission_plan_users_ids
@@ -566,12 +575,6 @@ msgstr "Pronóstico"
 #: model:ir.model.fields,field_description:sale_commission.field_sale_commission_report__date_from
 msgid "From"
 msgstr "De"
-
-#. module: sale_commission
-#. odoo-python
-#: code:addons/sale_commission/model/commission_plan_user.py:0
-msgid "From must be before To"
-msgstr "“De” debe ser antes de “A”"
 
 #. module: sale_commission
 #: model:ir.model.fields,field_description:sale_commission.field_sale_commission_plan__has_message
@@ -760,6 +763,18 @@ msgid "Other plans"
 msgstr "Otros planes"
 
 #. module: sale_commission
+#. odoo-python
+#: code:addons/sale_commission/model/commission_plan_target.py:0
+msgid ""
+"Overlapping periods detected for plan '%(plan)s':\n"
+"- %(c_name)s [%(c_from)s → %(c_to)s]\n"
+"- %(n_name)s [%(n_from)s → %(n_to)s]"
+msgstr ""
+"Se han detectado períodos superpuestos para el plan '%(plan)s':\n"
+"- %(c_name)s [%(c_from)s → %(c_to)s]\n"
+"- %(n_name)s [%(n_from)s → %(n_to)s]"
+
+#. module: sale_commission
 #: model:ir.model.fields,field_description:sale_commission.field_sale_commission_plan_target__payment_amount
 msgid "Payment Amount"
 msgstr "Importe de pago"
@@ -894,6 +909,7 @@ msgstr "Comerciales"
 #. module: sale_commission
 #: model:ir.model.fields,field_description:sale_commission.field_sale_commission_achievement_report__user_id
 #: model:ir.model.fields,field_description:sale_commission.field_sale_commission_report__user_id
+#: model_terms:ir.ui.view,arch_db:sale_commission.sale_commission_plan_view_search
 msgid "Sales Person"
 msgstr "Comercial"
 
@@ -943,12 +959,12 @@ msgstr "Enviar"
 #. module: sale_commission
 #: model:ir.model.fields,help:sale_commission.field_sale_commission_plan_target__payment_amount
 msgid "Sum of amounts paid on the same payment date"
-msgstr ""
+msgstr "Total de importes pagados en la misma fecha"
 
 #. module: sale_commission
 #: model:ir.model.fields,help:sale_commission.field_sale_commission_achievement_report__commission_target_amount
 msgid "Sum of target amount per plan paid on the same date"
-msgstr ""
+msgstr "Total del importe objetivo por plan con la misma fecha de pago"
 
 #. module: sale_commission
 #: model:ir.model.fields,field_description:sale_commission.field_sale_commission_plan__target_ids
@@ -992,15 +1008,42 @@ msgstr "Objetivos"
 
 #. module: sale_commission
 #. odoo-python
+#: code:addons/sale_commission/model/commission_plan_user.py:0
+msgid "The assignment start date must be before the end date"
+msgstr ""
+"La fecha de inicio de la asignación debe ser anterior a la fecha de "
+"finalización"
+
+#. module: sale_commission
+#. odoo-python
 #: code:addons/sale_commission/model/commission_plan.py:0
 msgid "The plan should have at least one target with an achievement rate of 0%"
 msgstr "El plan debe tener al menos un objetivo con una tasa de logro del 0 %"
 
 #. module: sale_commission
 #. odoo-python
+#: code:addons/sale_commission/model/commission_plan_user.py:0
+msgid ""
+"The sales person's assignment must be within the commission plan period."
+msgstr ""
+"La asignación del comercial debe estar dentro del período del plan de "
+"comisiones."
+
+#. module: sale_commission
+#. odoo-python
 #: code:addons/sale_commission/model/commission_plan.py:0
 msgid "The start date must be before the end date."
 msgstr "La fecha de inicio debe ser antes de la fecha de finalización."
+
+#. module: sale_commission
+#. odoo-python
+#: code:addons/sale_commission/model/commission_plan_target.py:0
+msgid ""
+"The start date must be before the end date.\n"
+"Period: %s"
+msgstr ""
+"La fecha de inicio debe ser anterior a la fecha de finalización.\n"
+"Período: %s"
 
 #. module: sale_commission
 #. odoo-python
@@ -1100,8 +1143,8 @@ msgstr "El periodo del usuario no puede terminar después del plan."
 #. module: sale_commission
 #. odoo-python
 #: code:addons/sale_commission/model/commission_plan_user.py:0
-msgid "User period cannot start before the plan."
-msgstr "El periodo del usuario no puede empezar antes del plan."
+msgid "User period cannot start after the plan."
+msgstr "El período del usuario no puede empezar después del plan."
 
 #. module: sale_commission
 #: model:ir.model.fields,field_description:sale_commission.field_sale_commission_plan__website_message_ids
@@ -1143,3 +1186,9 @@ msgstr "es decir, plan de comisiones 2025"
 #: model_terms:ir.ui.view,arch_db:sale_commission.sale_commission_plan_view_form
 msgid "per"
 msgstr "por"
+
+#~ msgid "From must be before To"
+#~ msgstr "“De” debe ser antes de “A”"
+
+#~ msgid "User period cannot start before the plan."
+#~ msgstr "El periodo del usuario no puede empezar antes del plan."

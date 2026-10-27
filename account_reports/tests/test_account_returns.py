@@ -1,6 +1,8 @@
 from datetime import date
 from freezegun import freeze_time
+from itertools import product
 from unittest.mock import patch
+from dateutil.relativedelta import relativedelta
 
 from odoo import fields, Command
 from odoo.addons.account_reports.tests.common import TestAccountReportsCommon
@@ -68,7 +70,7 @@ class TestAccountReturn(TestAccountReportsCommon):
         cls.startClassPatcher(freeze_time('2024-01-16'))
 
         with cls._patch_returns_generation():
-            cls.env.company.account_opening_date = '2023-01-01'
+            cls.env.company.account_opening_date = '2024-01-01'
 
     @classmethod
     def _patch_returns_generation(cls):
@@ -77,6 +79,22 @@ class TestAccountReturn(TestAccountReportsCommon):
     @classmethod
     def _patch_generate_locking_attachments(cls):
         return patch.object(cls.registry['account.return'], '_generate_locking_attachments', lambda self, options: None)
+
+    @classmethod
+    def _patch_postprocess_vat_closing_entry_results(cls, profit_account, loss_account, line_1, line_2):
+        def patched_postprocess_vat_closing_entry_results(self, company, options, results):
+            rounding_accounts = {
+                'profit': profit_account,
+                'loss': loss_account,
+            }
+
+            vat_results_summary = [
+                ('due', line_1.id, 'balance'),
+                ('deductible', line_2.id, 'balance'),
+            ]
+            return self._vat_closing_entry_results_rounding(company, options, results, rounding_accounts, vat_results_summary)
+
+        return patch.object(cls.registry['account.return'], '_postprocess_vat_closing_entry_results', patched_postprocess_vat_closing_entry_results)
 
     def assert_return_dates_equal(self, returns, dates_list):
         self.assertEqual(len(returns), len(dates_list), "Return count mismatch")
@@ -143,6 +161,8 @@ class TestAccountReturn(TestAccountReportsCommon):
                 'start_day': 1,
                 'start_month': 1,
                 'report_id': self.basic_tax_report.id,
+                'fy_start_day': 1,
+                'fy_start_month': 1,
             },
         })
         start_day, start_month = self.basic_return_type._get_start_date_elements(self.env.company)
@@ -155,6 +175,8 @@ class TestAccountReturn(TestAccountReportsCommon):
                 'start_month': start_month,
                 'return_type_id': self.basic_return_type.id,
                 'report_id': self.basic_tax_report.id,
+                'fy_start_day': 1,
+                'fy_start_month': 1,
             }
         )
 
@@ -167,6 +189,8 @@ class TestAccountReturn(TestAccountReportsCommon):
                 'start_month': 1,
                 'return_type_id': self.basic_return_type.id,
                 'report_id': self.basic_tax_report.id,
+                'fy_start_day': 1,
+                'fy_start_month': 10,
             },
         })
         self.assertDictEqual(
@@ -178,6 +202,8 @@ class TestAccountReturn(TestAccountReportsCommon):
                 'start_month': 1,
                 'return_type_id': self.basic_return_type.id,
                 'report_id': self.basic_tax_report.id,
+                'fy_start_day': 1,
+                'fy_start_month': 10,
             }
         )
 
@@ -190,6 +216,8 @@ class TestAccountReturn(TestAccountReportsCommon):
                 'start_month': 1,
                 'return_type_id': self.basic_return_type.id,
                 'report_id': self.basic_tax_report.id,
+                'fy_start_day': 1,
+                'fy_start_month': 1,
             },
         })
         self.assertDictEqual(
@@ -201,6 +229,8 @@ class TestAccountReturn(TestAccountReportsCommon):
                 'start_month': start_month,
                 'return_type_id': self.basic_return_type.id,
                 'report_id': self.basic_tax_report.id,
+                'fy_start_day': 1,
+                'fy_start_month': 1,
             }
         )
 
@@ -217,6 +247,8 @@ class TestAccountReturn(TestAccountReportsCommon):
                 'start_month': 1,
                 'return_type_id': self.basic_return_type.id,
                 'report_id': self.basic_tax_report.id,
+                'fy_start_day': 1,
+                'fy_start_month': 1,
             },
         })
         self.assertFalse(options.get('return_periodicity'), "'return_periodicity' key should be absent as the report_id in the dict is different as the actual report generating the options.")
@@ -232,6 +264,8 @@ class TestAccountReturn(TestAccountReportsCommon):
                 'start_month': start_month,
                 'return_type_id': self.basic_return_type.id,
                 'report_id': self.basic_tax_report.id,
+                'fy_start_day': 1,
+                'fy_start_month': 1,
             }
         )
 
@@ -280,6 +314,7 @@ class TestAccountReturn(TestAccountReportsCommon):
         self.assert_return_dates_equal(
             existing_returns,
             [
+                ("2023-12-01", "2023-12-31"),
                 ("2024-01-01", "2024-01-31"),
                 ("2024-02-01", "2024-02-29"),
                 ("2024-03-01", "2024-03-31"),
@@ -294,6 +329,101 @@ class TestAccountReturn(TestAccountReportsCommon):
                 ("2024-12-01", "2024-12-31"),
             ]
         )
+
+    def test_tax_return_with_branches_and_rounding_applied(self):
+        """
+        Some countries apply a rounding to the closing moves by calling `_vat_closing_entry_results_rounding`
+        with a specific `vat_results_summary`.
+        This test checks that the rounding is well computed when having a company with branches
+        """
+        # We need to create a new tax report with report lines which will be used in _postprocess_vat_closing_entry_results
+        report = self.env['account.report'].create({
+            'name': "Tax report",
+            'root_report_id': self.env.ref('account.generic_tax_report').id,
+            'column_ids': [
+                Command.create({
+                    'name': "Balance",
+                    'expression_label': 'balance',
+                }),
+            ],
+        })
+
+        sale_tag, purchase_tag = self.env['account.account.tag'].create([
+            {
+                'name': name,
+                'applicability': 'taxes',
+                'country_id': self.env.company.country_id.id,
+            } for i, name in enumerate(['test_sale_tag', 'test_purchase_tag'])
+        ])
+
+        report_lines = self.env['account.report.line'].create([
+            {
+                'name': 'test_sale_line',
+                'report_id': report.id,
+                'sequence': 10,
+                'expression_ids': [
+                    Command.create({
+                        'label': 'balance',
+                        'engine': 'tax_tags',
+                        'formula': tag.name,
+                    }),
+                ],
+            } for tag in (sale_tag, purchase_tag)
+        ])
+
+        self.basic_return_type.write({
+            'report_id': report.id,
+        })
+
+        self.tax_sale_a.invoice_repartition_line_ids.filtered(lambda l: l.repartition_type == 'tax').tag_ids = sale_tag
+        self.tax_purchase_a.invoice_repartition_line_ids.filtered(lambda l: l.repartition_type == 'tax').tag_ids = purchase_tag
+
+        branch_1, branch_2 = [self._create_company(name=name, parent_id=self.env.company.id) for name in ('Branch A', 'Branch B')]
+
+        for move_type, amount, company in [('in_invoice', 100, self.env.company), ('out_invoice', 200, branch_1), ('out_invoice', 300, branch_2)]:
+            self._create_invoice(move_type=move_type, invoice_date='2023-12-15', post=True, company_id=company.id, invoice_line_ids=[self._prepare_invoice_line(product_id=self.product_a, price_unit=amount)])
+
+        with self._patch_returns_generation():
+            self.env.company.account_opening_date = '2024-01-01'
+
+        existing_returns = self.env['account.return'].search([
+            ('type_id', '=', self.basic_return_type.id),
+            ('company_id', '=', self.env.company.id),
+        ])
+
+        self.assert_return_dates_equal(
+            existing_returns,
+            [
+                ("2023-12-01", "2023-12-31"),
+                ("2024-01-01", "2024-01-31"),
+                ("2024-02-01", "2024-02-29"),
+                ("2024-03-01", "2024-03-31"),
+                ("2024-04-01", "2024-04-30"),
+                ("2024-05-01", "2024-05-31"),
+                ("2024-06-01", "2024-06-30"),
+                ("2024-07-01", "2024-07-31"),
+                ("2024-08-01", "2024-08-31"),
+                ("2024-09-01", "2024-09-30"),
+                ("2024-10-01", "2024-10-31"),
+                ("2024-11-01", "2024-11-30"),
+                ("2024-12-01", "2024-12-31"),
+            ]
+        )
+
+        profit_account = self.company_data['default_account_revenue']
+        loss_account = self.company_data['default_account_expense']
+        with self.allow_pdf_render(), self._patch_postprocess_vat_closing_entry_results(profit_account, loss_account, *report_lines):
+            existing_returns[0].action_mark_completed()
+            existing_returns[0].action_validate(bypass_failing_tests=True)
+
+        self.assertRecordValues(existing_returns[0].closing_move_ids.line_ids.sorted('move_id'), [
+            {'company_id': self.env.company.id, 'account_id': self.company_data['default_account_tax_purchase'].id,   'debit':  0.0, 'credit': 15.0},
+            {'company_id': self.env.company.id, 'account_id': self.company_data['default_account_expense'].id,        'debit': 15.0, 'credit':  0.0},
+            {'company_id': branch_2.id,         'account_id': self.company_data['default_account_tax_sale'].id,       'debit': 45.0, 'credit':  0.0},
+            {'company_id': branch_2.id,         'account_id': self.company_data['default_account_revenue'].id,        'debit':  0.0, 'credit': 45.0},
+            {'company_id': branch_1.id,         'account_id': self.company_data['default_account_tax_sale'].id,       'debit': 30.0, 'credit':  0.0},
+            {'company_id': branch_1.id,         'account_id': self.company_data['default_account_revenue'].id,        'debit':  0.0, 'credit': 30.0},
+        ])
 
     def test_return_generation_change_periodicity_smaller_to_greater(self):
         existing_returns = self.env['account.return'].search([
@@ -317,7 +447,8 @@ class TestAccountReturn(TestAccountReportsCommon):
         self.assert_return_dates_equal(
             existing_returns,
             [
-                ("2024-01-01", "2024-01-31"),  # First one already posted
+                ("2023-12-01", "2023-12-31"),  # First one already posted
+                ("2024-01-01", "2024-02-29"),
                 ("2024-03-01", "2024-04-30"),
                 ("2024-05-01", "2024-06-30"),
                 ("2024-07-01", "2024-08-31"),
@@ -338,6 +469,7 @@ class TestAccountReturn(TestAccountReportsCommon):
         self.assert_return_dates_equal(
             existing_returns,
             [
+                ("2023-11-01", "2023-12-31"),
                 ("2024-01-01", "2024-02-29"),
                 ("2024-03-01", "2024-04-30"),
                 ("2024-05-01", "2024-06-30"),
@@ -363,7 +495,9 @@ class TestAccountReturn(TestAccountReportsCommon):
         self.assert_return_dates_equal(
             existing_returns,
             [
-                ("2024-01-01", "2024-02-29"),  # First one already posted
+                ("2023-11-01", "2023-12-31"),  # First one already posted
+                ("2024-01-01", "2024-01-31"),
+                ("2024-02-01", "2024-02-29"),
                 ("2024-03-01", "2024-03-31"),
                 ("2024-04-01", "2024-04-30"),
                 ("2024-05-01", "2024-05-31"),
@@ -417,7 +551,7 @@ class TestAccountReturn(TestAccountReportsCommon):
         self.assert_return_dates_equal(
             existing_returns,
             [
-                ("2024-01-01", "2024-01-31"),   # first already posted so we won't create another one before it
+                ("2023-12-01", "2023-12-31"),   # first already posted so we won't create another one before it
                 ("2024-04-01", "2024-07-31"),
                 ("2024-08-01", "2024-11-30"),
             ]
@@ -432,6 +566,7 @@ class TestAccountReturn(TestAccountReportsCommon):
         self.assert_return_dates_equal(
             existing_returns,
             [
+                ("2023-12-01", "2023-12-31"),
                 ("2024-01-01", "2024-01-31"),
                 ("2024-02-01", "2024-02-29"),
                 ("2024-03-01", "2024-03-31"),
@@ -465,6 +600,7 @@ class TestAccountReturn(TestAccountReportsCommon):
                 {'is_completed': True},
                 {'is_completed': True},
                 {'is_completed': True},
+                {'is_completed': True},
             ]
         )
 
@@ -478,6 +614,7 @@ class TestAccountReturn(TestAccountReportsCommon):
         self.assert_return_dates_equal(
             existing_returns,
             [
+                ("2023-12-01", "2023-12-31"),
                 ("2024-01-01", "2024-01-31"),
                 ("2024-02-01", "2024-02-29"),
                 ("2024-03-01", "2024-03-31"),
@@ -490,6 +627,41 @@ class TestAccountReturn(TestAccountReportsCommon):
                 ("2024-10-01", "2024-10-31"),
                 ("2024-11-01", "2024-11-30"),
                 ("2024-12-01", "2024-12-31"),
+            ]
+        )
+
+    def test_return_fiscal_year_periodicity(self):
+        with self._patch_returns_generation():
+            self.env.company.fiscalyear_last_day = 31
+            self.env.company.fiscalyear_last_month = '12'
+            self.env['account.fiscal.year'].create([
+                {
+                    'name': "FY 2024_1",
+                    'date_from': '2024-01-01',
+                    'date_to': '2024-09-30',
+                    'company_id': self.env.company.id,
+                },
+                {
+                    'name': "FY 2024_2",
+                    'date_from': '2024-10-01',
+                    'date_to': '2024-12-31',
+                    'company_id': self.env.company.id,
+                },
+            ])
+            self.basic_return_type.deadline_periodicity = 'fiscalyear'
+
+            self.env['account.return.type']._generate_or_refresh_all_returns(self.env.company)
+
+        existing_returns = self.env['account.return'].search([
+            ('type_id', '=', self.basic_return_type.id),
+            ('company_id', '=', self.env.company.id)
+        ])
+        self.assert_return_dates_equal(
+            existing_returns,
+            [
+                ("2023-01-01", "2023-12-31"),
+                ("2024-01-01", "2024-09-30"),
+                ("2024-10-01", "2024-12-31"),
             ]
         )
 
@@ -569,30 +741,53 @@ class TestAccountReturn(TestAccountReportsCommon):
         assert_period(date(2024, 12, 6), expected_start=date(2024, 12, 6), expected_end=date(2025, 1, 5))
         assert_period(date(2025, 1, 5), expected_start=date(2024, 12, 6), expected_end=date(2025, 1, 5))
 
+        # Fiscal year
+        self.basic_return_type.deadline_periodicity = 'fiscalyear'
+        self.env.company.fiscalyear_last_day = 31
+        self.env.company.fiscalyear_last_month = '12'
+        self.env['account.fiscal.year'].create([
+            {
+                'name': "FY 2024_1",
+                'date_from': '2024-01-01',
+                'date_to': '2024-09-30',
+                'company_id': self.env.company.id,
+            },
+            {
+                'name': "FY 2024_2",
+                'date_from': '2024-10-01',
+                'date_to': '2024-12-31',
+                'company_id': self.env.company.id,
+            },
+        ])
+
+        assert_period(date(2024, 5, 1), expected_start=date(2024, 1, 1), expected_end=date(2024, 9, 30))
+        assert_period(date(2024, 11, 5), expected_start=date(2024, 10, 1), expected_end=date(2024, 12, 31))
+        assert_period(date(2025, 5, 1), expected_start=date(2025, 1, 1), expected_end=date(2025, 12, 31))
+
     def test_vat_closing_moves_with_lock_date(self):
         """ Checks posting a closing entry after the tax lock date has been manually set is allowed.
         """
-        self.env.company.tax_lock_date = '2024-12-31'
+        self.env.company.tax_lock_date = '2023-12-31'
 
         first_return = self.env['account.return'].search([
             ('type_id', '=', self.basic_return_type.id),
-            ('date_from', '=', '2024-01-01'),
             ('company_id', '=', self.env.company.id),
-        ])
+            ('date_to', '=', '2023-12-31'),
+        ], order='date_from', limit=1)
         self.assertEqual(len(first_return), 1)
 
         with self.allow_pdf_render():
             first_return.action_validate()
 
-        self.assertTrue(first_return.closing_move_ids)
+        self.assertEqual(fields.Date.to_string(first_return.closing_move_ids.date), '2023-12-31')
 
     def test_multicompany_generation_branches(self):
         with self._patch_returns_generation():
             branch_1_data = self.setup_other_company(name='Branch 1', parent_id=self.company_data['company'].id)
-            branch_2_data = self.setup_other_company(name='Branch 2', vat='23434344', parent_id=self.company_data['company'].id, account_return_periodicity='semester', account_opening_date="2014-01-01")
+            branch_2_data = self.setup_other_company(name='Branch 2', vat='23434344', parent_id=self.company_data['company'].id, account_return_periodicity='semester', account_opening_date="2024-01-01")
 
             branch_2_return = self.env['account.return'].search([('type_id', '=', self.basic_return_type.id), ('company_id', '=', branch_2_data['company'].id)])
-            self.assert_return_dates_equal(branch_2_return, [[("2024-01-01"), ("2024-06-30")], [("2024-07-01"), ("2024-12-31")]])
+            self.assert_return_dates_equal(branch_2_return, [("2023-07-01", "2023-12-31"), ("2024-01-01", "2024-06-30"), ("2024-07-01", "2024-12-31")])
             self.assertEqual(branch_2_return.company_id, branch_2_data['company'])
 
             branch_1_1_data = self.setup_other_company(name='Branch 1-1', parent_id=branch_1_data['company'].id)
@@ -605,6 +800,7 @@ class TestAccountReturn(TestAccountReportsCommon):
             self.assert_return_dates_equal(
                 tree_1_returns,
                 [
+                    ("2023-12-01", "2023-12-31"),
                     ("2024-01-01", "2024-01-31"),
                     ("2024-02-01", "2024-02-29"),
                     ("2024-03-01", "2024-03-31"),
@@ -625,6 +821,7 @@ class TestAccountReturn(TestAccountReportsCommon):
             self.assert_return_dates_equal(
                 tree_2_returns,
                 [
+                    ("2023-07-01", "2023-12-31"),
                     ("2024-01-01", "2024-06-30"),
                     ("2024-07-01", "2024-12-31"),
                 ],
@@ -644,6 +841,7 @@ class TestAccountReturn(TestAccountReportsCommon):
         self.assert_return_dates_equal(
             self.env['account.return'].search([('type_id', '=', self.basic_return_type.id), ('company_ids', 'in', self.company_data['company'].id)]),
             [
+                ("2023-11-01", "2023-12-31"),
                 ("2024-01-01", "2024-02-29"),
                 ("2024-03-01", "2024-04-30"),
                 ("2024-05-01", "2024-06-30"),
@@ -656,6 +854,7 @@ class TestAccountReturn(TestAccountReportsCommon):
         self.assert_return_dates_equal(
             self.env['account.return'].search([('type_id', '=', self.basic_return_type.id), ('company_ids', 'in', other_company_data['company'].id)]),
             [
+                ("2023-12-01", "2023-12-31"),
                 ("2024-01-01", "2024-01-31"),
                 ("2024-02-01", "2024-02-29"),
                 ("2024-03-01", "2024-03-31"),
@@ -680,11 +879,12 @@ class TestAccountReturn(TestAccountReportsCommon):
                 'vat': '6537643',
             })
 
-        unit_returns = self.env['account.return'].search([('type_id', '=', self.basic_return_type.id), ('company_ids', 'in', unit_companies.ids)])
+        unit_returns = self.env['account.return'].search([('type_id', '=', self.basic_return_type.id)]).filtered(lambda r: r.company_ids == unit_companies)
 
         self.assert_return_dates_equal(
             unit_returns,
             [
+                ("2023-11-01", "2023-12-31"),
                 ("2024-01-01", "2024-02-29"),
                 ("2024-03-01", "2024-04-30"),
                 ("2024-05-01", "2024-06-30"),
@@ -707,13 +907,42 @@ class TestAccountReturn(TestAccountReportsCommon):
             first_return.action_validate()
             second_return.action_validate()
 
-        self.company_data['company'].tax_lock_date = date(2023, 12, 31)
+        self.company_data['company'].tax_lock_date = first_return.date_from - relativedelta(days=1)
 
         with self.assertRaises(UserError):
             first_return.action_reset_tax_return_common()
 
         second_return.action_reset_tax_return_common()
         first_return.action_reset_tax_return_common()
+
+    @freeze_time('2026-08-01')
+    def test_reset_tax_return_reverses_closing_move_with_restrictive_audit_trail(self):
+        """ When the company enforces the restrictive audit trail, the posted closing move can not
+        be deleted. Resetting the return must instead reverse the closing move, so no entry is ever
+        removed and the audit trail stays intact. """
+        self.company_data['company'].restrictive_audit_trail = True
+
+        tax_return = self.env['account.return'].search([
+            ('type_id', '=', self.basic_return_type.id),
+            ('company_id', '=', self.company_data['company'].id),
+        ], order='date_to ASC', limit=1)
+
+        with self.allow_pdf_render():
+            tax_return.action_validate(True)
+
+        closing_move = tax_return.closing_move_ids
+        self.assertEqual(len(closing_move), 1)
+        self.assertEqual(closing_move.state, 'posted')
+        self.assertTrue(tax_return.date_lock)
+
+        tax_return.action_reset_tax_return_common()
+
+        # The closing entry must be canceled.
+        self.assertEqual(closing_move.state, 'cancel')
+        self.assertFalse(closing_move.closing_return_id)
+
+        self.assertEqual(tax_return.state, 'new')
+        self.assertFalse(tax_return.closing_move_ids)
 
     def test_cannot_submit_if_previous_not_submitted(self):
         first_return, second_return = self.env['account.return'].search([
@@ -732,8 +961,8 @@ class TestAccountReturn(TestAccountReportsCommon):
     def test_return_manual_creation_wizard_single_return(self):
         original_number_of_returns = self.env['account.return'].search_count([])
         wizard = self.env['account.return.creation.wizard'].create([{
-            'date_from': '2023-12-01',
-            'date_to': '2023-12-31',
+            'date_from': '2023-11-01',
+            'date_to': '2023-11-30',  # December is auto generated by try_create using the normal range
             'return_type_id': self.basic_return_type.id,
         }])
         wizard.action_create_manual_account_returns()
@@ -741,7 +970,7 @@ class TestAccountReturn(TestAccountReportsCommon):
 
         self.assertEqual(new_number_of_returns, original_number_of_returns + 1)
 
-        new_return = self.env['account.return'].search([], order='date_from')[0]
+        new_return = self.env['account.return'].search([('type_id', '=', self.basic_return_type.id)], order='date_from asc', limit=1)
         self.assertRecordValues(
             new_return,
             [{
@@ -751,32 +980,62 @@ class TestAccountReturn(TestAccountReportsCommon):
         )
         self.assert_return_dates_equal(
             new_return,
-            [("2023-12-01", "2023-12-31")]
+            [("2023-11-01", "2023-11-30")]
         )
 
     def test_return_manual_creation_wizard_multiple_returns(self):
         original_number_of_returns = self.env['account.return'].search_count([])
         wizard = self.env['account.return.creation.wizard'].create([{
             'date_from': '2023-10-01',
-            'date_to': '2023-12-31',
+            'date_to': '2023-11-30',  # December is auto generated by try_create using the normal range
             'return_type_id': self.basic_return_type.id,
         }])
         wizard.action_create_manual_account_returns()
 
         new_number_of_returns = self.env['account.return'].search_count([])
-        self.assertEqual(new_number_of_returns, original_number_of_returns + 3)
+        self.assertEqual(new_number_of_returns, original_number_of_returns + 2)
 
-        new_returns = self.env['account.return'].search([], order='date_from')[:3]
-        self.assertEqual(new_returns.company_id.id, self.env.company.id)
-        self.assertEqual(new_returns.type_id.id, self.basic_return_type.id)
+        new_returns = self.env['account.return'].search([('type_id', '=', self.basic_return_type.id)], order='date_from', limit=2)
+        self.assertEqual(new_returns[0].company_id.id, self.env.company.id)
         self.assert_return_dates_equal(
             new_returns,
             [
                 ("2023-10-01", "2023-10-31"),
                 ("2023-11-01", "2023-11-30"),
-                ("2023-12-01", "2023-12-31"),
             ]
         )
+
+    def test_return_creation_for_archived_return_month(self):
+        existing_return = self.env['account.return'].search([
+            ('type_id', '=', self.basic_return_type.id),
+            ('company_id', '=', self.env.company.id),
+            ('active', '=', True),
+            ('date_from', '=', '2024-01-01'),
+            ('date_to', '=', '2024-01-31'),
+        ])
+        self.assertEqual(len(existing_return), 1)
+        existing_return.action_archive()
+        self.assertFalse(existing_return.active)
+
+        # Create a return for a period where a return already existed but is now archived
+        wizard = self.env['account.return.creation.wizard'].create([{
+            'date_from': '2024-01-01',
+            'date_to': '2024-01-31',
+            'return_type_id': self.basic_return_type.id,
+        }])
+        wizard.action_create_manual_account_returns()
+        domain = [
+            ('company_id', '=', self.env.company.id),
+            ('type_id', '=', self.basic_return_type.id),
+            ('date_from', '=', '2024-01-01'),
+            ('date_to', '=', '2024-01-31'),
+            ('active', '=', True),
+        ]
+        self.assertEqual(self.env['account.return'].search_count(domain), 1)
+
+        # Unarchiving old return should raise an error since a new return exists for same period
+        with self.assertRaises(UserError):
+            existing_return.action_unarchive()
 
     def test_return_manual_creation_wizard_wrong_dates(self):
         wizard = self.env['account.return.creation.wizard'].create([{
@@ -789,6 +1048,47 @@ class TestAccountReturn(TestAccountReportsCommon):
             'date_from': '2023-12-01',
         })
         self.assertEqual(wizard.show_warning_wrong_dates, False)
+
+    def test_return_manual_creation_force_wrong_dates(self):
+        wizard = self.env['account.return.creation.wizard'].create([{
+            'date_from': '2023-10-15',
+            'date_to': '2023-12-31',
+            'return_type_id': self.basic_return_type.id,
+        }])
+        self.assertEqual(wizard.show_warning_wrong_dates, True)
+        wizard.with_context(force_periodicity_violation=True).action_create_manual_account_returns()
+
+        generated_account_return = self.env['account.return'].search([
+            ('type_id', '=', self.basic_return_type.id),
+            ('company_id', '=', self.env.company.id),
+            ('date_from', '=', '2023-10-15'),
+            ('date_to', '=', '2023-12-31'),
+        ])
+        self.assertEqual(len(generated_account_return), 1)
+
+        options = generated_account_return._get_closing_report_options()
+        self.assertEqual(options['date']['filter'], 'custom')
+        self.assertEqual(options['date']['date_from'], '2023-10-15')
+        self.assertEqual(options['date']['date_to'], '2023-12-31')
+
+    def test_audit_manual_creation_allow_duplicates(self):
+        wizard = self.env['account.return.creation.wizard'].create([{
+            'category': 'audit',
+            'date_from': '2024-01-01',
+            'date_to': '2024-12-31',
+            'return_type_id': self.audit_return_type.id,
+        }])
+
+        wizard.action_create_manual_account_returns()
+
+        audits = self.env['account.return'].search([
+            ('type_id', '=', self.audit_return_type.id),
+            ('company_id', '=', self.env.company.id),
+            ('date_from', '=', '2024-01-01'),
+            ('date_to', '=', '2024-12-31'),
+        ])
+
+        self.assertEqual(len(audits), 2)
 
     def test_account_return_check_template_basic(self):
         # 1. Create audit return type
@@ -1057,6 +1357,60 @@ class TestAccountReturn(TestAccountReportsCommon):
             ]
         )
 
+    def test_account_return_check_template_changing_domain(self):
+        audit_return_type = self.env['account.return.type'].create([{
+            'category': 'audit',
+            'default_deadline_periodicity': 'year',
+            'default_deadline_start_date': '2024-01-01',
+            'name': "Audit",
+        }])
+
+        template = self.env['account.return.check.template'].create({
+            'name': "Check 1",
+            'code': '_template_checks_1',
+            'return_type': audit_return_type.id,
+            'type': 'check',
+            'model': 'account.move',
+            'domain': "[('state', '=', 'draft')]",
+        })
+
+        account_return = audit_return_type.with_context(
+            forced_date_from=fields.Date.from_string('2024-01-01'),
+            forced_date_to=fields.Date.from_string('2024-12-31'),
+        )._try_create_returns_for_fiscal_year(self.env.company, False)
+
+        self.init_invoice('out_invoice', amounts=[10], invoice_date='2024-01-01')
+
+        account_return.refresh_checks()
+
+        self.assert_checks_equal(
+            account_return,
+            [
+                {
+                    'code': '_template_checks_1',
+                    'type': 'check',
+                    'result': 'anomaly',
+                    'records_count': 1,
+                }
+            ]
+        )
+
+        template.domain = "[('state', '=', 'posted')]"
+
+        account_return.refresh_checks()
+
+        self.assert_checks_equal(
+            account_return,
+            [
+                {
+                    'code': '_template_checks_1',
+                    'type': 'check',
+                    'result': 'reviewed',
+                    'records_count': 0,
+                }
+            ]
+        )
+
     def test_reset_account_reviewed_audit_status_on_balance_change(self):
         audit_return_type = self.env['account.return.type'].create([{
             'category': 'audit',
@@ -1200,7 +1554,6 @@ class TestAccountReturn(TestAccountReportsCommon):
             ec_sales_list_return,
             [
                 'goods_service_classification',
-                'only_b2b',
                 'eu_cross_border',
                 'reverse_charge_mentioned',
                 'no_partners_without_vat'
@@ -1208,11 +1561,9 @@ class TestAccountReturn(TestAccountReportsCommon):
         )
 
         eu_cross_border_check = checks.filtered(lambda c: c.code == 'eu_cross_border')
-        only_b2b_check = checks.filtered(lambda c: c.code == 'only_b2b')
         no_partners_without_vat_check = checks.filtered(lambda c: c.code == 'no_partners_without_vat')
 
         self.assertEqual(eu_cross_border_check.result, 'reviewed', "The EU cross border check should succeed as there is a cross-border transaction")
-        self.assertEqual(only_b2b_check.result, 'reviewed', "The only B2B check should succeed as there is a B2B transaction")
         self.assertEqual(no_partners_without_vat_check.result, 'reviewed', "The no partners without VAT check should succeed as there is a partner without VAT")
 
     def test_annual_return_checks(self):
@@ -1366,6 +1717,11 @@ class TestAccountReturn(TestAccountReportsCommon):
         self.init_invoice('in_invoice', amounts=[100], taxes=purchase_tax, post=True, invoice_date='2024-04-01')
         self.init_invoice('out_invoice', amounts=[10], taxes=sale_tax, post=True, invoice_date='2024-05-01')
         self.init_invoice('out_invoice', amounts=[90], taxes=sale_tax, post=True, invoice_date='2024-06-01')
+        self.init_invoice('out_invoice', amounts=[50], taxes=sale_tax, post=True, invoice_date='2024-07-01')
+
+        # Mark december return completed
+        december_return = self.env['account.return'].search([('type_id', '=', self.basic_return_type.id), ('date_to', '=', '2023-12-31')])
+        december_return.action_mark_completed()
 
         # January Return: 2.10 to recover
         january_return = self.env['account.return'].search([('type_id', '=', self.basic_return_type.id), ('date_to', '=', '2024-01-31')])
@@ -1428,8 +1784,8 @@ class TestAccountReturn(TestAccountReportsCommon):
         may_return = self.env['account.return'].search([('type_id', '=', self.basic_return_type.id), ('date_to', '=', '2024-05-31')])
         with self.allow_pdf_render():
             may_return.action_validate(bypass_failing_tests=True)
-        self.assertEqual(may_return.total_amount_to_pay, -18.90)
-        self.assertEqual(may_return.period_amount_to_pay, 2.1)
+        self.assertEqual(may_return.total_amount_to_pay, -18.9)
+        self.assertEqual(may_return.period_amount_to_pay, 2.10)
         self.assertRecordValues(
             may_return.closing_move_ids.line_ids,
             [
@@ -1450,6 +1806,36 @@ class TestAccountReturn(TestAccountReportsCommon):
             [
                 {'account_id': tax_account.id, 'debit': 18.9, 'credit': 0.0},
                 {'account_id': tax_receivable.id, 'debit': 0.0, 'credit': 18.9},
+            ],
+        )
+
+        other_account = self.company_data['default_account_revenue']
+        # Generating an amount to recover of 200 which is not generated by a closing
+        self.env['account.move'].create({
+            'date': '2024-07-01',
+            'line_ids': [
+                Command.create({
+                    'debit': 200,
+                    'account_id': other_account.id
+                }),
+                Command.create({
+                    'credit': 200,
+                    'account_id': tax_receivable.id
+                }),
+            ]
+        }).action_post()
+
+        july_return = self.env['account.return'].search([('type_id', '=', self.basic_return_type.id), ('date_to', '=', '2024-07-31')])
+        with self.allow_pdf_render():
+            july_return.action_validate(bypass_failing_tests=True)
+        self.assertEqual(july_return.total_amount_to_pay, 210.5)
+        self.assertEqual(july_return.period_amount_to_pay, 10.5)
+        self.assertRecordValues(
+            july_return.closing_move_ids.line_ids,
+            [
+                {'account_id': tax_account.id, 'debit': 10.5, 'credit': 0.0},
+                {'account_id': tax_receivable.id, 'debit': 200.0, 'credit': 0.0},
+                {'account_id': tax_payable.id, 'debit': 0.0, 'credit': 210.5},
             ],
         )
 
@@ -1536,11 +1922,19 @@ class TestAccountReturn(TestAccountReportsCommon):
                 "Vérifiez et validez les factures et factures fournisseurs en brouillon pour la période, ou modifiez leur date comptable."
             )
 
+    def test_load_module_terms_without_accounting_access(self):
+        """ Installing a language refreshes the translated name of the recent returns. An
+        administrator without accounting access can install one, so it must not require it. """
+        limited_user = self.env['res.users'].create({
+            'name': "No Accounting",
+            'login': "no_accounting",
+            'group_ids': [Command.set(self.env.ref('base.group_system').ids)],
+        })
+        self.assertFalse(limited_user.has_group('account.group_account_user'))
+
+        self.env['res.lang'].with_user(limited_user)._activate_and_install_lang('fr_FR')
+
     def test_audit_balances_account(self):
-        unaff_earnings_account = self.env['account.account'].search(domain=[
-            *self.env['account.account']._check_company_domain(self.env.company.ids),
-            ('account_type', '=', 'equity_unaffected'),
-        ], limit=1)
         self.init_invoice('out_invoice', amounts=[20], post=True, invoice_date='2024-02-01')
         self.init_invoice('out_invoice', amounts=[30], post=True, invoice_date='2025-02-01')
 
@@ -1551,17 +1945,11 @@ class TestAccountReturn(TestAccountReportsCommon):
 
         self.assertEqual(self.company_data['default_account_revenue'].with_context(working_file_id=self.audit_2024.id).audit_balance, -20)
         self.assertEqual(self.company_data['default_account_revenue'].with_context(working_file_id=self.audit_2024.id).audit_previous_balance, 0)
-        self.assertEqual(unaff_earnings_account.with_context(working_file_id=self.audit_2024.id).audit_balance, 0)
-        self.assertEqual(unaff_earnings_account.with_context(working_file_id=self.audit_2024.id).audit_previous_balance, 0)
 
         self.assertEqual(self.company_data['default_account_revenue'].with_context(working_file_id=self.audit_2025.id).audit_balance, -30)
         self.assertEqual(self.company_data['default_account_revenue'].with_context(working_file_id=self.audit_2025.id).audit_previous_balance, -20)
-        self.assertEqual(unaff_earnings_account.with_context(working_file_id=self.audit_2025.id).audit_balance, -20)
-        self.assertEqual(unaff_earnings_account.with_context(working_file_id=self.audit_2025.id).audit_previous_balance, 0)
 
         self.init_invoice('out_invoice', amounts=[10], post=True, invoice_date='2023-02-01')
-        self.assertEqual(unaff_earnings_account.with_context(working_file_id=self.audit_2025.id).audit_balance, -30)
-        self.assertEqual(unaff_earnings_account.with_context(working_file_id=self.audit_2025.id).audit_previous_balance, -10)
 
     def test_state_progression(self):
         return_types = [
@@ -1756,3 +2144,200 @@ class TestAccountReturn(TestAccountReportsCommon):
         ])
 
         self.assert_return_dates_equal(existing_return, [('2022-09-01', '2023-12-31')])
+
+    def test_tax_return_with_shared_accounts(self):
+        '''
+        Test that creating an audit including a shared account will not raise an AccessError in case
+        the account is used by the other company in the audit period.
+        '''
+
+        company_1 = self.company_data['company']
+        company_2 = self.company_data_2['company']
+        account_revenue = self.company_data['default_account_revenue']
+
+        # Sharing account
+        self.company_data['default_account_revenue'].write({
+            'code_mapping_ids': [
+                Command.create({'company_id': company_1.id, 'code': '180021'}),
+                Command.create({'company_id': company_2.id, 'code': '180022'}),
+            ],
+            'company_ids': [Command.set([company_1.id, company_2.id])],
+        })
+
+        audit_2024_company_1 = self.audit_2024
+        audit_2024_company_2 = self.audit_return_type.with_context(
+            forced_date_from=fields.Date.from_string('2024-01-01'),
+            forced_date_to=fields.Date.from_string('2024-12-31')
+        )._try_create_returns_for_fiscal_year(company_2, False)
+
+        # Set the account audit status to 'reviewed'
+        account_status = account_revenue.account_status.filtered(lambda status: status.audit_id in (audit_2024_company_1, audit_2024_company_2))
+        account_status.status = 'reviewed'
+
+        # With company 2, create a move in the audit period
+        company_2_move = self.env['account.move'].with_company(company_2).create({
+            'move_type': 'entry',
+            'date': '2024-01-02',
+            'company_id': company_2.id,
+            'line_ids': [
+                Command.create({
+                    'name': 'revenue_line',
+                    'account_id': account_revenue.id,
+                    'debit': 500.0,
+                    'credit': 0.0,
+                }),
+                Command.create({
+                    'name': 'counterpart line',
+                    'account_id': self.company_data_2['default_account_expense'].id,
+                    'debit': 0.0,
+                    'credit': 500.0,
+                }),
+            ]
+        })
+
+        # Should be able to post the move without issues
+        company_2_move.action_post()
+        self.assertEqual(account_status.filtered(lambda a: a.audit_id.company_id == company_1).status, 'reviewed', "Audit status in company 1 should be unchanged")
+        self.assertEqual(account_status.filtered(lambda a: a.audit_id.company_id == company_2).status, 'todo', "Audit status in company 2 should reset to default")
+
+    def test_vies_validation_fiscal_position_vat_required(self):
+        """ Test that vies validation is performed only for moves with fiscal position with vat required """
+
+        def _check_vies_iap(record):
+            return "valid" if record.vat == 'ESA12345674' else "unassigned"
+
+        # needed to have the 'check_partner_vies'
+        self.ensure_installed('base_vat')
+        self.basic_tax_report.country_id = self.env.ref('base.be')
+        self.env.company.vat_check_vies = True
+
+        partner = self.partner_a.copy({'country_id': self.env.ref("base.es").id})
+        fp_vat_required = self.env['account.fiscal.position'].create({
+            'name': 'fp vat required',
+            'vat_required': True,
+        })
+
+        january_return = self.env['account.return'].search([
+            ('type_id', '=', self.basic_return_type.id),
+            ('company_id', '=', self.env.company.id),
+            ('date_from', '=', '2024-01-01'),
+            ('date_to', '=', '2024-01-31'),
+        ])
+
+        self.assertEqual(len(january_return), 1, "There should be one return for January 2024")
+
+        invoice = self._create_invoice('in_invoice', partner_id=partner, invoice_date='2024-01-01', post=True)
+
+        data_list = [
+            {'partner_vals': {'vat': False}, 'expected_check': ['reviewed', 'anomaly']},
+            {'partner_vals': {'vat': 'ESA12345674'}, 'expected_check': ['reviewed', 'reviewed']},
+            {'partner_vals': {'vat': 'ESA12345678'}, 'expected_check': ['reviewed', 'anomaly']},
+        ]
+
+        for with_fp, data in product((False, True), data_list):
+            with self.subTest(with_fp=with_fp, vat=data['partner_vals']['vat']):
+                if bool(invoice.fiscal_position_id) ^ with_fp:
+                    invoice.button_draft()
+                    invoice.fiscal_position_id = False if not with_fp else fp_vat_required
+                    invoice.action_post()
+
+                partner.with_context(no_vat_validation=True).write(data['partner_vals'])
+                with patch('odoo.addons.base_vat.models.res_partner.ResPartner._check_vies_iap', _check_vies_iap):
+                    january_return.refresh_checks()
+
+                self.assert_return_contains_checks(
+                    january_return,
+                    ['check_partner_vies'],
+                )
+
+                vies_check = january_return.check_ids.filtered(lambda c: c.code == 'check_partner_vies')
+                self.assertEqual(vies_check.result, data['expected_check'][with_fp])
+
+    def test_change_type_workflow(self):
+        returns = self.env['account.return'].search([
+            ('type_id', '=', self.basic_return_type.id),
+            ('company_id', '=', self.env.company.id)
+        ], limit=3, order='date_from ASC')
+
+        with self.allow_pdf_render():
+            returns[0].action_submit()
+            returns[1].action_validate()
+
+        self.assertEqual(returns[0].state, 'paid')
+        self.assertEqual(returns[1].state, 'reviewed')
+        self.assertEqual(returns[2].state, 'new')
+
+        self.assertTrue(returns[0].is_completed)
+        self.assertFalse(returns[1].is_completed)
+        self.assertFalse(returns[2].is_completed)
+
+        self.basic_return_type.states_workflow = 'generic_state_review'
+
+        # Changing the workflow to 'review' should reset the return in the terminal state so that it's in the new terminal state
+        self.assertEqual(returns[0].state, 'reviewed')
+        self.assertEqual(returns[1].state, 'reviewed')
+        self.assertEqual(returns[2].state, 'new')
+
+        self.assertTrue(returns[0].is_completed)
+        self.assertTrue(returns[1].is_completed)
+        self.assertFalse(returns[2].is_completed)
+
+        # Changing the state back to 'review-submit-pay' should keep the same states and completion status
+        self.basic_return_type.states_workflow = 'generic_state_tax_report'
+        self.assertEqual(returns[0].state, 'reviewed')
+        self.assertEqual(returns[1].state, 'reviewed')
+        self.assertEqual(returns[2].state, 'new')
+
+        self.assertTrue(returns[0].is_completed)
+        self.assertTrue(returns[1].is_completed)
+        self.assertFalse(returns[2].is_completed)
+
+        # Changing the workflow to only use a 'paid' state should crash, because there already exist returns with an inconsistent state
+        with self.assertRaises(UserError):
+            self.basic_return_type.states_workflow = 'generic_state_only_pay'
+
+    def test_get_return_from_report_options_multiple_return_types_on_a_report(self):
+        """ Several return types can share a report: a correction filed alongside the original
+        return, for instance. The options generated for a return must then resolve back to that
+        return, and not to whichever one the search happens to order first.
+        """
+        correction_return_type = self.env['account.return.type'].create({
+            'name': "VAT Return (Generic) - Correction",
+            'report_id': self.basic_tax_report.id,
+            'default_deadline_start_date': '2024-01-01',
+        })
+
+        common_vals = {
+            'company_id': self.env.company.id,
+            'date_from': '2024-01-01',
+            'date_to': '2024-03-31',
+        }
+        original_return, correction_return = self.env['account.return'].create([
+            {**common_vals, 'name': "Original", 'type_id': self.basic_return_type.id},
+            {**common_vals, 'name': "Correction", 'type_id': correction_return_type.id},
+        ])
+
+        for account_return in (original_return, correction_return):
+            options = account_return._get_closing_report_options()
+            self.assertEqual(
+                self.env['account.return']._get_return_from_report_options(options),
+                account_return,
+                "The return the options were generated from must be the one resolved back from them.",
+            )
+
+    def test_readonly_user_access_tax_returns_action(self):
+        """Ensure users with Accounting Read-only rights can view the Tax Return page without encountering an AccessError."""
+        readonly_user = self.env['res.users'].create({
+            'name': 'Readonly Test',
+            'login': 'readonly_test_user',
+            'group_ids': [
+                Command.set([
+                    self.env.ref('base.group_user').id,
+                    self.env.ref('account.group_account_readonly').id,
+                ])
+            ],
+        })
+        server_action = self.env.ref('account_reports.action_server_open_view_account_return')
+        result = server_action.with_user(readonly_user).run()
+        self.assertEqual(result.get('type'), 'ir.actions.act_window')
+        self.assertEqual(result.get('res_model'), 'account.return')

@@ -531,7 +531,7 @@ class WebStudioController(http.Controller):
             context_cleaned = clean_context(context)
             request.update_context(**context_cleaned)
         IrModelFields = request.env['ir.model.fields']
-        view = request.env['ir.ui.view'].browse(view_id)
+        view = request.env['ir.ui.view'].browse(view_id)._get_closest_primary_view()
         operations = operations or []
         for op in operations:
             if op['type'] not in OPERATIONS_WHITELIST:
@@ -586,10 +586,12 @@ class WebStudioController(http.Controller):
             if node and node.get('tag') == 'field' and node.get('field_description') and node['field_description'].get('related'):
                 model_name = node['field_description'].get("model_name") or model
                 related_filename = node['field_description']['related'] + '_filename'
+                related_model_path = related_filename.split(".")[:-1]
                 related_filename = request.env["ir.model.fields"]._get_related_field(model_name, related_filename)
                 if not related_filename:
                     continue
-                char_op['node']['field_description'].update({'related': related_filename.name})
+                path = ".".join(chain(related_model_path, [related_filename.name]))
+                char_op['node']['field_description'].update({'related': path})
             char_op['node']['attrs']['invisible'] = 'True'
 
             # put the filename field after the binary field

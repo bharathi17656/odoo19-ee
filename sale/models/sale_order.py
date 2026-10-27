@@ -37,6 +37,7 @@ class SaleOrder(models.Model):
     _description = "Sales Order"
     _order = 'date_order desc, id desc'
     _check_company_auto = True
+    _mail_post_access = "read"
 
     _date_order_conditional_required = models.Constraint(
         "CHECK((state = 'sale' AND date_order IS NOT NULL) OR state != 'sale')",
@@ -72,6 +73,7 @@ class SaleOrder(models.Model):
         string="Status",
         readonly=True, copy=False, index=True,
         tracking=3,
+        group_expand=True,
         default='draft')
     locked = fields.Boolean(
         help="Locked orders cannot be modified.",
@@ -133,7 +135,7 @@ class SaleOrder(models.Model):
 
     validity_date = fields.Date(
         string="Expiration",
-        help="Validity of the order, after that you will not able to sign & pay the quotation.",
+        help="Validity of the quotation. After this date, you will no longer be able to sign and pay it.",
         compute='_compute_validity_date',
         store=True, readonly=False, copy=False, precompute=True)
     journal_id = fields.Many2one(
@@ -505,11 +507,14 @@ class SaleOrder(models.Model):
     def _default_team_id(self):
         return self.env.context.get('default_team_id', False) or self.team_id.id
 
+    def _get_priced_lines(self):
+        return self.order_line.filtered(lambda x: not x.display_type)
+
     @api.depends('order_line.price_subtotal', 'currency_id', 'company_id', 'payment_term_id')
     def _compute_amounts(self):
         AccountTax = self.env['account.tax']
         for order in self:
-            order_lines = order.order_line.filtered(lambda x: not x.display_type)
+            order_lines = order._get_priced_lines()
             base_lines = [line._prepare_base_line_for_taxes_computation() for line in order_lines]
             base_lines += order._add_base_lines_for_early_payment_discount()
             AccountTax._add_tax_details_in_base_lines(base_lines, order.company_id)
@@ -539,7 +544,7 @@ class SaleOrder(models.Model):
         ):
             percentage = self.payment_term_id.discount_percentage
             currency = self.currency_id or self.company_id.currency_id
-            for line in self.order_line.filtered(lambda x: not x.display_type):
+            for line in self._get_priced_lines():
                 line_amount_after_discount = (line.price_subtotal / 100) * percentage
                 epd_lines.append(self.env['account.tax']._prepare_base_line_for_taxes_computation(
                     record=self,
@@ -547,6 +552,7 @@ class SaleOrder(models.Model):
                     quantity=1.0,
                     currency_id=currency,
                     sign=1,
+                    special_mode='total_excluded',
                     special_type='early_payment',
                     tax_ids=line.tax_ids.flatten_taxes_hierarchy().filtered(lambda tax: tax.amount_type != 'fixed'),
                 ))
@@ -556,6 +562,7 @@ class SaleOrder(models.Model):
                     quantity=1.0,
                     currency_id=currency,
                     sign=1,
+                    special_mode='total_excluded',
                     special_type='early_payment',
                 ))
         return epd_lines
@@ -672,11 +679,16 @@ class SaleOrder(models.Model):
             )
 
     def _compute_amount_undiscounted(self):
+        AccountTax = self.env['account.tax']
         for order in self:
-            total = 0.0
+            subtotal = 0
             for line in order.order_line:
-                total += (line.price_subtotal * 100)/(100-line.discount) if line.discount != 100 else (line.price_unit * line.product_uom_qty)
-            order.amount_undiscounted = total
+                base_line = line._prepare_base_line_for_taxes_computation(discount=0)
+                # Exclude global discounts and down payments
+                if not base_line.get('special_type'):
+                    AccountTax._add_tax_details_in_base_line(base_line, order.company_id)
+                    subtotal += base_line['tax_details']['raw_total_excluded_currency']
+            order.amount_undiscounted = subtotal
 
     @api.depends('client_order_ref', 'origin', 'partner_id')
     def _compute_duplicated_order_ids(self):
@@ -774,7 +786,7 @@ class SaleOrder(models.Model):
     @api.depends('company_id', 'partner_id', 'amount_total')
     def _compute_partner_credit_warning(self):
         for order in self:
-            order.with_company(order.company_id)
+            order = order.with_company(order.company_id)
             order.partner_credit_warning = ''
             show_warning = order.state in ('draft', 'sent') and \
                            order.company_id.account_use_credit_limit
@@ -789,7 +801,7 @@ class SaleOrder(models.Model):
     def _compute_tax_totals(self):
         AccountTax = self.env['account.tax']
         for order in self:
-            order_lines = order.order_line.filtered(lambda x: not x.display_type)
+            order_lines = order._get_priced_lines()
             base_lines = [line._prepare_base_line_for_taxes_computation() for line in order_lines]
             base_lines += order._add_base_lines_for_early_payment_discount()
             AccountTax._add_tax_details_in_base_lines(base_lines, order.company_id)
@@ -801,6 +813,7 @@ class SaleOrder(models.Model):
             )
 
     @api.depends('state')
+    @api.depends_context('lang')
     def _compute_type_name(self):
         for record in self:
             if record.state in ('draft', 'sent', 'cancel'):
@@ -823,6 +836,9 @@ class SaleOrder(models.Model):
             warnings = OrderedSet()
             if partner_msg := order.partner_id.sale_warn_msg:
                 warnings.add((order.partner_id.name or order.partner_id.display_name) + ' - ' + partner_msg)
+            if partner_parent_msg := order.partner_id.parent_id.sale_warn_msg:
+                parent = order.partner_id.parent_id
+                warnings.add((parent.name or parent.display_name) + ' - ' + partner_parent_msg)
             for line in order.order_line:
                 if product_msg := line.sale_line_warn_msg:
                     warnings.add(line.product_id.display_name + ' - ' + product_msg)
@@ -911,7 +927,7 @@ class SaleOrder(models.Model):
 
     @api.onchange('pricelist_id')
     def _onchange_pricelist_id_show_update_prices(self):
-        self.show_update_pricelist = bool(self.order_line)
+        self.show_update_pricelist = bool(self.order_line and self._origin.pricelist_id != self.pricelist_id)
 
     @api.onchange('prepayment_percent')
     def _onchange_prepayment_percent(self):
@@ -920,8 +936,11 @@ class SaleOrder(models.Model):
 
     @api.onchange('order_line')
     def _onchange_order_line(self):
+        linked_lines_by_line = self.order_line._get_linked_lines_by_line()
         for index, line in enumerate(self.order_line):
-            combo_item_lines = line._get_linked_lines().filtered('combo_item_id')
+            if line.display_type == 'line_subsection' and not line.parent_id:
+                line.display_type = 'line_section'
+            combo_item_lines = linked_lines_by_line[line].filtered('combo_item_id')
             if line.product_template_id.type != 'combo':
                 if combo_item_lines:
                     # Delete any linked combo item lines if the line's product is no longer a combo
@@ -1457,7 +1476,6 @@ class SaleOrder(models.Model):
                 'default_partner_id': self.partner_id.id,
                 'default_partner_shipping_id': self.partner_shipping_id.id,
                 'default_invoice_payment_term_id': self.payment_term_id.id or self.partner_id.property_payment_term_id.id or self.env['account.move'].default_get(['invoice_payment_term_id']).get('invoice_payment_term_id'),
-                'default_invoice_origin': self.name,
             })
         action['context'] = context
         return action
@@ -1770,6 +1788,11 @@ class SaleOrder(models.Model):
         elif 'state' in init_values and self.state == 'sent':
             return self.env.ref('sale.mt_order_sent')
         return super()._track_subtype(init_values)
+
+    def _get_model_description(self, model_name):
+        if not self:
+            return super()._get_model_description(model_name)
+        return self.type_name
 
     # PAYMENT #
 
@@ -2120,7 +2143,7 @@ class SaleOrder(models.Model):
             downpayment_wizard = order.env['sale.advance.payment.inv'].create({
                 'sale_order_ids': order,
                 'advance_payment_method': 'fixed',
-                'fixed_amount': order.amount_paid,
+                'fixed_amount': self.env.context.get('downpayment_fixed_amount', order.amount_paid),
             })
             generated_invoices |= downpayment_wizard._create_invoices(order)
 

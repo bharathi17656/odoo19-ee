@@ -52,6 +52,12 @@ async function applyProduct(record, product) {
         // and the value isn't expected to change anyway.
         update_values.product_uom_id = product.uom;
     }
+    if (product.product_type === "combo" && product.selectedComboItems?.length) {
+        update_values.selected_combo_items = JSON.stringify(
+            product.selectedComboItems.map(serializeComboItem)
+        );
+        update_values.virtual_id = product.virtual_id || uuid();
+    }
     await record._update(update_values);
 }
 
@@ -116,7 +122,7 @@ export class SaleOrderLineProductField extends ProductLabelSectionAndNoteField {
         return this.props.record.data.is_configurable_product;
     }
     get isCombo() {
-        return this.props.record.data.product_type === 'combo';
+        return this.props.record.data.product_template_id && this.props.record.data.product_type === 'combo';
     }
     get isDownpayment() {
         return this.props.record.data.is_downpayment;
@@ -234,7 +240,7 @@ export class SaleOrderLineProductField extends ProductLabelSectionAndNoteField {
     async _openProductConfigurator(edit = false, selectedComboItems = []) {
         const saleOrderRecord = this.props.record.model.root;
         const saleOrderLine = this.props.record.data;
-        const ptavIds = this._getVariantPtavIds(saleOrderLine);
+        const ptavIds = [...this._getVariantPtavIds(saleOrderLine)];
         let customPtavs = [];
 
         if (edit) {
@@ -259,21 +265,25 @@ export class SaleOrderLineProductField extends ProductLabelSectionAndNoteField {
             selectedComboItems: selectedComboItems,
             edit: edit,
             save: async (mainProduct, optionalProducts) => {
-                await Promise.all([
-                    // Don't add main product if it's a combo product as it has already been added
-                    // from combo configurator
-                    ...(
-                        !selectedComboItems.length ?
-                            [applyProduct(this.props.record, mainProduct)]: []
-                    ),
-                    ...optionalProducts.map(async product => {
-                        const line = await saleOrderRecord.data.order_line.addNewRecord({
-                            position: 'bottom', mode: 'readonly'
-                        });
-                        const productData = this._prepareNewLineData(line, product);
-                        await applyProduct(line, productData);
-                    }),
-                ]);
+                // Don't add main product if it's a combo product as it has already been added
+                // from combo configurator
+                const proms = !selectedComboItems.length
+                    ? [applyProduct(this.props.record, mainProduct)]
+                    : [];
+
+                for (const [i, product] of optionalProducts.entries()) {
+                    const index =
+                        saleOrderRecord.data.order_line.records.indexOf(this.props.record)
+                        + selectedComboItems.length
+                        + i;
+                    const line = await saleOrderRecord.data.order_line.addNewRecordAtIndex(index, {
+                        mode: 'readonly',
+                    });
+                    const productData = this._prepareNewLineData(line, product);
+                    proms.push(applyProduct(line, productData));
+                }
+
+                await Promise.all(proms);
                 this._onProductUpdate();
                 saleOrderRecord.data.order_line.leaveEditMode();
             },
@@ -358,10 +368,7 @@ export class SaleOrderLineProductField extends ProductLabelSectionAndNoteField {
         await saleOrder.order_line._sort();
 
         if (hasOptionalProducts && !edit) {
-            const selectedComboProducts = selectedComboItems.map(
-                item => ({ name: item.product.display_name })
-            );
-            await this._openProductConfigurator(false, selectedComboProducts);
+            await this._openProductConfigurator(false, selectedComboItems);
         }
     }
 

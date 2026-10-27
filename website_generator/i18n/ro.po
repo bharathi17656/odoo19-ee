@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:50+0000\n"
+"POT-Creation-Date: 2026-07-03 17:48+0000\n"
 "PO-Revision-Date: 2025-11-13 13:14+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/"
@@ -39,8 +39,9 @@ msgstr ""
 "<div>\n"
 "            <p><b>Vești bune!</b> Conversia site-ului dvs. este completă, "
 "iar noul dvs. site Odoo integrat este acum online.</p>\n"
-"            <p>Vedeți noul dvs. site aici: <a t-att-href="
-"\"ctx.get('website_url')\"><t t-out=\"ctx.get('website_url')\"/></a></p>\n"
+"            <p>Vedeți noul dvs. site aici: <a t-att-"
+"href=\"ctx.get('website_url')\"><t t-out=\"ctx.get('website_url')\"/></a></"
+"p>\n"
 "            <p>Vă mulțumim că ați ales Odoo pentru integrarea web!</p>\n"
 "            <p>Cu stimă,</p>\n"
 "            <br/>\n"
@@ -113,6 +114,12 @@ msgid "Done, website generated"
 msgstr "Gata, site-ul web generat"
 
 #. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "Error"
+msgstr ""
+
+#. module: website_generator
 #: model:ir.model,name:website_generator.model_ir_http
 msgid "HTTP Routing"
 msgstr "Rutare HTTP"
@@ -124,12 +131,6 @@ msgstr "Rutare HTTP"
 #: model:ir.model.fields,field_description:website_generator.field_website_page__id
 msgid "ID"
 msgstr "ID"
-
-#. module: website_generator
-#. odoo-javascript
-#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
-msgid "If you require more, you can contact us at"
-msgstr ""
 
 #. module: website_generator
 #. odoo-javascript
@@ -200,6 +201,12 @@ msgstr "Ultima actualizare de"
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__write_date
 msgid "Last Updated on"
 msgstr "Ultima actualizare la"
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
+msgid "Loading..."
+msgstr ""
 
 #. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__notified
@@ -295,6 +302,18 @@ msgstr "Succes"
 
 #. module: website_generator
 #. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
+msgid "The URL is not reachable."
+msgstr ""
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
+msgid "The URL is reachable."
+msgstr ""
+
+#. module: website_generator
+#. odoo-javascript
 #: code:addons/website_generator/static/src/systray_items/generator_request.js:0
 msgid "The import of your website has started!"
 msgstr "Importul site-ului dvs. a început!"
@@ -302,7 +321,19 @@ msgstr "Importul site-ului dvs. a început!"
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
-msgid "The maximum number of pages is 200 by default."
+msgid "The maximum number of pages is 100."
+msgstr ""
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "The provided URL is not allowed"
+msgstr ""
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "The provided URL is not reachable"
 msgstr ""
 
 #. module: website_generator
@@ -342,10 +373,22 @@ msgid "This can take a few minutes."
 msgstr "Aceasta poate dura câteva minute."
 
 #. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "Too many requests"
+msgstr ""
+
+#. module: website_generator
 #. odoo-python
 #: code:addons/website_generator/models/page.py:0
 msgid "Top Menu for Website %s"
 msgstr "Top Meniu pentru site-ul Web %s"
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "URL redirection"
+msgstr ""
 
 #. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__target_url
@@ -458,10 +501,4 @@ msgstr "și"
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
 msgid "https://www.odoo.com/"
-msgstr ""
-
-#. module: website_generator
-#. odoo-javascript
-#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
-msgid "odoo.com/help"
 msgstr ""

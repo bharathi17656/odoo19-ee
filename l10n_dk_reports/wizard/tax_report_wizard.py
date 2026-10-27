@@ -213,7 +213,14 @@ class L10nDkTaxReportRSUSubmitDraftWizard(models.TransientModel):
     def action_submit_draft(self):
         self.ensure_one()
 
-        lines = self.report_id._get_lines(self.report_id.get_options())
+        previous_options = {
+            'date': {
+                'date_from': self.settlement_period_start,
+                'date_to': self.settlement_period_end,
+            },
+        } if self.settlement_period_start and self.settlement_period_end else {}
+
+        lines = self.report_id._get_lines(self.report_id.get_options(previous_options))
         ReportHandler = self.env['l10n_dk.tax.report.handler']
 
         def get_line_value_from_xmlid(lines, xmlid):

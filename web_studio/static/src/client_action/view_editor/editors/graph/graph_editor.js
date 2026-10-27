@@ -60,8 +60,8 @@ export class GraphEditorSidebar extends Component {
 
     get orderChoices() {
         return [
-            { label: _t("Ascending"), value: "asc" },
-            { label: _t("Descending"), value: "desc" },
+            { label: _t("Ascending"), value: "ASC" },
+            { label: _t("Descending"), value: "DESC" },
         ];
     }
 
@@ -69,7 +69,7 @@ export class GraphEditorSidebar extends Component {
         return fieldsToChoices(
             this.viewEditorModel.fields,
             this.viewEditorModel.GROUPABLE_TYPES,
-            (field) => field.groupable && field.name !== this.modelParams.groupBy[1]
+            (field) => field.groupable && field.name !== this.secondGroupBy
         );
     }
 
@@ -77,7 +77,7 @@ export class GraphEditorSidebar extends Component {
         return fieldsToChoices(
             this.viewEditorModel.fields,
             this.viewEditorModel.GROUPABLE_TYPES,
-            (field) => field.groupable && field.name !== this.modelParams.groupBy[0]
+            (field) => field.groupable && field.name !== this.firstGroupBy
         );
     }
 
@@ -88,9 +88,21 @@ export class GraphEditorSidebar extends Component {
             (field) => field.aggregator && field.name !== "id"
         );
     }
+
+    get firstGroupBy() {
+        return getFieldNameFromGroupby(this.modelParams.groupBy[0]);
+    }
+
+    get secondGroupBy() {
+        return getFieldNameFromGroupby(this.modelParams.groupBy[1]);
+    }
 }
 
 registry.category("studio_editors").add("graph", {
     ...graphView,
     Sidebar: GraphEditorSidebar,
 });
+
+function getFieldNameFromGroupby(str) {
+    return str ? str.split(":")[0] : undefined;
+}

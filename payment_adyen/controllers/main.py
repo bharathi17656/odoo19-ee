@@ -8,7 +8,7 @@ import pprint
 
 from werkzeug.exceptions import Forbidden
 
-from odoo import _, http
+from odoo import _, http, release
 from odoo.exceptions import ValidationError
 from odoo.http import request
 from odoo.tools import py_to_js_locale, urls
@@ -86,7 +86,9 @@ class AdyenController(http.Controller):
 
         # Prepare the payment request to Adyen
         provider_sudo = request.env['payment.provider'].sudo().browse(provider_id).exists()
-        tx_sudo = request.env['payment.transaction'].sudo().search([('reference', '=', reference)])
+        tx_sudo = request.env['payment.transaction'].sudo().search([
+            ('provider_id', '=', provider_sudo.id), ('reference', '=', reference),
+        ])
         partner_country_code = (
             tx_sudo.partner_country_id.code or provider_sudo.company_id.country_id.code or 'NL'
         )
@@ -95,6 +97,13 @@ class AdyenController(http.Controller):
             'amount': {
                 'value': converted_amount,
                 'currency': request.env['res.currency'].browse(currency_id).name,  # ISO 4217
+            },
+            'applicationInfo': {
+                'externalPlatform': {
+                    'name': 'Odoo',
+                    'version': release.version,
+                    'integrator': 'Odoo SA',
+                }
             },
             'countryCode': partner_country_code,  # ISO 3166-1 alpha-2 (e.g.: 'BE')
             'reference': reference,
@@ -168,8 +177,16 @@ class AdyenController(http.Controller):
         """
         # Make the payment details request to Adyen
         provider_sudo = request.env['payment.provider'].browse(provider_id).sudo()
+        tx_sudo = request.env['payment.transaction'].sudo().search([
+            ('provider_id', '=', provider_sudo.id), ('reference', '=', reference),
+        ])
+
+        idempotency_key = payment_utils.generate_idempotency_key(
+            tx_sudo, scope='payment_details_request_controller'
+        )
+
         response_content = provider_sudo._send_api_request(
-            'POST', '/payments/details', json=payment_details
+            'POST', '/payments/details', json=payment_details, idempotency_key=idempotency_key,
         )
 
         # Process the payment data request response.
@@ -298,20 +315,6 @@ class AdyenController(http.Controller):
         :return: The computed signature
         :rtype: str
         """
-        def _flatten_dict(_value, _path_base='', _separator='.'):
-            """ Recursively generate a flat representation of a dict.
-
-            :param Object _value: The value to flatten. A dict or an already flat value
-            :param str _path_base: They base path for keys of _value, including preceding separators
-            :param str _separator: The string to use as a separator in the key path
-            """
-            if isinstance(_value, dict):  # The inner value is a dict, flatten it
-                _path_base = _path_base if not _path_base else _path_base + _separator
-                for _key in _value:
-                    yield from _flatten_dict(_value[_key], _path_base + str(_key))
-            else:  # The inner value cannot be flattened, yield it
-                yield _path_base, _value
-
         def _to_escaped_string(_value):
             """ Escape payload values that are using illegal symbols and cast them to string.
 
@@ -329,14 +332,18 @@ class AdyenController(http.Controller):
             else:
                 return str(_value)
 
-        signature_keys = [
-            'pspReference', 'originalReference', 'merchantAccountCode', 'merchantReference',
-            'amount.value', 'amount.currency', 'eventCode', 'success'
+        # Read the signature values
+        amount = payload.get('amount') or {}
+        signature_values = [
+            payload.get('pspReference'),
+            payload.get('originalReference'),
+            payload.get('merchantAccountCode'),
+            payload.get('merchantReference'),
+            amount.get('value'),
+            amount.get('currency'),
+            payload.get('eventCode'),
+            payload.get('success'),
         ]
-        # Flatten the payload to allow accessing inner dicts naively
-        flattened_payload = {k: v for k, v in _flatten_dict(payload)}
-        # Build the list of signature values as per the list of required signature keys
-        signature_values = [flattened_payload.get(key) for key in signature_keys]
         # Escape values using forbidden symbols
         escaped_values = [_to_escaped_string(value) for value in signature_values]
         # Concatenate values together with ':' as delimiter

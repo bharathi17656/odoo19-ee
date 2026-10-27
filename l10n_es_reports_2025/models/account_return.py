@@ -10,12 +10,11 @@ class AccountReturn(models.Model):
             "l10n_es_reports_2025.es_mod111_tax_return_type": 111,
             "l10n_es_reports_2025.es_mod115_tax_return_type": 115,
             "l10n_es_reports_2025.es_mod130_tax_return_type": 130,
-            "l10n_es_reports.es_mod303_tax_return_type": 303,
             "l10n_es_reports_2025.es_mod347_tax_return_type": 347,
             "l10n_es_reports_2025.es_mod349_tax_return_type": 349,
             "l10n_es_reports_2025.es_mod390_tax_return_type": 390,
         }
-        return xmlid_to_modelo.get(self.type_external_id, None)
+        return xmlid_to_modelo.get(self.type_external_id, None) or super()._l10n_es_get_report_modelo_number()
 
     def action_submit(self):
         # EXTENDS account_reports

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from unittest.mock import patch
+
 from odoo.addons.marketing_automation.tests.common import MarketingAutomationCommon
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged, users
 
 
@@ -20,6 +22,17 @@ class TestMarketingCampaign(MarketingAutomationCommon):
                 'interval_number': 0, 'interval_type': 'hours',
             },
         )
+
+    @users('user_marketing_automation')
+    def test_action_retry_failed_blocked_for_marketing_automation(self):
+        """ Ensure retrying a mailing linked to a marketing campaign is blocked. """
+        mailing = self.activity.mass_mailing_id
+
+        self.assertTrue(mailing.use_in_marketing_automation)
+
+        # Verify that calling action_retry_failed raises a UserError
+        with self.assertRaises(UserError, msg="Retrying a marketing automation mailing should be blocked."):
+            mailing.action_retry_failed()
 
     @users('user_marketing_automation')
     def test_create_records_with_xml_ids(self):
@@ -83,6 +96,34 @@ class TestMarketingCampaign(MarketingAutomationCommon):
                             'records': self.test_contacts,
                             'trace_status': 'sent',
                         }], activity)
+
+    @users('user_marketing_automation')
+    def test_domain_restricted_field(self):
+        """ Filter domain referencing a field restricted to system users
+        should be rejected, on both the campaign and its activities. """
+        field = self.env['mailing.contact']._fields['name']
+        for group in ('base.group_system', 'base.group_erp_manager'):
+            with self.subTest(group=group), patch.object(field, 'groups', group):
+                campaign = self.env['marketing.campaign'].create({
+                    'model_id': self.env['ir.model']._get_id('mailing.contact'),
+                    'name': 'Restricted Domain Campaign',
+                })
+                with self.assertRaises(ValidationError):
+                    campaign.write({'domain': "[('name', '=', 'test')]"})
+
+                activity = self._create_activity_mail(campaign, user=self.user_marketing_automation)
+                with self.assertRaises(ValidationError):
+                    activity.write({'activity_domain': "[('name', '=', 'test')]"})
+
+    @users('user_marketing_automation')
+    def test_domain_falsy_leaf(self):
+        """ A domain using the falsy sentinel leaf ([(0, '=', 1)]) should not
+        crash the domain check. """
+        campaign = self.env['marketing.campaign'].create({
+            'model_id': self.env['ir.model']._get_id('mailing.contact'),
+            'name': 'Falsy Domain Campaign',
+        })
+        campaign.write({'domain': "[(0, '=', 1)]"})
 
     @users('user_marketing_automation')
     def test_utm_source(self):

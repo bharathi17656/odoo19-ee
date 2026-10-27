@@ -1,4 +1,5 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+
 from . import common
 from odoo import Command
 from odoo.tests import Form, tagged
@@ -7,14 +8,14 @@ from odoo.exceptions import ValidationError
 
 
 @tagged('post_install_l10n', '-at_install', 'post_install')
-class TestManual(common.TestAr):
+class TestArManual(common.TestArCommon):
 
     @classmethod
     def setUpClass(cls):
-        super(TestManual, cls).setUpClass()
-        cls.journal = cls._create_journal(cls, 'preprinted')
+        super().setUpClass()
+        cls.journal = cls._create_journal('preprinted')
         cls.partner = cls.res_partner_adhoc
-        cls._create_test_invoices_like_demo(cls)
+        cls._create_test_invoices_like_demo()
 
     def test_01_create_invoice(self):
         """ Create and validate an invoice for a Responsable Inscripto
@@ -23,7 +24,7 @@ class TestManual(common.TestAr):
         * Properly set the tax amount of the product / partner
         * Proper fiscal position (this case not fiscal position is selected)
         """
-        invoice = self._create_invoice()
+        invoice = self._create_invoice_ar()
         self.assertEqual(invoice.company_id, self.company_ri, 'created with wrong company')
         self.assertEqual(invoice.amount_tax, 21, 'invoice taxes are not properly set')
         self.assertEqual(invoice.amount_total, 121.0, 'invoice taxes has not been applied to the total')
@@ -36,19 +37,19 @@ class TestManual(common.TestAr):
 
     def test_02_fiscal_position(self):
         # ADHOC SA > IVA Responsable Inscripto > Without Fiscal Positon
-        invoice = self._create_invoice({'partner': self.partner})
+        invoice = self._create_invoice_ar(partner_id=self.partner)
         self.assertFalse(invoice.fiscal_position_id, 'Fiscal position should be set to empty')
 
         # Consumidor Final > IVA Responsable Inscripto > Without Fiscal Positon
-        invoice = self._create_invoice({'partner': self.partner_cf})
+        invoice = self._create_invoice_ar(partner_id=self.partner_cf)
         self.assertFalse(invoice.fiscal_position_id, 'Fiscal position should be set to empty')
 
         # Montana Sur > IVA Liberado - Ley Nº 19.640 > Compras / Ventas Zona Franca > IVA Exento
-        invoice = self._create_invoice({'partner': self.res_partner_montana_sur})
+        invoice = self._create_invoice_ar(partner_id=self.res_partner_montana_sur)
         self.assertEqual(invoice.fiscal_position_id, self._search_fp('Purchases / Sales Free Trade Zone'))
 
         # Barcelona food > Cliente / Proveedor del Exterior >  > IVA Exento
-        invoice = self._create_invoice({'partner': self.res_partner_barcelona_food})
+        invoice = self._create_invoice_ar(partner_id=self.res_partner_barcelona_food)
         self.assertEqual(invoice.fiscal_position_id, self._search_fp('Purchases / Sales abroad'))
 
     def test_03_corner_cases(self):
@@ -110,7 +111,7 @@ class TestManual(common.TestAr):
         self.assertTrue(self.journal.l10n_ar_is_pos)
 
         # If we create an invoice it will not use manual numbering
-        invoice = self._create_invoice({'partner': self.partner})
+        invoice = self._create_invoice_ar()
         self.assertFalse(invoice.l10n_latam_manual_document_number)
 
         # Create a new sale journal that is not ARCA POS
@@ -195,29 +196,29 @@ class TestManual(common.TestAr):
 
     def test_18_invoice_b_tax_breakdown_1(self):
         """ Display Both VAT and Other Taxes """
-        invoice = self._create_invoice_from_dict({
-            'ref': 'test_invoice_20:  Final Consumer Invoice B with multiple vat/perceptions/internal/other/national taxes',
-            "move_type": 'out_invoice',
-            "partner_id": self.partner_cf,
-            "company_id": self.company_ri,
-            "invoice_date": "2021-03-20",
-            "invoice_line_ids": [
-                {'product_id': self.service_iva_21, 'price_unit': 124.3, 'quantity': 3, 'name': 'Support Services 8',
-                 'tax_ids': [Command.set([self.tax_21.id, self.tax_perc_iibb.id])]},
-                {'product_id': self.service_iva_27, 'price_unit': 2250.0,
-                 'tax_ids': [Command.set([self.tax_27.id, self.tax_national.id])]},
-                {'product_id': self.product_iva_105_perc, 'price_unit': 1740.0,
-                 'tax_ids': [Command.set([self.tax_10_5.id, self.tax_internal.id])]},
-                {'product_id': self.product_iva_105_perc, 'price_unit': 10000.0,
-                 'tax_ids': [Command.set([self.tax_0.id, self.tax_other.id])]},
+        invoice = self._create_invoice_ar(
+            ref='test_invoice_20:  Final Consumer Invoice B with multiple vat/perceptions/internal/other/national taxes',
+            partner_id=self.partner_cf,
+            company_id=self.company_ri,
+            invoice_date="2021-03-20",
+            invoice_line_ids=[
+                self._prepare_invoice_line(product_id=self.service_iva_21, price_unit=124.3, quantity=3, name='Support Services 8', tax_ids=self.tax_21 + self.tax_perc_iibb),
+                self._prepare_invoice_line(product_id=self.service_iva_27, price_unit=2250.0, tax_ids=self.tax_27 + self.tax_national),
+                self._prepare_invoice_line(product_id=self.product_iva_105_perc, price_unit=1740.0, tax_ids=self.tax_10_5 + self.tax_internal),
+                self._prepare_invoice_line(product_id=self.product_iva_105_perc, price_unit=10000.0, tax_ids=self.tax_0 + self.tax_other),
             ],
-        })
+        )
         results = invoice._l10n_ar_get_invoice_custom_tax_summary_for_report()
         self.assertEqual(results, [
             {
                 'tax_amount_currency': 868.51,
                 'formatted_tax_amount_currency': '868.51',
                 'name': 'VAT Content $',
+            },
+            {
+                'tax_amount_currency': 0.0,
+                'formatted_tax_amount_currency': '0.00',
+                'name': 'Perc IIBB P. Buenos Aires',
             },
             {
                 'tax_amount_currency': 142.20,
@@ -238,12 +239,6 @@ class TestManual(common.TestAr):
                     'tax_amount_currency': 100.0,
                     'tax_groups': [
                         {
-                            'id': self.tax_perc_iibb.tax_group_id.id,
-                            'base_amount_currency': 372.9,
-                            'tax_amount_currency': 0.0,
-                            'display_base_amount_currency': 372.9,
-                        },
-                        {
                             'id': self.tax_other.tax_group_id.id,
                             'base_amount_currency': 10000.0,
                             'tax_amount_currency': 100.0,
@@ -256,17 +251,13 @@ class TestManual(common.TestAr):
 
     def test_19_invoice_b_tax_breakdown_2(self):
         """ Display only Other Taxes (VAT taxes are 0) """
-        invoice = self._create_invoice_from_dict({
-            'ref': 'test_invoice_21: Final Consumer Invoice B with 0 tax and internal tax',
-            "move_type": 'out_invoice',
-            "partner_id": self.partner_cf,
-            "company_id": self.company_ri,
-            "invoice_date": "2021-03-20",
-            "invoice_line_ids": [
-                {'product_id': self.product_iva_105_perc, 'price_unit': 10000.0,
-                 'tax_ids': [Command.set([self.tax_no_gravado.id, self.tax_internal.id])]},
-            ],
-        })
+        invoice = self._create_invoice_ar(
+            ref='test_invoice_21: Final Consumer Invoice B with 0 tax and internal tax',
+            partner_id=self.partner_cf,
+            company_id=self.company_ri,
+            invoice_date="2021-03-20",
+            invoice_line_ids=[self._prepare_invoice_line(product_id=self.product_iva_105_perc, price_unit=10000.0, tax_ids=self.tax_no_gravado + self.tax_internal)],
+        )
         results = invoice._l10n_ar_get_invoice_custom_tax_summary_for_report()
         self.assertEqual(results, [
             {
@@ -292,17 +283,13 @@ class TestManual(common.TestAr):
 
     def test_20_invoice_b_tax_breakdown_3(self):
         """ Display only Other Taxes (VAT taxes are 0 and non other taxes) """
-        invoice = self._create_invoice_from_dict({
-            'ref': 'test_invoice_22: Final Consumer Invoice B with only 0 tax',
-            "move_type": 'out_invoice',
-            "partner_id": self.partner_cf,
-            "company_id": self.company_ri,
-            "invoice_date": "2021-03-20",
-            "invoice_line_ids": [
-                {'product_id': self.product_iva_105_perc, 'price_unit': 10000.0, 'quantity': 1,
-                    'tax_ids': [(6, 0, [self.tax_no_gravado.id])]},
-            ],
-        })
+        invoice = self._create_invoice_ar(
+            ref='test_invoice_22: Final Consumer Invoice B with only 0 tax',
+            partner_id=self.partner_cf,
+            company_id=self.company_ri,
+            invoice_date="2021-03-20",
+            invoice_line_ids=[self._prepare_invoice_line(product_id=self.product_iva_105_perc, price_unit=10000.0, tax_ids=self.tax_no_gravado)],
+        )
         results = invoice._l10n_ar_get_invoice_custom_tax_summary_for_report()
         self.assertEqual(results, [
             {
@@ -317,6 +304,83 @@ class TestManual(common.TestAr):
             'base_amount_currency': 10000.0,
             'tax_amount_currency': 0.0,
             'total_amount_currency': 10000.0,
+            'subtotals': [],
+        })
+
+    def test_21_invoice_b_iibb_perceptions_transparency(self):
+        """ Display IIBB Perceptions by their invoice_label, not in the tax totals box """
+        tax_iibb_caba = self.env['account.tax'].create({
+            "name": "P. IIBB CABA",
+            "invoice_label": "ALÍCUOTA ISIB CABA 3%",
+            "amount": "3",
+            "amount_type": "percent",
+            "sequence": 5,
+            "type_tax_use": "sale",
+            "country_id": self.env.ref("base.ar").id,
+            "company_id": self.company_ri.id,
+            "tax_group_id": self.env.ref(f"account.{self.company_ri.id}_tax_group_percepcion_iibb_caba").id,
+        })
+        tax_iibb_er = self.env['account.tax'].create({
+            "name": "P. IIBB ER",
+            "invoice_label": "Imp. Pciales o IIBB o Profesiones Liberales Entre Ríos 2%",
+            "amount": "2",
+            "amount_type": "percent",
+            "sequence": 6,
+            "type_tax_use": "sale",
+            "country_id": self.env.ref("base.ar").id,
+            "company_id": self.company_ri.id,
+            "tax_group_id": self.env.ref(f"account.{self.company_ri.id}_tax_group_percepcion_iibb_er").id,
+        })
+        tax_iibb_ct = self.env['account.tax'].create({
+            "name": "P. IIBB CHT",
+            "invoice_label": "VALOR APROXIMADO DEL ISIB CHUBUT",
+            "amount": "4",
+            "amount_type": "percent",
+            "sequence": 7,
+            "type_tax_use": "sale",
+            "country_id": self.env.ref("base.ar").id,
+            "company_id": self.company_ri.id,
+            "tax_group_id": self.env.ref(f"account.{self.company_ri.id}_tax_group_percepcion_iibb_ct").id,
+        })
+
+        invoice = self._create_invoice_ar(
+            partner_id=self.partner_cf,
+            company_id=self.company_ri,
+            invoice_date="2021-03-20",
+            invoice_line_ids=[
+                self._prepare_invoice_line(product_id=self.service_iva_21, price_unit=1000.0, tax_ids=self.tax_21 + tax_iibb_caba + tax_iibb_er + tax_iibb_ct),
+            ],
+        )
+        self.assertEqual(invoice.l10n_latam_document_type_id, self.document_type['invoice_b'])
+        results = invoice._l10n_ar_get_invoice_custom_tax_summary_for_report()
+        self.assertEqual(results, [
+            {
+                'tax_amount_currency': 210.0,
+                'formatted_tax_amount_currency': '210.00',
+                'name': 'VAT Content $',
+            },
+            {
+                'tax_amount_currency': 30.0,
+                'formatted_tax_amount_currency': '30.00',
+                'name': "ALÍCUOTA ISIB CABA 3%",
+            },
+            {
+                'tax_amount_currency': 20.0,
+                'formatted_tax_amount_currency': '20.00',
+                'name': "Imp. Pciales o IIBB o Profesiones Liberales Entre Ríos 2%",
+            },
+            {
+                'tax_amount_currency': 40.0,
+                'formatted_tax_amount_currency': '40.00',
+                'name': "VALOR APROXIMADO DEL ISIB CHUBUT",
+            },
+        ])
+        self._assert_tax_totals_summary(invoice._l10n_ar_get_invoice_totals_for_report(), {
+            'same_tax_base': True,
+            'currency_id': self.currency.id,
+            'base_amount_currency': 1300.0,
+            'tax_amount_currency': 0.0,
+            'total_amount_currency': 1300.0,
             'subtotals': [],
         })
 
@@ -352,11 +416,19 @@ class TestManual(common.TestAr):
         self.assertAlmostEqual(l10n_ar_values['price_net'], 5196.5)
 
     def test_l10n_ar_vat_with_non_numeric_value(self):
-        with self.assertRaises(ValidationError) as e:
-            with Form(self.partner) as partner_form:
-                partner_form.l10n_latam_identification_type_id = self.env.ref("l10n_ar.it_dni")
-                partner_form.vat = "test"
-        self.assertIn('Only numbers allowed for "DNI"', str(e.exception))
+        partner = self.env["res.partner"].create({"name": "AR Company", "country_id": self.env.ref("base.ar").id})
+
+        with self.assertRaisesRegex(ValidationError, 'Only numbers allowed for "DNI"'):
+            partner.l10n_latam_identification_type_id = self.env.ref("l10n_ar.it_dni")
+            partner.vat = "test"
+
+        with self.assertRaisesRegex(ValidationError, 'Invalid length for "CUIL"'):
+            partner.l10n_latam_identification_type_id = self.env.ref("l10n_ar.it_CUIL")
+            partner.vat = "1234567890a"
+
+        partner.l10n_latam_identification_type_id = self.env.ref("l10n_latam_base.it_pass")
+        partner.vat = "A12345678"
+        self.assertEqual(partner.vat, "A12345678")
 
     def test_create_debit_note_for_credit_note(self):
         """
@@ -383,3 +455,49 @@ class TestManual(common.TestAr):
         })
         debit_note_wizard.create_debit()
         self.assertTrue(invoice.reversal_move_ids.debit_note_ids)
+
+    def test_foreign_partner_without_expo_journal(self):
+        """ Test that if there is no active export journal, creating an invoice for a foreign partner doesn't
+        block the user but set a regular (non-expo) sales journal and default the document type to Invoice B."""
+
+        expo_journals = self.env['account.journal'].search([
+            ('company_id', '=', self.company_ri.id),
+            ('type', '=', 'sale'),
+            ('l10n_ar_afip_pos_system', 'in', ['FEERCEL', 'FEEWS', 'FEERCELP']),
+        ])
+        draft_moves_on_expo_journals = self.env['account.move'].search([
+            ('journal_id', 'in', expo_journals.ids),
+            ('state', '=', 'draft'),
+        ])
+        draft_moves_on_expo_journals.unlink()
+        expo_journals.write({'active': False})
+
+        with Form(self.env['account.move'].with_context(default_move_type='out_invoice')) as invoice_form:
+            invoice_form.partner_id = self.res_partner_barcelona_food
+            with invoice_form.invoice_line_ids.new() as line_form:
+                line_form.product_id = self.product_iva_21
+        invoice = invoice_form.save()
+
+        self.assertEqual(
+            invoice.journal_id, self.journal,
+            'Journal should stay on a regular (non-expo) sales journal since there is no export journal available',
+        )
+        self.assertEqual(
+            invoice.l10n_latam_document_type_id, self.document_type['invoice_b'],
+            'Document type should default to Invoice B when no export journal is available',
+        )
+
+    def test_get_vat_aliquot_cancelled_out_by_down_payment(self):
+        """ An aliquot whose base and tax cancel out (final invoice deducting a 100% down
+        payment) must not be reported: both amounts sent to ARCA would be 0.00 """
+        invoice = self._create_invoice_ar(
+            invoice_line_ids=[
+                self._prepare_invoice_line(product_id=self.product_iva_21, price_unit=1565963.28, tax_ids=self.tax_21),
+                self._prepare_invoice_line(product_id=self.product_iva_21, price_unit=2540664.0, tax_ids=self.tax_21),
+                # down payment deduction: cancels the lines above, but summing the rounded
+                # amounts leaves a floating point residual (~4.66e-10) that is not exactly zero
+                self._prepare_invoice_line(product_id=self.product_iva_21, price_unit=4106627.28, quantity=-1, tax_ids=self.tax_21),
+            ],
+        )
+        self.assertEqual(invoice.amount_total, 0.0)
+        self.assertEqual(invoice._get_vat(), [])

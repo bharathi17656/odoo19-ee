@@ -3,13 +3,16 @@
 # * delivery_starshipit
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2026.
+# NEDŽAD BEUS <nedzad.beus@implex.si>, 2026.
+# Nedžad Beus <nedzad.beus@implex.si>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.4+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:41+0000\n"
-"PO-Revision-Date: 2025-09-16 21:29+0000\n"
-"Last-Translator: \"Tiffany Chang (tic)\" <tic@odoo.com>\n"
+"POT-Creation-Date: 2026-09-25 17:42+0000\n"
+"PO-Revision-Date: 2026-09-16 10:37+0000\n"
+"Last-Translator: Nedžad Beus <nedzad.beus@implex.si>\n"
 "Language-Team: Slovenian <https://translate.odoo.com/projects/odoo-19/"
 "delivery_starshipit/sl/>\n"
 "Language: sl\n"
@@ -18,7 +21,25 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || "
 "n%100==4 ? 2 : 3;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
+
+#. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid ""
+"%(order_info)sHowever, the shipping label creation failed with the following "
+"error:\n"
+"%(error)s\n"
+"\n"
+"Please either continue the configuration or delete the order in Starshipit "
+"before trying again."
+msgstr ""
+"%(order_info)sVendar je ustvarjanje dostavne etikete spodletelo z naslednjo "
+"napako:\n"
+"%(error)s\n"
+"\n"
+"Prosimo, nadaljujte z nastavitvijo ali izbrišite naročilo v Starshipit, "
+"preden poskusite znova."
 
 #. module: delivery_starshipit
 #: model_terms:ir.ui.view,arch_db:delivery_starshipit.view_delivery_carrier_form
@@ -53,6 +74,17 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-info-circle\"/> Razpoložljive storitve dostave so odvisne "
 "od omogočenih prevoznikov v vašem računu Starshipit."
+
+#. module: delivery_starshipit
+#: model_terms:ir.ui.view,arch_db:delivery_starshipit.choose_delivery_carrier_view_form
+msgid "<i class=\"oi oi-arrow-right me-1\"/>Get more delivery methods"
+msgstr "<i class=\"oi oi-arrow-right me-1\"/>Pridobi več načinov dostave"
+
+#. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/wizard/starshipit_shipping_wizard.py:0
+msgid "Add a shipping method"
+msgstr "Dodaj metodo odpreme"
 
 #. module: delivery_starshipit
 #: model_terms:ir.ui.view,arch_db:delivery_starshipit.view_shipping_method_starshipit
@@ -113,11 +145,17 @@ msgid "Delivery"
 msgstr "Dostava"
 
 #. module: delivery_starshipit
+#: model:ir.model,name:delivery_starshipit.model_choose_delivery_carrier
+msgid "Delivery Carrier Selection Wizard"
+msgstr "Čarovnik za izbiro dostavne službe"
+
+#. module: delivery_starshipit
 #: model_terms:ir.ui.view,arch_db:delivery_starshipit.view_shipping_method_starshipit
 msgid "Delivery Service"
 msgstr "Dostavna storitev"
 
 #. module: delivery_starshipit
+#: model:ir.model.fields,field_description:delivery_starshipit.field_choose_delivery_carrier__display_name
 #: model:ir.model.fields,field_description:delivery_starshipit.field_delivery_carrier__display_name
 #: model:ir.model.fields,field_description:delivery_starshipit.field_starshipit_shipping_wizard__display_name
 #: model:ir.model.fields,field_description:delivery_starshipit.field_stock_package_type__display_name
@@ -142,6 +180,7 @@ msgid "Error: this delivery method is not available for this order."
 msgstr "Napaka: ta način dostave ni na voljo za to naročilo."
 
 #. module: delivery_starshipit
+#: model:ir.model.fields,field_description:delivery_starshipit.field_choose_delivery_carrier__id
 #: model:ir.model.fields,field_description:delivery_starshipit.field_delivery_carrier__id
 #: model:ir.model.fields,field_description:delivery_starshipit.field_starshipit_shipping_wizard__id
 #: model:ir.model.fields,field_description:delivery_starshipit.field_stock_package_type__id
@@ -234,12 +273,6 @@ msgstr ""
 
 #. module: delivery_starshipit
 #. odoo-python
-#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
-msgid "Please delete the order on Starshipit then try again."
-msgstr "Prosim, izbrišite naročilo na Starshipit in poskusite znova."
-
-#. module: delivery_starshipit
-#. odoo-python
 #: code:addons/delivery_starshipit/models/starshipit_service.py:0
 msgid "Please fill in the field %(field)s on the %(partner)s partner."
 msgstr "Prosimo, izpolnite polje %(field)s na %(partner)s partnerju."
@@ -247,7 +280,7 @@ msgstr "Prosimo, izpolnite polje %(field)s na %(partner)s partnerju."
 #. module: delivery_starshipit
 #: model:ir.actions.server,name:delivery_starshipit.action_print_starshipit_labels
 msgid "Print Starshipit Labels"
-msgstr ""
+msgstr "Natisni Starshipit nalepke"
 
 #. module: delivery_starshipit
 #: model:ir.model.fields,field_description:delivery_starshipit.field_delivery_carrier__delivery_type
@@ -421,12 +454,6 @@ msgstr ""
 
 #. module: delivery_starshipit
 #. odoo-python
-#: code:addons/delivery_starshipit/models/starshipit_service.py:0
-msgid "Starshipit returned an error: %(message)s"
-msgstr "Starshipit je vrnil napako: %(message)s"
-
-#. module: delivery_starshipit
-#. odoo-python
 #: code:addons/delivery_starshipit/models/delivery_carrier.py:0
 msgid ""
 "Starshipit: Delivery cost re-evaluated on Sales Order based on updated exact "
@@ -482,6 +509,15 @@ msgid "The Shipping Cost is being fetched in the background."
 msgstr "Stroški pošiljanja se pridobivajo v ozadju."
 
 #. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid ""
+"The address of your company/warehouse is incomplete or wrong (Missing "
+"field(s):  \n"
+" %s)"
+msgstr ""
+
+#. module: delivery_starshipit
 #: model:ir.model.fields,help:delivery_starshipit.field_delivery_carrier__starshipit_carrier_code
 msgid ""
 "The carrier on starshipit used by this carrier. The service code belongs to "
@@ -502,6 +538,18 @@ msgstr ""
 
 #. module: delivery_starshipit
 #. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid "The order '%(order_number)s' has been created!\n"
+msgstr "Naročilo '%(order_number)s' je bilo ustvarjeno!\n"
+
+#. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid "The order has been created!\n"
+msgstr "Naročilo je bilo ustvarjeno!\n"
+
+#. module: delivery_starshipit
+#. odoo-python
 #: code:addons/delivery_starshipit/models/starshipit_service.py:0
 msgid ""
 "The picking %(picking_name)s sequence is too long for Starshipit. Please "
@@ -509,6 +557,14 @@ msgid ""
 msgstr ""
 "Zaporedje %(picking_name)s izbir je za Starshipit predolgo. Posodobite "
 "zaporedje izbir, da bo imelo največ 50 znakov."
+
+#. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid ""
+"The recipient address is incomplete or wrong (Missing field(s):  \n"
+" %s)"
+msgstr ""
 
 #. module: delivery_starshipit
 #. odoo-python
@@ -537,16 +593,6 @@ msgid ""
 msgstr ""
 "Storitev, ki bo uporabljena za tega operaterja. To se nastavi, ko v "
 "čarovniku izberete operaterja."
-
-#. module: delivery_starshipit
-#. odoo-python
-#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
-msgid ""
-"The shipping label creation failed with the following error:\n"
-"%(error)s"
-msgstr ""
-"Ustvarjanje nalepke za pošiljanje ni uspelo zaradi naslednje napake:\n"
-"%(error)s"
 
 #. module: delivery_starshipit
 #. odoo-python
@@ -582,4 +628,17 @@ msgstr "Prenos"
 #. odoo-python
 #: code:addons/delivery_starshipit/controllers/download_starshipit_labels.py:0
 msgid "starshipit_labels"
-msgstr ""
+msgstr "starshipit_labels"
+
+#~ msgid "Please delete the order on Starshipit then try again."
+#~ msgstr "Prosim, izbrišite naročilo na Starshipit in poskusite znova."
+
+#~ msgid "Starshipit returned an error: %(message)s"
+#~ msgstr "Starshipit je vrnil napako: %(message)s"
+
+#~ msgid ""
+#~ "The shipping label creation failed with the following error:\n"
+#~ "%(error)s"
+#~ msgstr ""
+#~ "Ustvarjanje nalepke za pošiljanje ni uspelo zaradi naslednje napake:\n"
+#~ "%(error)s"

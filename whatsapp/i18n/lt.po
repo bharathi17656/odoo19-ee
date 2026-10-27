@@ -3,14 +3,14 @@
 # * whatsapp
 #
 # Vytenis Viruišis <vytenis@users.noreply.translate.odoo.com>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-09-27 02:41+0000\n"
-"Last-Translator: Vytenis Viruišis "
-"<vytenis@users.noreply.translate.odoo.com>\n"
+"POT-Creation-Date: 2025-12-30 18:42+0000\n"
+"PO-Revision-Date: 2026-10-05 22:33+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "whatsapp/lt/>\n"
 "Language: lt\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: whatsapp
 #. odoo-python
@@ -32,13 +32,13 @@ msgstr ""
 #. odoo-python
 #: code:addons/whatsapp/models/whatsapp_template.py:0
 msgid "%(original_name)s (copy)"
-msgstr ""
+msgstr "%(original_name)s (kopija)"
 
 #. module: whatsapp
 #. odoo-python
 #: code:addons/whatsapp/models/whatsapp_template.py:0
 msgid "%(template_name)s [%(account_name)s]"
-msgstr ""
+msgstr "%(template_name)s [%(account_name)s]"
 
 #. module: whatsapp
 #. odoo-python
@@ -80,6 +80,9 @@ msgid ""
 "                            <span class=\"text-600 o-whatsapp-"
 "font-9\">{{Address}}</span>"
 msgstr ""
+"<span class=\"o-whatsapp-font-11\">{{Location name}}</span><br/>\n"
+"                           <span class=\"text-600 o-whatsapp-font-9\">{"
+"{Address}}</span>"
 
 #. module: whatsapp
 #: model_terms:ir.ui.view,arch_db:whatsapp.whatsapp_account_view_form
@@ -211,7 +214,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/whatsapp/static/src/core/common/composer_patch.js:0
 msgid "Answer as %(whatsapp_account_name)s"
-msgstr ""
+msgstr "Atsakykite taip: %(whatsapp_account_name)s"
 
 #. module: whatsapp
 #: model:ir.model.fields,field_description:whatsapp.field_whatsapp_account__app_uid
@@ -410,7 +413,7 @@ msgstr ""
 #. module: whatsapp
 #: model:ir.model.fields,field_description:whatsapp.field_whatsapp_account__callback_url
 msgid "Callback URL"
-msgstr ""
+msgstr "Atgalinio skambučio URL"
 
 #. module: whatsapp
 #: model_terms:ir.ui.view,arch_db:whatsapp.whatsapp_message_view_form
@@ -472,7 +475,7 @@ msgstr ""
 #. module: whatsapp
 #: model_terms:ir.ui.view,arch_db:whatsapp.ir_actions_server_view_form_whatsapp
 msgid "Choose a template..."
-msgstr ""
+msgstr "Pasirinkite šabloną..."
 
 #. module: whatsapp
 #: model_terms:ir.ui.view,arch_db:whatsapp.whatsapp_composer_view_form
@@ -511,7 +514,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/whatsapp/static/src/core/common/composer_patch.js:0
 msgid "Conversation closed."
-msgstr ""
+msgstr "Pokalbis baigtas."
 
 #. module: whatsapp
 #: model_terms:ir.ui.view,arch_db:whatsapp.whatsapp_message_view_search
@@ -637,7 +640,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:whatsapp.field_whatsapp_template_button__display_name
 #: model:ir.model.fields,field_description:whatsapp.field_whatsapp_template_variable__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Rodomas vardas"
 
 #. module: whatsapp
 #: model:ir.model.fields.selection,name:whatsapp.selection__whatsapp_template__header_type__document
@@ -652,7 +655,7 @@ msgstr ""
 #. module: whatsapp
 #: model:ir.model.fields,field_description:whatsapp.field_whatsapp_composer__res_model
 msgid "Document Model Name"
-msgstr ""
+msgstr "Dokumento modelio pavadinimas"
 
 #. module: whatsapp
 #. odoo-python
@@ -1346,6 +1349,8 @@ msgstr ""
 msgid ""
 "Location variables should only exist when a \"location\" header is selected."
 msgstr ""
+"Vietos kintamieji turėtų būti naudojami tik tada, kai pasirinktas antraštės "
+"elementas „location“."
 
 #. module: whatsapp
 #: model:ir.model.fields,help:whatsapp.field_whatsapp_account__debug_logging
@@ -1431,7 +1436,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/whatsapp/models/whatsapp_template.py:0
 msgid "Message Statistics Of %(template_name)s"
-msgstr ""
+msgstr "Pranešimų statistika %(template_name)s"
 
 #. module: whatsapp
 #: model:ir.model.fields,field_description:whatsapp.field_whatsapp_message__message_type
@@ -1469,7 +1474,7 @@ msgstr ""
 #. module: whatsapp
 #: model:ir.model.fields,field_description:whatsapp.field_whatsapp_template_variable__model
 msgid "Model Name"
-msgstr ""
+msgstr "Modelio pavadinimas"
 
 #. module: whatsapp
 #: model_terms:ir.actions.act_window,help:whatsapp.whatsapp_message_action
@@ -1487,7 +1492,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:whatsapp.whatsapp_account_view_form
 #: model_terms:ir.ui.view,arch_db:whatsapp.whatsapp_template_view_form
 msgid "Name"
-msgstr ""
+msgstr "Pavadinimas"
 
 #. module: whatsapp
 #: model:ir.model.fields.selection,name:whatsapp.selection__whatsapp_message__failure_type__network
@@ -1688,7 +1693,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/whatsapp/wizard/whatsapp_composer.py:0
 msgid "Please select a WhatsApp Template to send."
-msgstr ""
+msgstr "Prašome pasirinkti „WhatsApp“ šabloną, kurį norite išsiųsti."
 
 #. module: whatsapp
 #: model:ir.model.fields.selection,name:whatsapp.selection__whatsapp_template__lang_code__pl
@@ -1786,7 +1791,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/whatsapp/models/discuss_channel.py:0
 msgid "Related %(model_name)s: "
-msgstr ""
+msgstr "Susiję „ %(model_name)s “: "
 
 #. module: whatsapp
 #: model:ir.model.fields,field_description:whatsapp.field_whatsapp_template__model
@@ -1828,7 +1833,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/whatsapp/static/src/core/common/composer_actions_patch.js:0
 msgid "Revive WhatsApp Conversation"
-msgstr ""
+msgstr "Atkurti „WhatsApp“ pokalbį"
 
 #. module: whatsapp
 #: model:ir.model.fields.selection,name:whatsapp.selection__whatsapp_template__lang_code__ro
@@ -1860,13 +1865,13 @@ msgstr ""
 #. module: whatsapp
 #: model_terms:ir.ui.view,arch_db:whatsapp.template_message_preview
 msgid "See all options"
-msgstr ""
+msgstr "Peržiūrėti visas parinktis"
 
 #. module: whatsapp
 #. odoo-python
 #: code:addons/whatsapp/models/ir_actions_server.py:0
 msgid "Send %(template_name)s"
-msgstr ""
+msgstr "Siųsti %(template_name)s"
 
 #. module: whatsapp
 #: model_terms:ir.ui.view,arch_db:whatsapp.whatsapp_composer_view_form
@@ -2112,7 +2117,7 @@ msgstr ""
 #. module: whatsapp
 #: model:ir.model.fields,field_description:whatsapp.field_whatsapp_template__template_name
 msgid "Template Name"
-msgstr ""
+msgstr "Šabloninis pavadinimas"
 
 #. module: whatsapp
 #: model:ir.actions.act_window,name:whatsapp.whatsapp_preview_action_from_template
@@ -2165,7 +2170,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/whatsapp/models/whatsapp_account.py:0
 msgid "Templates Of %(account_name)s"
-msgstr ""
+msgstr "Šablonai %(account_name)s"
 
 #. module: whatsapp
 #: model_terms:ir.actions.act_window,help:whatsapp.whatsapp_template_action
@@ -2304,6 +2309,8 @@ msgid ""
 "This conversation has been closed as more than 24 hours have passed since "
 "the last message received."
 msgstr ""
+"Šis pokalbis uždarytas, nes nuo paskutinio gauto pranešimo praėjo daugiau "
+"nei 24 valandos."
 
 #. module: whatsapp
 #. odoo-python
@@ -2387,7 +2394,7 @@ msgstr ""
 #. module: whatsapp
 #: model:ir.model.fields.selection,name:whatsapp.selection__whatsapp_template_variable__field_type__user_name
 msgid "User Name"
-msgstr ""
+msgstr "Vartotojo vardas"
 
 #. module: whatsapp
 #: model:ir.model.fields.selection,name:whatsapp.selection__whatsapp_template_variable__field_type__user_phone
@@ -2482,7 +2489,7 @@ msgstr ""
 #. module: whatsapp
 #: model:ir.model.fields.selection,name:whatsapp.selection__whatsapp_template__lang_code__vi
 msgid "Vietnamese"
-msgstr ""
+msgstr "Vietnamiečių kalba"
 
 #. module: whatsapp
 #. odoo-javascript
@@ -2610,7 +2617,7 @@ msgstr ""
 #. module: whatsapp
 #: model:ir.model.fields.selection,name:whatsapp.selection__discuss_channel__channel_type__whatsapp
 msgid "WhatsApp Conversation"
-msgstr ""
+msgstr "„WhatsApp“ pokalbis"
 
 #. module: whatsapp
 #. odoo-python
@@ -2729,7 +2736,7 @@ msgstr ""
 #: code:addons/whatsapp/models/whatsapp_template.py:0
 #: code:addons/whatsapp/models/whatsapp_template_variable.py:0
 msgid "You can not select field of %(model)s."
-msgstr ""
+msgstr "Negalima pasirinkti lauko „ %(model)s “."
 
 #. module: whatsapp
 #. odoo-javascript

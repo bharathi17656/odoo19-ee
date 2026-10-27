@@ -1,7 +1,7 @@
 import re
 from bisect import bisect_left
 from copy import deepcopy
-from itertools import chain
+from itertools import chain, takewhile
 from collections.abc import Iterable
 from collections import deque
 from dataclasses import dataclass, field
@@ -240,6 +240,11 @@ def _leaves_repr(leaves: list[Leaf]):
             case TextLeaf(element=element):
                 if element:
                     texts.append(element)
+            case CommentLeaf(element=element):
+                if texts:
+                    yield (None, _texts_concat(texts))
+                    texts = []
+                yield ("comment", element)
     if texts:
         yield (None, _texts_concat(texts))
 
@@ -921,6 +926,10 @@ class KeyedXmlDiffer:
             left_old = old_leaves[0]
             if isinstance(old_leaves[-1], TextLeaf):
                 right_old = old_leaves[-1]
+                if position == "after":
+                    texts_reversed = [l.element for l in takewhile(lambda l: isinstance(l, TextLeaf), reversed(old_leaves))]
+                    right_old = TextLeaf(_texts_concat(reversed(texts_reversed)))
+
         if new_leaves:
             left_new = new_leaves[0]
             right_new = new_leaves[-1]

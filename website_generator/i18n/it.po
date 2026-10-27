@@ -3,13 +3,13 @@
 # * website_generator
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
-# "Marianna Ciofani (cima)" <cima@odoo.com>, 2025.
+# "Marianna Ciofani (cima)" <cima@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:50+0000\n"
-"PO-Revision-Date: 2025-10-08 02:40+0000\n"
+"POT-Creation-Date: 2026-07-03 17:48+0000\n"
+"PO-Revision-Date: 2026-07-06 08:30+0000\n"
 "Last-Translator: \"Marianna Ciofani (cima)\" <cima@odoo.com>\n"
 "Language-Team: Italian <https://translate.odoo.com/projects/odoo-19/"
 "website_generator/it/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: website_generator
 #: model:mail.template,body_html:website_generator.email_template_website_scrapped
@@ -119,6 +119,12 @@ msgid "Done, website generated"
 msgstr "Fatto, sito web creato"
 
 #. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "Error"
+msgstr "Errore"
+
+#. module: website_generator
 #: model:ir.model,name:website_generator.model_ir_http
 msgid "HTTP Routing"
 msgstr "Instradamento HTTP"
@@ -130,12 +136,6 @@ msgstr "Instradamento HTTP"
 #: model:ir.model.fields,field_description:website_generator.field_website_page__id
 msgid "ID"
 msgstr "ID"
-
-#. module: website_generator
-#. odoo-javascript
-#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
-msgid "If you require more, you can contact us at"
-msgstr "Se hai bisogno di più pagine, contattaci all'indirizzo"
 
 #. module: website_generator
 #. odoo-javascript
@@ -153,7 +153,7 @@ msgstr "Importa il mio sito web"
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
 msgid "Import your"
-msgstr "Importa il tuo"
+msgstr "Importa"
 
 #. module: website_generator
 #. odoo-javascript
@@ -206,6 +206,12 @@ msgstr "Ultimo aggiornamento di"
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__write_date
 msgid "Last Updated on"
 msgstr "Ultimo aggiornamento il"
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
+msgid "Loading..."
+msgstr "Caricamento in corso..."
 
 #. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__notified
@@ -301,6 +307,18 @@ msgstr "Successo"
 
 #. module: website_generator
 #. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
+msgid "The URL is not reachable."
+msgstr "L'URL non è raggiungibile."
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
+msgid "The URL is reachable."
+msgstr "L'URL è raggiungibile."
+
+#. module: website_generator
+#. odoo-javascript
 #: code:addons/website_generator/static/src/systray_items/generator_request.js:0
 msgid "The import of your website has started!"
 msgstr "L'importazione del sito web è iniziata!"
@@ -308,8 +326,20 @@ msgstr "L'importazione del sito web è iniziata!"
 #. module: website_generator
 #. odoo-javascript
 #: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
-msgid "The maximum number of pages is 200 by default."
-msgstr "Il numero massimo di pagine è 200 per impostazione predefinita."
+msgid "The maximum number of pages is 100."
+msgstr "Il numero massimo di pagine è 100."
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "The provided URL is not allowed"
+msgstr "L'URL fornito non è consentito"
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "The provided URL is not reachable"
+msgstr "L'URL fornito non è raggiungibile"
 
 #. module: website_generator
 #. odoo-python
@@ -354,10 +384,22 @@ msgid "This can take a few minutes."
 msgstr "Possono volerci alcuni minuti."
 
 #. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "Too many requests"
+msgstr "Troppe richieste"
+
+#. module: website_generator
 #. odoo-python
 #: code:addons/website_generator/models/page.py:0
 msgid "Top Menu for Website %s"
 msgstr "Menù principale per il sito web %s"
+
+#. module: website_generator
+#. odoo-javascript
+#: code:addons/website_generator/static/src/client_actions/configurator/configurator.js:0
+msgid "URL redirection"
+msgstr "Reindirizzamento URL"
 
 #. module: website_generator
 #: model:ir.model.fields,field_description:website_generator.field_website_generator_request__target_url
@@ -471,11 +513,14 @@ msgstr "e"
 msgid "https://www.odoo.com/"
 msgstr "https://www.odoo.com/"
 
-#. module: website_generator
-#. odoo-javascript
-#: code:addons/website_generator/static/src/client_actions/configurator/configurator.xml:0
-msgid "odoo.com/help"
-msgstr "odoo.com/help"
+#~ msgid "If you require more, you can contact us at"
+#~ msgstr "Se hai bisogno di più pagine, contattaci all'indirizzo"
+
+#~ msgid "The maximum number of pages is 200 by default."
+#~ msgstr "Il numero massimo di pagine è 200 per impostazione predefinita."
+
+#~ msgid "odoo.com/help"
+#~ msgstr "odoo.com/help"
 
 #~ msgid "support@odoo.com"
 #~ msgstr "support@odoo.com"

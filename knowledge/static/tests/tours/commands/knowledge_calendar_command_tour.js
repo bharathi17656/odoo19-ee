@@ -6,6 +6,7 @@ import {
 } from "../knowledge_tour_utils.js";
 import { stepUtils } from "@web_tour/tour_utils";
 import { patch } from "@web/core/utils/patch";
+import { CalendarModel } from "@web/views/calendar/calendar_model";
 
 const embeddedViewPatchUtil = embeddedViewPatchFunctions();
 
@@ -32,7 +33,26 @@ function clickDate(el) {
     el.dispatchEvent(new MouseEvent('mouseup', eventParams));
 }
 
-function dragDate(el, target) {
+function patchCalendarModelUpdateRecord(targetEventId) {
+    const { promise, resolve } = Promise.withResolvers();
+    const eventId = Number(targetEventId);
+    const unpatchUpdateRecord = patch(CalendarModel.prototype, {
+        async updateRecord(record) {
+            const updateResult = await super.updateRecord(...arguments);
+            if(eventId === record.id) {
+                resolve();
+            }
+            return updateResult;
+        },
+    });
+    return { updateRecordPromise: promise, unpatchUpdateRecord };
+}
+
+async function dragDate(el, target) {
+    const eventParent = el.closest(".fc-event");
+    const eventId = eventParent.dataset.eventId;
+    const { updateRecordPromise, unpatchUpdateRecord } = patchCalendarModelUpdateRecord(eventId);
+
     // Cannot use drag_and_drop because it uses the center of the elements
     const elRect = el.getBoundingClientRect();
     el.dispatchEvent(new MouseEvent('mousedown', {
@@ -51,6 +71,12 @@ function dragDate(el, target) {
         clientX: targetRect.left + 1,
         clientY: targetRect.top + 1,
     }));
+
+    // FullCalendar schedules execution of callback handlers on the next macro-task slice.
+    // Since this is an implementation detail we wait (more robustly) until the update request 
+    // has been processed by the server.
+    await updateRecordPromise;
+    unpatchUpdateRecord();
 }
 
 registry.category("web_tour.tours").add('knowledge_calendar_command_tour', {
@@ -145,6 +171,9 @@ registry.category("web_tour.tours").add('knowledge_calendar_command_tour', {
 // Create a new start property
 ...stepUtils.editSelectMenuInput('.o_knowledge_item_calendar_dialog_date_start .o_select_menu_input', 'Start Property'),
 {
+    trigger: '.o_select_menu_menu:not(:has(.o_select_menu_group))',
+},
+{
     trigger: '.o_select_menu_menu .o_select_menu_item.o_create_datetime',
     run: 'click',
 }, { // Open the stop dropwdown
@@ -153,6 +182,9 @@ registry.category("web_tour.tours").add('knowledge_calendar_command_tour', {
 },
 // Create a new stop property
 ...stepUtils.editSelectMenuInput('.o_knowledge_item_calendar_dialog_date_stop .o_select_menu_input', 'Stop Property'),
+{
+    trigger: '.o_select_menu_menu:not(:has(.o_select_menu_group))',
+},
 {
     trigger: '.o_select_menu_menu .o_select_menu_item.o_create_choice',
     run: 'click',
@@ -223,7 +255,7 @@ registry.category("web_tour.tours").add('knowledge_calendar_command_tour', {
     run: 'click',
 }, {
     trigger: '.o_field_property_definition_header',
-    run: "edit Date Property",
+    run: "fill Date Property",
 }, {
     trigger: '.o_field_property_definition_type button.dropdown-toggle',
     run: 'click',
@@ -238,7 +270,7 @@ registry.category("web_tour.tours").add('knowledge_calendar_command_tour', {
     run: 'click',
 }, {
     trigger: '.o_field_property_definition_header',
-    run: "edit Boolean Property",
+    run: "fill Boolean Property",
 }, {
     trigger: '.o_field_property_definition_type button.dropdown-toggle',
     run: 'click',
@@ -253,7 +285,7 @@ registry.category("web_tour.tours").add('knowledge_calendar_command_tour', {
     run: 'click',
 }, {
     trigger: '.o_field_property_definition_header',
-    run: "edit Text Property",
+    run: "fill Text Property",
 }, {
     trigger: '.o_field_property_definition_type button.dropdown-toggle',
     run: 'click',
@@ -384,9 +416,9 @@ registry.category("web_tour.tours").add('knowledge_calendar_command_tour', {
     run: 'click',
 }, { // Move the item in the calendar
     trigger: '.fc-timegrid-event .o_event_title:contains("Item Article")',
-    run: function () {
+    async run() {
         const target = document.querySelector('.fc-timegrid-slot.fc-timegrid-slot-lane[data-time="09:00:00"]');
-        dragDate(this.anchor, target);
+        await dragDate(this.anchor, target);
     },
 }, { // Resize the item
     trigger: '.fc-timegrid-event:contains("Item Article")',
@@ -402,7 +434,7 @@ registry.category("web_tour.tours").add('knowledge_calendar_command_tour', {
             bottom: "0",
         });
         const target = document.querySelector('.fc-timegrid-slot.fc-timegrid-slot-lane[data-time="11:00:00"]');
-        dragDate(resizer, target);
+        await dragDate(resizer, target);
     },
 }, {
     //----------------------------------------------------------------------

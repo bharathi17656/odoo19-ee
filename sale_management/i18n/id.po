@@ -6,15 +6,16 @@
 # Martin Trigaux, 2022
 # Abdul Munif Hanafi <amunifhanafi@gmail.com>, 2022
 # Abe Manyo, 2023
-# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Abe Manyo (abem)" <abem@odoo.com>, 2025.
+# "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025, 2026.
+# "Abe Manyo (abem)" <abem@odoo.com>, 2025, 2026.
+# "Nurul Aini Akrima Sabila (nuaas)" <nuaas@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-21 18:34+0000\n"
-"PO-Revision-Date: 2025-11-25 02:33+0000\n"
-"Last-Translator: \"Abe Manyo (abem)\" <abem@odoo.com>\n"
+"POT-Creation-Date: 2026-01-25 18:35+0000\n"
+"PO-Revision-Date: 2026-10-21 08:33+0000\n"
+"Last-Translator: \"Nurul Aini Akrima Sabila (nuaas)\" <nuaas@odoo.com>\n"
 "Language-Team: Indonesian <https://translate.odoo.com/projects/odoo-19/"
 "sale_management/id/>\n"
 "Language: id\n"
@@ -22,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
@@ -47,7 +48,7 @@ msgstr "Tambahkan produk"
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "Add a section"
-msgstr "Add a section"
+msgstr "Tambahkan bagian"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_portal_optional_product_quantity
@@ -100,7 +101,7 @@ msgstr "Buat tawaran standar dengan produk default"
 #. module: sale_management
 #: model_terms:ir.actions.act_window,help:sale_management.sale_order_template_action
 msgid "Create your quotation template"
-msgstr "Buat templat quotation"
+msgstr "Buat template penawaran"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__create_uid
@@ -195,8 +196,8 @@ msgid ""
 "If unchecked, it will allow you to hide the quotation template without "
 "removing it."
 msgstr ""
-"Bila tidak dicentang, akan memungkinkan Anda untuk menyembunyikan templat "
-"quotation tanpa menghapus templat."
+"Bila tidak dicentang, akan memungkinkan Anda untuk menyembunyikan template "
+"penawaran tanpa menghapus templat."
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__journal_id
@@ -258,12 +259,18 @@ msgstr "Tanda Tangan Online"
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_line__is_optional
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__is_optional
 msgid "Optional Line"
-msgstr ""
+msgstr "Baris Opsional"
+
+#. module: sale_management
+#. odoo-python
+#: code:addons/sale_management/models/sale_order_template.py:0
+msgid "Optional Products Section"
+msgstr "Bagian Produk Opsional"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__parent_id
 msgid "Parent Section Line"
-msgstr ""
+msgstr "Baris Bagian Induk"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template__prepayment_percent
@@ -298,22 +305,22 @@ msgstr "Durasi Quotation"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_tree
 msgid "Quotation Template"
-msgstr "Kutipan Template"
+msgstr "Template Penawaran"
 
 #. module: sale_management
 #: model:ir.model,name:sale_management.model_sale_order_template_line
 msgid "Quotation Template Line"
-msgstr "Baris Templat Quotation"
+msgstr "Baris Template Penawaran"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "Quotation Template Lines"
-msgstr "Kutipan Template baris"
+msgstr "Template Penawaran baris"
 
 #. module: sale_management
 #: model:ir.model.fields,field_description:sale_management.field_sale_order_template_line__sale_order_template_id
 msgid "Quotation Template Reference"
-msgstr "Kutipan Template referensi"
+msgstr "Template Penawaran referensi"
 
 #. module: sale_management
 #: model:ir.actions.act_window,name:sale_management.sale_order_template_action
@@ -322,7 +329,7 @@ msgstr "Kutipan Template referensi"
 #: model:res.groups,name:sale_management.group_sale_order_template
 #: model_terms:ir.ui.view,arch_db:sale_management.res_config_settings_view_form
 msgid "Quotation Templates"
-msgstr "Kutipan template"
+msgstr "Template Penawaran"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
@@ -370,7 +377,7 @@ msgstr "Baris Pesanan Penjualan"
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_search
 msgid "Search Quotation Template"
-msgstr "Cari Templat Quotation"
+msgstr "Cari Template Penawaran"
 
 #. module: sale_management
 #: model:ir.model.fields.selection,name:sale_management.selection__sale_order_template_line__display_type__line_section
@@ -417,7 +424,7 @@ msgstr ""
 #. module: sale_management
 #: model:ir.model.fields.selection,name:sale_management.selection__sale_order_template_line__display_type__line_subsection
 msgid "Subsection"
-msgstr ""
+msgstr "Subseksi"
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
@@ -436,8 +443,8 @@ msgid ""
 "Terms set here will show up instead if you select this quotation template."
 msgstr ""
 "Administrator elah menetapkan Syarat & Ketentuan default di Pengaturan "
-"Sales. Syarat yang ditetapkan di sini akan muncul bila Anda memilih templat "
-"quotation ini."
+"Sales. Syarat yang ditetapkan di sini akan muncul bila Anda memilih template "
+"penawaran ini."
 
 #. module: sale_management
 #: model:ir.model.fields,help:sale_management.field_sale_order_template__prepayment_percent
@@ -512,22 +519,45 @@ msgstr ""
 #. module: sale_management
 #. odoo-python
 #: code:addons/sale_management/models/sale_order_template.py:0
-msgid "Your template cannot contain products from multiple companies."
+msgid ""
+"Your template belongs to company %(template_company)s but contains products "
+"from company (%(product_company)s) that are not accessible to %"
+"(template_company)s.\n"
+"Please change the company of your template or remove the products from other "
+"companies."
 msgstr ""
-"Templat Anda tidak boleh memiliki produk dari lebih dari satu perusahaan."
+"Templat Anda milik perusaahan %(template_company)s tapi memiliki produk dari "
+"perusahaan (%(product_company)s) yang tidak dapat diakses %(template_company)"
+"s.\n"
+"Silakan ubah perusahaan dari templat Anda atau hapus produk dari perusahaan "
+"lain."
 
 #. module: sale_management
 #. odoo-python
 #: code:addons/sale_management/models/sale_order_template.py:0
 msgid ""
-"Your template contains products from company %(product_company)s whereas "
-"your template belongs to company %(template_company)s. \n"
-" Please change the company of your template or remove the products from "
-"other companies."
+"Your template belongs to company %(template_company)s but contains products "
+"from other companies (%(product_company)s) that are not accessible to %"
+"(template_company)s.\n"
+"Please change the company of your template or remove the products from other "
+"companies."
 msgstr ""
-"Templat Anda memiliki produk dari perusahaan %(product_company)s sedangkan "
-"templat Anda merupakan milik perusahaan %(template_company)s. \n"
-" Mohon ganti perusahaan templat Anda atau hapus produk dari perusahaan lain."
+"Templat Anda milik perusahaan %(template_company)s tapi memiliki produk dari "
+"perusahaan lain (%(product_company)s) yang tidak dapat diakses %"
+"(template_company)s.\n"
+"Silakan ubah perusahaan dari templat Anda atau hapus produk dari perusahaan "
+"lain."
+
+#. module: sale_management
+#. odoo-python
+#: code:addons/sale_management/models/sale_order_template.py:0
+msgid ""
+"Your template cannot contain products from specific companies if it's shared "
+"between companies. Please restrict the template access, or remove those "
+"products."
+msgstr ""
+"Templat Anda tidak memiliki produk dari perusahaan tertentu bila dibagi "
+"antara perusahaan. Silakan batasi akses templat, atau hapus produk tersebut."
 
 #. module: sale_management
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
@@ -538,6 +568,21 @@ msgstr "hari"
 #: model_terms:ir.ui.view,arch_db:sale_management.sale_order_template_view_form
 msgid "e.g. Standard Consultancy Package"
 msgstr "contoh Paket Konsultansi Standar"
+
+#~ msgid "Your template cannot contain products from multiple companies."
+#~ msgstr ""
+#~ "Templat Anda tidak boleh memiliki produk dari lebih dari satu perusahaan."
+
+#~ msgid ""
+#~ "Your template contains products from company %(product_company)s whereas "
+#~ "your template belongs to company %(template_company)s. \n"
+#~ " Please change the company of your template or remove the products from "
+#~ "other companies."
+#~ msgstr ""
+#~ "Templat Anda memiliki produk dari perusahaan %(product_company)s "
+#~ "sedangkan templat Anda merupakan milik perusahaan %(template_company)s. \n"
+#~ " Mohon ganti perusahaan templat Anda atau hapus produk dari perusahaan "
+#~ "lain."
 
 #~ msgid "Add to cart"
 #~ msgstr "Tambahkan ke keranjang"

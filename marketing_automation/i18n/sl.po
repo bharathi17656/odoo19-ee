@@ -13,13 +13,17 @@
 # Tomaž Jug <tomaz@editor.si>, 2023
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Žiga Trček <ziga.trcek@implex.si>, 2026.
+# Jan Zorko <jan.zorko@implex.si>, 2026.
+# NEDŽAD BEUS <nedzad.beus@implex.si>, 2026.
+# Nedžad Beus <nedzad.beus@implex.si>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-16 13:38+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-09 17:44+0000\n"
+"PO-Revision-Date: 2026-09-14 13:33+0000\n"
+"Last-Translator: Nedžad Beus <nedzad.beus@implex.si>\n"
 "Language-Team: Slovenian <https://translate.odoo.com/projects/odoo-19/"
 "marketing_automation/sl/>\n"
 "Language: sl\n"
@@ -28,7 +32,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || "
 "n%100==4 ? 2 : 3;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_summary_template
@@ -584,8 +588,8 @@ msgid ""
 "Create one or load a template prepared by our experts.<br>\n"
 "                            Then sit down and let Odoo handle the rest!"
 msgstr ""
-"Ustvarite ga ali naložite predlogo, ki so jo pripravili naši "
-"strokovnjaki.<br>\n"
+"Ustvarite ga ali naložite predlogo, ki so jo pripravili naši strokovnjaki."
+"<br>\n"
 "                            Potem se usedite in pustite, da Odoo poskrbi za "
 "ostalo!"
 
@@ -738,6 +742,12 @@ msgstr "Sporočilo o napaki"
 #: code:addons/marketing_automation/models/marketing_activity.py:0
 msgid "Error! You can't create recursive hierarchy of Activity."
 msgstr "Napaka! Rekurzivne hierarhije aktivnosti ni mogoče ustvariti."
+
+#. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/marketing_activity.py:0
+msgid "Error! You can't modify the hierarchy of an active Activity."
+msgstr "Napaka! Hierarhije aktivne aktivnosti ne morete spreminjati."
 
 #. module: marketing_automation
 #. odoo-python
@@ -1238,6 +1248,16 @@ msgid "Offer free catalog"
 msgstr "Ponudite brezplačen katalog"
 
 #. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/mailing_mailing.py:0
+msgid ""
+"Oops! You can't retry sending emails from inside a Marketing Automation "
+"campaign."
+msgstr ""
+"Ups! Pošiljanja e-poštnih sporočil ne morete znova poskusiti iz kampanje "
+"avtomatizacije trženja."
+
+#. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
 msgid "Opened"
 msgstr "Odprto"
@@ -1381,6 +1401,12 @@ msgstr "Model snemanja"
 
 #. module: marketing_automation
 #. odoo-python
+#: code:addons/marketing_automation/models/marketing_campaign.py:0
+msgid "Record no longer matches campaign filter"
+msgstr "Zapis ne ustreza več filtru kampanje"
+
+#. module: marketing_automation
+#. odoo-python
 #: code:addons/marketing_automation/models/marketing_activity.py:0
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_activity__rejected
 #: model:ir.model.fields.selection,name:marketing_automation.selection__marketing_trace__state__rejected
@@ -1448,6 +1474,11 @@ msgstr "Odgovoren"
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_form
 msgid "Run"
 msgstr "Zaženi"
+
+#. module: marketing_automation
+#: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
+msgid "Run Activities"
+msgstr "Zaženi aktivnosti"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
@@ -1610,12 +1641,12 @@ msgstr "Začni iz nič"
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_trace__state
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_search
 msgid "State"
-msgstr "Zvezna država ali regija"
+msgstr "Stanje"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_form
 msgid "State: {{0}}"
-msgstr ""
+msgstr "Stanje: {{0}}"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_activity__statistics_graph_data
@@ -1708,6 +1739,12 @@ msgstr "Testna sled"
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
 msgid "Tests"
 msgstr "Preizkusi"
+
+#. module: marketing_automation
+#. odoo-python
+#: code:addons/marketing_automation/models/marketing_campaign.py:0
+msgid "The filter domain is using unauthorized fields."
+msgstr ""
 
 #. module: marketing_automation
 #. odoo-python
@@ -1899,9 +1936,9 @@ msgid ""
 "(trigger_type)s\"\n"
 "Please modify one of those activities before saving."
 msgstr ""
-"Poskušate nastaviti aktivnost \"%(parent_activity)s\" kot \"%(parent_type)s\""
-" medtem ko ima njen podrejeni \"%(activity)s\" vrsto sprožilca "
-"\"%(trigger_type)s\"\n"
+"Poskušate nastaviti aktivnost \"%(parent_activity)s\" kot \"%"
+"(parent_type)s\" medtem ko ima njen podrejeni \"%(activity)s\" vrsto "
+"sprožilca \"%(trigger_type)s\"\n"
 "Pred shranjevanjem spremenite eno od teh aktivnosti."
 
 #. module: marketing_automation

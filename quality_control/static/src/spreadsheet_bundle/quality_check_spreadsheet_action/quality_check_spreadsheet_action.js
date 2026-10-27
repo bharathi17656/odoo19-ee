@@ -23,7 +23,8 @@ export class QualityCheckSpreadsheetAction extends QualitySpreadsheetTemplateAct
     }
 
     async writeToQualityCheck() {
-        const method = this.isCheckPassed() ? this.params.pass_action ?? "do_pass" : this.params.fail_action ?? "do_fail"
+        const { pass_action, fail_action } = this.params;
+        const method = this.isCheckPassed() ? pass_action || "do_pass" : fail_action || "do_fail";
         if (this.qualityCheckWizardId) {
             // we are part of the quality check wizard flow
             this.writeToQualityCheckWizard(method);
@@ -34,10 +35,10 @@ export class QualityCheckSpreadsheetAction extends QualitySpreadsheetTemplateAct
                 [this.qualityCheckId],
                 { context: this.props.action.context },
             );
+            await this.goBack();
             if (action && action.type === 'ir.actions.act_window') {
                 return this.actionService.doAction(action);
             }
-            await this.goBack();
         }
     }
 

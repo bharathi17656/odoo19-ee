@@ -18,6 +18,11 @@ class TestKpiProvider(TestAccountReportsCommon):
             'phone': '555-555-5555',
             'email': 'test@example.com'
         })
+
+        # The kpi are fetched for all companies, disregarding any access rules. We need to make sure no other company in the database
+        # contains return types that could interfere with the test.
+        cls.env['account.return'].sudo().search([]).active = False
+
         cls.return_types = cls.env['account.return.type'].create([
             {'name': 'Return with a report without a root report',
              'report_id': cls.env.ref('account.generic_tax_report').id,

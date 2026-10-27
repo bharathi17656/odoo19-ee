@@ -27,11 +27,7 @@ class IrAttachment(models.Model):
 
     def _get_attachment_content(self):
         """
-        Get the content of the attachment.
-        For PDFs, prioritize content extracted via _compute_pdf_content over index_content.
-        For other file types, use index_content.
-        :return: The content of the attachment or None if the content is invalid
-        :rtype: str
+        Get the indexing-processed content of the attachment
         """
         self.ensure_one()
         attachment_content = ''
@@ -46,14 +42,18 @@ class IrAttachment(models.Model):
         else:
             attachment_content = self.index_content
 
-        # Validate the content
-        if not attachment_content or len(attachment_content.split()) <= 2:
-            return False
+        if not attachment_content:
+            return None
+
         # Check for reasonable content length and word variety
-        words = attachment_content.split()
-        if len(attachment_content.strip()) >= 10 and len({w.lower() for w in words}) >= 2:
-            return attachment_content
-        return None
+        if len(attachment_content.strip()) <= 10:
+            return None
+
+        unique_words = {w.lower() for w in attachment_content.split()}
+        if len(unique_words) < 2:
+            return None
+
+        return attachment_content
 
     def _setup_attachment_chunks(self, embedding_model, content=None):
         self.ensure_one()

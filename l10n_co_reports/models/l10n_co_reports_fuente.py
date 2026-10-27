@@ -23,15 +23,7 @@ class L10n_CoFuenteReportHandler(models.AbstractModel):
             origin_tax_desc_expression = SQL("COALESCE(tax.description->>%s,tax.description->>'en_US')", lang)
             origin_tax_desc_expression = SQL("REGEXP_REPLACE(%s, '(<([^>]+)>)', '', 'g')", origin_tax_desc_expression)
             expanded_columns = SQL('%s AS origin_tax_id, %s AS origin_tax_desc,', origin_tax_id_expression if expanded else '', origin_tax_desc_expression if expanded else '')
-            tax_base_amount_select = SQL("""
-                SUM(CASE
-                    WHEN account_move_line.credit > 0
-                        THEN account_move_line.tax_base_amount
-                    WHEN account_move_line.debit > 0
-                        THEN account_move_line.tax_base_amount * -1
-                    ELSE 0
-                    END)
-            """)
+            tax_base_amount_select = SQL("SUM(account_move_line.tax_base_amount)")
             queries.append(SQL(
                 """
                 SELECT

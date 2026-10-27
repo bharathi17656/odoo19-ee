@@ -66,7 +66,7 @@ class AccountAnalyticLine(models.Model):
     parent_task_id = fields.Many2one('project.task', related='task_id.parent_id', store=True, index='btree_not_null')
     project_id = fields.Many2one(
         'project.project', 'Project', domain=_domain_project_id, index=True,
-        compute='_compute_project_id', store=True, readonly=False)
+        compute='_compute_project_id', inverse='_inverse_project_id', store=True, readonly=False)
     user_id = fields.Many2one(compute='_compute_user_id', store=True, readonly=False)
     employee_id = fields.Many2one('hr.employee', "Employee", domain=_domain_employee_id, context={'active_test': False},
         index=True, help="Define an 'hourly cost' on the employee to track the cost of their time.")
@@ -142,6 +142,11 @@ class AccountAnalyticLine(models.Model):
                 continue
             line.project_id = line.task_id.project_id
 
+    def _inverse_project_id(self):
+        for line in self:
+            if line.task_id.project_id != line.project_id:
+                line.sudo().task_id = False
+
     @api.depends('project_id')
     def _compute_task_id(self):
         self.filtered(lambda t: not t.project_id).task_id = False
@@ -182,18 +187,20 @@ class AccountAnalyticLine(models.Model):
                 )
             else:
                 minutes = round(line.unit_amount * 60)
-                hours, minutes = divmod(minutes, 60)
+                hours, minutes = divmod(abs(round(minutes)), 60)
                 if minutes:
                     line.calendar_display_name = self.env._(
-                        "%(project_name)s (%(hours)sh%(minutes)s)",
+                        "%(project_name)s (%(sign)s%(hours)sh%(minutes)s)",
                         project_name=line.project_id.display_name,
+                        sign='-' if line.unit_amount < 0 else '',
                         hours=hours,
                         minutes=minutes,
                     )
                 else:
                     line.calendar_display_name = self.env._(
-                        "%(project_name)s (%(hours)sh)",
+                        "%(project_name)s (%(sign)s%(hours)sh)",
                         project_name=line.project_id.display_name,
+                        sign='-' if line.unit_amount < 0 else '',
                         hours=hours,
                     )
 
@@ -220,6 +227,8 @@ class AccountAnalyticLine(models.Model):
         if self.env.context.get('timesheet_calendar'):
             self.env['hr.employee'].browse([vals.get('employee_id') for vals in vals_list])
         # 1/ Collect the user_ids and employee_ids from each timesheet vals
+        skipped_vals = 0
+        valid_vals = 0
         for vals in vals_list[:]:
             if self.env.context.get('timesheet_calendar'):
                 if not 'employee_id' in vals:
@@ -231,6 +240,7 @@ class AccountAnalyticLine(models.Model):
                     datetime.combine(date, time.max, tzinfo=user_timezone),
                 )[0][employee.resource_id.id]):
                     vals_list.remove(vals)
+                    skipped_vals += 1
                     continue
             task = self.env['project.task'].sudo().browse(vals.get('task_id'))
             project = self.env['project.project'].sudo().browse(vals.get('project_id'))
@@ -263,6 +273,7 @@ class AccountAnalyticLine(models.Model):
                 user_id = vals.get('user_id', default_user_id)
                 if user_id not in user_ids:
                     user_ids.append(user_id)
+            valid_vals += 1
 
         # 2/ Search all employees related to user_ids and employee_ids, in the selected companies
         HrEmployee_sudo = self.env['hr.employee'].sudo()
@@ -331,6 +342,23 @@ class AccountAnalyticLine(models.Model):
         for line, values in zip(lines, vals_list):
             if line.project_id:  # applied only for timesheet
                 line._timesheet_postprocess(values)
+
+        if self.env.context.get('timesheet_calendar'):
+            if skipped_vals:
+                type = "danger"
+                if valid_vals:
+                    message = self.env._("Some timesheets were not created: employees aren’t working on the selected days")
+                else:
+                    message = self.env._("No timesheets created: employees aren’t working on the selected days")
+            else:
+                type = "success"
+                message = self.env._("Timesheets successfully created")
+
+            self.env.user._bus_send('simple_notification', {
+                "type": type,
+                "message": message,
+            })
+
         return lines
 
     def write(self, vals):

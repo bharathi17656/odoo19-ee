@@ -27,7 +27,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
+"POT-Creation-Date: 2026-10-02 17:42+0000\n"
 "PO-Revision-Date: 2025-11-21 14:20+0000\n"
 "Last-Translator: Odoo Turkish Import <dyki+tr@odoo.com>\n"
 "Language-Team: Turkish <https://translate.odoo.com/projects/odoo-19/"
@@ -83,30 +83,10 @@ msgid ". Then, share it with appraisers."
 msgstr ". Sonra da bunu değerlendirme uzmanlarıyla paylaşın."
 
 #. module: hr_appraisal
-#: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__100
-msgid "100%"
-msgstr "100%"
-
-#. module: hr_appraisal
-#: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__025
-msgid "25%"
-msgstr "%25"
-
-#. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_res_config_settings__module_hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "360 Feedback"
 msgstr "360 Feedback"
-
-#. module: hr_appraisal
-#: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__050
-msgid "50%"
-msgstr "%50"
-
-#. module: hr_appraisal
-#: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_goal__progression__075
-msgid "75%"
-msgstr "%75"
 
 #. module: hr_appraisal
 #: model:mail.template,body_html:hr_appraisal.mail_template_appraisal_confirm
@@ -136,22 +116,22 @@ msgid ""
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">"
-"\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;"
+"\">\n"
 "                        <t t-out=\"ctx.get('employee_to_name')\"> "
 "çalışanının</t> bir değerlendirmesi onaylanmıştır.\n"
 "                       <br/><br/>\n"
 "                        Lütfen birlikte bir değerlendirme tarihi planlayın.\n"
 "                       <br/><br/>\n"
 "                       <t t-if=\"ctx.get('recipient_users')\">\n"
-"                            <p style="
-"\"margin: 16px 0px 16px 0px; text-align: center;\">\n"
-"                               <a t-att-href=\"ctx.get('url')\" t-attf-style"
-"=\"background-color: {{object.company_id.email_secondary_color or "
-"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: {{"
-"object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;\""
-">{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;"
-"\">\n"
+"                            <p style=\"margin: 16px 0px 16px 0px; text-"
+"align: center;\">\n"
+"                               <a t-att-href=\"ctx.get('url')\" t-attf-"
+"style=\"background-color: {{object.company_id.email_secondary_color or "
+"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;"
+"\">{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: "
+"5px;\">\n"
 "                                    Değerlendirmeyi Görüntüle\n"
 "                               </a>\n"
 "                            </p>\n"
@@ -197,14 +177,14 @@ msgid ""
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">"
-"\n"
-"                        Sayın <t t-out=\"ctx.get('employee_to_name')\""
-">çalışanı</t>,\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;"
+"\">\n"
+"                        Sayın <t t-out=\"ctx.get('employee_to_name')"
+"\">çalışanı</t>,\n"
 "                       <br/>\n"
 "                        <t t-out=\"ctx.get('author_name', '')\">Addison "
-"Olson</t> (<t t-out=\"ctx.get('author_mail', '')\""
-">addison.olson28@example.com</t>) bir değerlendirme istiyor.\n"
+"Olson</t> (<t t-out=\"ctx.get('author_mail', '')"
+"\">addison.olson28@example.com</t>) bir değerlendirme istiyor.\n"
 "                       <t t-if=\"ctx.get('user_body')\">\n"
 "                            <div style=\"margin: 16px 0px 16px 0px; padding: "
 "8px 16px 8px 16px; background-color: #F1F1F1;\">\n"
@@ -216,10 +196,10 @@ msgstr ""
 "                           <p style=\"margin: 16px 0px 16px 0px; padding: "
 "8px 16px 8px 16px; text-align: center;\">\n"
 "                                <a t-att-href=\"ctx.get('url')\" t-attf-"
-"style=\" margin: auto; background-color: {{"
-"object.employee_id.company_id.email_secondary_color or '#875A7B'}}; padding: "
-"8px 16px 8px 16px; text-decoration: none; color: {{"
-"object.employee_id.company_id.email_primary_color or '#FFFFFF'}}; border-"
+"style=\" margin: auto; background-color: "
+"{{object.employee_id.company_id.email_secondary_color or '#875A7B'}}; "
+"padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"{{object.employee_id.company_id.email_primary_color or '#FFFFFF'}}; border-"
 "radius: 5px;\">{{object.employee_id.company_id.email_primary_color or "
 "'#FFFFFF'}}; border-radius: 5px;\">\n"
 "                                    Değerlendirmeyi Görüntüle\n"
@@ -274,10 +254,10 @@ msgid ""
 "            "
 msgstr ""
 "<div style=\"margin: 0px; padding: 0px;\">\n"
-"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">"
-"\n"
-"                        Merhaba <t t-out=\"ctx.get('employee_to_name')\">"
-"[employee]</t>,\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;"
+"\">\n"
+"                        Merhaba <t t-out=\"ctx.get('employee_to_name')"
+"\">[employee]</t>,\n"
 "                       <br/>\n"
 "                        <t t-out=\"ctx.get('manager_names')\"> [Appraisers] "
 "ile yapacağınız bir sonraki değerlendirmeniz için kısa bir hatırlatma</t>\n"
@@ -286,21 +266,21 @@ msgstr ""
 "                       <br/>\n"
 "                        <t t-if=\"ctx.get('user_body')\">\n"
 "                           <div class=\"my-3 py-2 px-3 bg-secondary\">\n"
-"                                <t t-out=\"ctx.get('user_body')\">"
-"[İsteğe bağlı yorum]</t>\n"
+"                                <t t-out=\"ctx.get('user_body')\">[İsteğe "
+"bağlı yorum]</t>\n"
 "                            </div>\n"
 "                       </t>\n"
 "                        <t t-if=\"ctx.get('recipient_users')\">\n"
-"                            Değerlendirme formunuza buradan ulaşabilirsiniz:"
-"\n"
+"                            Değerlendirme formunuza buradan "
+"ulaşabilirsiniz:\n"
 "                           <p class=\"text-center my-3 py-2 px-3\">\n"
 "                                <a t-att-href=\"ctx.get('url')\" t-attf-"
-"style=\" margin: auto; background-color: {{"
-"object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
-"8px 16px; text-decoration: none; color: {{"
-"object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;\""
-">{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;"
-"\">\n"
+"style=\" margin: auto; background-color: "
+"{{object.company_id.email_secondary_color or '#875A7B'}}; padding: 8px 16px "
+"8px 16px; text-decoration: none; color: "
+"{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px;"
+"\">{{object.company_id.email_primary_color or '#FFFFFF'}}; border-radius: "
+"5px;\">\n"
 "                                    Değerlendirmeyi Görüntüle\n"
 "                               </a>\n"
 "                            </p>\n"
@@ -435,8 +415,8 @@ msgstr "<em>Tazminat</em>"
 #: model_terms:hr.appraisal.template,appraisal_manager_feedback_template:hr_appraisal.hr_appraisal_default_template
 msgid "<em>Do you need a rapid response to address the current situation?</em>"
 msgstr ""
-"<em>Mevcut durumu ele almak için hızlı bir müdahaleye mi ihtiyacınız "
-"var?</em>"
+"<em>Mevcut durumu ele almak için hızlı bir müdahaleye mi ihtiyacınız var?</"
+"em>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_default_template
@@ -623,10 +603,10 @@ msgid ""
 "                                            <span invisible=\"not "
 "employee_feedback_published\">Private</span>"
 msgstr ""
-"<strong class=\"text-info\" invisible=\"employee_feedback_published\""
-">Özel</strong>\n"
-"                                            <span invisible="
-"\"not employee_feedback_published\">Özel</span>"
+"<strong class=\"text-info\" invisible=\"employee_feedback_published\">Özel</"
+"strong>\n"
+"                                            <span invisible=\"not "
+"employee_feedback_published\">Özel</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -636,10 +616,10 @@ msgid ""
 "                                            <span invisible=\"not "
 "manager_feedback_published\">Private</span>"
 msgstr ""
-"<strong class=\"text-info\" invisible=\"manager_feedback_published\""
-">Özel</strong>\n"
-"                                            <span invisible="
-"\"not manager_feedback_published\">Özel</span>"
+"<strong class=\"text-info\" invisible=\"manager_feedback_published\">Özel</"
+"strong>\n"
+"                                            <span invisible=\"not "
+"manager_feedback_published\">Özel</span>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_probationary_period_template
@@ -785,7 +765,8 @@ msgstr "<strong>Sağlanan materyaller ne kadar faydalıydı ?</strong>"
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_post_training_template
 msgid "<strong>How would you asses your level before the training ?</strong>"
-msgstr "<strong>Eğitim öncesinde seviyenizi nasıl değerlendirirsiniz ?</strong>"
+msgstr ""
+"<strong>Eğitim öncesinde seviyenizi nasıl değerlendirirsiniz ?</strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_post_training_template
@@ -928,8 +909,8 @@ msgid ""
 "<strong>What are your thoughts on the company culture and work environment ?"
 "</strong>"
 msgstr ""
-"<strong>Şirket kültürü ve çalışma ortamı hakkında fikirleriniz neler "
-"?</strong>"
+"<strong>Şirket kültürü ve çalışma ortamı hakkında fikirleriniz neler ?</"
+"strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_yearly_template
@@ -951,8 +932,8 @@ msgid ""
 "<strong>What are your thoughts on your overall experience during the "
 "probationary period ?</strong>"
 msgstr ""
-"<strong>Deneme süresi boyunca genel deneyiminiz hakkında ne düşünüyorsunuz "
-"?</strong>"
+"<strong>Deneme süresi boyunca genel deneyiminiz hakkında ne düşünüyorsunuz ?"
+"</strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_exit_interview_template
@@ -1023,8 +1004,8 @@ msgid ""
 "<strong>Which skills do you possess that you feel the company is not "
 "utilizing ?</strong>"
 msgstr ""
-"<strong>Şirketin faydalanmadığını düşündüğünüz becerileriniz nelerdir "
-"?</strong>"
+"<strong>Şirketin faydalanmadığını düşündüğünüz becerileriniz nelerdir ?</"
+"strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_yearly_template
@@ -1032,8 +1013,8 @@ msgid ""
 "<strong>Which skills would you like to prioritize for training, and why ?</"
 "strong>"
 msgstr ""
-"<strong>Eğitim için hangi becerileri önceliklendirmek istersiniz ve neden "
-"?</strong>"
+"<strong>Eğitim için hangi becerileri önceliklendirmek istersiniz ve neden ?</"
+"strong>"
 
 #. module: hr_appraisal
 #: model_terms:hr.appraisal.template,appraisal_employee_feedback_template:hr_appraisal.hr_appraisal_exit_interview_template
@@ -1296,9 +1277,9 @@ msgid ""
 "Appraisal for %(appraisal_title)s should be using template \"%"
 "(template_name)s\" instead of \"%(wrong_template_name)s\""
 msgstr ""
-"%(appraisal_title)s için yapılan değerlendirmelerin "
-"\"%(wrong_template_name)s\" yerine \"%(template_name)s\" şablonunu "
-"kullanması gerekir"
+"%(appraisal_title)s için yapılan değerlendirmelerin \"%"
+"(wrong_template_name)s\" yerine \"%(template_name)s\" şablonunu kullanması "
+"gerekir"
 
 #. module: hr_appraisal
 #. odoo-python
@@ -1328,6 +1309,14 @@ msgstr "Doldurulacak değerlendirme"
 #: model:ir.actions.act_window,name:hr_appraisal.hr_appraisal_action_from_department
 msgid "Appraisal to start"
 msgstr "Başlangıç Değerlendirmesi"
+
+#. module: hr_appraisal
+#. odoo-python
+#: code:addons/hr_appraisal/wizard/hr_departure_wizard.py:0
+msgid ""
+"Appraisal's managers have been updated due to the end of collaboration with "
+"an employee."
+msgstr ""
 
 #. module: hr_appraisal
 #: model:ir.actions.server,name:hr_appraisal.ir_cron_scheduler_appraisal_ir_actions_server
@@ -2524,8 +2513,8 @@ msgid ""
 msgstr ""
 "Bir e-posta gönderirken seçmek için isteğe bağlı çeviri dili (ISO kodu). "
 "Ayarlanmazsa, ana ortağın dili kullanılacaktır. Bu genellikle uygun dili "
-"sağlayan bir yer tutucu ifade olmalıdır, örneğin {{ object.partner_id.lang "
-"}}."
+"sağlayan bir yer tutucu ifade olmalıdır, örneğin "
+"{{ object.partner_id.lang }}."
 
 #. module: hr_appraisal
 #: model:ir.model.fields.selection,name:hr_appraisal.selection__hr_appraisal_campaign_wizard__manager__person
@@ -2694,11 +2683,6 @@ msgid "Request Appraisal"
 msgstr "Değerlendirme Talebi"
 
 #. module: hr_appraisal
-#: model:ir.actions.server,name:hr_appraisal.action_create_multi_appraisals
-msgid "Request Appraisals"
-msgstr "Değerlendirme İsteyin"
-
-#. module: hr_appraisal
 #: model:ir.model,name:hr_appraisal.model_request_appraisal
 msgid "Request an Appraisal"
 msgstr "Bir Değerlendirme Talebi"
@@ -2707,6 +2691,13 @@ msgstr "Bir Değerlendirme Talebi"
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Reset"
 msgstr "Sıfırla"
+
+#. module: hr_appraisal
+#: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
+msgid ""
+"Resetting the appraisal will erase all manually entered content in the "
+"Employee and Manager Feedback sections. Do you want to continue?"
+msgstr ""
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__activity_user_id
@@ -3326,6 +3317,21 @@ msgstr ""
 #: model:mail.template,subject:hr_appraisal.mail_template_appraisal_confirm
 msgid "{{ object.employee_id.name }}: Appraisal Confirmed"
 msgstr "{{ object.employee_id.name }}: Değerlendirme Onaylandı"
+
+#~ msgid "Request Appraisals"
+#~ msgstr "Değerlendirme İsteyin"
+
+#~ msgid "100%"
+#~ msgstr "100%"
+
+#~ msgid "25%"
+#~ msgstr "%25"
+
+#~ msgid "50%"
+#~ msgstr "%50"
+
+#~ msgid "75%"
+#~ msgstr "%75"
 
 #~ msgid "%s Goals"
 #~ msgstr "%s Hedefler"

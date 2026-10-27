@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.tests import tagged, TransactionCase
+from odoo.fields import Command
+from odoo.tests import TransactionCase, tagged
 
 
 @tagged('post_install', '-at_install')
@@ -56,3 +57,50 @@ class TestName(TransactionCase):
         res_ids = [r[0] for r in res]
         self.assertIn(template_dyn.id, res_ids)
         self.assertIn(product.product_tmpl_id.id, res_ids)
+
+    def test_product_product_name_search(self):
+        attribute = self.env['product.attribute'].create({
+            'name': 'Attribute',
+            'value_ids': [
+                Command.create({'name': f'value {i}'})
+                for i in range(3)
+            ]
+        })
+        template = self.env['product.template'].create({
+            'name': 'Whatever',
+            'attribute_line_ids': [
+                Command.create({
+                    'attribute_id': attribute.id,
+                    'value_ids': [Command.set(attribute.value_ids.ids)]
+                })
+            ]
+        })
+        variant1, _variant2, _variant3 = template.product_variant_ids
+        variant1.default_code = 'HOHO'
+        product_search = self.env['product.product'].with_context(partner_id=33).search([
+            ('display_name', '=', 'HOHO'),
+        ])
+        self.assertEqual(variant1, product_search)
+
+    def test_product_product_name_search_favorite_first(self):
+        # `is_favorite` was removed from product.product's `_order` for name_search
+        # performance reasons; name_search must still surface favorites first when
+        # called without a search term (e.g. opening a many2one dropdown).
+        Product = self.env['product.product']
+        favorite = Product.create({'name': 'ZZZFavTest Favorite'})
+        non_favorite = Product.create({'name': 'AAAFavTest NonFavorite'})
+        favorite.product_tmpl_id.is_favorite = True
+
+        domain = [('id', 'in', (favorite + non_favorite).ids)]
+        res = Product.name_search(name='', domain=domain, limit=1)
+        self.assertEqual(
+            [r[0] for r in res], [favorite.id],
+            "The favorite product should be suggested first even though it sorts "
+            "after the non-favorite one alphabetically.",
+        )
+        res = Product.name_search(name='', domain=domain, limit=2)
+        self.assertEqual(
+            [r[0] for r in res], [favorite.id, non_favorite.id],
+            "The non-favorite product should still be suggested once the "
+            "favorite one(s) have been listed.",
+        )

@@ -331,9 +331,19 @@ class PlanningSlot(models.Model):
                     AND S1.allocated_percentage + S2.allocated_percentage > 100
                     and S1.id in %s
                     AND (%s or S2.state = 'published')
+                    AND S1.company_id IN %s
+                    AND S2.company_id IN %s
                 GROUP BY S1.id;
             """
-            self.env.cr.execute(query, (tuple(self.ids), self.env.user.has_group('planning.group_planning_manager')))
+            self.env.cr.execute(
+                query,
+                (
+                    tuple(self.ids),
+                    self.env.user.has_group('planning.group_planning_manager'),
+                    tuple(self.env.companies.ids),
+                    tuple(self.env.companies.ids),
+                ),
+            )
             overlap_mapping = dict(self.env.cr.fetchall())
             for slot in self:
                 slot_result = overlap_mapping.get(slot.id, [])
@@ -342,17 +352,26 @@ class PlanningSlot(models.Model):
         else:
             # Allow fetching overlap without id if there is only one record
             # This is to allow displaying the warning when creating a new record without having an ID yet
-            if len(self) == 1 and self.employee_id and self.start_datetime and self.end_datetime:
+            if len(self) == 1 and self.resource_id and self.start_datetime and self.end_datetime:
                 query = """
                     SELECT ARRAY_AGG(s.id) as conflict_ids
                       FROM planning_slot s
-                     WHERE s.employee_id = %s
+                     WHERE s.resource_id = %s
                        AND s.start_datetime < %s
                        AND s.end_datetime > %s
                        AND s.allocated_percentage + %s > 100
+                       AND s.company_id IN %s
                 """
-                self.env.cr.execute(query, (self.employee_id.id, self.end_datetime,
-                                            self.start_datetime, self.allocated_percentage))
+                self.env.cr.execute(
+                    query,
+                    (
+                        self.resource_id.id,
+                        self.end_datetime,
+                        self.start_datetime,
+                        self.allocated_percentage,
+                        tuple(self.env.companies.ids),
+                    ),
+                )
                 overlaps = self.env.cr.dictfetchall()
                 conflict_slot_ids = overlaps[0]['conflict_ids']
                 if conflict_slot_ids:
@@ -442,7 +461,7 @@ class PlanningSlot(models.Model):
 
     def _different_than_template(self, check_empty=True):
         self.ensure_one()
-        if not self.start_datetime:
+        if not (self.start_datetime and self.end_datetime):
             return True
         template_fields = self._get_template_fields().items()
         for template_field, slot_field in template_fields:
@@ -665,18 +684,8 @@ class PlanningSlot(models.Model):
             m = round(modf(template_id.end_time)[0] * 60.0)
             end = (start + relativedelta(days=(template_id.duration_days - 1), hour=0, minute=0, second=0))
             if template_id.duration_days > 1 and resource_id.calendar_id:
-                end = resource.calendar_id.plan_days(template_id.duration_days, start, compute_leaves=True)
-            end = end.replace(hour=int(h), minute=int(m))
-
-            if resource and not resource._is_flexible():
-                work_interval, _dummy = resource._get_valid_work_intervals(
-                    start,
-                    end
-                )
-                start = start.astimezone(pytz.utc).replace(tzinfo=None)
-                end = work_interval[resource.id]._items[-1][1].astimezone(pytz.utc).replace(tzinfo=None) \
-                    if work_interval[resource.id]._items \
-                    else end
+                end = resource.calendar_id.plan_days(template_id.duration_days, start.replace(hour=0, minute=0), compute_leaves=True) or end
+            end = end.replace(hour=int(h), minute=int(m), second=0, microsecond=0)
 
         # Need to remove the tzinfo in start and end as without these it leads to a traceback
         # when the start time is empty
@@ -839,6 +848,31 @@ class PlanningSlot(models.Model):
                     vals['state'] = 'published'
             if not vals.get('company_id'):
                 vals['company_id'] = self.env.company.id
+        if self.env.context.get("multi_create"):
+            vals_list_updated = []
+            resource_per_id = {}
+            user_tz = pytz.timezone(self._get_tz())
+            min_datetime = fields.Datetime.from_string(vals_list[0]['start_datetime']).astimezone(user_tz)
+            max_datetime = fields.Datetime.from_string(vals_list[-1]['end_datetime']).astimezone(user_tz)
+            for vals in vals_list:
+                if resource_id := vals.get('resource_id'):
+                    resource = resource_per_id.get(resource_id)
+                    if not resource:
+                        resource = Resource.browse(resource_id)
+                        resource_per_id[resource_id] = resource
+                        Resource |= resource
+            schedule, _ = Resource._get_valid_work_intervals(min_datetime, max_datetime)
+            for vals in vals_list:
+                if resource_id := vals.get('resource_id'):
+                    shift_interval = Intervals([(
+                        fields.Datetime.from_string(vals.get('start_datetime')).astimezone(user_tz),
+                        fields.Datetime.from_string(vals.get('end_datetime')).astimezone(user_tz),
+                        self.env['resource.calendar.attendance'],
+                    )])
+                    if shift_interval & schedule[resource_id]:
+                        vals_list_updated.append(vals)
+            if vals_list_updated:
+                vals_list = vals_list_updated
         return super().create(vals_list)
 
     def create_batch_from_calendar(self, vals_list):
@@ -1083,6 +1117,8 @@ class PlanningSlot(models.Model):
         if self.company_id in self.env.user.employee_ids.mapped('company_id'):
             resource_id = self.env.user.employee_ids.filtered(lambda e: e.company_id == self.company_id)[
                 0].resource_id.id
+        elif len(self.env.user.employee_ids) == 1:
+            resource_id = self.env.user.employee_ids.resource_id.id
         else:
             raise UserError(self.env._("You cannot assign yourself to a shift belonging to another company."))
         return self.sudo().write({'resource_id': resource_id})
@@ -1477,7 +1513,9 @@ class PlanningSlot(models.Model):
     @api.model
     def action_rollback_auto_plan_ids(self, shifts_data):
         open_shift_assigned = shifts_data["open_shift_assigned"]
-        self.browse(open_shift_assigned).resource_id = False
+        shifts = self.browse(open_shift_assigned)
+        with self.env.protecting([self._fields['allocated_hours']], shifts):
+            shifts.write({'resource_id': False})
 
     # ----------------------------------------------------
     # Gantt - Calendar view
@@ -1488,7 +1526,51 @@ class PlanningSlot(models.Model):
         result = super(PlanningSlot, self.with_context(scale=scale)).get_gantt_data(domain, groupby, read_specification, limit=limit, offset=offset, unavailability_fields=unavailability_fields, progress_bar_fields=progress_bar_fields, start_date=start_date, stop_date=stop_date, scale=scale)
         if "resource_id" in groupby:
             result["working_periods"] = self._gantt_resource_employees_working_periods(result["groups"], start_date, stop_date)
+        planning_data = self._get_gantt_planning_data(domain, start_date, stop_date)
+        result.update({"planning_data": planning_data})
         return result
+
+    def _get_gantt_planning_data(self, domain, start_date, stop_date):
+        resources = self.search_fetch(domain).mapped('resource_id')
+
+        work_interval_per_resource = defaultdict(list)
+        flexible_per_resource = {False: False}
+        avg_hours_per_resource = {False: 0}
+
+        if resources:
+            start_datetime, end_datetime = fields.Datetime.from_string(start_date).replace(tzinfo=pytz.utc), fields.Datetime.from_string(stop_date).replace(tzinfo=pytz.utc)
+
+            # Get slots' resources and current company work intervals.
+            work_intervals_per_resource, _dummy = resources._get_valid_work_intervals(start_datetime, end_datetime)
+            company_calendar = self.env.company.resource_calendar_id
+            company_calendar_work_intervals = company_calendar._work_intervals_batch(start_datetime, end_datetime)
+
+            # Export work intervals in UTC
+            work_intervals_per_resource[False] = company_calendar_work_intervals[False]
+            for resource_id, resource_work_intervals_per_resource in work_intervals_per_resource.items():
+                calendar_tz = pytz.timezone(resources.browse(resource_id).calendar_id.tz) if resources.browse(resource_id).calendar_id else pytz.UTC
+                for resource_work_interval in resource_work_intervals_per_resource:
+                    def fix_tz(dt, target_tz):
+                        # Strip existing tz, localize with target_tz, then convert to UTC
+                        return target_tz.localize(dt.replace(tzinfo=None)).astimezone(pytz.UTC)
+
+                    start_utc = fix_tz(resource_work_interval[0], calendar_tz)
+                    end_utc = fix_tz(resource_work_interval[1], calendar_tz)
+                    work_interval_per_resource[resource_id].append((start_utc, end_utc))
+
+            # Add the flexible status per resource and the average daily work hours per resource calendar to the output
+            for resource in set(resources):
+                flexible_per_resource[resource.id] = resource._is_flexible()
+                if resource._is_fully_flexible():
+                    avg_hours_per_resource[resource.id] = 24    # set to 24 hours if the resource is fully flexible
+                else:
+                    avg_hours_per_resource[resource.id] = (resource.calendar_id or company_calendar).hours_per_day
+
+        return {
+            "work_intervals": work_interval_per_resource,
+            "is_flexible": flexible_per_resource,
+            "avg_hours": avg_hours_per_resource,
+        }
 
     @api.model
     def _gantt_unavailability(self, field, res_ids, start, stop, scale):
@@ -1503,7 +1585,9 @@ class PlanningSlot(models.Model):
         result = {False: []}
         for resource in resources:
             # return no unavailability if the resource is fully flexible hours (both material and employee).
-            if (resource.id not in res_ids) or (resource and resource._is_fully_flexible()):
+            if ((resource.id not in res_ids)
+                or (resource and resource._is_fully_flexible())
+                or (resource.id not in leaves_mapping and resource and resource._is_flexible())):
                 continue
             calendar = leaves_mapping.get(resource.id, company_leaves)
             # remove intervals smaller than a cell, as they will cause half a cell to turn grey
@@ -1550,7 +1634,7 @@ class PlanningSlot(models.Model):
 
     def action_rollback_copy_previous_week(self, copied_slot_ids):
         self.browse(copied_slot_ids).was_copied = False
-        self.unlink()
+        self.exists().unlink()
 
     # ----------------------------------------------------
     # Sending Shifts
@@ -1651,7 +1735,7 @@ class PlanningSlot(models.Model):
 
     def _print_planning_get_slot_title(self, slot_start, slot_end, tz_info, group_by):
         def print_planning_format_time(date, tz_info):
-            return format_time(self.env, date.time(), tz_info, 'HH:mm')
+            return format_time(self.env, date.time(), tz_info, 'short')
 
         allocated_hours_formatted = ""
         if self.allocated_percentage != 100:
@@ -1802,7 +1886,7 @@ class PlanningSlot(models.Model):
 
         for group_id, slots in sorted(group_by_slots, key=lambda x: x[0].display_name if x[0] else ''):
             group = group_id.id if group_id else False
-            for slot in slots:
+            for slot in slots.sorted(key=lambda s: (s.start_datetime, s.id)):
                 resource_id = slot.resource_id
                 slot_start = slot.start_datetime.astimezone(tz_info)
                 slot_end = slot.end_datetime.astimezone(tz_info)
@@ -1857,7 +1941,7 @@ class PlanningSlot(models.Model):
             for week, data in group_by_slots_per_day_per_week.items()
         }
 
-        return self.env.ref('planning.report_planning_slot').with_context(discard_logo_check=True).report_action(None,
+        return self.env.ref('planning.report_planning_slot').with_context(discard_logo_check=True, allow_printing_planning_report=True).report_action(None,
             data={
                 'group_by_slots_per_day_per_week': group_by_slots_per_day_per_week_formatted,
                 'weeks': weeks,
@@ -2329,6 +2413,7 @@ class PlanningSlot(models.Model):
             allocated_hours = timedelta(hours=self.allocated_hours).total_seconds()
             formatted_allocated_hours = "%d:%02d" % (allocated_hours // 3600, round(allocated_hours % 3600 / 60))
             allocated_percentage = float_utils.float_repr(self.allocated_percentage, precision_digits=0)
+            lang = employee.user_partner_id.lang or employee.work_contact_id.lang or self.env.context.get('lang')
             # update context to build a link for view in the slot
             view_context.update({
                 'link': employee_url_map[employee.id],
@@ -2338,7 +2423,8 @@ class PlanningSlot(models.Model):
                 'work_email': employee.work_email,
                 'allocated_hours': formatted_allocated_hours,
                 'allocated_percentage': allocated_percentage,
-                'unassign_deadline': unassign_deadline
+                'unassign_deadline': unassign_deadline,
+                'lang': lang,
             })
             mail_id = template.with_context(view_context).send_mail(self.id, email_layout_xmlid='mail.mail_notification_light')
             mails_to_send_ids.append(mail_id)
@@ -2603,26 +2689,6 @@ class PlanningSlot(models.Model):
             resource = resources.browse(resource_id)
             work_hours[resource_id] = self._get_employee_work_hours_within_interval(resource, work_intervals, flexible_resources_hours_per_day, flexible_resources_hours_per_week)
 
-        company_calendar = self.env.company.resource_calendar_id
-        # Export work intervals in UTC
-        resource_work_intervals[False] = (
-            calendar_work_intervals.get(company_calendar.id)
-            or company_calendar._work_intervals_batch(start, stop)[False]
-        )
-        work_interval_per_resource = defaultdict(list)
-        for resource_id, resource_work_intervals_per_resource in resource_work_intervals.items():
-            for resource_work_interval in resource_work_intervals_per_resource:
-                work_interval_per_resource[resource_id].append(
-                    (resource_work_interval[0].replace(tzinfo=pytz.UTC), resource_work_interval[1].replace(tzinfo=pytz.UTC))
-                )
-        # Add average daily work hours per resource calendar to the output
-        avg_hours_per_resource = {False: 0}
-        for resource in set(resources):
-            if resource._is_fully_flexible():
-                avg_hours_per_resource[resource.id] = 24    # set to 24 hours if the resource is fully flexible
-            else:
-                avg_hours_per_resource[resource.id] = (resource.calendar_id or company_calendar).hours_per_day
-
         return {
             resource.id: {
                 'is_material_resource': resource.resource_type == 'material',
@@ -2633,8 +2699,6 @@ class PlanningSlot(models.Model):
                 'employee_id': resource.employee_id.id,
                 'is_flexible_hours': resource._is_flexible(),
                 'is_fully_flexible_hours': resource._is_fully_flexible(),
-                'work_intervals': work_interval_per_resource.get(resource.id, 0.0),
-                'avg_hours': avg_hours_per_resource.get(resource.id, 0.0),
             }
             for resource in resources
         }
@@ -2709,6 +2773,7 @@ class PlanningSlot(models.Model):
                 self.env["hr.version"].sudo()._read_group(
                     domain=[
                         ("employee_id", "in", employees_sudo.ids),
+                        ('contract_date_start', '!=', False),
                     ],
                     groupby=["employee_id"],
                     aggregates=["__count"],
@@ -2718,14 +2783,14 @@ class PlanningSlot(models.Model):
             employees_with_contract_in_current_scale = []
             for contract in contracts:
                 employee_id = contract.employee_id.id
-                end_datetime = contract.date_end and contract.date_end + relativedelta(hour=23, minute=59, second=59)
+                end_datetime = contract.contract_date_end and contract.contract_date_end + relativedelta(hour=23, minute=59, second=59)
                 if end_datetime:
                     user_tz = pytz.timezone(self.env.user.tz or self.env.context.get('tz') or 'UTC')
                     end_datetime = user_tz.localize(end_datetime).astimezone(pytz.utc).replace(tzinfo=None)
                     end_datetime = fields.Datetime.to_string(end_datetime)
                 employees_with_contract_in_current_scale.append(employee_id)
                 working_periods[employee_id_to_ressource_id[employee_id]].append({
-                    "start": fields.Datetime.to_string(contract.date_start),
+                    "start": fields.Datetime.to_string(contract.contract_date_start),
                     "end": end_datetime,
                 })
             for employee in employees_sudo - self.env["hr.employee"].browse(employees_with_contract_in_current_scale):

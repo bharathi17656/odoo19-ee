@@ -10,21 +10,22 @@
 # Dorin Hongu <dhongu@gmail.com>, 2023
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 # Odoo Translation Bot <c3p@odoo.com>, 2025.
+# Alin Ilie <alin.ilie@logit-solutions.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-21 18:40+0000\n"
-"PO-Revision-Date: 2025-11-27 18:17+0000\n"
-"Last-Translator: Odoo Translation Bot <c3p@odoo.com>\n"
-"Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/iot/ro/>"
-"\n"
+"POT-Creation-Date: 2026-02-27 18:44+0000\n"
+"PO-Revision-Date: 2025-12-10 10:26+0000\n"
+"Last-Translator: Alin Ilie <alin.ilie@logit-solutions.com>\n"
+"Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/iot/ro/"
+">\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : "
-"(n==0 || (n%100 > 0 && n%100 < 20)) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
 "X-Generator: Weblate 5.14.3\n"
 
 #. module: iot
@@ -157,12 +158,6 @@ msgid "Camera"
 msgstr "Aparat Foto"
 
 #. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/backend/iot_device_form.js:0
-msgid "Check if the device is still connected"
-msgstr "Verificați dacă dispozitivul este încă conectat"
-
-#. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_no_iot_box_found
 msgid "Check the lights"
 msgstr "Verificați luminile"
@@ -218,12 +213,6 @@ msgstr "Stare conectată"
 #: model_terms:ir.ui.view,arch_db:iot.iot_device_search
 msgid "Connection"
 msgstr "Conexiune"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/backend/iot_device_form.js:0
-msgid "Connection to device failed"
-msgstr "Conexiunea la dispozitiv a eșuat"
 
 #. module: iot
 #: model:ir.model.fields,field_description:iot.field_add_iot_box__create_uid
@@ -333,7 +322,7 @@ msgstr "Afișare URL"
 #. module: iot
 #: model:ir.model.fields,field_description:iot.field_select_printers_wizard__do_not_ask_again
 msgid "Do not ask me again"
-msgstr ""
+msgstr "Nu mă mai întrebați din nou"
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_no_iot_box_found
@@ -384,6 +373,24 @@ msgstr "Eșec la resetarea parolei pentru %s."
 #: code:addons/iot/static/src/view_widgets/iot_restart_odoo.js:0
 msgid "Failed to send the restart command to the IoT Box ('%s')"
 msgstr "Eșec la trimiterea comenzii de repornire către IoT Box ('%s')"
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "Failed to toggle remote debug."
+msgstr ""
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/backend/iot_device_form.js:0
+msgid "Failed to update keyboard layout on the device."
+msgstr ""
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/backend/iot_device_form.js:0
+msgid "Failed to update scanner mode on the device."
+msgstr ""
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_pair_offline
@@ -569,8 +576,8 @@ msgstr "IoT Box găsit. Conectare..."
 msgid ""
 "IoT Box local network is %(lan_quality)s and internet is %(wan_quality)s"
 msgstr ""
-"IoT Box rețeaua locală este %(lan_quality)s și internetul este %(wan_quality)"
-"s"
+"IoT Box rețeaua locală este %(lan_quality)s și internetul este %"
+"(wan_quality)s"
 
 #. module: iot
 #: model:ir.actions.act_window,name:iot.iot_box_action
@@ -591,7 +598,7 @@ msgstr "Dispozitive IoT"
 #. module: iot
 #: model:ir.model.fields,field_description:iot.field_add_iot_box__iot_box_to_connect
 msgid "Iot Box To Connect"
-msgstr ""
+msgstr "Cutie IoT pentru conectare"
 
 #. module: iot
 #: model:ir.model.fields,field_description:iot.field_iot_device__is_scanner
@@ -756,8 +763,8 @@ msgid ""
 msgstr ""
 "Unul dintre imprimantele utilizate pentru a imprima documentul a fost "
 "eliminat.\n"
-"Pentru a reseta imprimantele, accesați aplicația IoT, fila Configurare, „"
-"Resetați imprimantele conectate” și încercați din nou operațiunea."
+"Pentru a reseta imprimantele, accesați aplicația IoT, fila Configurare, "
+"„Resetați imprimantele conectate” și încercați din nou operațiunea."
 
 #. module: iot
 #. odoo-javascript
@@ -769,12 +776,6 @@ msgstr "Operațiunea nu a fost salvată pe blackbox"
 #: model_terms:ir.ui.view,arch_db:iot.view_no_iot_box_found
 msgid "Optional: Plug a screen"
 msgstr "Opțional: Conectați un ecran"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/network_utils/iot_http_service.js:0
-msgid "Out of paper"
-msgstr "Fără hârtie"
 
 #. module: iot
 #. odoo-javascript
@@ -799,12 +800,6 @@ msgstr "Cod Împerechere"
 #: model_terms:ir.ui.view,arch_db:iot.view_no_iot_box_found
 msgid "Pairing code received from a printer or screen"
 msgstr "Cod de asociere primit de la o imprimantă sau un ecran"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/network_utils/iot_http_service.js:0
-msgid "Paper is low"
-msgstr "Hârtia este puțină"
 
 #. module: iot
 #: model:ir.model.fields.selection,name:iot.selection__iot_device__type__payment
@@ -845,12 +840,6 @@ msgstr "Imprimantă"
 #. module: iot
 #. odoo-javascript
 #: code:addons/iot/static/src/network_utils/iot_http_service.js:0
-msgid "Printer is not ready"
-msgstr "Imprimanta nu este gata"
-
-#. module: iot
-#. odoo-javascript
-#: code:addons/iot/static/src/network_utils/iot_http_service.js:0
 msgid "Printer is unreachable"
 msgstr "Imprimanta este inaccesibilă"
 
@@ -880,6 +869,12 @@ msgstr "Imprimantă pentru bonuri"
 #: code:addons/iot/static/src/view_widgets/iot_remote_debug.xml:0
 msgid "Remote Debug"
 msgstr "Depanare la distanță"
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "Remote debug is %s."
+msgstr ""
 
 #. module: iot
 #. odoo-javascript
@@ -946,12 +941,12 @@ msgstr "Resetează imprimantele asociate"
 #. odoo-javascript
 #: code:addons/iot/static/src/backend/no_iot_box_found_form_controller.js:0
 msgid "Retrying in "
-msgstr ""
+msgstr "Reîncercare în "
 
 #. module: iot
 #: model:ir.model.fields,field_description:iot.field_iot_box__ssl_certificate_end_date
 msgid "SSL Certificate End Date"
-msgstr ""
+msgstr "Data de expirare a certificatului SSL"
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_select_printers_wizard
@@ -1185,7 +1180,7 @@ msgstr "Neacceptat"
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_no_iot_box_found
 msgid "Use Pairing Code"
-msgstr ""
+msgstr "Utilizați codul de asociere"
 
 #. module: iot
 #: model:res.groups,name:iot.group_iot_user
@@ -1255,11 +1250,17 @@ msgstr "Conectare"
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.iot_device_view_kanban
 msgid "connection_type"
-msgstr ""
+msgstr "tip_conexiune"
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.iot_box_view_kanban
 msgid "device-icon"
+msgstr "pictogramă dispozitiv"
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "disabled"
 msgstr ""
 
 #. module: iot
@@ -1270,6 +1271,12 @@ msgstr "documentație"
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.view_enter_pairing_code
 msgid "e.g. ABDE0123"
+msgstr "de exemplu ABDE0123"
+
+#. module: iot
+#. odoo-javascript
+#: code:addons/iot/static/src/view_widgets/iot_remote_debug.js:0
+msgid "enabled"
 msgstr ""
 
 #. module: iot
@@ -1282,8 +1289,8 @@ msgid ""
 msgstr ""
 "pentru Wi-Fi.<br/>\n"
 "                Apoi, conectați caseta IoT la o imprimantă (prin cablu USB) "
-"sau la un ecran (prin cablu micro HDMI) pentru a obține codul de asociere.<"
-"br/>\n"
+"sau la un ecran (prin cablu micro HDMI) pentru a obține codul de asociere."
+"<br/>\n"
 "                <br/>"
 
 #. module: iot
@@ -1309,6 +1316,21 @@ msgstr "resetează.imprimante.asociate"
 #: model_terms:ir.actions.act_window,help:iot.iot_box_action
 msgid "to add an IoT Box."
 msgstr "pentru a adăuga o casetă IoT."
+
+#~ msgid "Out of paper"
+#~ msgstr "Fără hârtie"
+
+#~ msgid "Paper is low"
+#~ msgstr "Hârtia este puțină"
+
+#~ msgid "Printer is not ready"
+#~ msgstr "Imprimanta nu este gata"
+
+#~ msgid "Check if the device is still connected"
+#~ msgstr "Verificați dacă dispozitivul este încă conectat"
+
+#~ msgid "Connection to device failed"
+#~ msgstr "Conexiunea la dispozitiv a eșuat"
 
 #~ msgid "Please wait"
 #~ msgstr "Te rog așteaptă"

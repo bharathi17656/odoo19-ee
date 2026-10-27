@@ -1,10 +1,10 @@
 import { stores, helpers } from "@odoo/o-spreadsheet";
-import { ModelNotFoundError } from "@spreadsheet/data_sources/data_source";
 import { Domain } from "@web/core/domain";
 import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { CommandResult } from "@spreadsheet/o_spreadsheet/cancelled_reason";
 import { globalFieldMatchingRegistry } from "@spreadsheet/global_filters/helpers";
+import { waitForDataSourcesToBeReady } from "./helpers";
 
 const { UuidGenerator } = helpers;
 
@@ -352,29 +352,11 @@ export class FilterEditorStore extends SpreadsheetStore {
     }
 
     async _loadData({ modelName, modelDisplayName, fieldMatching } = {}) {
-        this._allModelsExist = await this._waitForDataSourcesBeReady();
+        this._allModelsExist = await waitForDataSourcesToBeReady(this.model.getters);
         if (this.isNew && this.filter.type === "relation" && modelName) {
             this.selectRelatedModel(modelName, modelDisplayName);
         }
         await this._loadFilterMatchings(fieldMatching);
-    }
-
-    async _waitForDataSourcesBeReady() {
-        try {
-            const promises = globalFieldMatchingRegistry
-                .getAll()
-                .map((el) => el.waitForReady(this.model.getters))
-                .flat();
-            await Promise.all(promises);
-        } catch (e) {
-            if (e instanceof ModelNotFoundError) {
-                console.error(e);
-                return false;
-            } else {
-                throw e;
-            }
-        }
-        return true;
     }
 
     async _loadFilterMatchings(initialFieldMatching = {}) {

@@ -1,9 +1,11 @@
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
+
 import odoo
+from odoo.tests import Form
 from odoo.addons.point_of_sale.tests.common import CommonPosTest
 
 
-@odoo.tests.tagged('post_install', '-at_install')
-class TestPosAppointmentFlow(CommonPosTest):
+class CommonPosAppointmentTest(CommonPosTest):
 
     @classmethod
     def setUpClass(cls):
@@ -32,6 +34,10 @@ class TestPosAppointmentFlow(CommonPosTest):
             }
         ])
         cls.env.user.group_ids -= cls.env.ref('appointment.group_appointment_manager')
+
+
+@odoo.tests.tagged('post_install', '-at_install')
+class TestPosAppointmentFlow(CommonPosAppointmentTest):
 
     def test_appointment_reservation_count(self):
         """ Test that bookings are created with the correct number of reservation. """
@@ -100,3 +106,31 @@ class TestPosAppointmentFlow(CommonPosTest):
         # And reversely, changing the phone number on the event does not change it on the partner
         event.phone_number = '111222333'
         self.assertEqual(partner.phone, '987654321')
+
+    def test_booking_gantt_create_without_appointment_type_filter(self):
+        """ Bookings created from the PoS booking views must be linked to the PoS appointment type
+        even when the user removes every filter from the search bar. """
+        action = self.env['calendar.event'].with_context(
+            appointment_type_id=self.reservation_appointment.id,
+        ).action_open_booking_gantt_view()
+
+        # Only the action context is used: no search facet adds the appointment type default
+        booking_form = Form(
+            self.env['calendar.event'].with_context(action['context']),
+            view='pos_appointment.calendar_event_view_form_gantt_booking',
+        )
+        self.assertEqual(booking_form.appointment_type_id, self.reservation_appointment)
+        self.assertEqual(
+            self.env['appointment.resource'].search([('appointment_type_ids', 'in', booking_form.appointment_type_id.id)]),
+            self.resource_1 | self.resource_2,
+        )
+        booking_form.name = "Rest'Odoo"
+        booking_form.resource_ids.add(self.resource_1)
+        booking = booking_form.save()
+
+        self.assertEqual(booking.appointment_type_id, self.reservation_appointment)
+        self.assertEqual(booking.appointment_status, 'booked')
+        self.assertEqual(booking.appointment_resource_ids, self.resource_1)
+
+        # The appointment type restriction cannot be removed from the search bar
+        self.assertEqual(action.get('domain'), [('appointment_type_id', '=', self.reservation_appointment.id)])

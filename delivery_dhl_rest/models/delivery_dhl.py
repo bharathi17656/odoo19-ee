@@ -24,6 +24,19 @@ With the above example, the description of each package will be updated.
 For more information, please refer to the DHL API documentation: https://developer.dhl.com/api-reference/dhl-express-mydhl-api.
 """
 
+LABEL_FORMAT_MAPPING = {
+    '8X4_A4_PDF': 'ECOM26_84_A4_001',
+    '8X4_thermal': 'ECOM26_84_001',
+    '8X4_A4_TC_PDF': 'ECOM_TC_A4',
+    '6X4_thermal': 'ECOM26_A6_002',
+    '6X4_A4_PDF': 'ECOM26_A6_002',
+    '8X4_CI_PDF': 'ECOM26_84CI_001',
+    '8X4_CI_thermal': 'ECOM26_84CI_001',
+    '8X4_RU_A4_PDF': 'ECOM_A4_RU_002',
+    '6X4_PDF': 'ECOM26_A6_002',
+    '8X4_PDF': 'ECOM26_84_001',
+}
+
 
 class ProviderDHL(models.Model):
     _inherit = 'delivery.carrier'
@@ -220,6 +233,15 @@ class ProviderDHL(models.Model):
     def _convert_to_utc_string(self, datetime_object):
         return datetime_object.astimezone(tz=pytz.utc).strftime('%Y-%m-%dT%H:%M:%S GMT+00:00')
 
+    def _get_dhl_label_format(self):
+        match self.dhl_label_image_format:
+            case 'ZPL2':
+                return 'zpl'
+            case 'EPL2':
+                return 'epl'
+            case _:
+                return 'pdf'
+
     def _rate_shipment_vals(self, order=False, picking=False):
         if picking:
             warehouse_partner_id = picking.picking_type_id.warehouse_id.partner_id
@@ -259,9 +281,11 @@ class ProviderDHL(models.Model):
         if self.dhl_dutiable:
             rating_request['monetaryAmount'] = srm._get_dutiable_vals(total_value, currency_id.name)
         rating_request['unitOfMeasurement'] = self.dhl_unit_system
-        if planned_date <= fields.Datetime.now():
-            raise UserError(_("The planned date for the shipment must be in the future."))
+        if not planned_date or planned_date <= fields.Datetime.now():
+            # DHL requires a planned date in the future => +1 hr to now
+            planned_date = fields.Datetime.now() + timedelta(hours=1)
         rating_request['plannedShippingDateAndTime'] = self._convert_to_utc_string(planned_date)
+        rating_request['nextBusinessDay'] = True
         rating_request['accounts'] = srm._get_billing_vals(account_number, "shipper")
         self._dhl_add_extra_data_to_request(rating_request, 'rate')
         rating_request['productsAndServices'] = [{
@@ -326,10 +350,11 @@ class ProviderDHL(models.Model):
             srm = DHLProvider(self)
             account_number = self.sudo().dhl_account_number
             planned_date = picking.scheduled_date
-            if planned_date <= fields.Datetime.now():
-                raise UserError(_("The planned date for the shipment must be in the future."))
+            if not planned_date or planned_date <= fields.Datetime.now():
+                # DHL requires a planned date in the future => +1 hr to now
+                planned_date = fields.Datetime.now() + timedelta(hours=1)
             shipment_request['plannedShippingDateAndTime'] = self._convert_to_utc_string(planned_date)
-            shipment_request['pickup'] = {'isRequested': True}
+            shipment_request['pickup'] = {'isRequested': False}
             shipment_request['accounts'] = srm._get_billing_vals(account_number, "shipper")
             shipment_request['customerDetails'] = {}
             shipment_request['customerDetails']['receiverDetails'] = srm._get_consignee_vals(picking.partner_id)
@@ -349,15 +374,25 @@ class ProviderDHL(models.Model):
             if self.dhl_dutiable:
                 shipment_request['content']['declaredValue'] = total_value
                 shipment_request['content']['declaredValueCurrency'] = currency_name
+            shipment_request['content']['packages'] = srm._get_shipment_vals(picking)
+            shipment_request['outputImageProperties'] = {
+                'encodingFormat': self._get_dhl_label_format(),
+            }
+            shipment_request['outputImageProperties']['imageOptions'] = [{
+                'typeCode': 'label',
+                'templateName': LABEL_FORMAT_MAPPING.get(self.dhl_label_template, 'ECOM26_84_001'),
+                'fitLabelsToA4': self.dhl_label_image_format == 'PDF' and 'A4' in self.dhl_label_template,
+            }]
             if picking._should_generate_commercial_invoice():
                 shipment_request['content']['exportDeclaration'] = srm._get_export_declaration_vals(self, picking)
                 shipment_request['content']['declaredValueCurrency'] = currency_name
-            shipment_request['content']['packages'] = srm._get_shipment_vals(picking)
-            shipment_request['outputImageProperties'] = {}
-            shipment_request['outputImageProperties']['imageOptions'] = [{
-                'typeCode': 'label',
-                'templateName': self.dhl_label_template,
-            }]
+                shipment_request['outputImageProperties']['imageOptions'].append({
+                    'typeCode': 'invoice',
+                    'templateName': 'COMMERCIAL_INVOICE_P_10',
+                    'languageCountryCode': self.env.company.country_code,
+                    'isRequested': True,
+                    'invoiceType': 'commercial',
+                })
             if self.supports_shipping_insurance and self.shipping_insurance:
                 shipment_request['valueAddedServices'] = [srm._get_insurance_vals(self.shipping_insurance, total_value, currency_name)]
             self._dhl_add_extra_data_to_request(shipment_request, 'ship')
@@ -371,16 +406,25 @@ class ProviderDHL(models.Model):
                 )
                 for document in dhl_response['documents'] if document['typeCode'] == 'label'
             ]
+            dhl_commercial_invoice = [
+                (
+                    'CommercialInvoice-DHL-{}.{}'.format(tracking_number, document['imageFormat']),
+                    base64.b64decode(document['content'])
+                )
+                for document in dhl_response['documents'] if document['typeCode'] == 'invoice'
+            ]
             other_documents = [
                 (
                     'ShippingDoc-DHL-{}.{}'.format(document['packageReferenceNumber'], document['imageFormat']),
                     base64.b64decode(document['content'])
                 )
-                for document in dhl_response['documents'] if document['typeCode'] != 'label'
+                for document in dhl_response['documents'] if document['typeCode'] != 'label' and document['typeCode'] != 'invoice'
             ]
             lognote_pickings = picking.sale_id.picking_ids if picking.sale_id else picking
             for pick in lognote_pickings:
                 pick.message_post(body=logmessage, attachments=dhl_labels)
+                if dhl_commercial_invoice:
+                    pick.message_post(body=_("DHL Commercial Invoice"), attachments=dhl_commercial_invoice)
                 if other_documents:
                     pick.message_post(body=_("DHL Documents"), attachments=other_documents)
             shipping_data = {
@@ -400,8 +444,9 @@ class ProviderDHL(models.Model):
         srm = DHLProvider(self)
         account_number = self.sudo().dhl_account_number
         planned_date = picking.scheduled_date
-        if planned_date <= fields.Datetime.now():
-            raise UserError(_("The planned date for the shipment must be in the future."))
+        if not planned_date or planned_date <= fields.Datetime.now():
+            # DHL requires a planned date in the future => +1 hr to now
+            planned_date = fields.Datetime.now() + timedelta(hours=1)
         shipment_request['plannedShippingDateAndTime'] = self._convert_to_utc_string(planned_date)
         shipment_request['pickup'] = {'isRequested': False}
         shipment_request['accounts'] = srm._get_billing_vals(account_number, "shipper")
@@ -413,7 +458,7 @@ class ProviderDHL(models.Model):
         shipment_request['content'] = {
             'description': picking.sale_id.name if picking.sale_id else picking.name,
             'unitOfMeasurement': self.dhl_unit_system,
-            'incoterm': picking.sale_id.incoterm or self.env.company.incoterm_id.code or 'EXW',
+            'incoterm': picking.sale_id.incoterm.code or self.env.company.incoterm_id.code or 'EXW',
             'isCustomsDeclarable': self.dhl_dutiable,
             'packages': srm._get_shipment_vals(picking)
         }
@@ -421,15 +466,22 @@ class ProviderDHL(models.Model):
         if self.dhl_dutiable:
             shipment_request['content']['declaredValue'] = total_value
             shipment_request['content']['declaredValueCurrency'] = currency_name
-        if picking._should_generate_commercial_invoice():
-            shipment_request['content']['exportDeclaration'] = srm._get_export_declaration_vals(self, picking)
-            shipment_request['content']['declaredValueCurrency'] = currency_name
         shipment_request['outputImageProperties'] = {
             'imageOptions': [{
                 'typeCode': 'label',
                 'templateName': self.dhl_label_template,
             }]
         }
+        if picking._should_generate_commercial_invoice():
+            shipment_request['content']['exportDeclaration'] = srm._get_export_declaration_vals(self, picking)
+            shipment_request['content']['declaredValueCurrency'] = currency_name
+            shipment_request['outputImageProperties']['imageOptions'].append({
+                'typeCode': 'invoice',
+                'templateName': 'COMMERCIAL_INVOICE_P_10',
+                'languageCountryCode': self.env.company.country_code,
+                'isRequested': True,
+                'invoiceType': 'commercial',
+            })
         shipment_request['valueAddedServices'] = [{'serviceCode': 'PV'}]
         self._dhl_add_extra_data_to_request(shipment_request, 'return')
         dhl_response = srm._send_shipment(shipment_request)
@@ -442,16 +494,25 @@ class ProviderDHL(models.Model):
             )
             for document in dhl_response['documents'] if document['typeCode'] == 'label'
         ]
+        dhl_commercial_invoice = [
+            (
+                'CommercialInvoiceReturn-DHL-{}.{}'.format(tracking_number, document['imageFormat']),
+                base64.b64decode(document['content'])
+            )
+            for document in dhl_response['documents'] if document['typeCode'] == 'invoice'
+        ]
         other_documents = [
             (
                 'ShippingDoc-DHL-{}.{}'.format(document['packageReferenceNumber'], document['imageFormat']),
                 base64.b64decode(document['content'])
             )
-            for document in dhl_response['documents'] if document['typeCode'] != 'label'
+            for document in dhl_response['documents'] if document['typeCode'] != 'label' and document['typeCode'] != 'invoice'
         ]
         lognote_pickings = picking.sale_id.picking_ids if picking.sale_id else picking
         for pick in lognote_pickings:
             pick.message_post(body=logmessage, attachments=dhl_labels)
+            if dhl_commercial_invoice:
+                pick.message_post(body=_("DHL Commercial Invoice (return)"), attachments=dhl_commercial_invoice)
             if other_documents:
                 pick.message_post(body=_("DHL Documents"), attachments=other_documents)
         shipping_data = {

@@ -26,7 +26,6 @@ registry.category("web_tour.tours").add("test_ensure_mobile_order_preparation_di
             ProductPage.clickProduct("Coca-Cola"),
             Utils.clickBtn("Checkout"),
             Utils.clickBtn("Order"),
-            CartPage.selectTable("1234"),
             {
                 trigger: ".confirmation-page:contains('Pay $ 2.53 at the counter')",
             },

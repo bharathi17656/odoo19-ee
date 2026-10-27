@@ -48,7 +48,10 @@ class AccountJournal(models.Model):
                 # statements for multiple accounts
                 journal_for_data = len(iban_bank_statement_data) == 1 and self or self.env['account.journal']
                 attachment_ignored_qty = 0
-                for currency_code, account_number, stmts_vals in iban_bank_statement_data:
+                for currency_code, account_number, *stmts_vals in iban_bank_statement_data:
+                    # In stms_vals we could have an extension number in the first position of the array, since we don't
+                    # need it for the import, we will just ignore it.
+                    stmts_vals = stmts_vals[-1]
                     try:
                         # Check raw data
                         self._check_parsed_data(stmts_vals, account_number)
@@ -84,12 +87,6 @@ class AccountJournal(models.Model):
                 errors[attachment.name].append(e.args[0])
 
         statements = self.env['account.bank.statement'].browse(statement_ids_all)
-        line_to_reconcile = statements.line_ids
-        if line_to_reconcile:
-            if len(line_to_reconcile) <= 80:
-                line_to_reconcile._try_auto_reconcile_statement_lines()
-            else:
-                line_to_reconcile._cron_try_auto_reconcile_statement_lines(batch_size=100)
 
         result = self.env['account.bank.statement.line']._action_open_bank_reconciliation_widget(
             extra_domain=[('statement_id', 'in', statements.ids)],
@@ -192,13 +189,27 @@ class AccountJournal(models.Model):
                 currency = False
 
         journal = self
+
+        if journal:
+            # Currency Match
+            journal_currency = journal.currency_id or journal.company_id.currency_id
+            currency_match = currency is None or journal_currency == (currency or company_currency)
+
+            # If check fails, 'self' is the wrong journal for this file
+            if not currency_match:
+                journal = self.env['account.journal']
+
         if account_number:
             # No bank account on the journal : create one from the account number of the statement
             if journal and not journal.bank_account_id:
                 journal.set_bank_account(account_number)
             # No journal passed to the wizard : try to find one using the account number of the statement
             elif not journal:
-                journal = self.search([('bank_account_id.sanitized_acc_number', '=', sanitized_account_number)])
+                domain = [
+                    ('bank_account_id.sanitized_acc_number', '=', sanitized_account_number),
+                    ('currency_id', '=', currency.id if currency else False),
+                ]
+                journal = self.search(domain, limit=1)
                 if not journal:
                     # Sometimes the bank returns only part of the full account number (e.g. local account number instead of full IBAN)
                     partial_match = self.search([('bank_account_id.sanitized_acc_number', 'ilike', sanitized_account_number)])
@@ -287,7 +298,10 @@ class AccountJournal(models.Model):
                 st_vals.pop('transactions', None)
                 # Create the statement
                 st_vals['line_ids'] = [Command.create(line) for line in filtered_st_lines]
-                statement = BankStatement.with_context(default_journal_id=self.id).create(st_vals)
+                statement = BankStatement.with_context(
+                    default_journal_id=self.id,
+                    auto_statement_processing=True,
+                ).create(st_vals)
                 if not statement.name:
                     statement.name = st_vals['reference']
                 statement_ids.append(statement.id)

@@ -31,12 +31,12 @@ class AILivechatController(LivechatController):
 
         channel.sudo()._forward_human_operator()
         # forwarding failed given that the ai agent is still a member of the channel.
-        if channel.sudo().ai_agent_id:
-            return {
-                'success': False,
-                'notification': _("There is no human agent available at the moment. Please try again later."),
-                "notification_type": "warning"
-            }
+        if ai_agent_id := channel.sudo().ai_agent_id:
+            ai_agent_id._post_ai_response(
+                channel,
+                self.env._("Live agents are currently unavailable. Please try again later or try rephrasing your question and I will do my best to help."),
+            )
+            return {'success': False}
         return {
             'success': True,
             'notification': _("The conversation has been forwarded successfully."),
@@ -50,4 +50,6 @@ class AILivechatController(LivechatController):
         if ai_agent and ai_agent._is_user_access_allowed():
             non_persisted_channel_params['ai_agent_id'] = ai_agent.id
             persisted_channel_params['ai_agent_id'] = ai_agent.id
+            livechat_channel = kwargs.get('livechat_channel', self.env['im_livechat.channel'])
+            non_persisted_channel_params['livechat_channel_has_agents'] = bool(livechat_channel.user_ids)
         return non_persisted_channel_params, persisted_channel_params

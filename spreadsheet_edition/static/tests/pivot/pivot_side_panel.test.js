@@ -18,7 +18,7 @@ const { useStore, useStoreProvider, ModelStore, SidePanelStore } = stores;
 defineSpreadsheetModels();
 describe.current.tags("desktop");
 
-const { coreViewsPluginRegistry } = registries;
+const { coreViewsPluginRegistry, pivotRegistry } = registries;
 
 let target;
 
@@ -368,6 +368,8 @@ test("add column dimension on a related model", async function () {
     await contains(
         ".o_popover_field_selector .o_model_field_selector_popover_item[data-name='active'] button"
     ).click();
+    expect(".fa-exclamation-triangle").toHaveCount(0);
+    expect(".pivot-dimension:first .o-fw-bold").toHaveText("Product > Active");
     await contains(".pivot-defer-update .o-checkbox").click();
     const definition = JSON.parse(JSON.stringify(model.getters.getPivotCoreDefinition(pivotId)));
     expect(definition.columns).toEqual([{ fieldName: "product_id.active", order: "asc" }]);
@@ -391,6 +393,8 @@ test("add row dimension on a related model", async function () {
     await contains(
         ".o_popover_field_selector .o_model_field_selector_popover_item[data-name='active'] button"
     ).click();
+    expect(".fa-exclamation-triangle").toHaveCount(0);
+    expect(".pivot-dimension:first .o-fw-bold").toHaveText("Product > Active");
     await contains(".pivot-defer-update .o-checkbox").click();
     const definition = JSON.parse(JSON.stringify(model.getters.getPivotCoreDefinition(pivotId)));
     expect(definition.columns).toEqual([]);
@@ -425,6 +429,19 @@ test("date/datetime field can be re-selected because of different granularities"
     expect(item).not.toBe(null);
     expect(item.getAttribute("data-tooltip")).toBe(null);
     expect(item.querySelector(".o_model_field_selector_popover_item_name").disabled).toBe(false);
+});
+
+test("date/datetime field is filtered out once every granularity is used", async function () {
+    const { model, env, pivotId } = await createSpreadsheetWithPivot();
+    const dateGranularities = pivotRegistry.get("ODOO").dateGranularities;
+    updatePivot(model, pivotId, {
+        rows: dateGranularities.map((granularity) => ({ fieldName: "date", granularity })),
+    });
+    await openSidePanel(model, env, pivotId);
+    const fixture = getFixture();
+
+    await contains(".add-dimension.o-button").click();
+    expect(getFieldItem("date", fixture)).toBe(null);
 });
 
 test("relation field cannot be re-selected but subfields stay accessible", async function () {

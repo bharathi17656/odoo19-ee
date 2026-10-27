@@ -3,13 +3,14 @@
 # * social
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Rosen Vladimirov <vladimirov.rosen@gmail.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-17 03:10+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-10 17:44+0000\n"
+"PO-Revision-Date: 2026-07-26 13:39+0000\n"
+"Last-Translator: Rosen Vladimirov <vladimirov.rosen@gmail.com>\n"
 "Language-Team: Bulgarian <https://translate.odoo.com/projects/odoo-19/social/"
 "bg/>\n"
 "Language: bg\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: social
 #: model:ir.model.fields,field_description:social.field_social_media__accounts_count
@@ -28,7 +29,7 @@ msgstr "# Акаунти"
 #. odoo-python
 #: code:addons/social/models/social_post.py:0
 msgid "%(media_name)s (max %(max_chars)s chars)"
-msgstr ""
+msgstr "%(media_name)s (макс. %(max_chars)s знака)"
 
 #. module: social
 #. odoo-javascript
@@ -292,6 +293,12 @@ msgstr "Кликвания:"
 #. module: social
 #. odoo-javascript
 #: code:addons/social/static/src/xml/social_templates.xml:0
+msgid "Comment GIF"
+msgstr "GIF в коментар"
+
+#. module: social
+#. odoo-javascript
+#: code:addons/social/static/src/xml/social_templates.xml:0
 msgid "Comment Image"
 msgstr "Коментар на изображението"
 
@@ -368,8 +375,8 @@ msgid ""
 "Create other accounts for %(media_names)s for this company or ask %"
 "(company_names)s to share their accounts"
 msgstr ""
-"Създайте други профили %(media_names)s за тази фирма или "
-"помолете%(company_names)s да споделят своите профили"
+"Създайте други профили %(media_names)s за тази фирма или помолете%"
+"(company_names)s да споделят своите профили"
 
 #. module: social
 #: model:ir.model.fields,field_description:social.field_social_account__create_uid
@@ -653,7 +660,7 @@ msgstr "Има ли тенденции?"
 #. module: social
 #: model:ir.model.fields,field_description:social.field_social_post__is_hatched
 msgid "Hatched"
-msgstr ""
+msgstr "Излюпен"
 
 #. module: social
 #: model:ir.model.fields,field_description:social.field_res_config_settings__id
@@ -1011,7 +1018,7 @@ msgstr "Нова публикация"
 #. odoo-javascript
 #: code:addons/social/static/src/xml/social_templates.xml:0
 msgid "New comments are disabled"
-msgstr ""
+msgstr "Новите коментари са изключени"
 
 #. module: social
 #. odoo-javascript
@@ -1153,8 +1160,8 @@ msgid ""
 "Number of times people who have engaged with your channel have created "
 "stories on their friends' or followers' feed (Shares, Reposts...)"
 msgstr ""
-"Брой пъти, в които хората са взаимодействали с вашите публикации ("
-"харесвания, коментари, споделяния...)"
+"Брой пъти, в които хората са взаимодействали с вашите публикации "
+"(харесвания, коментари, споделяния...)"
 
 #. module: social
 #. odoo-javascript
@@ -1171,7 +1178,8 @@ msgstr "Процент на увеличаване/намаляване на а�
 #: model:ir.model.fields,help:social.field_social_account__engagement_trend
 msgid ""
 "Percentage of increase/decrease of the engagement over a defined period."
-msgstr "Процент на увеличаване/намаляване на аудиторията през определен период."
+msgstr ""
+"Процент на увеличаване/намаляване на аудиторията през определен период."
 
 #. module: social
 #: model:ir.model.fields,help:social.field_social_account__stories_trend
@@ -1402,8 +1410,8 @@ msgid ""
 "Selected accounts (%(account_list)s) do not match the selected company (%"
 "(company)s)"
 msgstr ""
-"Избраните профили (%(account_list)s) не съответстват с избраната фирма "
-"(%(company)s)"
+"Избраните профили (%(account_list)s) не съответстват с избраната фирма (%"
+"(company)s)"
 
 #. module: social
 #: model:ir.model.fields.selection,name:social.selection__social_post__post_method__now
@@ -1662,7 +1670,8 @@ msgstr "Стриймовете са активирани"
 #. module: social
 #: model:ir.model.fields,help:social.field_social_post__live_post_ids
 msgid "Sub-posts that will be published on each selected social accounts."
-msgstr "Подпубликации, които ще бъдат публикувани в избраните социални профили."
+msgstr ""
+"Подпубликации, които ще бъдат публикувани в избраните социални профили."
 
 #. module: social
 #. odoo-javascript
@@ -1680,8 +1689,8 @@ msgstr "Профили, на които ще бъде публикувана т�
 #: model:ir.model.fields,help:social.field_social_stream_post__author_name
 msgid "The post author name based on third party information (ex: 'John Doe')."
 msgstr ""
-"Име на автора на публикацията, базирано на информация от трета страна (напр.:"
-" 'Джон Доу')."
+"Име на автора на публикацията, базирано на информация от трета страна "
+"(напр.: 'Джон Доу')."
 
 #. module: social
 #: model:ir.model.fields,help:social.field_social_post__state
@@ -1689,8 +1698,8 @@ msgid ""
 "The post is considered as 'Posted' when all its sub-posts (one per social "
 "account) are either 'Failed' or 'Posted'"
 msgstr ""
-"Публикацията се счита за „Публикувана“, когато всички нейни подпубликации ("
-"по една за всеки социален профил) са или „Неуспешни“, или „Публикувани“."
+"Публикацията се счита за „Публикувана“, когато всички нейни подпубликации "
+"(по една за всеки социален профил) са или „Неуспешни“, или „Публикувани“."
 
 #. module: social
 #: model:ir.model.fields,help:social.field_social_stream_post__published_date
@@ -1818,7 +1827,7 @@ msgstr "Преглед"
 #: model_terms:ir.ui.view,arch_db:social.social_account_view_form
 #: model_terms:ir.ui.view,arch_db:social.social_post_view_form
 msgid "Visible to all"
-msgstr ""
+msgstr "Видимо за всички"
 
 #. module: social
 #: model:ir.model.fields,field_description:social.field_social_media__website_message_ids

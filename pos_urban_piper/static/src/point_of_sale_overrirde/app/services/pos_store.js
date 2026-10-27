@@ -2,6 +2,7 @@ import { patch } from "@web/core/utils/patch";
 import { PosStore } from "@point_of_sale/app/services/pos_store";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { _t } from "@web/core/l10n/translation";
+import { Domain } from "@web/core/domain";
 
 patch(PosStore.prototype, {
     /**
@@ -99,20 +100,24 @@ patch(PosStore.prototype, {
         }
     },
 
-    async getServerOrders() {
+    getServerOrdersDomain() {
+        const base = super.getServerOrdersDomain();
         if (this.config.module_pos_urban_piper && this.config.urbanpiper_store_identifier) {
-            await this.data.loadServerOrders([
-                ["company_id", "=", this.config.company_id.id],
-                ["state", "=", "draft"],
-                ["session_id", "=", this.session.id],
-                [
-                    "delivery_provider_id",
-                    "in",
-                    this.config.urbanpiper_delivery_provider_ids.map((provider) => provider.id),
-                ],
+            return Domain.or([
+                base,
+                new Domain([
+                    ["company_id", "=", this.config.company_id.id],
+                    ["state", "=", "draft"],
+                    ["session_id", "=", this.session.id],
+                    [
+                        "delivery_provider_id",
+                        "in",
+                        this.config.urbanpiper_delivery_provider_ids.map((provider) => provider.id),
+                    ],
+                ]),
             ]);
         }
-        return await super.getServerOrders(...arguments);
+        return base;
     },
     _fetchStoreAction(data) {
         const params = {
@@ -201,9 +206,7 @@ patch(PosStore.prototype, {
             return;
         }
         if (deliveryOrder.delivery_status === "acknowledged" && deliveryOrder.state != "cancel") {
-            if (!deliveryOrder.isFutureOrder()) {
-                await this.sendOrderInPreparationUpdateLastChange(deliveryOrder);
-            }
+            await this._sendDeliveryOrderForPreparation(deliveryOrder);
         } else if (deliveryOrder.delivery_status === "placed") {
             if (!this.isSoundPlaying) {
                 this.isSoundPlaying = true;
@@ -214,6 +217,28 @@ patch(PosStore.prototype, {
                     this.notificationOptions
                 );
             }
+        }
+    },
+
+    async _sendDeliveryOrderForPreparation(deliveryOrder) {
+        if (
+            deliveryOrder.last_order_preparation_change.urbanpiper_printed ||
+            deliveryOrder.isFutureOrder()
+        ) {
+            return;
+        }
+        let isReadyToPrint = true;
+        try {
+            isReadyToPrint = await this.data.call(
+                "pos.order",
+                "mark_urbanpiper_prep_order_as_printed",
+                [deliveryOrder.id]
+            );
+        } catch {
+            isReadyToPrint = false;
+        }
+        if (isReadyToPrint) {
+            await this.sendOrderInPreparationUpdateLastChange(deliveryOrder);
         }
     },
 

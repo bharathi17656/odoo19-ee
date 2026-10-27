@@ -24,6 +24,8 @@ export class Session {
      */
     static preferredInputDevice = "";
 
+    /** @type {string} */
+    controlHandle = "";
     /** @type {import("@voip/core/call_service").CallService} */
     callService;
     /**
@@ -41,10 +43,23 @@ export class Session {
      * @type {HTMLAudioElement|null}
      */
     remoteAudio = null;
+    /**
+     * Whether the session is responsible for playing the incoming ringtone.
+     *
+     * @type {boolean}
+     */
+    ringleader = false;
     /** @type {string|undefined} */
     transferTarget;
     /** @type {import("@voip/core/call_model").Call} */
     _call;
+    /**
+     * The remote party the PBX last asserted (P-Asserted-Identity), once the
+     * call shows it.
+     *
+     * @type {string|undefined}
+     */
+    _connectedNumber;
     /** @type {boolean} */
     _isOnHold = false;
     /** @type {boolean} */
@@ -74,7 +89,10 @@ export class Session {
         if (!sipSession) {
             return this;
         }
-        sipSession.delegate = { onBye: () => this.callService.end(this.call) };
+        sipSession.delegate = {
+            onBye: () => this.callService.end(this.call),
+            onInvite: (request, response, statusCode) => this._onReinvite(request, statusCode),
+        };
         sipSession.stateChange.addListener((state) => this._onSessionStateChange(state));
         this._sipSession = sipSession;
     }
@@ -239,13 +257,26 @@ export class Session {
      *
      * @param {SIP.IncomingRequestMessage} message
      */
-    _onIncomingInviteCanceled() {
+    async _onIncomingInviteCanceled(message) {
         if (this.isActiveSession) {
             this.ringtones.stopPlaying();
             this.voip.softphone.activeTab = "recent";
         }
         this.sipSession.reject({ statusCode: 487 /* Request Terminated */ });
-        this.callService.miss(this.call);
+        const reason = message.getHeader("Reason");
+        if (/Call completed elsewhere/i.test(reason)) {
+            // Terminated calls are expected to have a start date on 19.0.
+            await this.callService.start(this.call);
+            await this.callService.end(this.call);
+        } else if (
+            /\bSIP\s*;\s*cause\s*=\s*603\b/i.test(reason) ||
+            /\bQ\.850\s*;\s*cause\s*=\s*21\b/i.test(reason)
+        ) {
+            // Another registered SIP endpoint explicitly declined the call.
+            await this.callService.reject(this.call);
+        } else {
+            await this.callService.miss(this.call);
+        }
     }
 
     /**
@@ -323,10 +354,49 @@ export class Session {
     }
 
     /**
+     * A re-INVITE may carry a new connected line, e.g. once an attended
+     * transfer bridges this call to the transferred party: the call must then
+     * show that party instead of the transferring colleague.
+     *
+     * Only an accepted re-INVITE (statusCode 200) means the call now goes to
+     * that party. One announcing the same party, such as a hold, changes
+     * nothing.
+     *
+     * @param {SIP.IncomingRequestMessage} request
+     * @param {number} statusCode
+     */
+    async _onReinvite(request, statusCode) {
+        const number = this._getConnectedNumber(request);
+        if (statusCode !== 200 || !number || number === this._connectedNumber) {
+            return;
+        }
+        await this.callService.updatePhoneNumber(this.call, number);
+        // Only once the server answered: a failed update stays retryable.
+        this._connectedNumber = number;
+    }
+
+    /**
+     * The remote party a request announces: P-Asserted-Identity, or else
+     * Remote-Party-ID, which PBXs configured with send_rpid (e.g. Axivox) send
+     * instead. SIP.js only reads the former (`assertedIdentity`).
+     *
+     * @param {SIP.IncomingRequestMessage|SIP.OutgoingRequestMessage|undefined} request
+     * @returns {string|undefined}
+     */
+    _getConnectedNumber(request) {
+        const header =
+            request?.getHeader("P-Asserted-Identity") || request?.getHeader("Remote-Party-ID");
+        return header ? SIP.Grammar.nameAddrHeaderParse(header)?.uri.user : undefined;
+    }
+
+    /**
      * Triggered when the state of the SIP.js session changes to Established.
      * Only triggered by actual RTC sessions (production mode).
      */
     _onSessionEstablished() {
+        this._connectedNumber =
+            this.sipSession.assertedIdentity?.uri.user ??
+            this._getConnectedNumber(this.sipSession.request);
         this._setUpRemoteAudio();
         this.sipSession.sessionDescriptionHandler.remoteMediaStream.onaddtrack = (
             mediaStreamTrackEvent

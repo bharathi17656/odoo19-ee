@@ -9,6 +9,7 @@ from odoo import api, fields, models, modules, tools, _
 from odoo.fields import Datetime
 from odoo.exceptions import ValidationError, AccessError
 from odoo.tools import convert
+from odoo.tools.misc import OrderedSet
 
 
 class MarketingCampaign(models.Model):
@@ -66,6 +67,41 @@ class MarketingCampaign(models.Model):
                 raise ValidationError(
                     _("The saved filter targets different model and is incompatible with this campaign.")
                 )
+
+    @api.model
+    def _check_restricted_domain(self, model_name, domain_str):
+        """ Raise if the filter domain references a field restricted to system
+        users (base.group_system, base.group_erp_manager) as they makes no
+        sense in a marketing filter. """
+
+        RESTRICTED_DOMAIN_GROUPS = ('base.group_system', 'base.group_erp_manager')
+        domain_str = (domain_str or '').strip()
+        if not domain_str or domain_str == "[]":
+            return
+        domain = literal_eval(domain_str)
+        model = self.env[model_name]
+        for leaf in domain:
+            if not isinstance(leaf, (list, tuple)) or len(leaf) != 3 or not isinstance(leaf[0], str):
+                continue
+            current_model = model
+            for fname in leaf[0].split('.'):
+                field = current_model._fields.get(fname)
+                if field is None:
+                    break
+                field_groups = field.groups.split(',') if field.groups else []
+                if any(group in field_groups for group in RESTRICTED_DOMAIN_GROUPS):
+                    raise ValidationError(
+                        _("The filter domain is using unauthorized fields.")
+                    )
+                if not field.relational:
+                    break
+                current_model = self.env[field.comodel_name]
+
+    @api.constrains('domain')
+    def _check_domain(self):
+        """ Check that the filter domain is valid for the current user """
+        for campaign in self:
+            self._check_restricted_domain(campaign.model_name, campaign.domain)
 
     @api.depends('model_id')
     def _compute_unique_field_id(self):
@@ -192,16 +228,20 @@ class MarketingCampaign(models.Model):
         synchronization aka it mainly creates and updates 'marketing.trace'
         records. It is done in 2 steps:
 
-         * update traces related to activities requiring sync, based on their
-           ``require_sync`` field. For those we update ``schedule date``.
-         * create traces for new activities added in the workflow, aka created
-           after campaign ``last_sync_date``:
-          * 'begin' activities: create traces for all running participants;
-          * other activities: create child for traces linked to the parent of
-            the newly created activity
-          * for 'not' triggers take into account brother traces that are already
-            processed e.g. do not schedule 'mail_not_open' if 'mail_open' is
-            already processed;
+        * update traces related to activities requiring sync, based on their
+          ``require_sync`` field. For those we update ``schedule date``.
+
+        * create traces for new activities added in the workflow, aka created
+          after campaign ``last_sync_date``:
+
+        * 'begin' activities: create traces for all running participants;
+
+        * other activities: create child for traces linked to the parent of
+          the newly created activity
+
+        * for 'not' triggers take into account brother traces that are already
+          processed e.g. do not schedule 'mail_not_open' if 'mail_open' is
+          already processed;
 
         Note that scheduling is done right after parent processing independently
         of other time considerations.
@@ -263,23 +303,28 @@ class MarketingCampaign(models.Model):
 
                     # avoid creating new traces that would have processed brother traces already processed
                     # example: do not create a mail_not_click trace if mail_click is already processed
-                    if activity.trigger_type in ['mail_not_open', 'mail_not_click', 'mail_not_reply']:
-                        opposite_trigger = activity.trigger_type.replace('_not_', '_')
-                        brother_traces = self.env['marketing.trace'].search([
-                            ('parent_id', 'in', valid_parent_traces.ids),
-                            ('trigger_type', '=', opposite_trigger),
-                            ('state', '=', 'processed'),
-                        ])
-                        valid_parent_traces = valid_parent_traces - brother_traces.mapped('parent_id')
+                    if activity.trigger_type in activity._get_reschedule_trigger_types():
+                        opposite_triggers = activity._get_opposite_trigger_types()[activity.trigger_type]
+                        if opposite_triggers:
+                            brother_traces = self.env['marketing.trace'].search([
+                                ('parent_id', 'in', valid_parent_traces.ids),
+                                ('trigger_type', 'in', opposite_triggers),
+                                ('state', '=', 'processed'),
+                            ])
+                            valid_parent_traces = valid_parent_traces - brother_traces.mapped('parent_id')
 
                     valid_parent_traces.mapped('participant_id').filtered(lambda participant: participant.state == 'completed').action_set_running()
 
                     for parent_trace in valid_parent_traces:
+                        if activity.trigger_type in activity._get_reschedule_trigger_types():
+                            schedule_date = Datetime.from_string(parent_trace.schedule_date) + activity_offset
+                        else:
+                            schedule_date = False
                         self.env['marketing.trace'].create({
                             'activity_id': activity.id,
                             'participant_id': parent_trace.participant_id.id,
                             'parent_id': parent_trace.id,
-                            'schedule_date': Datetime.from_string(parent_trace.schedule_date) + activity_offset,
+                            'schedule_date': schedule_date,
                         })
 
         self.action_set_synchronized()
@@ -341,10 +386,6 @@ class MarketingCampaign(models.Model):
 
         :return: new participants to the campaign
         """
-        def _uniquify_list(seq):
-            seen = set()
-            return [x for x in seq if x not in seen and not seen.add(x)]
-
         participants = self.env['marketing.participant']
         now = self.env.cr.now()
         # auto-commit except in testing mode
@@ -357,13 +398,13 @@ class MarketingCampaign(models.Model):
             RecordModel = self.env[campaign.model_name].with_context(lang=user_id.lang)
 
             # Fetch existing participants
-            participants_data = participants.search_read([('campaign_id', '=', campaign.id)], ['res_id'])
-            existing_rec_ids = _uniquify_list([live_participant['res_id'] for live_participant in participants_data])
+            campaign_participants = participants.search_fetch([('campaign_id', '=', campaign.id)], ['res_id'])
+            existing_rec_ids = OrderedSet(campaign_participants.mapped('res_id'))
 
             record_domain = literal_eval(campaign.domain or "[]")
-            db_rec_ids = _uniquify_list(RecordModel.search(record_domain).ids)
+            db_rec_ids = OrderedSet(RecordModel.search(record_domain).ids)
             to_create = [rid for rid in db_rec_ids if rid not in existing_rec_ids]  # keep ordered IDs
-            to_remove = set(existing_rec_ids) - set(db_rec_ids)
+            to_remove = existing_rec_ids - db_rec_ids
             unique_field = campaign.unique_field_id.sudo()
             if unique_field.name != 'id':
                 without_duplicates = []
@@ -398,8 +439,13 @@ class MarketingCampaign(models.Model):
                     ('campaign_id', '=', campaign.id),
                     ('state', '!=', 'unlinked'),
                 ])
+                existing_record_ids = set(RecordModel.browse(list(to_remove)).exists().ids)
                 for index in range(0, len(participants_to_unlink), 1000):
-                    participants_to_unlink[index:index+1000].action_set_unlink()
+                    batch = participants_to_unlink[index:index + 1000]
+                    if filter_excluded := batch.filtered(lambda p: p.res_id in existing_record_ids):
+                        filter_excluded._action_set_unlink(_('Record no longer matches campaign filter'))
+                    if deleted := batch - filter_excluded:
+                        deleted._action_set_unlink()
                     # Commit only every 100 operation to avoid committing to often
                     # this mean every 10k record. It should be ok, it takes 1sec second to process 10k
                     if auto_commit and not index % (BATCH_SIZE * 100):
@@ -533,6 +579,7 @@ for record in records:
                         'module': module,
                         'model': model_name,
                         'res_id': created_record.id,
+                        'noupdate': True,
                     })
 
     # --------------------------------------

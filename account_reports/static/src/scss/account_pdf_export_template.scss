@@ -98,6 +98,7 @@
             .o_cell_td > .o_line_cell_value_number {
                 display: block;
                 text-align: right;
+                white-space: nowrap;
             }
 
             .o_cell_td > .o_last_comment {
@@ -107,34 +108,45 @@
                 word-break: break-word;
             }
 
+            .o_line_name {
+                display: inline-block;
+                vertical-align: middle;
+            }
+
             .o_status_badge {
                 display: inline-block;
-                padding: 4px 8px;
+                vertical-align: middle;
+                padding: 2px 5px;
                 margin-left: 8px;
                 border-radius: 800px;
-                font-size: 10px;
+                font-size: 0.8em;
                 font-weight: 500;
-                color: white;
-                min-width: 16px;
                 text-align: center;
                 white-space: nowrap;
             }
 
             .o_status_badge_todo {
-                background-color: $o-gray-300;
-                color: black;
+                color: $o-info;
+                border: 1px solid $o-info;
             }
-
             .o_status_badge_reviewed {
-                background-color: $o-info;
+                color: $o-success;
+                border: 1px solid $o-success;
             }
             .o_status_badge_supervised {
-                background-color: $o-success;
+                color: $o-success;
+                border: 1px solid $o-success;
             }
             .o_status_badge_anomaly {
-                background-color: $o-danger;
+                color: $o-danger;
+                border: 1px solid $o-danger;
             }
         }
+    }
+
+    .o_company_logo {
+        max-height: 4rem;
+        margin-bottom: 12px;
     }
 }
 
@@ -151,11 +163,6 @@
     font-size: 1.5rem;
     font-weight: bold;
     margin-bottom: 1rem;
-}
-
-.o_company_logo {
-    max-height: 4rem;
-    margin-bottom: 12px;
 }
 
 .o_overflow_value {

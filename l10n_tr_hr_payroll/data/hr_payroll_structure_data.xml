@@ -7,6 +7,9 @@
         <field name="type_id" ref="l10n_tr_hr_payroll.structure_type_employee_tr"/>
         <field name="rule_ids" eval="[]"/>
         <field name="ytd_computation" eval="True"/>
+        <field name="unpaid_work_entry_type_ids" eval="[
+            (4, ref('hr_work_entry.work_entry_type_unpaid_leave')),
+        ]"/>
     </record>
 
     <record id="l10n_tr_hr_payroll.structure_type_employee_tr" model="hr.payroll.structure.type">

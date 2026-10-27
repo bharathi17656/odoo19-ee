@@ -8,6 +8,7 @@ from werkzeug import urls
 from odoo import _, api, fields, models
 from odoo.fields import Domain
 from odoo.http import request
+from odoo.modules.db import FunctionStatus
 from odoo.tools import float_is_zero, is_html_empty
 from odoo.tools.sql import SQL, column_exists, create_column
 from odoo.tools.translate import html_translate
@@ -25,7 +26,7 @@ _logger = logging.getLogger(__name__)
 def get_translated_field_gist_index(registry, column_name):
     if not registry.has_trigram:
         return ""
-    if registry.has_unaccent:
+    if registry.has_unaccent == FunctionStatus.INDEXABLE:
         return f"USING GIST(unaccent((JSONB_PATH_QUERY_ARRAY({column_name}, '$.*'::jsonpath))::text) gist_trgm_ops)"
     return f"USING GIST((JSONB_PATH_QUERY_ARRAY({column_name}, '$.*'::jsonpath)::text) gist_trgm_ops)"
 
@@ -74,6 +75,7 @@ class ProductTemplate(models.Model):
         sanitize_overridable=True,
         sanitize_attributes=False,
         sanitize_form=False,
+        index="trigram",
     )
 
     alternative_product_ids = fields.Many2many(
@@ -134,6 +136,9 @@ class ProductTemplate(models.Model):
         compute='_compute_base_unit_count',
         inverse='_set_base_unit_count',
         store=True,
+        # Force NUMERIC with unlimited precision, as for `uom.uom.relative_factor`,
+        # to support very small ratios, e.g. one unit in a box of 10000.
+        digits=0,
         required=True,
         default=0,
     )
@@ -173,9 +178,10 @@ class ProductTemplate(models.Model):
     _name_gist_idx = models.Index(lambda registry: get_translated_field_gist_index(registry, "name"))
     _description_gist_idx = models.Index(lambda registry: get_translated_field_gist_index(registry, "description"))
     _description_sale_gist_idx = models.Index(lambda registry: get_translated_field_gist_index(registry, "description_sale"))
+    _description_ecommerce_gist_idx = models.Index(lambda registry: get_translated_field_gist_index(registry, "description_ecommerce"))
     _default_code_gist_idx = models.Index(
         lambda registry: 'USING GIST(unaccent(default_code) gist_trgm_ops)'
-        if registry.has_trigram and registry.has_unaccent
+        if registry.has_trigram and registry.has_unaccent == FunctionStatus.INDEXABLE
         else ('USING GIST(default_code gist_trgm_ops)' if registry.has_trigram else '')
     )
 
@@ -260,7 +266,11 @@ class ProductTemplate(models.Model):
     def write(self, vals):
         # Clear empty ecommerce description content to avoid side-effects on product pages
         # when there is no content to display anyway.
-        if vals.get('description_ecommerce') and is_html_empty(vals['description_ecommerce']):
+        if (
+            (description_ecommerce := vals.get('description_ecommerce'))
+            and is_html_empty(description_ecommerce)
+            and not ('media_iframe_video' in description_ecommerce or 'data-embedded' in description_ecommerce)  # don't remove "empty" video div
+        ):
             vals['description_ecommerce'] = ''
         return super().write(vals)
 
@@ -595,7 +605,7 @@ class ProductTemplate(models.Model):
             product=product_or_template,
             quantity=quantity,
             uom=uom,
-            target_currency=currency,
+            currency=currency,
         )
 
         price_before_discount = pricelist_price
@@ -616,6 +626,7 @@ class ProductTemplate(models.Model):
             'has_discounted_price': has_discounted_price,
             'discount_start_date': pricelist_item.date_start,
             'discount_end_date': pricelist_item.date_end,
+            'show_extra_price': pricelist_item.compute_price != 'fixed',
         }
 
         if (
@@ -707,24 +718,25 @@ class ProductTemplate(models.Model):
         Note AWA: Known "exploit" issues with this method:
 
         - This method could be used by an unauthenticated user to generate a
-            lot of useless variants. Unfortunately, after discussing the
-            matter with ODO, there's no easy and user-friendly way to block
-            that behavior.
-
-            We would have to use captcha/server actions to clean/... that
-            are all not user-friendly/overkill mechanisms.
+          lot of useless variants. Unfortunately, after discussing the
+          matter with ODO, there's no easy and user-friendly way to block
+          that behavior.
+          We would have to use captcha/server actions to clean/... that
+          are all not user-friendly/overkill mechanisms.
 
         - This method could be used to try to guess what product variant ids
-            are created in the system and what product template ids are
-            configured as "dynamic", but that does not seem like a big deal.
+          are created in the system and what product template ids are
+          configured as "dynamic", but that does not seem like a big deal.
 
         The error messages are identical on purpose to avoid giving too much
         information to a potential attacker:
-            - returning 0 when failing
-            - returning the variant id whether it already existed or not
+
+        - returning 0 when failing
+        - returning the variant id whether it already existed or not
 
         :param product_template_attribute_value_ids: the combination for which
             to get or create variant
+
         :type product_template_attribute_value_ids: list of id
             of `product.template.attribute.value`
 
@@ -851,6 +863,13 @@ class ProductTemplate(models.Model):
         ]
 
     @api.model
+    def _get_website_sale_search_fields(self, search_in_description=True):
+        search_fields = ['name', 'variants_default_code']
+        if search_in_description:
+            search_fields += ['description_sale', 'description_ecommerce']
+        return search_fields
+
+    @api.model
     def _search_get_detail(self, website, order, options):
         with_image = options['displayImage']
         with_description = options['displayDescription']
@@ -878,7 +897,7 @@ class ProductTemplate(models.Model):
             domains.append([('list_price', '<=', max_price)])
         if attribute_value_dict:
             domains.extend(self._get_attribute_value_domain(attribute_value_dict))
-        search_fields = ['name', 'default_code', 'variants_default_code']
+        search_fields = self._get_website_sale_search_fields(with_description)
         fetch_fields = ['id', 'name', 'website_url']
         mapping = {
             'name': {'name': 'name', 'type': 'text', 'match': True},
@@ -889,11 +908,8 @@ class ProductTemplate(models.Model):
         if with_image:
             mapping['image_url'] = {'name': 'image_url', 'type': 'html'}
         if with_description:
-            # Internal note is not part of the rendering.
-            search_fields.append('description')
-            fetch_fields.append('description')
-            search_fields.append('description_sale')
             fetch_fields.append('description_sale')
+            fetch_fields.append('description_ecommerce')
             mapping['description'] = {'name': 'description_sale', 'type': 'text', 'match': True}
         if with_price:
             mapping['detail'] = {'name': 'price', 'type': 'html', 'display_currency': options['display_currency']}
@@ -951,7 +967,10 @@ class ProductTemplate(models.Model):
             list_price = self.env['ir.qweb.field.monetary'].value_to_html(
                 combination_info['list_price'], monetary_options
             )
-        if combination_info.get('compare_list_price'):
+        if (
+            combination_info.get('compare_list_price')
+            and combination_info.get('compare_list_price') > combination_info.get('price')
+        ):
             list_price = self.env['ir.qweb.field.monetary'].value_to_html(
                 combination_info['compare_list_price'], monetary_options
             )
@@ -961,7 +980,7 @@ class ProductTemplate(models.Model):
     def _get_google_analytics_data(self, product, combination_info):
         self.ensure_one()
         return {
-            'item_id': product.barcode or product.id,
+            'item_id': product.default_code or product.id,
             'item_name': combination_info['display_name'],
             'item_category': self.categ_id.name,
             'currency': combination_info['currency'].name,
@@ -1028,6 +1047,13 @@ class ProductTemplate(models.Model):
         if self.product_variant_count == 1:
             return self.product_variant_id._to_markup_data(website)
 
+        # perf: temporal solution to avoid slowness when product have many variants and pricelist rules
+        limit = self.env['ir.config_parameter'].sudo().get_param('website_sale.markup_data_limit_variants', False)
+        if limit:
+            product_variant_ids = self.product_variant_ids[:int(limit)]
+        else:
+            product_variant_ids = self.product_variant_ids
+
         base_url = website.get_base_url()
         markup_data = {
             '@context': 'https://schema.org/',
@@ -1035,7 +1061,7 @@ class ProductTemplate(models.Model):
             'name': self.name,
             'image': f'{base_url}{website.image_url(self, "image_1920")}',
             'url': f'{base_url}{self.website_url}',
-            'hasVariant': [product._to_markup_data(website) for product in self.product_variant_ids]
+            'hasVariant': [product._to_markup_data(website) for product in product_variant_ids]
         }
         if self.description_ecommerce:
             markup_data['description'] = text_from_html(self.description_ecommerce)
@@ -1109,3 +1135,13 @@ class ProductTemplate(models.Model):
             url = f'{url}?{urls.url_encode(query_params)}'
 
         return url
+
+    def _mail_get_operation_for_mail_message_operation(self, message_operation):
+        if (
+            message_operation == 'create'
+            and not self.env.user._is_internal()
+        ):
+            website = self.env['website'].get_current_website()
+            if not website.with_context(website_id=website.id).is_view_active('website_sale.product_comment'):
+                return dict.fromkeys(self, 'write')
+        return super()._mail_get_operation_for_mail_message_operation(message_operation)

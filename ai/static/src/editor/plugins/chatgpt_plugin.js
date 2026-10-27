@@ -17,7 +17,6 @@ export class ChatGPTPlugin extends Plugin {
         "dom",
         "sanitize",
         "dialog",
-        "split",
     ];
     resources = {
         user_commands: [
@@ -54,11 +53,18 @@ export class ChatGPTPlugin extends Plugin {
         }),
     };
 
+    isUnremovable(el) {
+        return this.getResource("unremovable_node_predicates").some((p) => p(el));
+    }
+
     isNotReplaceableByAI(selection = this.dependencies.selection.getEditableSelection()) {
+        if (selection.isCollapsed) {
+            return false;
+        }
         const isEmpty = !selection.textContent().replace(/\s+/g, "");
         const cannotReplace = this.dependencies.selection
             .getTargetedNodes()
-            .find((el) => this.dependencies.split.isUnsplittable(el) || !isContentEditable(el));
+            .find((el) => this.isUnremovable(el) || !isContentEditable(el));
         return cannotReplace || isEmpty;
     }
 

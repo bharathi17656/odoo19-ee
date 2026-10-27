@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import RedirectWarning, UserError
 import json
 import requests
 import logging
@@ -92,20 +92,46 @@ class L10n_UkVatObligation(models.Model):
         elif error_code == 'NOT_FOUND':
             error_message = _('No open obligations were found for the moment.')
         elif error_code == 'CLIENT_OR_AGENT_NOT_AUTHORISED':
-            # In case one user needs to submit the report for two companies, they will need to re-login.
+            # The HMRC account used to connect has no access to this VAT number: reset the connection so
+            # that the user can connect again with the right account
+            _logger.warning("HMRC refused access to the VAT obligations of %s: %s", vat, response)
             self.env['hmrc.service']._clean_tokens(user)
-            return []
+            self.env.cr.commit()  # Even with the raise, we want to commit the cleaning of the tokens in the db
+            raise RedirectWarning(
+                _(
+                    "HMRC refused access to the VAT obligations of %(vat)s: %(error)s\n"
+                    "Connect to HMRC again with the Government Gateway user ID linked to this VAT number.",
+                    vat=vat,
+                    error=response.get('message'),
+                ),
+                self.env['hmrc.service']._login(),
+                _("Connect to HMRC"),
+            )
         else:
             error_message = response.get('message', error_code)
         raise UserError(error_message)
 
     def _get_vat(self):
         # Use company's VAT if company is British, otherwise try to look for a UK fiscal position.
-        foreign_vat = False
-        if not self.env.company.country_id.code == 'GB':
-            foreign_vat = self.env.company.fiscal_position_ids.filtered(lambda fp: fp.country_id.code == 'GB').foreign_vat
+        vat = ""
+        report = self.env.ref('l10n_uk.tax_report')
+        options = report.get_options({})
+        if (tax_unit := options.get('tax_unit')) and tax_unit != 'company_only':
+            vat = self.env['account.tax.unit'].browse(tax_unit).vat
 
-        vat = foreign_vat or self.env.company.vat
+        if not vat:
+            foreign_vat = False
+            if self.env.company.country_id.code != 'GB':
+                foreign_vat = self.env.company.fiscal_position_ids.filtered(lambda fp: fp.country_id.code == 'GB').foreign_vat
+
+            vat = foreign_vat or self.env.company.vat
+
+        if not vat:
+            raise RedirectWarning(
+                self.env._("No VAT number associated with %(company_name)s. Please define one", company_name=self.env.company.name),
+                self.env.company._get_records_action(),
+                self.env._("Company Settings")
+            )
 
         # The VAT sent to HMRC should not include the GB or XI prefix.
         if vat.startswith(('GB', 'XI')):

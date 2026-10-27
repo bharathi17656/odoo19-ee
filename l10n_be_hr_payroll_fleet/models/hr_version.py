@@ -1,6 +1,5 @@
 from odoo import api, fields, models
 from odoo.fields import Domain
-from odoo.addons.fleet.models.fleet_vehicle_model import FUEL_TYPES
 
 
 class HrVersion(models.Model):
@@ -11,21 +10,12 @@ class HrVersion(models.Model):
         domain = Domain.AND([
             Domain.OR([
                 [('company_id', '=', False)],
-                [('company_id', '=', self.company_id.id)]
+                [('company_id', '=', self.company_id.id)],
             ]),
-            Domain.AND([
-                Domain.AND([
-                    Domain.OR([
-                        [('future_driver_id', '=', False)],
-                        [('future_driver_id', 'in', driver_ids.ids if driver_ids else [])],
-                    ]),
-                    [('model_id.vehicle_type', '=', vehicle_type)],
-                ]),
-                Domain.OR([
-                    [('driver_id', '=', False)],
-                    [('driver_id', 'in', driver_ids.ids if driver_ids else [])],
-                    [('plan_to_change_car', '=', True)] if vehicle_type == 'car' else [('plan_to_change_bike', '=', True)]
-                ])
+            [('model_id.vehicle_type', '=', vehicle_type)],
+            Domain.OR([
+                [(f'plan_to_change_{vehicle_type}', '=', True)],
+                [('future_driver_id', 'in', driver_ids.ids if driver_ids else [])],
             ]),
             [('write_off_date', '=', False)],
         ])
@@ -60,7 +50,7 @@ class HrVersion(models.Model):
         'fleet.vehicle', string='Company Car',
         tracking=True, compute="_compute_car_id", store=True, readonly=False,
         domain=lambda self: [('company_id', 'in', (False, self.env.company.id)), ('vehicle_type', '=', 'car')],
-        groups='fleet.fleet_group_manager,hr.hr_group_user')
+        groups='fleet.fleet_group_manager')
     car_atn = fields.Float(
         compute='_compute_car_atn_and_costs',
         store=True,
@@ -84,7 +74,7 @@ class HrVersion(models.Model):
     ordered_car_id = fields.Many2one('fleet.vehicle', string='Ordered New Car',
         tracking=True, store=True, readonly=False,
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id), ('vehicle_type', '=', 'car')]",
-        groups='fleet.fleet_group_manager,hr.hr_group_user')
+        groups='fleet.fleet_group_manager')
     new_car_model_id = fields.Many2one(
         'fleet.vehicle.model', string="New Company Car", domain=lambda self: self._get_possible_model_domain(),
         groups='hr.group_hr_user', tracking=True)
@@ -94,7 +84,7 @@ class HrVersion(models.Model):
     max_unused_cars = fields.Integer(compute='_compute_max_unused_cars', groups='hr.group_hr_user')
     acquisition_date = fields.Date(related='car_id.acquisition_date', readonly=False, groups="fleet.fleet_group_manager")
     car_value = fields.Float(related="car_id.car_value", readonly=False, groups="fleet.fleet_group_manager")
-    fuel_type = fields.Selection(selection=lambda self: FUEL_TYPES, compute="_compute_fuel_type", readonly=False, groups="fleet.fleet_group_manager")
+    fuel_type = fields.Selection(selection=lambda self: self.env['fleet.vehicle']._fields['fuel_type']._description_selection(self.env), compute="_compute_fuel_type", readonly=False, groups="fleet.fleet_group_manager")
     co2 = fields.Float(related="car_id.co2", readonly=False, groups="fleet.fleet_group_manager")
     driver_id = fields.Many2one('res.partner', related="car_id.driver_id", readonly=False, groups="fleet.fleet_group_manager")
     car_open_contracts_count = fields.Integer(compute='_compute_car_open_contracts_count', groups="fleet.fleet_group_manager")
@@ -120,6 +110,20 @@ class HrVersion(models.Model):
         domain=lambda self: self._get_possible_model_domain(vehicle_type='bike'),
         compute='_compute_new_bike_model_id', store=True, readonly=False, groups='hr.group_hr_user')
     transport_mode_private_car = fields.Boolean(store=True, readonly=False)
+
+    def _get_whitelist_fields_from_template(self):
+        whitelisted_fields = super()._get_whitelist_fields_from_template()
+        if self.env.company.country_id.code == "BE":
+            whitelisted_fields += [
+                "bike_id",
+                "car_id",
+                "new_bike",
+                "new_bike_model_id",
+                "new_car",
+                "new_car_model_id",
+                "transport_mode_bike",
+            ]
+        return whitelisted_fields
 
     @api.depends('new_bike', 'new_bike_model_id')
     def _compute_bike_id(self):
@@ -222,16 +226,16 @@ class HrVersion(models.Model):
                     lambda c: c.state == 'open'
                 ).recurring_cost_amount_depreciated = version.recurring_cost_amount_depreciated
 
+    def _get_available_cars_domain(self):
+        return self._get_vehicles_without_current_drivers_domain(
+            self.employee_id.work_contact_id,
+        )
+
     @api.depends('name')
     def _compute_available_cars_amount(self):
         for version in self:
             version.available_cars_amount = self.env['fleet.vehicle'].sudo().search_count(
-                Domain.AND([
-                    version._get_vehicles_without_current_drivers_domain(
-                        version.employee_id.work_contact_id
-                    ),
-                    [('state_id.hide_in_offer', '=', False)]
-                ])
+                version._get_available_cars_domain(),
             )
 
     @api.depends('name')

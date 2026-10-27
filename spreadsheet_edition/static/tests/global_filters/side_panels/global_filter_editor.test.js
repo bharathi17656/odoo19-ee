@@ -34,6 +34,7 @@ import {
     contains,
     defineModels,
     fields,
+    makeServerError,
     models,
     mountWithCleanup,
     onRpc,
@@ -121,7 +122,7 @@ class Parent extends Component {
 
 async function openSidePanelForCreation(model, env, type, notificationStore) {
     env.openSidePanel = env.openSidePanel ?? (() => {});
-    await mountWithCleanup(Parent, { env, props: { model, type, notificationStore } });
+    return await mountWithCleanup(Parent, { env, props: { model, type, notificationStore } });
 }
 
 async function openSidePanel(model, env, filterId, notificationStore) {
@@ -300,6 +301,16 @@ test("Selecting another field resets the default value", async function () {
     expect(".o_tag_badge_text").toHaveCount(1);
     await selectFieldForSelection("lang");
     expect(".o_tag_badge_text").toHaveCount(0);
+});
+
+test("Field matching is only available after both model and field are selected", async function () {
+    const { model, env } = await createSpreadsheetWithPivot();
+    await openSidePanelForCreation(model, env, "selection");
+    expect(".o_spreadsheet_field_matching").toHaveCount(0);
+    await selectModelForSelection("res.users");
+    expect(".o_spreadsheet_field_matching").toHaveCount(0);
+    await selectFieldForSelection("state");
+    expect(".o_spreadsheet_field_matching").toHaveCount(1);
 });
 
 test("Create a new numeric global filter", async function () {
@@ -1193,4 +1204,47 @@ test("Create a new numeric global filter with empty value", async function () {
     expect(globalFilter.label).toBe("My Label");
     expect(globalFilter.type).toBe("numeric");
     expect(globalFilter.defaultValue).toBe(undefined);
+});
+
+test("Cannot create a filter if a datasource is in error", async function () {
+    const { model, env } = await createSpreadsheetWithList({
+        mockRPC: async function (route, { model, method, kwargs }) {
+            if (model === "partner" && method === "fields_get") {
+                throw makeServerError({ code: 404 });
+            }
+        },
+    });
+
+    const comp = await openSidePanelForCreation(model, env, "text");
+    expect(".o-validation-error").toHaveCount(1);
+    expect(".o_global_filter_cancel").toHaveCount(1);
+    expect(".o_global_filter_save").toHaveCount(0);
+
+    for (const type of Object.keys(SIDE_PANELS)) {
+        comp.props.type = type;
+        await animationFrame();
+        expect(".o-validation-error").toHaveCount(1);
+        expect(".o_global_filter_cancel").toHaveCount(1);
+        expect(".o_global_filter_save").toHaveCount(0);
+    }
+});
+
+test("Default value and subdomain are hidden for invalid relational filters", async () => {
+    const { model, env } = await createSpreadsheetWithList({
+        mockRPC: async function (route, { model, method, kwargs }) {
+            if (model === "unknown" && method === "fields_get") {
+                throw makeServerError({ code: 404 });
+            }
+        },
+    });
+
+    addGlobalFilterWithoutReload(model, {
+        id: "43",
+        type: "relation",
+        label: "Relational Filter",
+        modelName: "unknown",
+    });
+
+    await openSidePanel(model, env, "43");
+    expect(".o_multi_record_selector").toHaveCount(0);
 });

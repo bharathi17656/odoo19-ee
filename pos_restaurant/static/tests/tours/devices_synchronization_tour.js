@@ -29,7 +29,7 @@ registry.category("web_tour.tours").add("test_devices_synchronization", {
             DeviceSynchronization.changeLineQuantity("Water", 44),
             ProductScreen.checkTotalAmount(99.0),
             ProductScreen.clickPartnerButton(),
-            ProductScreen.clickCustomer("Deco Addict"),
+            ProductScreen.clickCustomer("Acme Corporation"),
             Chrome.clickPlanButton(),
 
             // prpoduct_screen
@@ -115,5 +115,18 @@ registry.category("web_tour.tours").add("OrderSynchronisationTour", {
             TicketScreen.checkStatus("device_sync", "Paid"),
             TicketScreen.selectOrder("device_sync"),
             TicketScreen.confirmRefund(),
+        ].flat(),
+});
+
+registry.category("web_tour.tours").add("test_guest_count_not_asked_on_other_device", {
+    steps: () =>
+        [
+            Chrome.startPoS(),
+            Dialog.confirm("Open Register"),
+            FloorScreen.clickTable("5"),
+            ProductScreen.orderlineIsToOrder("Coca-Cola"),
+            // The guest count was already entered on the device that created the order.
+            Dialog.isNot(),
+            ProductScreen.guestNumberIs("6"),
         ].flat(),
 });

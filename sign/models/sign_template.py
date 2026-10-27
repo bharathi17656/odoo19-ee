@@ -2,6 +2,7 @@
 
 import base64
 import re
+from datetime import timedelta
 
 from reportlab.rl_config import TTFSearchPath
 
@@ -25,7 +26,7 @@ class SignTemplate(models.Model):
 
     document_ids = fields.One2many('sign.document', 'template_id', string="Documents", copy=True)
     name = fields.Char(required=True, default="New Template")
-    sign_item_ids = fields.One2many('sign.item', 'template_id', string="Signature Items", compute='_compute_sign_item_ids', store=True)
+    sign_item_ids = fields.One2many('sign.item', 'template_id', string="Signature Items", compute='_compute_sign_item_ids', store=True, domain=[('page', '>', -1)])
     responsible_count = fields.Integer(compute='_compute_responsible_count', string="Responsible Count")
 
     active = fields.Boolean(default=True, string="Active")
@@ -104,6 +105,7 @@ class SignTemplate(models.Model):
                 item.id
                 for document in template.document_ids
                 for item in document.sign_item_ids
+                if item.page > -1
             ])]
 
     @api.depends('sign_item_ids.responsible_id')
@@ -139,12 +141,62 @@ class SignTemplate(models.Model):
         return super().get_empty_list_help(help_message)
 
     def copy_data(self, default=None):
-        vals_list = super().copy_data(default=default)
-        for template, vals in zip(self, vals_list):
+        # Need to add the new sign map to the context for Copying sign.item.roles
+        # because they need thier own copys instead of using the same roles in sign.templates.
+        templates = self.with_context(__sign_role_copy_map={})
+        vals_list = super(SignTemplate, templates).copy_data(default=default)
+        for template, vals in zip(templates, vals_list):
             if 'name' in vals and vals.get('name') == template.name or 'name' not in vals:
                 vals['name'] = template._get_copy_name(template.name)
 
         return vals_list
+
+    def update_document(self, document_id, attachment_data):
+        """ Update a document in the template with a new one, preserving sign items.
+        :param int document_id: ID of the document to replace
+        :param dict attachment_data: Dictionary containing the new document data with name and datas
+        :returns dict: Action to redirect to the new template
+        """
+        self.ensure_one()
+        old_document = self.env['sign.document'].browse(document_id)
+
+        if not old_document.exists() or old_document.template_id != self:
+            raise UserError(_("The document you're trying to update doesn't exist or doesn't belong to this template."))
+
+        # Check if the attachment data is valid PDF.
+        self.env['sign.document']._check_pdf_data_validity(attachment_data['datas'])
+
+        # Store the old document's sequence and create a copy of the template.
+        # Find and delete the corresponding document in the new template.
+        target_sequence = old_document.sequence
+        new_template = self.copy()
+        corresponding_doc = new_template.document_ids.filtered(
+            lambda d: d.sequence == target_sequence
+        )
+        if corresponding_doc:
+            corresponding_doc.unlink()
+
+        # Create the new document directly with the correct sequence.
+        # Copy sign items from old document to new document.
+        attachment = self.env['ir.attachment'].create({
+            'name': attachment_data['name'],
+            'datas': attachment_data['datas'],
+        })
+        new_document = self.env['sign.document'].create({
+            'attachment_id': attachment.id,
+            'sequence': target_sequence,
+            'template_id': new_template.id,
+        })
+        old_document._copy_sign_items_to(new_document)
+
+        # Return action to open new template.
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'sign.Template',
+            'name': _('Edit Template'),
+            'params': {'id': new_template.id},
+            'context': {},
+        }
 
     @api.model
     def create_from_attachment_data(self, attachment_data_list, active=True):
@@ -246,13 +298,18 @@ class SignTemplate(models.Model):
 
     def update_from_pdfviewer(self, sign_items=None, deleted_sign_item_ids=None, name=None, document_id=None):
         """ Update a sign.template from the pdfviewer
-        :param dict sign_items: {id (str): values (dict)}
-            id: positive: sign.item's id in database (the sign item is already in the database and should be update)
-                negative: negative random itemId(transaction_id) in pdfviewer (the sign item is new created in the pdfviewer and should be created in database)
-            values: values to update/create
-        :param list(str) deleted_sign_item_ids: list of ids of deleted sign items. These deleted ids may be
-            positive: the sign item exists in the database
-            negative: the sign item is new created in pdfviewer but removed before a successful transaction
+
+        :param dict sign_items: ``{id (str): values (dict)}``
+
+            * id: positive: sign.item's id in database (the sign item is already in the database and should be update)
+            * negative: negative random itemId(transaction_id) in pdfviewer (the sign item is new created in the pdfviewer and should be created in database)
+            * values: values to update/create
+
+        :param list[str] deleted_sign_item_ids: list of ids of deleted sign items. These deleted ids may be
+
+            * positive: the sign item exists in the database
+            * negative: the sign item is new created in pdfviewer but removed before a successful transaction
+
         :return: dict new_id_to_item_id_map: {negative itemId(transaction_id) in pdfviewer (str): positive id in database (int)}
         """
         self.ensure_one()
@@ -374,12 +431,17 @@ class SignTemplate(models.Model):
 
     def trigger_template_tour(self):
         template = self.env.ref('sign.template_sign_tour')
-        if template.has_sign_requests:
+        # Write access to the item's roles is needed to update the roles names.
+        sign_items_access = template.sign_item_ids.mapped('responsible_id').has_access('write')
+        if template.has_sign_requests or not sign_items_access:
             template = template.copy({
+                'user_id': self.env.user.id,
                 'favorited_ids': [Command.link(self.env.user.id)],
                 'active': False,
-                'sign_item_ids': False,
             })
+            # Remove items added by previous tour runs, as the tour guides
+            # the user to add new ones. Also avoids access errors.
+            template.sign_item_ids.unlink()
         return {
             'type': 'ir.actions.client',
             'tag': 'sign.Template',
@@ -499,3 +561,41 @@ class SignTemplate(models.Model):
             'target': 'new',
         })
         return action
+
+    @api.model
+    def create_item_and_role(self, document_id, role_name):
+        """ Create a new sign role and a corresponding dummy sign item. """
+        role = self.env['sign.item.role'].create({'name': role_name})
+        signature_item_type = self.env["sign.item.type"].search([], limit=1)
+        if not signature_item_type:
+            raise UserError(_("You need at least one field type in order to sign a document!"))
+        self.env['sign.item'].create({
+            'document_id': document_id,
+            'type_id': signature_item_type.id,
+            'required': False,
+            'responsible_id': role.id,
+            'page': -1,
+            'posX': -1,
+            'posY': -1,
+            'width': -1,
+            'height': -1,
+        })
+        return role.id
+
+    @api.autovacuum
+    def _gc_sign_items(self):
+        """ Garbage-collect dummy sign items (page < 0) that are older than one day,
+        and remove sign roles that are no longer linked to any active sign items.
+        """
+
+        # Filter dummy items older than 1 day to avoid deleting roles that may still be
+        # used in an ongoing sign request creation session.
+        one_day_ago = fields.Datetime.now() - timedelta(days=1)
+        dummy_items = self.env['sign.item'].search([('page', '<', 0), ('create_date', '<', one_day_ago)])
+
+        active_items = self.env['sign.item'].search([('page', '>', -1)])
+        roles_with_dummy_items = dummy_items.mapped('responsible_id')
+        roles_with_active_items = active_items.mapped('responsible_id')
+        unused_role_recordset = roles_with_dummy_items - roles_with_active_items
+        dummy_items.unlink()
+        unused_role_recordset.unlink()

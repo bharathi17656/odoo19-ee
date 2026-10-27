@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates id="template" xml:space="preserve">
+    <t t-name="l10n_de_pos_cert.CashMoveReceipt" t-inherit="point_of_sale.CashMoveReceipt" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('pos-receipt-order-data')]" position="before">
+            <div class="pos-receipt-order-data" t-if="props.txnUuid">
+                <div>Transaction: <t t-esc="props.txnUuid"/></div>
+                <div>Client: <t t-esc="this.pos.getClientId()"/></div>
+            </div>
+            <br/>
+        </xpath>
+    </t>
+</templates>

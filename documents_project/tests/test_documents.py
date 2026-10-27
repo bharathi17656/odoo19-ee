@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import base64
+from unittest.mock import patch
 
 from odoo.exceptions import UserError
 from odoo.tests.common import users
@@ -32,10 +33,11 @@ class TestDocumentsBridgeProject(TestProjectCommon, TransactionCaseDocuments):
 
     def test_archive_folder_on_projects_unlinked(self):
         """
-        Projects folders should be archived if every related projects have been unlinked.
+        Projects folders should be archived if every related projects have been
+        unlinked, an archived project still counting as a related project.
         """
-        folder_1, folder_2, folder_3, folder_4 = self.env['documents.document'].create(
-            [{'name': f'F{i}', 'type': 'folder'} for i in range(4)]
+        folder_1, folder_2, folder_3, folder_4, folder_5 = self.env['documents.document'].create(
+            [{'name': f'F{i}', 'type': 'folder'} for i in range(5)]
         )
 
         (
@@ -45,19 +47,24 @@ class TestDocumentsBridgeProject(TestProjectCommon, TransactionCaseDocuments):
             {'name': f'p{i}', 'documents_folder_id': folder.id}
             for i, folder in enumerate([folder_1] * 4 + [folder_2] * 3 + [folder_3])
         ])
+        archived_project = self.env['project.project'].create({
+            'name': 'p_archived',
+            'documents_folder_id': folder_5.id,
+            'active': False,
+        })
 
         cases = [
             (
                 project_1 | project_4,
-                folder_1 | folder_2 | folder_3 | folder_4,
+                folder_1 | folder_2 | folder_3 | folder_4 | folder_5,
                 self.env['documents.document']
             ), (
                 project_2,
-                folder_1 | folder_2 | folder_3 | folder_4,
+                folder_1 | folder_2 | folder_3 | folder_4 | folder_5,
                 self.env['documents.document']
             ), (
                 project_0 | project_3 | project_5 | project_6,
-                folder_3 | folder_4,
+                folder_3 | folder_4 | folder_5,
                 folder_1 | folder_2
             ),
         ]
@@ -70,6 +77,10 @@ class TestDocumentsBridgeProject(TestProjectCommon, TransactionCaseDocuments):
                 self.assertTrue(all(active_folders.mapped('active')))
                 self.assertFalse(any(inactive_folders.mapped('active')))
 
+        self.assertTrue(
+            archived_project.documents_folder_id.active,
+            "The folder of an archived project should be kept, no matter which other projects are unlinked")
+
         count_end = self.env['documents.document'].search_count([('active', '=', True)])
         self.assertEqual(count_end, count_start - 2)
 
@@ -80,11 +91,60 @@ class TestDocumentsBridgeProject(TestProjectCommon, TransactionCaseDocuments):
         parent_folder = self.env.company.documents_project_folder_id
         self.assertEqual(self.project_pigs.documents_folder_id.folder_id, parent_folder, "The folder of the project should be a child of the 'Projects' folder.")
 
+    def test_change_visibility_with_many_task_documents(self):
+        """Project access changes must propagate across batches in both directions."""
+        document_count = 5
+        project = self.project_pigs
+        documents = self.env['documents.document'].create([
+            {
+                'name': f'large-project-document-{index}',
+                'type': 'url',
+                'url': 'https://example.com',
+                'folder_id': project.documents_folder_id.id,
+                'res_model': 'project.task',
+                'res_id': self.task_1.id,
+                'access_internal': 'none',
+            }
+            for index in range(document_count)
+        ])
+        with patch('odoo.addons.documents.models.documents_document.ACCESS_UPDATE_BATCH_SIZE', 2):
+            project.privacy_visibility = 'employees'
+        self.assertEqual(len(project.document_ids), document_count)
+        self.assertEqual(project.documents_folder_id.access_internal, 'edit')
+        self.assertTrue(all(access == 'edit' for access in documents.mapped('access_internal')))
+        with patch('odoo.addons.documents.models.documents_document.ACCESS_UPDATE_BATCH_SIZE', 2):
+            project.privacy_visibility = 'followers'
+        self.assertEqual(project.documents_folder_id.access_internal, 'none')
+        self.assertTrue(all(access == 'none' for access in documents.mapped('access_internal')))
+
     def test_project_folder_creation(self):
         project = self.env['project.project'].create({
             'name': 'Project',
         })
         self.assertTrue(project.documents_folder_id, "A folder should be created for the project")
+
+    def test_change_visibility_updates_document_access(self):
+        """Changing project visibility updates document access when its folder
+        contains a shortcut."""
+        folder = self.project_pigs.documents_folder_id
+        document = self.env['documents.document'].create({
+            'datas': TEXT,
+            'name': 'in_folder.txt',
+            'mimetype': 'text/plain',
+            'folder_id': folder.id,
+        })
+        shortcut = self.document_txt_2.action_create_shortcut(location_user_folder_id=str(folder.id))
+        self.assertEqual(shortcut.folder_id, folder)
+        self.assertEqual(folder.access_internal, 'edit')
+        self.assertEqual(document.access_internal, 'edit')
+        self.assertEqual(shortcut.access_internal, 'view')
+        self.assertEqual(self.document_txt_2.access_internal, 'view')
+
+        self.project_pigs.privacy_visibility = 'followers'
+        self.assertEqual(folder.access_internal, 'none')
+        self.assertEqual(document.access_internal, 'none')
+        self.assertEqual(shortcut.access_internal, 'view')
+        self.assertEqual(self.document_txt_2.access_internal, 'view')
 
     def test_project_task_access_document(self):
         """
@@ -227,4 +287,81 @@ class TestDocumentsBridgeProject(TestProjectCommon, TransactionCaseDocuments):
         self.assertEqual(
             len(copied_project_documents), 1,
             "The copied project should have one document copied."
+        )
+
+    def test_project_document_unarchive_on_revert(self):
+        """ Ensure project documents are unarchived when a project is reverted
+        Steps:
+            1. Create a project
+            2. Convert the project into a project template
+            3. Undo the project
+            4. Check project documents
+        """
+        client_action = self.project_pigs.action_create_template_from_project()
+        self.env['project.project'].browse(client_action['params']['project_id']).unlink()
+        self.project_pigs.create_template_from_project_undo_callback(
+            client_action['params']['callback_data']['args'][1]
+        )
+        self.project_pigs.action_create_template_from_project()
+
+    def test_project_company_propagates_to_workspace(self):
+        """
+        Workspace is created without a company when a project has no company at creation
+        (e.g. kanban quick-create). Setting the company afterwards must propagate to the workspace.
+        """
+        project = self.env['project.project'].create({
+            'name': 'Kanban Project',
+            'company_id': False,
+        })
+        workspace = project.documents_folder_id
+        self.assertFalse(workspace.company_id)
+
+        project.write({'company_id': self.env.company.id})
+
+        self.assertEqual(
+            workspace.company_id, self.env.company,
+            "Workspace should receive the project company when it is the only linked project.",
+        )
+
+    def test_project_company_propagates_to_shared_workspace_when_all_aligned(self):
+        """
+        When multiple projects share a workspace, the workspace should only receive a company
+        once all linked projects are aligned on the same company.
+        """
+        project_1, project_2, project_3 = self.env['project.project'].create([
+            {'name': 'Project 1', 'company_id': False},
+            {'name': 'Project 2', 'company_id': False},
+            {'name': 'Project 3', 'company_id': False},
+        ])
+        workspace = project_1.documents_folder_id
+        (project_2 | project_3).write({'documents_folder_id': workspace.id})
+
+        (project_1 | project_2).write({'company_id': self.env.company.id})
+        self.assertFalse(workspace.company_id, "Workspace should not get a company until all linked projects are aligned.")
+
+        project_3.write({'company_id': self.env.company.id})
+        self.assertEqual(
+            workspace.company_id, self.env.company,
+            "Workspace should receive the company once all linked projects are aligned.",
+        )
+
+    def test_project_company_not_propagated_to_shared_workspace_when_mixed(self):
+        """
+        When projects sharing a workspace end up in different companies,
+        the workspace company should remain unset.
+        """
+        company_b = self.env['res.company'].create({'name': 'Company B (test mixed)'})
+        project_1, project_2 = self.env['project.project'].create([
+            {'name': 'Project 1', 'company_id': False},
+            {'name': 'Project 2', 'company_id': False},
+        ])
+        workspace = project_1.documents_folder_id
+        project_2.write({'documents_folder_id': workspace.id})
+
+        project_1.write({'company_id': self.env.company.id})
+        project_2.write({'company_id': company_b.id})
+
+        self.assertFalse(
+            workspace.company_id,
+            "Workspace should remain company-less when linked projects are in different companies.",
         )

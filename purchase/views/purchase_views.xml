@@ -245,7 +245,7 @@
                                 context="{'default_state': 'draft'}"
                                 readonly="state == 'cancel' or locked"
                                 options="{ 'subsections': True }">
-                                <list string="Purchase Order Lines" editable="bottom" limit="200"
+                                <list string="Purchase Order Lines" editable="bottom"
                                       decoration-warning="purchase_line_warn_msg">
                                     <control>
                                         <create name="add_product_control" string="Add a product"/>
@@ -269,7 +269,7 @@
                                         readonly="state in ('purchase', 'to approve', 'cancel') or is_downpayment"
                                         required="not display_type and not is_downpayment"
                                         optional="show"
-                                        context="{'partner_id':parent.partner_id, 'quantity':product_qty, 'company_id': parent.company_id}"
+                                        context="{'partner_id':partner_id, 'quantity':product_qty, 'company_id': parent.company_id}"
                                         options="{'show_label_warning': True}"
                                         force_save="1" domain="[('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', 'parent_of', parent.company_id)]"/>
                                     <field name="name" widget="section_and_note_text" optional="show"/>
@@ -829,7 +829,7 @@
                 <field name="partner_id" string="Vendor"/>
                 <field name="company_id" optional="show" groups="base.group_multi_company"/>
                 <field name="product_uom_qty" string="Quantity"/>
-                <field name="price_unit" widget="monetary"/>
+                <field name="price_unit_product_uom" widget="monetary" string="Unit Price"/>
                 <field name="price_subtotal" widget="monetary" string="Total Untaxed"/>
                 <field name="state" optional="hide"/>
             </list>

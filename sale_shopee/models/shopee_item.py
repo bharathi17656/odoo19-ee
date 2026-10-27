@@ -37,6 +37,7 @@ class ShopeeItem(models.Model):
 
     # === ACTION METHODS === #
 
+    # TODO: Remove this method as it is unused by the model.
     def action_sync_inventory(self):
         self._sync_inventory()
 
@@ -71,7 +72,7 @@ class ShopeeItem(models.Model):
                         'item_id': int(shopee_item_identifier),
                         'stock_list': [{
                             'model_id': int(item.shopee_model_identifier),
-                            'seller_stock': [{'stock': int(item.product_id.free_qty)}]
+                            'seller_stock': [{'stock': int(max(item.product_id.free_qty, 0))}]
                         } for item in items]
                     }, method='POST')
                     items.write({'last_inventory_sync_date': current_datetime})

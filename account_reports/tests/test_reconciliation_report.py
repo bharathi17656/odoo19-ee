@@ -127,11 +127,13 @@ class TestReconciliationReport(TestAccountReportsCommon):
             [
                 (f'Balance of \'{account}\'',                    '',           -200.0),
                 ('Last statement balance',                       '',           -200.0),
-                ('Including Unreconciled Receipts',              '',            200.0),
+                ('Including Unreconciled Receipts',              '',            800.0),
                 ('BNKKK/2015/00002',                   '01/02/2015',            200.0),
-                ('Including Unreconciled Payments',              '',           -450.0),
+                ('BNKKK/2014/00001',                   '12/31/2014',           600.00),
+                ('Including Unreconciled Payments',              '',           -950.0),
                 ('BNKKK/2015/00004',                   '01/04/2015',           -400.0),
-                ('BNKKK/2015/00003',                   '01/03/2015',            -50.0),
+                ('BNKKK/2015/00003',                   '01/03/2015',           -50.00),
+                ('BNKKK/2014/00002',                   '12/31/2014',           -500.0),
                 ('Transactions without statement',               '',              0.0),
                 ('Including Unreconciled Receipts',              '',              0.0),
                 ('Including Unreconciled Payments',              '',              0.0),
@@ -857,3 +859,14 @@ class TestReconciliationReport(TestAccountReportsCommon):
             currency_map={3: {'currency': bank_journal.currency_id}},
             ignore_folded=False,
         )
+
+    def test_reconciliation_report_action_bank_statement(self):
+        """ This test will ensure that the action, action_redirect_to_bank_statement_widget, returns default_journal_id
+        """
+        report = self.env.ref('account_reports.bank_reconciliation_report').with_context(
+            active_id=self.company_data['default_journal_bank'].id,
+            active_model='account.journal'
+        )
+        options = self._generate_options(report, fields.Date.from_string('2019-01-01'), fields.Date.from_string('2019-01-12'))
+        action = self.env['account.bank.reconciliation.report.handler'].action_redirect_to_bank_statement_widget(options)
+        self.assertIsNotNone(action['context'].get('default_journal_id'))

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:47+0000\n"
+"POT-Creation-Date: 2026-04-24 17:44+0000\n"
 "PO-Revision-Date: 2025-11-17 03:44+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Bosnian <https://translate.odoo.com/projects/odoo-19/"
@@ -25,6 +25,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/industry_fsm_sale/models/project_task.py:0
 msgid "%(project_name)s - %(task_name)s"
+msgstr ""
+
+#. module: industry_fsm_sale
+#. odoo-javascript
+#: code:addons/industry_fsm_sale/static/src/js/tours/industry_fsm_sale_tour.js:0
+msgid "<b>Click to edit."
 msgstr ""
 
 #. module: industry_fsm_sale
@@ -52,10 +58,13 @@ msgid ""
 "<p class=\"o_view_nocontent_smiling_face\">\n"
 "                            No products found. Let's create one!\n"
 "                        </p><p>\n"
-"                            Keep track of the products you are using to complete your tasks, and invoice your customers for the goods.\n"
-"                            Tip: using kits, you can add multiple products at once.\n"
+"                            Keep track of the products you are using to "
+"complete your tasks, and invoice your customers for the goods.\n"
+"                            Tip: using kits, you can add multiple products "
+"at once.\n"
 "                        </p><p>\n"
-"                            When your task is marked as done, your stock will be updated automatically. Simply choose a warehouse\n"
+"                            When your task is marked as done, your stock "
+"will be updated automatically. Simply choose a warehouse\n"
 "                            in your profile from where to draw stock.\n"
 "                        </p>"
 msgstr ""
@@ -71,7 +80,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm_sale.project_view_form_inherit
 msgid ""
 "<span invisible=\"not is_fsm\">\n"
-"                    Define the service and the rate at which an employee's time is billed based on their expertise, skills or experience.\n"
+"                    Define the service and the rate at which an employee's "
+"time is billed based on their expertise, skills or experience.\n"
 "                </span>"
 msgstr ""
 
@@ -172,8 +182,8 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/industry_fsm_sale/static/src/js/tours/industry_fsm_sale_tour.js:0
 msgid ""
-"Choose a <b>name</b> for your product <i>(e.g. Bolts, Screws, Boiler, "
-"etc.).</i>"
+"Choose a <b>name</b> for your product <i>(e.g. Bolts, Screws, Boiler, etc.)."
+"</i>"
 msgstr ""
 
 #. module: industry_fsm_sale
@@ -229,6 +239,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_project_project__display_name
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_project_sale_line_employee_map__display_name
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_project_task__display_name
+#: model:ir.model.fields,field_description:industry_fsm_sale.field_project_template_create_wizard__display_name
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_report_project_task_user_fsm__display_name
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_sale_advance_payment_inv__display_name
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_sale_order__display_name
@@ -286,6 +297,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_project_project__id
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_project_sale_line_employee_map__id
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_project_task__id
+#: model:ir.model.fields,field_description:industry_fsm_sale.field_project_template_create_wizard__id
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_report_project_task_user_fsm__id
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_sale_advance_payment_inv__id
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_sale_order__id
@@ -449,6 +461,11 @@ msgid "Project Sales line, employee mapping"
 msgstr ""
 
 #. module: industry_fsm_sale
+#: model:ir.model,name:industry_fsm_sale.model_project_template_create_wizard
+msgid "Project Template create Wizard"
+msgstr ""
+
+#. module: industry_fsm_sale
 #: model_terms:ir.ui.view,arch_db:industry_fsm_sale.worksheet_time_and_material
 msgid "Quantity"
 msgstr "Količina"
@@ -505,8 +522,11 @@ msgstr "Stavka prodajne narudžbe"
 #. module: industry_fsm_sale
 #: model:ir.model.fields,help:industry_fsm_sale.field_project_project__sale_line_id
 msgid ""
-"Sales order item that will be selected by default on the tasks and timesheets of this project, except if the employee set on the timesheets is explicitely linked to another sales order item on the project.\n"
-"It can be modified on each task and timesheet entry individually if necessary."
+"Sales order item that will be selected by default on the tasks and "
+"timesheets of this project, except if the employee set on the timesheets is "
+"explicitely linked to another sales order item on the project.\n"
+"It can be modified on each task and timesheet entry individually if "
+"necessary."
 msgstr ""
 
 #. module: industry_fsm_sale
@@ -630,7 +650,8 @@ msgid ""
 "        !! Set the task a high priority\n"
 "        !!! Set the task a urgent priority\n"
 "\n"
-"        Make sure to use the right format and order e.g. Improve the configuration screen 5h #feature #v16 @Mitchell !"
+"        Make sure to use the right format and order e.g. Improve the "
+"configuration screen 5h #feature #v16 @Mitchell !"
 msgstr ""
 
 #. module: industry_fsm_sale

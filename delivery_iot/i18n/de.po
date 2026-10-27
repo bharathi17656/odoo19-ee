@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:43+0000\n"
-"PO-Revision-Date: 2025-11-08 20:02+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2025-12-30 18:44+0000\n"
+"PO-Revision-Date: 2025-12-10 10:28+0000\n"
+"Last-Translator: \"Larissa Manderfeld (lman)\" <lman@odoo.com>\n"
 "Language-Team: German <https://translate.odoo.com/projects/odoo-19/"
 "delivery_iot/de/>\n"
 "Language: de\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: delivery_iot
 #: model:ir.actions.report,print_report_name:delivery_iot.action_report_shipping_docs
@@ -157,6 +157,19 @@ msgstr "Manuelle Messung"
 #: model:ir.model.fields,help:delivery_iot.field_stock_put_in_pack__manual_measurement
 msgid "Manually read the measurement from the device"
 msgstr "Manuelles Ablesen der Messung vom Gerät"
+
+#. module: delivery_iot
+#. odoo-python
+#: code:addons/delivery_iot/models/ir_action_report.py:0
+msgid ""
+"One of the printer used to print the document has been removed.\n"
+"To reset printers, go to the Inventory App, Configuration tab, \"Reset "
+"Linked Printers\" and retry the operation."
+msgstr ""
+"Einer der zum Drucken des Dokuments verwendeten Drucker wurde entfernt.\n"
+"Um die Drucker zurückzusetzen, gehen Sie zur Lager-App, zum Reiter "
+"„Konfiguration“, zu „Verknüpfte Drucker zurücksetzen“ und wiederholen Sie "
+"den Vorgang."
 
 #. module: delivery_iot
 #: model:ir.model.fields,field_description:delivery_iot.field_iot_device__picking_type_ids

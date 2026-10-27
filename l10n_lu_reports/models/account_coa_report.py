@@ -111,7 +111,7 @@ class AccountReport(models.AbstractModel):
             :return: a dictionary in which the values for the different fields (dict keys) are filled in
         """
         account_fields = {}
-        lines = self._get_lines(self.get_options(options))
+        lines = self._get_lines(self.get_options({**options, "no_report_reroute": True}))
         # Read the debit and credit from all accounts and add the values to the corresponding fields.
         # Name hierarchy allows easy calculation of the totals.
         # eg the debit from account 106284 will be added to the fields: 106284, 10628, 1062, 106, 10
@@ -129,7 +129,7 @@ class AccountReport(models.AbstractModel):
             else:
                 balance = float(line['columns'][3]['no_format'])
             # 142 (results for the financial year) will be manually calculated to balance as required
-            if code[:3] == '142' and year <= 2019:
+            if code[:3] == '142':
                 continue
             for i in range(len(code)):
                 acc = account_dict.get(code[:i + 1])
@@ -141,12 +141,14 @@ class AccountReport(models.AbstractModel):
                     elif balance < 0.00:
                         account_fields[acc["credit"]] = account_fields.get(acc["credit"], 0.00) - balance
 
-        # Fields are mandatory from 2020 on
+        # Required for years >= 2020 because these mandatory fields are missing
+        # from the account mapping and must be manually initialized.
         if year >= 2020:
             account_fields['1111'] = 0.00
             account_fields['1112'] = 0.00
             account_fields['2257'] = 0.00
             account_fields['2258'] = 0.00
+            account_fields['2956'] = 0.00
 
         # Calculate net debit/credit, and only fill the column with a positive value
         for account_code in account_dict:
@@ -207,7 +209,6 @@ class AccountReport(models.AbstractModel):
             update_fields['0161'] = net142
         else:
             update_fields['0162'] = - net142
-            net142 = account_fields.get('2257', 0.00) - account_fields.get('2258', 0.00)
         net14 = (account_fields.get('0159', 0.00) + update_fields.get('0161', 0.00)) - (account_fields.get('0160', 0.00) + update_fields.get('0162', 0.00))
         if float_compare(net14, 0.0, 2) > 0:
             update_fields['0157'] = net14

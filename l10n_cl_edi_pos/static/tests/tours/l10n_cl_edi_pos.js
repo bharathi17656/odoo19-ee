@@ -5,6 +5,7 @@ import * as ReceiptScreen from "@point_of_sale/../tests/pos/tours/utils/receipt_
 import * as PaymentScreen from "@point_of_sale/../tests/pos/tours/utils/payment_screen_util";
 import * as ProductScreen from "@point_of_sale/../tests/pos/tours/utils/product_screen_util";
 import * as PartnerList from "@point_of_sale/../tests/pos/tours/utils/partner_list_util";
+import * as TicketScreen from "@point_of_sale/../tests/pos/tours/utils/ticket_screen_util";
 import * as Dialog from "@point_of_sale/../tests/generic_helpers/dialog_util";
 import * as Notification from "@point_of_sale/../tests/generic_helpers/notification_util";
 import { negate } from "@point_of_sale/../tests/generic_helpers/utils";
@@ -79,5 +80,27 @@ registry.category("web_tour.tours").add("test_cl_partner_missing_info", {
             PaymentScreen.clickInvoiceButton(),
             PaymentScreen.clickValidate(),
             Notification.has("Please fill out missing fields to proceed:"),
+        ].flat(),
+});
+
+registry.category("web_tour.tours").add("test_refund_consumidor_final_anonimo", {
+    steps: () =>
+        [
+            Chrome.startPoS(),
+            Dialog.confirm("Open Register"),
+            ProductScreen.clickDisplayedProduct("Desk Organizer"),
+            ProductScreen.clickPayButton(),
+            PaymentScreen.clickPaymentMethod("Cash"),
+            PaymentScreen.clickValidate(),
+            ReceiptScreen.isShown(),
+            ReceiptScreen.clickNextOrder(),
+            ProductScreen.clickRefund(),
+            TicketScreen.selectOrder("1001"),
+            TicketScreen.confirmRefund(),
+            PaymentScreen.clickPaymentMethod("Cash"),
+            PaymentScreen.clickValidate(),
+            Dialog.is({ title: "Refund not possible" }),
+            Dialog.bodyIs("You cannot refund orders for the Consumidor Final Anònimo."),
+            Dialog.confirm(),
         ].flat(),
 });

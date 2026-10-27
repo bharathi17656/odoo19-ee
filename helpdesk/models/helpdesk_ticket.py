@@ -200,7 +200,7 @@ class HelpdeskTicket(models.Model):
     @api.depends('sla_status_ids.deadline', 'sla_status_ids.reached_datetime')
     def _compute_sla_reached(self):
         sla_status_read_group = self.env['helpdesk.sla.status']._read_group(
-            [('exceeded_hours', '<', 0), ('ticket_id', 'in', self.ids)],
+            [('reached_datetime', '!=', False), ('ticket_id', 'in', self.ids)],
             ['ticket_id'],
         )
         sla_status_ids_per_ticket = {ticket.id for [ticket] in sla_status_read_group}
@@ -294,7 +294,7 @@ class HelpdeskTicket(models.Model):
 
     def _inverse_partner_email(self):
         for ticket in self:
-            if ticket._get_partner_email_update():
+            if self.env.context.get('helpdesk_partner_sync', True) and ticket._get_partner_email_update():
                 ticket.partner_id.email = ticket.partner_email
 
     @api.depends('partner_id.phone')
@@ -306,8 +306,7 @@ class HelpdeskTicket(models.Model):
 
     def _inverse_partner_phone(self):
         for ticket in self:
-            if (ticket._get_partner_phone_update() or not ticket.partner_id.phone) and ticket.partner_phone:
-                ticket = ticket.sudo()
+            if self.env.context.get('helpdesk_partner_sync', True) and (ticket._get_partner_phone_update() or not ticket.partner_id.phone) and ticket.partner_phone:
                 ticket.partner_id.phone = ticket.partner_phone
 
     @api.depends('partner_id', 'partner_email', 'partner_phone')
@@ -391,8 +390,8 @@ class HelpdeskTicket(models.Model):
         self.ensure_one()
         if self.partner_id.email and self.partner_email and self.partner_email != self.partner_id.email:
             ticket_email_normalized = tools.email_normalize(self.partner_email) or self.partner_email or False
-            partner_email_normalized = tools.email_normalize(self.partner_id.email) or self.partner_id.email or False
-            return ticket_email_normalized != partner_email_normalized
+            partner_emails_normalized = tools.email_normalize_all(self.partner_id.email) or self.partner_id.email or False
+            return ticket_email_normalized not in partner_emails_normalized
         return False
 
     def _get_partner_phone_update(self):
@@ -735,6 +734,12 @@ class HelpdeskTicket(models.Model):
     def _unsubscribe_portal_users(self):
         self.message_unsubscribe(partner_ids=self.message_partner_ids.filtered('user_ids.share').ids)
 
+    def website_form_input_filter(self, request, values):
+        if 'partner_id' in values:
+            values.pop('partner_name', None)
+            values.pop('partner_email', None)
+        return values
+
     # ------------------------------------------------------------
     # Actions and Business methods
     # ------------------------------------------------------------
@@ -765,6 +770,19 @@ class HelpdeskTicket(models.Model):
         # unlink status and create the new ones in 2 operations
         sla_status_to_remove.unlink()
         return self.env['helpdesk.sla.status'].create(sla_status_value_list)
+
+    def _sla_find_domain(self):
+        """
+        Get domain to find matching SLAs.
+        This function aims to be inherited by submodules
+        :return: domain
+        :rtype : list [tuple]
+        """
+        return [
+            ('team_id', '=', self.team_id.id),
+            ('priority', '=', self.priority),
+            ('stage_id.sequence', '>=', self.stage_id.sequence),
+        ]
 
     @api.model
     def _sla_find_false_domain(self):
@@ -805,10 +823,13 @@ class HelpdeskTicket(models.Model):
                 tickets_map[key] |= ticket
                 # group the SLA to apply, by key
                 if key not in sla_domain_map:
-                    sla_domain_map[key] = Domain.AND([[
-                        ('team_id', '=', ticket.team_id.id), ('priority', '=', ticket.priority),
-                        ('stage_id.sequence', '>=', ticket.stage_id.sequence),
-                    ], Domain.OR([ticket._sla_find_extra_domain(), self._sla_find_false_domain()])])
+                    sla_domain_map[key] = Domain.AND([
+                        ticket._sla_find_domain(),
+                        Domain.OR([
+                            ticket._sla_find_extra_domain(),
+                            self._sla_find_false_domain(),
+                        ]),
+                    ])
 
         result = {}
         for key, tickets in tickets_map.items():  # only one search per ticket group
@@ -843,11 +864,12 @@ class HelpdeskTicket(models.Model):
             on stage having a sequence lower than the given one.
         """
         stage = self.env['helpdesk.stage'].browse(stage_id)
-        stages = self.env['helpdesk.stage'].search([('sequence', '<=', stage.sequence), ('team_ids', 'in', self.mapped('team_id').ids)])  # take previous stages
         sla_status = self.env['helpdesk.sla.status'].search([('ticket_id', 'in', self.ids)])
-        sla_not_reached = sla_status.filtered(lambda sla: not sla.reached_datetime and sla.sla_stage_id in stages)
-        sla_not_reached.write({'reached_datetime': fields.Datetime.now()})
-        (sla_status - sla_not_reached).filtered(lambda x: x.sla_stage_id not in stages).write({'reached_datetime': False})
+        # preserve the status reached under the previous team of the ticket
+        sla_status = sla_status.filtered(lambda status: status.sla_id.team_id == status.ticket_id.team_id)
+        reached = sla_status.filtered(lambda status: status.sla_stage_id.sequence <= stage.sequence)  # target stage or a previous one
+        reached.filtered(lambda status: not status.reached_datetime).write({'reached_datetime': fields.Datetime.now()})
+        (sla_status - reached).write({'reached_datetime': False})
 
     def action_open_helpdesk_ticket(self):
         self.ensure_one()

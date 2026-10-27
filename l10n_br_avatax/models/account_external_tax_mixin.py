@@ -476,18 +476,29 @@ class AccountExternalTaxMixin(models.AbstractModel):
         self._l10n_br_repr_amounts(lines)
 
         partner_shipping_id = params['partner_shipping']
-        rendered_address = {}
-        if is_service and partner_shipping_id != partner:
-            rendered_address['rendered'] = {
+        partner_shipping_location = {}
+        if partner_shipping_id != partner:
+            partner_shipping_content = {
+                'name': partner_shipping_id.display_name,
+                'businessName': partner_shipping_id.display_name,
+                'type': self._l10n_br_get_partner_type(partner_shipping_id),
+                'federalTaxId': partner_shipping_id.vat,
+                'cityTaxId': partner_shipping_id.l10n_br_im_code,
+                'suframa': partner_shipping_id.l10n_br_isuf_code or '',
                 'address': {
                     'number': partner_shipping_id.street_number,
+                    'complement': partner_shipping_id.street_number2,
                     'street': partner_shipping_id.street,
                     'neighborhood': partner_shipping_id.street2,
                     'zipcode': partner_shipping_id.zip,
                     'cityName': partner_shipping_id.city,
                     'state': partner_shipping_id.state_id.code,
+                    'phone': partner_shipping_id.phone,
+                    'email': partner_shipping_id.email
                 }
             }
+            key = 'rendered' if is_service else 'delivery'
+            partner_shipping_location[key] = partner_shipping_content
 
         taxes_settings_customer = self._l10n_br_get_taxes_settings(is_service, partner)
         taxes_settings_company = self._l10n_br_get_taxes_settings(is_service, company_partner)
@@ -547,7 +558,7 @@ class AccountExternalTaxMixin(models.AbstractModel):
                         'federalTaxId': company_partner.vat,
                         'suframa': company_partner.l10n_br_isuf_code or '',
                     },
-                    **rendered_address,
+                    **partner_shipping_location,
                 },
                 **payments,
             },
@@ -557,8 +568,6 @@ class AccountExternalTaxMixin(models.AbstractModel):
     @api.model
     def _extract_tax_values_from_l10n_br_avatax_detail(self, service_params, line_detail, tax_detail):
         tax_amount = tax_detail['tax']
-        if service_params['is_return']:
-            tax_amount = -tax_amount
 
         if tax_detail['taxImpact']['impactOnNetAmount'] == 'Subtracted':
             tax_amount *= -1
@@ -577,6 +586,7 @@ class AccountExternalTaxMixin(models.AbstractModel):
                 'amount': 1,
                 'amount_type': 'percent',
                 'price_include_override': 'tax_included' if tax_detail['taxImpact']['impactOnNetAmount'] == 'Included' else 'tax_excluded',
+                **({'type_tax_use': self.invoice_filter_type_domain} if 'invoice_filter_type_domain' in self._fields else {})
             },
             {'tax_amount_currency': tax_amount, 'base_amount_currency': base_amount_currency},
         )
@@ -606,9 +616,9 @@ class AccountExternalTaxMixin(models.AbstractModel):
             for record in records:
                 service_params = record._get_l10n_br_avatax_service_params()
                 document_data = record._prepare_l10n_br_avatax_document_service_call(service_params)
-                base_lines = [data['base_line'] for data in service_params['line_data']]
+                base_lines_by_id = {data['base_line']['id']: data['base_line'] for data in service_params['line_data']}
 
-                api_response = self._l10n_br_call_avatax_taxes(company, document_data)
+                api_response = record._l10n_br_call_avatax_taxes(company, document_data)
                 error = self._l10n_br_avatax_handle_response(service_params, api_response, _(
                     'Odoo could not fetch the taxes related to %(document)s.',
                     document=record.display_name,
@@ -617,11 +627,12 @@ class AccountExternalTaxMixin(models.AbstractModel):
                     errors.append(error)
                     continue
 
-                for base_line, line_results in zip(base_lines, api_response['lines']):
+                for line_results in api_response['lines']:
+                    base_line = base_lines_by_id[int(line_results['lineCode'])]
                     tax_values_list = []
                     for tax_detail in line_results['taxDetails']:
                         if tax_detail['taxImpact']['impactOnNetAmount'] != 'Informative' and tax_detail['taxImpact']['accounting'] != 'none':
-                            tax_values_list.append(self._extract_tax_values_from_l10n_br_avatax_detail(service_params, line_results, tax_detail))
+                            tax_values_list.append(record._extract_tax_values_from_l10n_br_avatax_detail(service_params, line_results, tax_detail))
                     base_line_with_tax_values.append((base_line, tax_values_list))
 
             if errors:
@@ -642,6 +653,7 @@ class AccountExternalTaxMixin(models.AbstractModel):
 
         params = {
             'db_uuid': self.env['ir.config_parameter'].sudo().get_param('database.uuid'),
+            # The service is now free, so this is not used to charge anything.
             'account_token': self.env['iap.account'].get(IAP_SERVICE_NAME).sudo().account_token,
             'avatax': {
                 'is_production': environment and environment == 'production',

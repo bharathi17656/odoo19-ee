@@ -3,8 +3,9 @@
 import io
 import zipfile
 
+from itertools import chain
+
 from odoo import http, _
-from odoo.exceptions import UserError
 from odoo.http import request, content_disposition
 
 
@@ -54,8 +55,8 @@ class AccountDocumentDownloadController(http.Controller):
             if filetype == 'all' and (doc_data := invoice._get_invoice_legal_documents_all(allow_fallback=allow_fallback)):
                 docs_data += doc_data
             elif doc_data := invoice._get_invoice_legal_documents(filetype, allow_fallback=allow_fallback):
-                if (errors := doc_data.get('errors')) and len(invoices) == 1:
-                    raise UserError(_("Error while creating XML:\n- %s", '\n- '.join(errors)))
+                # The potential export errors are not raised: like the Print, the documents generated
+                # here are not meant to be legally valid and are never stored on the invoice.
                 docs_data.append(doc_data)
         if len(docs_data) == 1:
             doc_data = docs_data[0]
@@ -83,14 +84,7 @@ class AccountDocumentDownloadController(http.Controller):
                     seen[new_name] = 0
             return docs
 
-        docs_data = []
-        for move in moves:
-            if move.is_purchase_document(include_receipts=True):
-                if attachment := move.message_main_attachment_id:
-                    docs_data.append({'filename': attachment.name, 'filetype': attachment.mimetype, 'content': attachment.raw})
-            else:
-                docs_data += move._get_invoice_legal_documents_all() or []
-        if docs_data:
+        if docs_data := list(chain.from_iterable(move._get_move_zip_export_docs() for move in moves)):
             docs_data = rename_duplicates(docs_data)
             zip_content = _build_zip_from_data(docs_data)
             headers = _get_headers(request.env._("Invoices") + '.zip', 'zip', zip_content)

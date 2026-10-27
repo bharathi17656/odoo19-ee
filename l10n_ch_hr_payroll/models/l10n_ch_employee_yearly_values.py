@@ -55,7 +55,7 @@ ANNUITY_RULE_MAPPING = {
 IS_REASON_MAPPING = {
     'entryCompany': ('Entry', 'entryCompany'),
     'entryCanton': ('Entry', 'cantonChange'),
-    'entryOther': ('Entry', 'entryOther'),
+    'entryOther': ('Entry', 'others'),
     'withdrawalCompany': ('Withdrawal', 'withdrawalCompany'),
     'withdrawalNat': ('Withdrawal', 'naturalization'),
     'withdrawalSettled': ('Withdrawal', 'settled-C'),
@@ -140,38 +140,52 @@ class L10nCHEmployeeYearlySnapshot(models.Model):
         return to_dict(root)
 
     def _toggle_pay_period_lock(self, lock=False):
-        paid_slips = self.env["hr.payslip"]._read_group(
-            domain=[("employee_id", 'in', self.employee_id.ids), ("state", "in", ["paid", "validated"]), ('struct_id.code', '=', 'CHMONTHLYELM')],
+        all_snapshots = self.monthly_value_ids
+
+        if not all_snapshots:
+            return
+
+        domain = [
+            ("employee_id", 'in', all_snapshots.mapped('employee_id').ids),
+            ("state", "in", ["paid", "validated"]),
+            ('struct_id.code', '=', 'CHMONTHLYELM')
+        ]
+
+        paid_slips_data = self.env["hr.payslip"]._read_group(
+            domain=domain,
             groupby=["employee_id", "date_to:year", "date_to:month"],
-            aggregates=["id:recordset"])
-        mapped_payslips = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: self.env["hr.payslip"])))
-        snapshots_to_toggle = self.env['l10n.ch.employee.monthly.values']
+            aggregates=["id:recordset"]
+        )
 
-        for emp, date_y, date_m, slip in paid_slips:
-            mapped_payslips[emp][date_y.year][date_m.month] += slip
+        max_month_per_year_map = defaultdict(int)
 
-        if lock:
-            for snapshot in self:
-                treated_months = []
-                for monthly_snapshot in snapshot.monthly_value_ids:
-                    if mapped_payslips[monthly_snapshot.employee_id][monthly_snapshot.year][monthly_snapshot.month]:
-                        treated_months.append(monthly_snapshot.month)
-                if treated_months:
-                    snapshots_to_toggle += snapshot.monthly_value_ids.filtered(lambda s: s.month <= max(treated_months))
-            if snapshots_to_toggle:
-                snapshots_to_toggle.write({
-                    "payroll_month_closed": True
-                })
-        else:
-            for snapshot in self:
-                treated_months = []
-                for monthly_snapshot in snapshot.monthly_value_ids:
-                    if not mapped_payslips[monthly_snapshot.employee_id][monthly_snapshot.year][monthly_snapshot.month]:
-                        snapshots_to_toggle += monthly_snapshot
+        for employee, date_year, date_month, slips in paid_slips_data:
+            year_val = date_year.year
+            month_val = date_month.month
 
-                snapshots_to_toggle.write({
-                    "payroll_month_closed": False
-                })
+            key = (employee.id, year_val)
+
+            if month_val > max_month_per_year_map[key]:
+                max_month_per_year_map[key] = month_val
+
+        snapshots_to_lock = self.env['l10n.ch.employee.monthly.values']
+        snapshots_to_unlock = self.env['l10n.ch.employee.monthly.values']
+
+        for snapshot in all_snapshots:
+            key = (snapshot.employee_id.id, snapshot.year)
+
+            cutoff_month = max_month_per_year_map.get(key, 0)
+
+            if snapshot.month <= cutoff_month:
+                snapshots_to_lock += snapshot
+            else:
+                snapshots_to_unlock += snapshot
+
+        if snapshots_to_lock:
+            snapshots_to_lock.write({"payroll_month_closed": True})
+
+        if snapshots_to_unlock:
+            snapshots_to_unlock.write({"payroll_month_closed": False})
 
     @api.depends("year", "employee_id")
     def _compute_monthly_value_ids(self):
@@ -249,7 +263,20 @@ class L10nCHEmployeeYearlySnapshot(models.Model):
             groupby=["employee_id", "date_to:year", "date_to:month"],
             aggregates=["id:recordset"])
         yearly_values = self.env["l10n.ch.employee.yearly.values"].search([("year", '=', year), ('employee_id.company_id', '=', company_id.id)])
-        mapped_qst_institutions = self.env["l10n.ch.source.tax.institution"].search([('company_id', '=', company_id.id)]).grouped("canton")
+        qst_institutions = self.env["l10n.ch.source.tax.institution"].search([('company_id', '=', company_id.id)])
+        mapped_qst_institutions = qst_institutions.grouped("canton")
+
+        source_tax_commission = defaultdict(float)
+
+        for qst_institution in qst_institutions:
+            commission_rate = self.env['hr.rule.parameter']._get_parameter_from_code(f'l10n_ch_withholding_tax_rates_{qst_institution.canton.upper()}_PEL', date=datetime.date(year, month, 1), raise_if_not_found=False)
+            if commission_rate:
+                # Format : [(1.0, 999999.0, 0.0, 2.0)]
+                real_rate = commission_rate[0][3] / 100
+            else:
+                real_rate = 0
+            source_tax_commission[swissdec_declaration.get_institution_id_ref(institution=qst_institution)] = real_rate
+
         qst_ema = self.env["l10n.ch.is.mutation"]._read_group(
             domain=[("employee_id", 'in', yearly_values.mapped('employee_id').ids)],
             groupby=["employee_id", "valid_as_of:year", "valid_as_of:month"],
@@ -758,7 +785,7 @@ class L10nCHEmployeeYearlySnapshot(models.Model):
                 **staff_declaration,
                 **swissdec_declaration.get_institutions(institutions_to_process),
                 "SalaryCounters": swissdec_declaration.get_salary_tag_counter(staff_declaration),
-                "SalaryTotals": swissdec_declaration.get_salary_totals(staff, CurrentMonth=[XSD_YMONTH, year, month, False])
+                "SalaryTotals": swissdec_declaration.get_salary_totals(staff, CurrentMonth=[XSD_YMONTH, year, month, False], source_tax_commission_rates=source_tax_commission)
             }
             allowed_institutions = {
                 "QST": set(global_qst_institutions.ids),
@@ -1070,6 +1097,21 @@ class L10nCHEmployeeYearlySnapshot(models.Model):
     def _generate_certificate_uuid(self):
         return uuid.uuid4().hex
 
+    def _get_certificate_remark(self, current_certificate, relevant_tax_slips, year_delta):
+        """ Section 15: the additional text of the certificate profile, followed by the total of each
+        salary rule declared in the remarks, named after its payslip lines, which an input can rename. """
+        remarks = [current_certificate.l10n_ch_cs_additional_text] if current_certificate.l10n_ch_cs_additional_text else []
+        remark_lines = relevant_tax_slips.filtered(
+            lambda p: p.l10n_ch_after_departure_payment if year_delta else True).line_ids.filtered(
+            lambda pl: pl.salary_rule_id.l10n_ch_salary_certificate == '15')
+        lines_by_rule = remark_lines.grouped('salary_rule_id')
+        for rule in remark_lines.salary_rule_id.sorted():
+            total = sum(lines_by_rule[rule].mapped('total'))
+            if total:
+                text = ', '.join(sorted(set(lines_by_rule[rule].mapped('name'))))
+                remarks.append(f"{text}: {self._amount2str(total)} CHF")
+        return "\n".join(remarks)
+
     def _create_wage_statement(self, current_certificate, period_from, period_to, relevant_tax_slips, line_values, last_monthly_value, rules_grouped_by_certificate_section, year_delta, rectificate_original_id=None, rectificate_original_date=None):
         if last_monthly_value.person:
             last_valid_activity_rate = float(last_monthly_value.person.get("Work", {}).get("WorkingTime", {}).get("Steady", {}).get("ActivityRate", "100"))
@@ -1138,8 +1180,9 @@ class L10nCHEmployeeYearlySnapshot(models.Model):
 
             if current_certificate.l10n_ch_source_tax_settlement_letter:
                 standard_remarks["TaxAtSourcePeriodForObjection"] = XSD_SKIP_VALUE
-            if current_certificate.l10n_ch_cs_additional_text:
-                salary_certificate["Remark"] = current_certificate.l10n_ch_cs_additional_text
+            remark = self._get_certificate_remark(current_certificate, relevant_tax_slips, year_delta)
+            if remark:
+                salary_certificate["Remark"] = remark
 
             if current_certificate.l10n_ch_cs_expense_policy:
                 if current_certificate.l10n_ch_cs_expense_policy == "approved":
@@ -1274,8 +1317,9 @@ class L10nCHEmployeeYearlySnapshot(models.Model):
         salary_certificate["NetIncome"] = self._amount2str(float(salary_certificate.get("GrossIncome", "0.00")))
 
         # 14 - 15 : Standard Remarks
-        if current_certificate.l10n_ch_cs_additional_text:
-            salary_certificate["Remark"] = current_certificate.l10n_ch_cs_additional_text
+        remark = self._get_certificate_remark(current_certificate, relevant_tax_slips, year_delta)
+        if remark:
+            salary_certificate["Remark"] = remark
         standard_remarks = dict()
         if rectificate_original_id and rectificate_original_date:
             standard_remarks["Rectificate"] = {

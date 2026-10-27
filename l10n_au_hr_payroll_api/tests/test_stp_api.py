@@ -32,6 +32,7 @@ class TestSingleTouchPayrollApi(L10nPayrollAccountCommon, TestL10nAUPayrollAPICo
                 'l10n_au_branch_code': '100',
         })
         cls.contract_1.date_end = False
+        cls.employee_1.l10n_au_super_account_ids.fund_id.is_valid = True
         cls.env['ir.config_parameter'].sudo().set_param('l10n_au_payroll_iap.test_endpoint', 'http://127.0.0.1:8070')
         cls.proxy_user = cls.env['account_edi_proxy_client.user']._register_proxy_user(cls.company, 'l10n_au_payroll', 'demo')
         cls.proxy_user.edi_mode = 'test'
@@ -42,7 +43,7 @@ class TestSingleTouchPayrollApi(L10nPayrollAccountCommon, TestL10nAUPayrollAPICo
         self._register_company()
 
     def test_api_submit_event(self):
-        payrun = self._prepare_payslip_run(self.employee_1 + self.employee_2)
+        payrun = self._prepare_payslip_run(self.employee_1 + self.employee_2, start_date=date(2024, 2, 1), end_date=date(2024, 2, 29))
         stp = self.env["l10n_au.stp"].search([("payslip_batch_id", "=", payrun.id)])
         stp.submit_date = date.today()
         with self.mock_stp_requests():
@@ -53,7 +54,7 @@ class TestSingleTouchPayrollApi(L10nPayrollAccountCommon, TestL10nAUPayrollAPICo
 
     @freeze_time("2024-03-31")
     def test_api_update_event(self):
-        batch = self._prepare_payslip_run(self.employee_1 + self.employee_2)
+        batch = self._prepare_payslip_run(self.employee_1 + self.employee_2, start_date=date(2024, 3, 1), end_date=date(2024, 3, 31))
         stp = self.env["l10n_au.stp"].search([("payslip_batch_id", "=", batch.id)])
         stp.submit_date = date.today()
         with self.mock_stp_requests():
@@ -73,8 +74,6 @@ class TestSingleTouchPayrollApi(L10nPayrollAccountCommon, TestL10nAUPayrollAPICo
             self._submit_stp(stp_update)
 
     def test_api_status_check(self):
-        self._register_company()
-
         payrun = self._prepare_payslip_run(self.employee_1 + self.employee_2)
         stp = self.env["l10n_au.stp"].search([("payslip_batch_id", "=", payrun.id)])
         stp.submit_date = date.today()

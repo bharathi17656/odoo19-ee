@@ -656,6 +656,24 @@ test("Show values", async () => {
     expect(options.plugins.chartShowValuesPlugin.showValues).toBe(true);
 });
 
+test("Use compact format (humanize numbers)", async () => {
+    const { model, env } = await createSpreadsheetFromGraphView();
+    const sheetId = model.getters.getActiveSheetId();
+    const chartId = model.getters.getChartIds(sheetId)[0];
+    await openChartSidePanel(model, env);
+    await contains(".o-panel-design").click();
+
+    expect(model.getters.getChartDefinition(chartId).humanize).toBe(true);
+    let options = model.getters.getChartRuntime(chartId).chartJsConfig.options;
+    expect(options.scales.y.ticks.callback(100000)).toBe("100k");
+
+    await contains("input[name='humanizeNumbers']").click();
+
+    expect(model.getters.getChartDefinition(chartId).humanize).toBe(false);
+    options = model.getters.getChartRuntime(chartId).chartJsConfig.options;
+    expect(options.scales.y.ticks.callback(100000)).toBe("100,000");
+});
+
 describe("Can edit chart data series", () => {
     test("Can edit bar chart data series ", async function () {
         const { model, env } = await createSpreadsheetFromGraphView();
@@ -713,6 +731,20 @@ test("An error is displayed in the side panel if the chart has invalid model", a
     await openChartSidePanel(model, env);
 
     expect(".o-validation-error").toHaveCount(1);
+});
+
+test("Can delete a chart with an invalid model from the side panel", async function () {
+    const { model, env } = await createSpreadsheetFromGraphView({
+        mockRPC: async function (route, { method }) {
+            if (method === "fields_get") {
+                throw makeServerError({ code: 404 });
+            }
+        },
+    });
+    await openChartSidePanel(model, env);
+
+    await contains("button:contains(Delete Chart)").click();
+    expect(model.getters.getChartIds(model.getters.getActiveSheetId())).toEqual([]);
 });
 
 test("display chart related filters", async function () {

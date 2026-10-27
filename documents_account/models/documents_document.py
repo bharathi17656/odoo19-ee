@@ -10,6 +10,7 @@ from xml.etree import ElementTree
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.fields import Domain
+from odoo.tools import SQL
 
 
 class DocumentsDocument(models.Model):
@@ -47,7 +48,7 @@ class DocumentsDocument(models.Model):
         """
         self.ensure_one()
 
-        if not self.mimetype:
+        if not self.mimetype or not self.raw:
             return False
 
         if not (self.mimetype.endswith('/xml')
@@ -109,13 +110,18 @@ class DocumentsDocument(models.Model):
             return journal_id.create_document_from_attachment(attachment_ids=self.attachment_id.ids)
 
         for document in self:
+            partner = partner_id or document.partner_id
             if document.res_model == 'account.move' and document.res_id:
                 move = self.env['account.move'].browse(document.res_id)
             else:
+                creation_context = {'default_move_type': move_type}
+                if move_type in ('in_invoice', 'in_refund') and partner and 'property_purchase_currency_id' in partner:
+                    supplier_currency = partner.with_company(document.company_id).property_purchase_currency_id
+                    if supplier_currency:
+                        creation_context['default_currency_id'] = supplier_currency.id
                 move = journal_id\
-                    .with_context(default_move_type=move_type)\
+                    .with_context(**creation_context)\
                     ._create_document_from_attachment(attachment_ids=document.attachment_id.id)
-            partner = partner_id or document.partner_id
             if partner:
                 move.partner_id = partner
             if move.statement_line_id:
@@ -127,6 +133,13 @@ class DocumentsDocument(models.Model):
         # loop (because of the "multi" server action). When it is the case, we try
         # to redirect to a list of all created invoices instead of just the last
         # one, using the context.
+        action_name_ref = {
+            'in_invoice': self.env._("Vendor Bills"),
+            'in_refund': self.env._("Vendor Refunds"),
+            'in_receipt': self.env._("Vendor Receipts"),
+            'out_invoice': self.env._("Customer Invoices"),
+            'out_refund': self.env._("Customer Credit Notes"),
+        }
         context = dict(self.env.context, default_move_type=move_type)
         documents_active_ids = context.get('documents_active_ids')
         if context.get('active_model') != 'documents.document' or not documents_active_ids:
@@ -136,7 +149,7 @@ class DocumentsDocument(models.Model):
         action = {
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
-            'name': _("Invoices"),
+            'name': action_name_ref[move_type],
             'view_id': False,
             'view_mode': 'list',
             'views': [(False, "list"), (False, "form")],
@@ -155,17 +168,28 @@ class DocumentsDocument(models.Model):
         return action
 
     def account_create_account_bank_statement(self, journal_id=None):
-        # only the journal type is checked as journal will be retrieved from
-        # the bank account later on. Also it is not possible to link the doc
+        # It is not possible to link the doc
         # to the newly created entry as they can be more than one. But importing
         # many times the same bank statement is later checked.
-        default_journal = journal_id or self.env['account.journal'].search([('type', '=', 'bank')], limit=1)
+        default_journal = journal_id or self.env['account.journal'].search([
+            *self.env['account.journal']._check_company_domain(self.env.company),
+            ('type', '=', 'bank'),
+        ], limit=1)
+
+        if not default_journal:
+            error_msg = self.env['account.journal']._build_no_journal_error_msg(self.env.company.display_name, ['bank'])
+            raise UserError(error_msg)
+
         return default_journal.create_document_from_attachment(attachment_ids=self.attachment_id.ids)
 
     @api.model
     def _get_base_server_actions_domain(self):
+        """ Adds a check on company to avoid using/running actions when not in the right company."""
+        domain = super()._get_base_server_actions_domain()
+        if self.env.context.get('documents_gc_actions'):
+            return domain
         return Domain.AND([
-            super()._get_base_server_actions_domain(),
+            domain,
             Domain.OR([
                 [('state', '!=', 'documents_account_record_create')],
                 [('documents_account_journal_id', '=', False)],
@@ -229,4 +253,13 @@ class DocumentsDocument(models.Model):
                     "sequence": 200,
                 }
             },
+        ])
+
+    def _get_gc_clear_bin_domain(self):
+        query_folder_id = self.env['documents.account.folder.setting']._search(
+            [('folder_id', '!=', False)]
+        ).select('folder_id')
+        return Domain.AND([
+            super()._get_gc_clear_bin_domain(),
+            [('id', 'not in', SQL("(%s)", query_folder_id))],
         ])

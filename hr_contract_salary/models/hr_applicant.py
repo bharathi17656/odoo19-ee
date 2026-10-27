@@ -123,7 +123,7 @@ class HrApplicant(models.Model):
             'company_id': contract_template.company_id.id or self.company_id.id or self.env.company.id,
             'contract_template_id': contract_template.id,
             'applicant_id': self.id,
-            'final_yearly_costs': contract_template.final_yearly_costs,
+            'final_yearly_costs': contract_template.sudo().final_yearly_costs,
             'job_title': self.job_id.name,
             'employee_job_id': self.job_id.id,
             'department_id': self.department_id.id,
@@ -139,11 +139,11 @@ class HrApplicant(models.Model):
         return contract_template
 
     def unlink_archived_versions(self):
+        # TODO: depereceated method remove me in master
         archived_versions = self.env['hr.version'].search([
             ('applicant_id', 'in', self.ids),
             ('active', '=', False)
         ])
         if archived_versions:
             archived_versions.sign_request_ids.write({'state': 'canceled', 'active': False})
-            archived_versions.employee_id.unlink()
             archived_versions.unlink()

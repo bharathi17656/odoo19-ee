@@ -11,12 +11,13 @@
             <t t-set-slot="content">
                 <DropdownItem tag="'button'" class="'btn btn-link o_documents_kanban_upload'"
                     onSelected="() => this.uploadFileInputRef.el.click()"
+                    closingMode="this.ui.isSmall ? 'none': 'all'"
                     attrs="{'data-hotkey': 'a', disabled: !canUploadInFolder(folder)}">
                     <i class="fa fa-upload fa-fw me-1"/>
                     <span>Upload</span>
                 </DropdownItem>
                 <DropdownItem tag="'button'" class="'btn btn-link o_documents_kanban_request'"
-                    t-if="userIsInternal"
+                    t-if="userIsDocumentUser"
                     onSelected="onClickDocumentsRequest"
                     attrs="{'data-hotkey': 'r', disabled: !canUploadInFolder(folder) || folder.id === 'COMPANY'}">
                     <i class="fa fa-paper-plane-o fa-fw me-1"/>

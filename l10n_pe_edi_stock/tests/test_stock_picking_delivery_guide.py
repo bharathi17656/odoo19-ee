@@ -224,6 +224,46 @@ class TestPEDeliveryGuideCommon(TestPeEdiCommon):
         expected_etree = self.get_xml_tree_from_string(expected_document)
         self.assertXmlTreeEqual(current_etree, expected_etree)
 
+    def test_loading_transport_event_only_public_transport(self):
+        """The 'Fecha de entrega de bienes al transportista' (LoadingTransportEvent)
+        is required by SUNAT only when the transport modality is public ('01');
+        emitting it for private transport ('02') would diverge from the
+        validation rules (R. S. N° 108-2026/SUNAT, error 3617)."""
+        self.picking.l10n_latam_document_number = "T001-00000001"
+
+        self.picking.l10n_pe_edi_transport_type = '02'
+        private_ubl = self.picking._l10n_pe_edi_create_delivery_guide()
+        self.assertNotIn(b'LoadingTransportEvent', private_ubl)
+
+        self.picking.l10n_pe_edi_transport_type = '01'
+        public_ubl = self.picking._l10n_pe_edi_create_delivery_guide()
+        self.assertIn(b'LoadingTransportEvent', public_ubl)
+        # The UBL 2.1 ShipmentStage sequence requires LoadingTransportEvent to
+        # come after CarrierParty; emitting it before makes SUNAT's schema
+        # validation reject the document (cvc-complex-type at cac:CarrierParty).
+        self.assertLess(
+            public_ubl.index(b'CarrierParty'),
+            public_ubl.index(b'LoadingTransportEvent'),
+            "LoadingTransportEvent must follow CarrierParty in the UBL sequence",
+        )
+
+    def test_outdated_module_error_message(self):
+        """When SUNAT rejects with code 3617 (missing 'Fecha de entrega de bienes al
+        transportista'), the installed module is out of date. Store an actionable
+        message telling the user to update instead of the raw SUNAT rejection."""
+        self.picking.l10n_latam_document_number = "T001-00000001"
+        sunat_response = {
+            'error': 'SUNAT returned an error code. Details: 3617: ...',
+            'error_reason': 'outdated_module',
+            'error_code': '3617',
+        }
+        with patch.object(StockPicking, '_l10n_pe_edi_sign', return_value=sunat_response):
+            self.picking.action_send_delivery_guide()
+
+        self.assertNotEqual(self.picking.l10n_pe_edi_status, 'sent')
+        self.assertIn('l10n_pe_edi_stock', self.picking.l10n_pe_edi_error)
+        self.assertIn('3617', self.picking.l10n_pe_edi_error)
+
     def test_send_delivery_guide(self):
         """Ensure that delivery guide is generated and sent to the SUNAT."""
 
@@ -231,3 +271,25 @@ class TestPEDeliveryGuideCommon(TestPeEdiCommon):
         with patch.object(StockPicking, '_l10n_pe_edi_sign', lambda *_args, **_kwargs: {'cdr': '1234567890'}):
             self.picking.action_send_delivery_guide()
         self.assertEqual(self.picking.l10n_pe_edi_status, 'sent', self.picking.l10n_pe_edi_error)
+
+    def test_address_type_code_omitted_for_reason_18(self):
+        """ The AddressTypeCode in the DeliveryAddress must be omitted when the transfer reason is 18."""
+
+        # Try transfer reason 18
+        self.picking.l10n_latam_document_number = "T001-00000002"
+        self.picking.l10n_pe_edi_reason_for_transfer = '18'
+        ubl_reason_18 = self.picking._l10n_pe_edi_create_delivery_guide()
+        tree_reason_18 = self.get_xml_tree_from_string(ubl_reason_18)
+        namespaces = {
+            'cac': 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
+            'cbc': 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+        }
+        delivery_address_type_code_18 = tree_reason_18.xpath('//cac:Delivery/cac:DeliveryAddress/cbc:AddressTypeCode', namespaces=namespaces)
+        self.assertFalse(delivery_address_type_code_18)
+
+        # Try another transfer reason (ex. 01)
+        self.picking.l10n_pe_edi_reason_for_transfer = '01'
+        ubl_reason_01 = self.picking._l10n_pe_edi_create_delivery_guide()
+        tree_reason_01 = self.get_xml_tree_from_string(ubl_reason_01)
+        delivery_address_type_code_01 = tree_reason_01.xpath('//cac:Delivery/cac:DeliveryAddress/cbc:AddressTypeCode', namespaces=namespaces)
+        self.assertTrue(delivery_address_type_code_01)

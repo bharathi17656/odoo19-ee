@@ -7,13 +7,13 @@
 # Ryoko Tsuda <ryoko@quartile.co>, 2022
 # 江口和志 <sandwhale1010@gmail.com>, 2022
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Junko Augias (juau)" <juau@odoo.com>, 2025.
+# "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:40+0000\n"
-"PO-Revision-Date: 2025-10-16 02:41+0000\n"
+"POT-Creation-Date: 2026-07-03 17:42+0000\n"
+"PO-Revision-Date: 2026-09-01 03:08+0000\n"
 "Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
 "Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/pos_iot/"
 "ja/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.res_config_view_form_inherit_pos_iot
@@ -68,10 +68,16 @@ msgid "Bypass browser printing and prints via the hardware proxy."
 msgstr "ブラウザの印刷をバイパスし、ハードウェアプロキシを介して印刷します。"
 
 #. module: pos_iot
+#. odoo-javascript
+#: code:addons/pos_iot/static/src/app/screens/scale_screen/scale_service.js:0
+msgid "Cannot weigh product – %(msg)s"
+msgstr ""
+
+#. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.pos_iot_config_view_form
 #: model_terms:ir.ui.view,arch_db:pos_iot.res_config_view_form_inherit_pos_iot
 msgid "Cashdrawer"
-msgstr "現金箱"
+msgstr "キャッシュドロワー"
 
 #. module: pos_iot
 #. odoo-javascript
@@ -215,7 +221,7 @@ msgstr "IOT デバイス"
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_printer__device_identifier
 msgid "Identifier"
-msgstr "保管ロット"
+msgstr "識別子"
 
 #. module: pos_iot
 #. odoo-javascript
@@ -281,7 +287,7 @@ msgstr "IoT Box ホームページ"
 #. odoo-javascript
 #: code:addons/pos_iot/static/src/overrides/network_utils/iot_http_service.js:0
 msgid "IoT Box Warning"
-msgstr ""
+msgstr "IoTボックス警告"
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_printer__device_id
@@ -319,6 +325,12 @@ msgid ""
 "network as the IoT Box.\n"
 "If the problem persists, consult the documentation or contact our support."
 msgstr ""
+"お客様のPOS端末がローカルネットワーク経由でIoT端末に接続できないようです。POS"
+"端末はウェブソケット接続に自動的に切り替わります。\n"
+"接続中の全デバイスがIIoT Boxと同じネットワークに接続されているかご確認くださ"
+"い。\n"
+"問題が解決しない場合は、ドキュメントを参照するかサポートまでお問い合わせくだ"
+"さい。"
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_auto_config_pos_iot__write_uid
@@ -360,12 +372,6 @@ msgstr "IoT Boxがまだ接続されているかどうかを確認してくだ�
 
 #. module: pos_iot
 #. odoo-javascript
-#: code:addons/pos_iot/static/src/app/utils/payment/payment_interface_iot.js:0
-msgid "Please check if the terminal is still connected."
-msgstr "端末がまだ接続されているか確認して下さい。"
-
-#. module: pos_iot
-#. odoo-javascript
 #: code:addons/pos_iot/static/src/app/services/pos_store.js:0
 msgid "Please process or cancel the current transaction."
 msgstr "現在の取引を処理またはキャンセルして下さい。"
@@ -400,12 +406,6 @@ msgstr "プロキシ経由で印刷"
 #: code:addons/pos_iot/static/src/app/utils/printer/iot_printer.js:0
 msgid "Printing failed"
 msgstr "印刷に失敗しました"
-
-#. module: pos_iot
-#. odoo-javascript
-#: code:addons/pos_iot/static/src/app/utils/printer/iot_printer.js:0
-msgid "Printing warning"
-msgstr "印刷警告"
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_printer__proxy_ip
@@ -448,6 +448,14 @@ msgstr "Six決済端末"
 #: model:ir.model.fields,help:pos_iot.field_pos_printer__proxy_ip
 msgid "The IP Address or hostname of the Printer's hardware proxy"
 msgstr "プリンタのハードウェアプロキシのIPアドレスまたはホスト名"
+
+#. module: pos_iot
+#. odoo-javascript
+#: code:addons/pos_iot/static/src/app/utils/payment/payment_interface_iot.js:0
+msgid ""
+"The IoT Box cannot detect the payment terminal. Please check if the terminal "
+"is still connected."
+msgstr ""
 
 #. module: pos_iot
 #. odoo-javascript
@@ -544,6 +552,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pos_iot.res_config_view_form_inherit_pos_iot
 msgid "none"
 msgstr "なし"
+
+#~ msgid "Please check if the terminal is still connected."
+#~ msgstr "端末がまだ接続されているか確認して下さい。"
+
+#~ msgid "Printing warning"
+#~ msgstr "印刷警告"
 
 #~ msgid "Amount:"
 #~ msgstr "金額:"

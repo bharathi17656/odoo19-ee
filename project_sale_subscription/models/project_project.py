@@ -68,7 +68,7 @@ class ProjectProject(models.Model):
              ('subscription_state', '!=', '1_draft'),
              ('is_subscription', '=', True),
             ],
-            ['sale_order_template_id', 'subscription_state', 'currency_id'],
+            ['sale_order_template_id', 'subscription_state', 'currency_id', 'plan_id'],
             ['recurring_monthly:sum', 'id:array_agg'],
         )
         if not subscription_read_group:
@@ -78,16 +78,25 @@ class ProjectProject(models.Model):
         set_currency_ids = {self.currency_id.id}
         amount_to_invoice_per_currency = defaultdict(lambda: 0.0)
         recurring_per_currency_per_template = defaultdict(lambda: defaultdict(lambda: 0.0))
-        for sale_order_template_id, subscription_state, currency, recurring_monthly, ids in subscription_read_group:
+        for sale_order_template_id, subscription_state, currency, subscription_plan, recurring_monthly, ids in subscription_read_group:
             all_subscription_ids.extend(ids)
             set_currency_ids.add(currency.id)
             if subscription_state != '3_progress':  # then the subscriptions are closed and so nothing is to invoice.
                 continue
             if not sale_order_template_id:  # then we will take the recurring monthly amount that we will invoice in the next invoice(s).
-                amount_to_invoice_per_currency[currency.id] += recurring_monthly
-                continue
-            recurring_per_currency_per_template[sale_order_template_id.id][currency.id] += recurring_monthly
-        # fetch the data needed for the 'invoiced' section before handling the 'to invoice' one, in order to have all the currencies available and make only one fetch on the rates
+                target = amount_to_invoice_per_currency
+            else:
+                target = recurring_per_currency_per_template[sale_order_template_id.id]
+            unit = subscription_plan.billing_period_unit
+            value = subscription_plan.billing_period_value
+            if unit == 'month':
+                periodicity = value
+            else:  # unit in ['week', 'year']
+                periodicity = value * 12
+                if unit == 'week':
+                    periodicity = periodicity / 365.25 * 7
+            target[currency.id] += recurring_monthly * periodicity
+            # fetch the data needed for the 'invoiced' section before handling the 'to invoice' one, in order to have all the currencies available and make only one fetch on the rates
         aal_read_group = self.env['account.analytic.line'].sudo()._read_group(
             [('move_line_id.subscription_id', 'in', all_subscription_ids),
              ('account_id', 'in', self.account_id.ids)],
@@ -153,7 +162,7 @@ class ProjectProject(models.Model):
 
         action_id = self.env.ref('sale_subscription.sale_subscription_action').id
         new_items = []
-        for subscription_line in subscriptions_lines.with_context(with_price_unit=True)._read_format(['name', 'product_uom_qty', 'qty_delivered', 'qty_invoiced', 'product_uom_id', 'product_id', 'order_id']):
+        for subscription_line in subscriptions_lines.with_context(with_price_unit=True)._read_format(['display_name', 'product_uom_qty', 'qty_delivered', 'qty_invoiced', 'product_uom_id', 'product_id', 'order_id']):
             action_dict = {}
             if self.env.user.has_group('sales_team.group_sale_salesman'):
                 action_dict = {'action': {'name': action_id, 'resId': subscription_line['order_id'][0]}}
@@ -176,4 +185,10 @@ class ProjectProject(models.Model):
         return Domain.AND([
             super()._get_items_from_invoices_domain(domain),
             [('subscription_id', '=', False)],
+        ])
+
+    def _get_sale_items_domain(self, additional_domain=None):
+        return Domain.AND([
+            super()._get_sale_items_domain(additional_domain),
+            [('order_id.is_subscription', '=', False)],
         ])

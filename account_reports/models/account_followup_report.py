@@ -15,6 +15,7 @@ class AccountFollowupCustomHandler(models.AbstractModel):
             'action': 'action_send_follow_up',
             'sequence': 100,
             'always_show': True,
+            'branch_allowed': True,
         })
 
         options['custom_display_config']['components']['AccountReportLine'] = 'PartnerLedgerFollowupLine'
@@ -28,13 +29,8 @@ class AccountFollowupCustomHandler(models.AbstractModel):
             options['ignore_totals_below_sections'] = True
             options['hide_partner_totals'] = True
 
-        if options['report_id'] != previous_options.get('report_id'):
+        if options['report_id'] != previous_options.get('report_id') and options['export_mode'] != 'print':
             options['unreconciled'] = True
-            # by default, select only the 'sales' journals
-            for journal in options.get('journals', []):
-                journal['selected'] = journal.get('type') != 'general'  # dividers don't get a type
-            # Since we forced the selection of some journal, we need to recompute the filter label
-            report._init_options_journals_names(options, previous_options=previous_options)
 
         if options['export_mode'] == 'print':
             # When printing the report, we don't want to include `no_followup` lines.
@@ -108,7 +104,7 @@ class AccountFollowupCustomHandler(models.AbstractModel):
         due_line_id, overdue_line_id = None, None
         for line_id in options['unfolded_lines']:
             res_ids_map = report._get_res_ids_from_line_id(line_id, ['account.report', 'res.partner'])
-            if res_ids_map['account.report'] == report.id and res_ids_map['res.partner'] == partner_id:
+            if 'res.partner' in res_ids_map and res_ids_map['account.report'] == report.id and res_ids_map['res.partner'] == partner_id:
                 markup, _dummy1, _dummy2 = report._parse_line_id(line_id)[-1]
                 if markup == 'Due':
                     due_line_id = line_id

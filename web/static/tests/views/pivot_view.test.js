@@ -520,6 +520,7 @@ test("clicking on a cell triggers a doAction", async () => {
                 domain: [["product_id", "=", 37]],
                 name: "Partners",
                 res_model: "partner",
+                search_view_id: [67, "search"],
                 target: "current",
                 type: "ir.actions.act_window",
                 view_mode: "list",
@@ -535,6 +536,7 @@ test("clicking on a cell triggers a doAction", async () => {
     await mountView({
         type: "pivot",
         resModel: "partner",
+        searchViewId: 67,
         arch: `
 			<pivot string="Partners">
 				<field name="product_id" type="row"/>
@@ -3860,6 +3862,7 @@ test("middle clicking on a cell triggers a doAction", async () => {
                 domain: [["product_id", "=", 37]],
                 name: "Partners",
                 res_model: "partner",
+                search_view_id: [67, "search"],
                 target: "current",
                 type: "ir.actions.act_window",
                 view_mode: "list",
@@ -3878,6 +3881,7 @@ test("middle clicking on a cell triggers a doAction", async () => {
     await mountView({
         type: "pivot",
         resModel: "partner",
+        searchViewId: 67,
         arch: `
 			<pivot string="Partners">
 				<field name="product_id" type="row"/>
@@ -4087,4 +4091,42 @@ test("scroll position is restored when coming back to pivot view (mobile)", asyn
     await animationFrame();
     expect(".o_content .o_pivot").toHaveCount(1);
     expect(".o_pivot_view").toHaveProperty("scrollTop", 200);
+});
+
+test("Measure from arch is not lost after update", async () => {
+    let readGroupCount = 0;
+    onRpc("formatted_read_grouping_sets", ({ kwargs }) => {
+        readGroupCount++;
+    });
+    await mountView({
+        type: "pivot",
+        resModel: "partner",
+        searchViewArch: `
+                <search>
+                    <filter name="some_filter" string="Some Filter" domain="[('foo', '>', 10)]"/>
+                </search>`,
+        arch: `
+			<pivot>
+				<field name="product_id" type="measure"/>
+			</pivot>`,
+        groupBy: ["product_id"],
+    });
+
+    expect(readGroupCount).toBe(1);
+    expect("td.o_pivot_cell_value:contains(2)").toHaveCount(1);
+
+    await contains(".o_pivot_buttons button.dropdown-toggle").click();
+    expect(".dropdown-menu .dropdown-item:contains(Product)").toHaveCount(1);
+
+    await contains(".dropdown-item:contains(Product)").click();
+    await contains(".dropdown-item:contains(Count)").click();
+    expect("td.o_pivot_cell_value:contains(4)").toHaveCount(1);
+    expect(readGroupCount).toBe(2);
+
+    await toggleSearchBarMenu();
+    await toggleMenuItem("Some Filter");
+    expect(readGroupCount).toBe(3);
+
+    await contains(".o_pivot_buttons button.dropdown-toggle").click();
+    expect(".dropdown-menu .dropdown-item:contains(Product)").toHaveCount(1);
 });

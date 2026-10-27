@@ -13,6 +13,7 @@ from docutils import nodes
 from docutils.core import publish_string
 from docutils.transforms import Transform, writer_aux
 from docutils.writers.html4css1 import Writer
+from markupsafe import Markup
 import lxml.html
 import psycopg2
 
@@ -21,7 +22,9 @@ from odoo import api, fields, models, modules, tools, _
 from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
 from odoo.exceptions import AccessDenied, UserError, ValidationError
 from odoo.fields import Domain
+from odoo.tools import config, SQL
 from odoo.tools.parse_version import parse_version
+from odoo.tools.sql import column_exists
 from odoo.tools.misc import topological_sort, get_flag
 from odoo.tools.translate import TranslationImporter, get_po_paths, get_datafile_translation_path
 from odoo.http import request
@@ -122,7 +125,7 @@ class MyFilterMessages(Transform):
             nodes_iter = self.document.traverse(nodes.system_message)
 
         for node in nodes_iter:
-            _logger.warning("docutils' system message present: %s", str(node))
+            _logger.debug("docutils' system message present: %s", str(node))
             node.parent.remove(node)
 
 
@@ -196,7 +199,14 @@ class IrModuleModule(models.Model):
                     'xml_declaration': False,
                     'file_insertion_enabled': False,
                 }
-                output = publish_string(source=module.description if not module.application and module.description else '', settings_overrides=overrides, writer=MyWriter())
+                raw_description = module.description or ''
+
+                try:
+                    output = publish_string(source=raw_description, settings_overrides=overrides, writer=MyWriter())
+                except Exception as e:  # noqa: BLE001
+                    _logger.warning("Failed to render module description for %s: %s. Falling back to raw description.", module.name, e)
+                    output = Markup('<pre><code>%s</code></pre>') % raw_description
+
                 module.description_html = _apply_description_images(output)
 
     @api.depends('name')
@@ -240,6 +250,7 @@ class IrModuleModule(models.Model):
     @api.depends('icon')
     def _get_icon_image(self):
         self.icon_image = ''
+        self.icon_flag = ''
         for module in self:
             if not module.id:
                 continue
@@ -417,7 +428,11 @@ class IrModuleModule(models.Model):
             modules._state_update('to install', ['uninstalled'])
 
             # Determine which auto-installable modules must be installed.
-            modules = self.search(auto_domain).filtered(must_install)
+
+            if config.get('skip_auto_install'):
+                modules = None
+            else:
+                modules = self.search(auto_domain).filtered(must_install)
 
         # the modules that are installed/to install/to upgrade
         install_mods = self.search([('state', 'in', list(install_states))])
@@ -594,14 +609,17 @@ class IrModuleModule(models.Model):
                 "for help."
             )
 
+        self.env.cr.execute("SET LOCAL lock_timeout = '3s'")
+
         # raise error if database is updating for module operations
         if self.search_count([('state', 'in', ('to install', 'to upgrade', 'to remove'))], limit=1):
             raise UserError(_("Odoo is currently processing another module operation.\n"
                                "Please try again later or contact your system administrator."))
         try:
             # raise error if another transaction is trying to schedule module operations concurrently
-            self.env.cr.execute("LOCK ir_module_module IN EXCLUSIVE MODE NOWAIT")
+            self.env.cr.execute("LOCK ir_module_module IN EXCLUSIVE MODE")
         except psycopg2.OperationalError:
+            self.env.cr.rollback()
             raise UserError(_("Odoo is currently processing another module operation.\n"
                                "Please try again later or contact your system administrator."))
 
@@ -609,8 +627,9 @@ class IrModuleModule(models.Model):
             # This is done because the installation/uninstallation/upgrade can modify a currently
             # running cron job and prevent it from finishing, and since the ir_cron table is locked
             # during execution, the lock won't be released until timeout.
-            self.env.cr.execute("SELECT FROM ir_cron FOR UPDATE NOWAIT")
+            self.env.cr.execute("SELECT FROM ir_cron FOR UPDATE")
         except psycopg2.OperationalError:
+            self.env.cr.rollback()
             raise UserError(_("Odoo is currently processing a scheduled action.\n"
                               "Module operations are not possible at this time, "
                               "please try again later or contact your system administrator."))
@@ -716,10 +735,20 @@ class IrModuleModule(models.Model):
                 ):
                     todo.append(dep.module_id)
 
-        self.browse(module.id for module in todo).write({'state': 'to upgrade'})
+        to_upgrade_modules = self.browse(module.id for module in todo)
+        # skip imported modules since they cannot be upgraded;
+        # the column 'imported' is defined in base_import_module, hence the SQL
+        if column_exists(self.env.cr, 'ir_module_module', 'imported'):
+            rows = self.env.execute_query(SQL("""
+                SELECT id
+                  FROM ir_module_module
+                 WHERE imported IS NOT TRUE AND id IN %s
+            """, tuple(to_upgrade_modules.ids)))
+            to_upgrade_modules = self.browse(id_ for id_, in rows)
+        to_upgrade_modules.state = 'to upgrade'
 
         to_install = []
-        for module in todo:
+        for module in to_upgrade_modules:
             if not self.get_module_info(module.name).get("installable", True):
                 continue
             for dep in module.dependencies_id:
@@ -761,6 +790,7 @@ class IrModuleModule(models.Model):
             'noupdate': True,
         } for module in modules]
         self.env['ir.model.data'].create(module_metadata_list)
+        self.env.registry.clear_cache('stable')
         return modules
 
     # update the list of available packages

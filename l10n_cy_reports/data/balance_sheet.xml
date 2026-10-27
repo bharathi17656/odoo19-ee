@@ -3,18 +3,17 @@
     <record id="l10n_cy_balance_sheet" model="account.report">
         <field name="name">Balance sheet</field>
         <field name="name@tr">Bilanço</field>
-        <field name="name@gr">Ισολογισμός</field>
+        <field name="name@el">Ισολογισμός</field>
         <field name="root_report_id" ref="account_reports.balance_sheet"/>
         <field name="filter_period_comparison" eval="True"/>
         <field name="filter_unfold_all" eval="True"/>
         <field name="country_id" ref="base.cy"/>
         <field name="filter_multi_company">selector</field>
-        <field name="allow_account_audit_status_on_lines" eval="True"/>
         <field name="column_ids">
             <record id="l10n_cy_balance_sheet_column" model="account.report.column">
                 <field name="name">Balance</field>
                 <field name="name@tr">Denge</field>
-                <field name="name@gr">Ισορροπία</field>
+                <field name="name@el">Ισορροπία</field>
                 <field name="expression_label">balance</field>
             </record>
         </field>
@@ -22,7 +21,7 @@
             <record id="account_financial_report_cy_active_line" model="account.report.line">
                 <field name="name">ACTIVE</field>
                 <field name="name@tr">AKTİF</field>
-                <field name="name@gr">ΕΝΕΡΓΟΣ</field>
+                <field name="name@el">ΕΝΕΡΓΟΣ</field>
                 <field name="horizontal_split_side">left</field>
                 <field name="hierarchy_level">0</field>
                 <field name="expression_ids">
@@ -36,7 +35,7 @@
                     <record id="account_financial_report_cy_current_asset" model="account.report.line">
                         <field name="name">Current Assets</field>
                         <field name="name@tr">Dönen Varlıklar</field>
-                        <field name="name@gr">Υπάρχοντα οικονομικά στοιχεία</field>
+                        <field name="name@el">Υπάρχοντα οικονομικά στοιχεία</field>
                         <field name="code">cy_current_asset</field>
                         <field name="expression_ids">
                             <record id="account_financial_report_cy_current_asset_expr" model="account.report.expression">
@@ -49,7 +48,7 @@
                             <record id="account_financial_report_cy_stock" model="account.report.line">
                                 <field name="name">Stock</field>
                                 <field name="name@tr">Stoklamak</field>
-                                <field name="name@gr">Στοκ</field>
+                                <field name="name@el">Στοκ</field>
                                 <field name="code">cy_stock</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -64,7 +63,7 @@
                             <record id="account_financial_report_cy_work_in_progress" model="account.report.line">
                                 <field name="name">Work in Progress</field>
                                 <field name="name@tr">Devam Eden Çalışma</field>
-                                <field name="name@gr">Εργασία σε εξέλιξη</field>
+                                <field name="name@el">Εργασία σε εξέλιξη</field>
                                 <field name="code">cy_work_in_progress</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -79,7 +78,7 @@
                             <record id="account_financial_report_cy_raw_materials" model="account.report.line">
                                 <field name="name">Raw Materials</field>
                                 <field name="name@tr">İşlenmemiş içerikler</field>
-                                <field name="name@gr">Πρώτες ύλες</field>
+                                <field name="name@el">Πρώτες ύλες</field>
                                 <field name="code">cy_raw_materials</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -94,7 +93,7 @@
                             <record id="account_financial_report_cy_accounts_receivables_and_other_payables" model="account.report.line">
                                 <field name="name">Accounts Receivables/Other Payables</field>
                                 <field name="name@tr">Alacaklar/Diğer Borçlar</field>
-                                <field name="name@gr">Λογαριασμοί Εισπρακτέοι/Λοιπές Υποχρεώσεις</field>
+                                <field name="name@el">Λογαριασμοί Εισπρακτέοι/Λοιπές Υποχρεώσεις</field>
                                 <field name="code">cy_accounts_receivable_other_payables</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -109,7 +108,7 @@
                             <record id="account_financial_report_cy_advance_payments" model="account.report.line">
                                 <field name="name">Advance Payments</field>
                                 <field name="name@tr">Peşin Ödemeler</field>
-                                <field name="name@gr">Προκαταβολές</field>
+                                <field name="name@el">Προκαταβολές</field>
                                 <field name="code">cy_advance_payments</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -124,7 +123,7 @@
                             <record id="account_financial_report_cy_other_receivables" model="account.report.line">
                                 <field name="name">Other Receivables</field>
                                 <field name="name@tr">Diğer alacaklar</field>
-                                <field name="name@gr">Αλλά παραληφθέντα</field>
+                                <field name="name@el">Αλλά παραληφθέντα</field>
                                 <field name="code">cy_other_receivables</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -139,7 +138,7 @@
                             <record id="account_financial_report_cy_prepaid_expenses" model="account.report.line">
                                 <field name="name">Prepaid Expenses</field>
                                 <field name="name@tr">Önceden ödenmiş giderler</field>
-                                <field name="name@gr">Προπληρωθέντα έξοδα</field>
+                                <field name="name@el">Προπληρωθέντα έξοδα</field>
                                 <field name="code">cy_prepaid_expenses</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -154,7 +153,7 @@
                             <record id="account_financial_report_cy_short_term_loans" model="account.report.line">
                                 <field name="name">Short-term Loans</field>
                                 <field name="name@tr">Kısa Vadeli Krediler</field>
-                                <field name="name@gr">Βραχυπρόθεσμα δάνεια</field>
+                                <field name="name@el">Βραχυπρόθεσμα δάνεια</field>
                                 <field name="code">cy_short_term_loans</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -169,7 +168,7 @@
                             <record id="account_financial_report_cy_short_term_investments" model="account.report.line">
                                 <field name="name">Short-term Investments</field>
                                 <field name="name@tr">Kısa vadeli yatırımlar</field>
-                                <field name="name@gr">Βραχυπρόθεσμες Επενδύσεις</field>
+                                <field name="name@el">Βραχυπρόθεσμες Επενδύσεις</field>
                                 <field name="code">cy_short_term_investments</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -184,7 +183,7 @@
                             <record id="account_financial_report_cy_cash_and_cash_equivalents" model="account.report.line">
                                 <field name="name">Cash and Cash Equivalents</field>
                                 <field name="name@tr">Nakit ve nakite eşdeğer</field>
-                                <field name="name@gr">Μετρητά και ισοδύναμα μετρητών</field>
+                                <field name="name@el">Μετρητά και ισοδύναμα μετρητών</field>
                                 <field name="code">cy_cash_and_cash_equivalents</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -201,7 +200,7 @@
                     <record id="account_financial_report_cy_non_current_asset" model="account.report.line">
                         <field name="name">non-current assets</field>
                         <field name="name@tr">duran varlıklar</field>
-                        <field name="name@gr">μη κυκλοφορούντα περιουσιακά στοιχεία</field>
+                        <field name="name@el">μη κυκλοφορούντα περιουσιακά στοιχεία</field>
                         <field name="code">cy_non_current_asset</field>
                         <field name="expression_ids">
                             <record id="account_financial_report_cy_non_current_asset_expr" model="account.report.expression">
@@ -214,7 +213,7 @@
                             <record id="account_financial_report_cy_patents_trademarks_licences_and_software_parent" model="account.report.line">
                                 <field name="name">Patents, Trademarks, Licenses &amp; Software</field>
                                 <field name="name@tr">Patentler, Ticari Markalar, Lisanslar ve Yazılım</field>
-                                <field name="name@gr">Διπλώματα ευρεσιτεχνίας, εμπορικά σήματα, άδειες χρήσης και λογισμικό</field>
+                                <field name="name@el">Διπλώματα ευρεσιτεχνίας, εμπορικά σήματα, άδειες χρήσης και λογισμικό</field>
                                 <field name="code">cy_patents_trademarks_licences_and_software_parent</field>
                                 <field name="expression_ids">
                                     <record id="account_financial_report_cy_patents_trademarks_licences_and_software_parent_expr" model="account.report.expression">
@@ -227,7 +226,7 @@
                                     <record id="account_financial_report_cy_patents_trademarks_licenses_and_software" model="account.report.line">
                                         <field name="name">Patents, Trademarks, Licenses &amp; Software</field>
                                         <field name="name@tr">Patentler, Ticari Markalar, Lisanslar ve Yazılım</field>
-                                        <field name="name@gr">Διπλώματα ευρεσιτεχνίας, εμπορικά σήματα, άδειες χρήσης και λογισμικό</field>
+                                        <field name="name@el">Διπλώματα ευρεσιτεχνίας, εμπορικά σήματα, άδειες χρήσης και λογισμικό</field>
                                         <field name="code">cy_patents_trademarks_licenses_and_software</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -242,7 +241,7 @@
                                     <record id="account_financial_report_cy_patents_trademarks_licenses_and_software_accumulated_amortization" model="account.report.line">
                                         <field name="name">Accumulated Amortization</field>
                                         <field name="name@tr">Birikmiş amortisman</field>
-                                        <field name="name@gr">Σωρευμένες Αποσβέσεις</field>
+                                        <field name="name@el">Σωρευμένες Αποσβέσεις</field>
                                         <field name="code">cy_patents_trademarks_licenses_and_software_accumulated_amortization</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -259,7 +258,7 @@
                             <record id="account_financial_report_cy_long_term_financial_investments" model="account.report.line">
                                 <field name="name">Long-term Financial Investments</field>
                                 <field name="name@tr">Uzun Vadeli Finansal Yatırımlar</field>
-                                <field name="name@gr">Μακροπρόθεσμες Χρηματοοικονομικές Επενδύσεις</field>
+                                <field name="name@el">Μακροπρόθεσμες Χρηματοοικονομικές Επενδύσεις</field>
                                 <field name="code">cy_long_term_financial_investments</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -276,7 +275,7 @@
                     <record id="account_financial_report_cy_fixed_asset" model="account.report.line">
                         <field name="name">Fixed Assets</field>
                         <field name="name@tr">Duran Varlıklar</field>
-                        <field name="name@gr">Πάγιο ενεργητικό</field>
+                        <field name="name@el">Πάγιο ενεργητικό</field>
                         <field name="code">cy_fixed_asset</field>
                         <field name="expression_ids">
                             <record id="account_financial_report_cy_fixed_asset_expr" model="account.report.expression">
@@ -289,7 +288,7 @@
                             <record id="account_financial_report_cy_property_plant_and_machinery_parent" model="account.report.line">
                                 <field name="name">Property, Plant and Machinery</field>
                                 <field name="name@tr">Gayrimenkul, Tesis ve Makineler</field>
-                                <field name="name@gr">Ακίνητα, εγκαταστάσεις και μηχανήματα</field>
+                                <field name="name@el">Ακίνητα, εγκαταστάσεις και μηχανήματα</field>
                                 <field name="code">cy_property_plant_and_machinery_parent</field>
                                 <field name="foldable" eval="True"/>
                                 <field name="expression_ids">
@@ -303,7 +302,7 @@
                                     <record id="account_financial_report_cy_property_plant_and_machinery" model="account.report.line">
                                         <field name="name">Property, Plant and Machinery</field>
                                         <field name="name@tr">Gayrimenkul, Tesis ve Makineler</field>
-                                        <field name="name@gr">Ακίνητα, εγκαταστάσεις και μηχανήματα</field>
+                                        <field name="name@el">Ακίνητα, εγκαταστάσεις και μηχανήματα</field>
                                         <field name="code">cy_property_plant_and_machinery</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -318,7 +317,7 @@
                                     <record id="account_financial_report_cy_property_plant_and_machinery_accumulated_depreciation" model="account.report.line">
                                         <field name="name">Accumulated Depreciation</field>
                                         <field name="name@tr">Birikmiş Amortisman</field>
-                                        <field name="name@gr">Συσσωρευμένες αποσβέσεις</field>
+                                        <field name="name@el">Συσσωρευμένες αποσβέσεις</field>
                                         <field name="code">cy_property_plant_and_machinery_accumulated_depreciation</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -335,7 +334,7 @@
                             <record id="account_financial_report_cy_equipments_parent" model="account.report.line">
                                 <field name="name">Equipments</field>
                                 <field name="name@tr">Ekipmanlar</field>
-                                <field name="name@gr">Εξοπλισμοί</field>
+                                <field name="name@el">Εξοπλισμοί</field>
                                 <field name="code">cy_equipments_parent</field>
                                 <field name="foldable" eval="True"/>
                                 <field name="expression_ids">
@@ -349,7 +348,7 @@
                                     <record id="account_financial_report_cy_equipments" model="account.report.line">
                                         <field name="name">Equipments</field>
                                         <field name="name@tr">Ekipmanlar</field>
-                                        <field name="name@gr">Εξοπλισμοί</field>
+                                        <field name="name@el">Εξοπλισμοί</field>
                                         <field name="code">cy_equipments</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -364,7 +363,7 @@
                                     <record id="account_financial_report_cy_equipments_accumulated_depreciation" model="account.report.line">
                                         <field name="name">Accumulated Depreciation</field>
                                         <field name="name@tr">Birikmiş Amortisman</field>
-                                        <field name="name@gr">Συσσωρευμένες αποσβέσεις</field>
+                                        <field name="name@el">Συσσωρευμένες αποσβέσεις</field>
                                         <field name="code">cy_equipments_accumulated_depreciation</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -381,7 +380,7 @@
                             <record id="account_financial_report_cy_computers_parent" model="account.report.line">
                                 <field name="name">Computers</field>
                                 <field name="name@tr">Bilgisayarlar</field>
-                                <field name="name@gr">Υπολογιστές</field>
+                                <field name="name@el">Υπολογιστές</field>
                                 <field name="code">cy_computers_parent</field>
                                 <field name="expression_ids">
                                     <record id="account_financial_report_cy_computers_parent_expr" model="account.report.expression">
@@ -394,7 +393,7 @@
                                     <record id="account_financial_report_cy_computers" model="account.report.line">
                                         <field name="name">Computers</field>
                                         <field name="name@tr">Bilgisayarlar</field>
-                                        <field name="name@gr">Υπολογιστές</field>
+                                        <field name="name@el">Υπολογιστές</field>
                                         <field name="code">cy_computers</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -409,7 +408,7 @@
                                     <record id="account_financial_report_cy_accumulated_computers_depreciation" model="account.report.line">
                                         <field name="name">Accumulated Depreciation</field>
                                         <field name="name@tr">Birikmiş Amortisman</field>
-                                        <field name="name@gr">Συσσωρευμένες αποσβέσεις</field>
+                                        <field name="name@el">Συσσωρευμένες αποσβέσεις</field>
                                         <field name="code">cy_accumulated_computers_depreciation</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -426,7 +425,7 @@
                             <record id="account_financial_report_cy_other_tangible_assets" model="account.report.line">
                                 <field name="name">Other Tangible Assets</field>
                                 <field name="name@tr">Diğer Maddi Duran Varlıklar</field>
-                                <field name="name@gr">Λοιπά ενσώματα περιουσιακά στοιχεία</field>
+                                <field name="name@el">Λοιπά ενσώματα περιουσιακά στοιχεία</field>
                                 <field name="code">cy_other_tangible_assets</field>
                                 <field name="expression_ids">
                                     <record id="account_financial_report_cy_other_tangible_assets_expr" model="account.report.expression">
@@ -439,7 +438,7 @@
                                     <record id="account_financial_report_cy_furniture_and_fixtures" model="account.report.line">
                                         <field name="name">Furniture and Fixtures</field>
                                         <field name="name@tr">Mobilya ve Demirbaşlar</field>
-                                        <field name="name@gr">Έπιπλα και Εξοπλισμός</field>
+                                        <field name="name@el">Έπιπλα και Εξοπλισμός</field>
                                         <field name="code">cy_furniture_and_fixtures</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -454,7 +453,7 @@
                                     <record id="account_financial_report_cy_accumulated_other_tangible_assets_depreciation" model="account.report.line">
                                         <field name="name">Accumulated Depreciation</field>
                                         <field name="name@tr">Birikmiş Amortisman</field>
-                                        <field name="name@gr">Συσσωρευμένες αποσβέσεις</field>
+                                        <field name="name@el">Συσσωρευμένες αποσβέσεις</field>
                                         <field name="code">cy_accumulated_other_tangible_assets_depreciation</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -471,7 +470,7 @@
                             <record id="account_financial_report_cy_motor_vehicles_parent" model="account.report.line">
                                 <field name="name">Motor Vehicles</field>
                                 <field name="name@tr">Motorlu Taşıtlar</field>
-                                <field name="name@gr">Μηχανοκίνητα οχήματα</field>
+                                <field name="name@el">Μηχανοκίνητα οχήματα</field>
                                 <field name="code">cy_motor_vehicles_parent</field>
                                 <field name="expression_ids">
                                     <record id="account_financial_report_cy_motor_vehicles_parent_expr" model="account.report.expression">
@@ -484,7 +483,7 @@
                                     <record id="account_financial_report_cy_motor_vehicles" model="account.report.line">
                                         <field name="name">Motor Vehicles</field>
                                         <field name="name@tr">Motorlu Taşıtlar</field>
-                                        <field name="name@gr">Μηχανοκίνητα οχήματα</field>
+                                        <field name="name@el">Μηχανοκίνητα οχήματα</field>
                                         <field name="code">cy_motor_vehicles</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -499,7 +498,7 @@
                                     <record id="account_financial_report_cy_accumulated_motor_vehicles_depreciation" model="account.report.line">
                                         <field name="name">Accumulated Depreciation</field>
                                         <field name="name@tr">Birikmiş Amortisman</field>
-                                        <field name="name@gr">Συσσωρευμένες αποσβέσεις</field>
+                                        <field name="name@el">Συσσωρευμένες αποσβέσεις</field>
                                         <field name="code">cy_accumulated_motor_vehicles_depreciation</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -520,7 +519,7 @@
             <record id="account_financial_report_cy_passive_line" model="account.report.line">
                 <field name="name">PASSIVE</field>
                 <field name="name@tr">PASİF</field>
-                <field name="name@gr">ΠΑΘΗΤΙΚΟΣ</field>
+                <field name="name@el">ΠΑΘΗΤΙΚΟΣ</field>
                 <field name="horizontal_split_side">right</field>
                 <field name="hierarchy_level">0</field>
                 <field name="expression_ids">
@@ -534,7 +533,7 @@
                     <record id="account_financial_report_cy_liabilities" model="account.report.line">
                         <field name="name">Liabilities</field>
                         <field name="name@tr">Yükümlülükler</field>
-                        <field name="name@gr">Υποχρεώσεις</field>
+                        <field name="name@el">Υποχρεώσεις</field>
                         <field name="code">cy_liabilities</field>
                         <field name="expression_ids">
                             <record id="account_financial_report_cy_liabilities_expr" model="account.report.expression">
@@ -547,7 +546,7 @@
                             <record id="account_financial_report_cy_current_liabilities" model="account.report.line">
                                 <field name="name">Current Liabilities</field>
                                 <field name="name@tr">Mevcut Borçlar</field>
-                                <field name="name@gr">Απαιτητέες υποχρεώσεις</field>
+                                <field name="name@el">Απαιτητέες υποχρεώσεις</field>
                                 <field name="code">cy_current_liabilities</field>
                                 <field name="expression_ids">
                                     <record id="account_financial_report_cy_current_liabilities_expr" model="account.report.expression">
@@ -560,7 +559,7 @@
                                     <record id="account_financial_report_cy_other_receivables_accounts_payables" model="account.report.line">
                                         <field name="name">Other Receivables/Accounts Payables</field>
                                         <field name="name@tr">Diğer Alacaklar/Borçlar Hesabı</field>
-                                        <field name="name@gr">Λοιπές Απαιτήσεις/Πληρωτέοι Λογαριασμοί</field>
+                                        <field name="name@el">Λοιπές Απαιτήσεις/Πληρωτέοι Λογαριασμοί</field>
                                         <field name="code">cy_other_receivables_accounts_payables</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -575,7 +574,7 @@
                                     <record id="account_financial_report_cy_other_payables" model="account.report.line">
                                         <field name="name">Other Payables</field>
                                         <field name="name@tr">Diğer Borçlar</field>
-                                        <field name="name@gr">Λοιπές υποχρεώσεις</field>
+                                        <field name="name@el">Λοιπές υποχρεώσεις</field>
                                         <field name="code">cy_other_payables</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -590,7 +589,7 @@
                                     <record id="account_financial_report_cy_accrued_liabilities" model="account.report.line">
                                         <field name="name">Accrued Liabilities</field>
                                         <field name="name@tr">Tahakkuk Eden Borçlar</field>
-                                        <field name="name@gr">Δεδουλευμένες υποχρεώσεις</field>
+                                        <field name="name@el">Δεδουλευμένες υποχρεώσεις</field>
                                         <field name="code">cy_accrued_liabilities</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -605,7 +604,7 @@
                                     <record id="account_financial_report_cy_other_receivables_tax_payables" model="account.report.line">
                                         <field name="name">Other Receivables/Tax Payable</field>
                                         <field name="name@tr">Diğer Alacaklar/Borçlu Vergiler</field>
-                                        <field name="name@gr">Λοιπές Απαιτήσεις/Πληρωτέοι φόροι</field>
+                                        <field name="name@el">Λοιπές Απαιτήσεις/Πληρωτέοι φόροι</field>
                                         <field name="code">cy_other_receivables_tax_payables</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -620,7 +619,7 @@
                                     <record id="account_financial_report_cy_other_receivables_accrued_liabilities" model="account.report.line">
                                         <field name="name">Other Receivables/Accrued Liabilities</field>
                                         <field name="name@tr">Diğer Alacaklar/Tahakkuk Eden Borçlar</field>
-                                        <field name="name@gr">Λοιπές Απαιτήσεις/ Δεδουλευμένες Υποχρεώσεις</field>
+                                        <field name="name@el">Λοιπές Απαιτήσεις/ Δεδουλευμένες Υποχρεώσεις</field>
                                         <field name="code">cy_other_receivables_accrued_liabilities</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -635,7 +634,7 @@
                                     <record id="account_financial_report_cy_dividends_payable" model="account.report.line">
                                         <field name="name">Dividends Payable</field>
                                         <field name="name@tr">Ödenecek borç</field>
-                                        <field name="name@gr">Καταβλητέα μερίσματα</field>
+                                        <field name="name@el">Καταβλητέα μερίσματα</field>
                                         <field name="code">cy_dividends_payable</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -650,7 +649,7 @@
                                     <record id="account_financial_report_cy_accruals_and_deferred_revenue" model="account.report.line">
                                         <field name="name">Accruals and Deferred Revenue</field>
                                         <field name="name@tr">Tahakkuklar ve Ertelenmiş Gelirler</field>
-                                        <field name="name@gr">Δεδουλευμένα και αναβαλλόμενα έσοδα</field>
+                                        <field name="name@el">Δεδουλευμένα και αναβαλλόμενα έσοδα</field>
                                         <field name="code">cy_accruals_and_deferred_revenue</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -665,7 +664,7 @@
                                     <record id="account_financial_report_cy_short_term_financial_liabilities" model="account.report.line">
                                         <field name="name">Short-term Financial Liabilities</field>
                                         <field name="name@tr">Kısa Vadeli Finansal Yükümlülükler</field>
-                                        <field name="name@gr">Βραχυπρόθεσμες χρηματοοικονομικές υποχρεώσεις</field>
+                                        <field name="name@el">Βραχυπρόθεσμες χρηματοοικονομικές υποχρεώσεις</field>
                                         <field name="code">cy_short_term_financial_liabilities</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -682,7 +681,7 @@
                             <record id="account_financial_report_cy_non_current_liabilities" model="account.report.line">
                                 <field name="name">Non-current Liabilities</field>
                                 <field name="name@tr">Uzun Vadeli Yükümlülükler</field>
-                                <field name="name@gr">Μακροπρόθεσμες Υποχρεώσεις</field>
+                                <field name="name@el">Μακροπρόθεσμες Υποχρεώσεις</field>
                                 <field name="code">cy_non_current_liabilities</field>
                                 <field name="expression_ids">
                                     <record id="account_financial_report_cy_non_current_liabilities_expr" model="account.report.expression">
@@ -695,7 +694,7 @@
                                     <record id="account_financial_report_cy_other_financial_liabilities" model="account.report.line">
                                         <field name="name">Other Financial Liabilities</field>
                                         <field name="name@tr">Diğer Mali Yükümlülükler</field>
-                                        <field name="name@gr">Λοιπές Χρηματοοικονομικές Υποχρεώσεις</field>
+                                        <field name="name@el">Λοιπές Χρηματοοικονομικές Υποχρεώσεις</field>
                                         <field name="code">cy_other_financial_liabilities</field>
                                         <field name="groupby">account_id</field>
                                         <field name="foldable" eval="True"/>
@@ -714,7 +713,7 @@
                     <record id="account_financial_report_cy_equity" model="account.report.line">
                         <field name="name">Equity</field>
                         <field name="name@tr">Eşitlik</field>
-                        <field name="name@gr">Μετοχικό κεφάλαιο</field>
+                        <field name="name@el">Μετοχικό κεφάλαιο</field>
                         <field name="code">cy_equity</field>
                         <field name="expression_ids">
                             <record id="account_financial_report_cy_equity_expr" model="account.report.expression">
@@ -727,7 +726,7 @@
                             <record id="account_financial_report_cy_share_capital" model="account.report.line">
                                 <field name="name">Share Capital</field>
                                 <field name="name@tr">Sermaye</field>
-                                <field name="name@gr">Μετοχικό κεφάλαιο</field>
+                                <field name="name@el">Μετοχικό κεφάλαιο</field>
                                 <field name="code">cy_share_capital</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -742,7 +741,7 @@
                             <record id="account_financial_report_cy_reserves" model="account.report.line">
                                 <field name="name">Reserves</field>
                                 <field name="name@tr">Rezervler</field>
-                                <field name="name@gr">Αποθεματικά</field>
+                                <field name="name@el">Αποθεματικά</field>
                                 <field name="code">cy_reserves</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -757,7 +756,7 @@
                             <record id="account_financial_report_cy_net_profit_loss_current_period" model="account.report.line">
                                 <field name="name">Net Profit/Loss Current Period</field>
                                 <field name="name@tr">Net Kar/Zarar Cari Dönem</field>
-                                <field name="name@gr">Καθαρά κέρδη/ζημίες Τρέχουσα περίοδος</field>
+                                <field name="name@el">Καθαρά κέρδη/ζημίες Τρέχουσα περίοδος</field>
                                 <field name="code">cy_net_profit_loss_current_period</field>
                                 <field name="groupby">account_id</field>
                                 <field name="foldable" eval="True"/>
@@ -772,7 +771,7 @@
                             <record id="account_financial_report_cy_unallocated_earnings" model="account.report.line">
                                 <field name="name">Unallocated Earnings</field>
                                 <field name="name@tr">Dağıtılmamış Kazançlar</field>
-                                <field name="name@gr">Μη κατανεμημένα κέρδη</field>
+                                <field name="name@el">Μη κατανεμημένα κέρδη</field>
                                 <field name="code">cy_unallocated_earnings</field>
                                 <field name="foldable" eval="True"/>
                                 <field name="expression_ids">
@@ -786,7 +785,7 @@
                                     <record id="account_financial_report_cy_current_year_unallocated_earnings" model="account.report.line">
                                         <field name="name">Current Year Unallocated Earnings</field>
                                         <field name="name@tr">Cari Yıl Dağıtılmamış Kazançlar</field>
-                                        <field name="name@gr">Αδιάθετα κέρδη τρέχοντος έτους</field>
+                                        <field name="name@el">Αδιάθετα κέρδη τρέχοντος έτους</field>
                                         <field name="code">cy_current_year_unallocated_earnings</field>
                                         <field name="foldable" eval="True"/>
                                         <field name="expression_ids">
@@ -813,7 +812,7 @@
                                             <record id="account_financial_report_cy_current_year_earnings" model="account.report.line">
                                                 <field name="name">Current Year Earnings</field>
                                                 <field name="name@tr">Cari Yıl Kazançları</field>
-                                                <field name="name@gr">Κέρδη τρέχοντος έτους</field>
+                                                <field name="name@el">Κέρδη τρέχοντος έτους</field>
                                                 <field name="code">cy_current_year_earnings</field>
                                                 <field name="expression_ids">
                                                     <record id="account_financial_report_cy_current_year_earnings_expr" model="account.report.expression">
@@ -828,7 +827,7 @@
                                             <record id="account_financial_report_cy_current_year_allocated_earnings" model="account.report.line">
                                                 <field name="name">Current Year Allocated Earnings</field>
                                                 <field name="name@tr">Cari Yıl Dağıtılan Kazançlar</field>
-                                                <field name="name@gr">Κατανεμημένα κέρδη τρέχοντος έτους</field>
+                                                <field name="name@el">Κατανεμημένα κέρδη τρέχοντος έτους</field>
                                                 <field name="code">cy_current_year_allocated_earnings</field>
                                                 <field name="groupby">account_id</field>
                                                 <field name="foldable" eval="True"/>
@@ -846,7 +845,7 @@
                                     <record id="account_financial_report_cy_previous_years_earnings" model="account.report.line">
                                         <field name="name">Previous Years Earnings</field>
                                         <field name="name@tr">Önceki Yıl Kazançları</field>
-                                        <field name="name@gr">Κέρδη προηγούμενων ετών</field>
+                                        <field name="name@el">Κέρδη προηγούμενων ετών</field>
                                         <field name="code">cy_previous_years_earnings</field>
                                         <field name="expression_ids">
                                             <record id="account_financial_report_cy_previous_years_earnings_gross" model="account.report.expression">

@@ -40,9 +40,7 @@ export class SignTemplateBody extends Component {
         this.popover = useService("popover");
         this.dialog = useService("dialog");
         this.PDFIframe = useRef("PDFIframe");
-        this.action = useService("action");
-        this.PDFViewerURL = buildPDFViewerURL(this.props.attachmentLocation, this.env.isSmall);
-        this.props.signStatus.discardChanges = this.discardChanges.bind(this);
+        this.PDFViewerURL = buildPDFViewerURL(this.props.attachmentLocation);
         this.state = useState({
             documentUsedTimesCounter: 0,
         })
@@ -74,6 +72,10 @@ export class SignTemplateBody extends Component {
 
 
         onWillUnmount(() => {
+            const iframeDoc = this.PDFIframe.el?.contentDocument;
+            if (iframeDoc && this._onIframeClick) {
+                iframeDoc.removeEventListener("click", this._onIframeClick);
+            }
             if (this.props.iframe) {
                 this.props.iframe.unmount();
                 this.props.iframe = null;
@@ -120,29 +122,28 @@ export class SignTemplateBody extends Component {
         });
     }
 
+    // Dropdowns rely on document clicks; iframe clicks don't propagate, so close all dropdowns manually
+    attachDropdownCloseOnIframeClick(iframeDoc) {
+        if (!iframeDoc) {
+            return;
+        }
+        if (this._onIframeClick) {
+            iframeDoc.removeEventListener("click", this._onIframeClick);
+        }
+        this._onIframeClick = () => {
+            document
+                .querySelectorAll(".o-dropdown--menu")
+                .forEach(menu => menu.remove());
+        };
+        iframeDoc.addEventListener("click", this._onIframeClick);
+    }
+
     waitForPDF() {
         this.PDFIframe.el.onload = () => {
             injectPDFCustomStyles(this.PDFIframe.el.contentDocument);
+            this.attachDropdownCloseOnIframeClick(this.PDFIframe.el.contentDocument);
             setTimeout(() => this.doPDFPostLoad(), 1);
         };
-    }
-
-    async discardChanges() {
-        const { signTemplate } = this.props;
-        const templateName = signTemplate.display_name;
-        const templateId = parseInt(signTemplate.id, 10);
-        this.props.signStatus.isTemplateChanged = false;
-        this.props.signStatus.isDiscardingChanges = true;
-        await this.action.doAction({
-            type: "ir.actions.client",
-            tag: "sign.Template",
-            name: _t("Template %s", templateName),
-            params: {
-                id: templateId,
-            },
-        }, {
-            stackPosition: "replaceCurrentAction"
-        });
     }
 
     doPDFPostLoad() {

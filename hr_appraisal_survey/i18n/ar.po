@@ -3,15 +3,15 @@
 # * hr_appraisal_survey
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
-# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2025.
+# "Malaz Siddig Elsayed Abuidris (msea)" <msea@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-16 18:05+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-10-09 17:45+0000\n"
+"PO-Revision-Date: 2026-09-21 07:33+0000\n"
+"Last-Translator: \"Malaz Siddig Elsayed Abuidris (msea)\" <msea@odoo.com>\n"
 "Language-Team: Arabic <https://translate.odoo.com/projects/odoo-19/"
 "hr_appraisal_survey/ar/>\n"
 "Language: ar\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
@@ -39,7 +39,7 @@ msgstr "ملاحظات شاملة"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_hr_appraisal_template__survey_template_ids
 msgid "360 Feedback Survey"
-msgstr ""
+msgstr "استبيان التقييم الشامل"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
@@ -88,13 +88,13 @@ msgid ""
 "            "
 msgstr ""
 "<p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
-"                    عزيزنا <t t-out="
-"\"object.partner_id.name or 'participant'\">[المشارك]</t>،\n"
+"                    عزيزنا <t t-out=\"object.partner_id.name or "
+"'participant'\">[المشارك]</t>،\n"
 "                    <br/>\n"
-"                    كجزء من عملية التقييم الشامل التي نطبقها، يود <t t-out="
-"\"ctx.get('logged_user')\">[المستخدم الحالي]</t>\n"
-"                    سماع رأيك حول أداء <t t-out=\"ctx.get('employee')\">"
-"[الموظف]</t>.\n"
+"                    كجزء من عملية التقييم الشامل التي نطبقها، يود <t t-"
+"out=\"ctx.get('logged_user')\">[المستخدم الحالي]</t>\n"
+"                    سماع رأيك حول أداء <t t-out=\"ctx.get('employee')"
+"\">[الموظف]</t>.\n"
 "                    <br/>\n"
 "                    ملاحظاتك مهمة جدًا حيث تساعدنا على التعرف على نقاط القوة "
 "وتحديد فرص النمو.\n"
@@ -103,23 +103,23 @@ msgstr ""
 "الرابط أدناه:\n"
 "                    <br/>\n"
 "                    </p><div class=\"text-center my-4\">\n"
-"                        <a t-att-href=\"object.get_start_url()\" t-attf-style"
-"=\"background-color: {{user.company_id.email_secondary_color or '#875A7B'}}; "
-"padding: 8px 16px 8px 16px; text-decoration: none; color: {{"
-"user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; font-"
-"size:13px;\">\n"
+"                        <a t-att-href=\"object.get_start_url()\" t-attf-"
+"style=\"background-color: {{user.company_id.email_secondary_color or "
+"'#875A7B'}}; padding: 8px 16px 8px 16px; text-decoration: none; color: "
+"{{user.company_id.email_primary_color or '#FFFFFF'}}; border-radius: 5px; "
+"font-size:13px;\">\n"
 "                            نود سماع رأيك\n"
 "                        </a>\n"
 "                    </div>\n"
-"                    يُرجى إكمال الاستطلاع قبل <t t-out=\"ctx.get('deadline')\""
-">[المهلة الزمنية المحددة]</t>.\n"
+"                    يُرجى إكمال الاستطلاع قبل <t t-out=\"ctx.get('deadline')"
+"\">[المهلة الزمنية المحددة]</t>.\n"
 "                    <br/>\n"
 "                    نشكرك على وقتك وصراحتك!\n"
 "                    <br/>\n"
 "                    <t t-if=\"ctx.get('user_body')\">\n"
 "                        <div class=\"my-3 py-2 px-3 bg-secondary\">\n"
-"                            <t t-out=\"ctx.get('user_body')\">[تعليق اختياري]"
-"</t>\n"
+"                            <t t-out=\"ctx.get('user_body')\">[تعليق "
+"اختياري]</t>\n"
 "                        </div>\n"
 "                    </t>\n"
 "                \n"
@@ -202,22 +202,12 @@ msgstr "الاعتراف بالأخطاء"
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__allowed_survey_template_ids
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_select_survey__allowed_survey_template_ids
 msgid "Allowed Survey Template"
-msgstr ""
+msgstr "قالب الاستطلاع المسموح به"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.x_360_5_5
 msgid "Almost always"
 msgstr "دائماً تقريباً"
-
-#. module: hr_appraisal_survey
-#. odoo-python
-#: code:addons/hr_appraisal_survey/wizard/appraisal_ask_feedback.py:0
-msgid ""
-"An appraisal feedback was requested. Please take time to fill the <a "
-"href=\"%s\" target=\"_blank\">survey</a>"
-msgstr ""
-"لقد تم طلب إبداء الملاحظات حول التقييم. نرجو أن تأخذ القليل من وقتك لملء هذا "
-"<a href=\"%s\" target=\"_blank\">الاستطلاع</a>"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_11
@@ -329,7 +319,7 @@ msgstr "إلغاء"
 #: code:addons/hr_appraisal_survey/models/survey_survey.py:0
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_select_survey_view_form
 msgid "Choose Survey"
-msgstr ""
+msgstr "اختر الاستطلاع"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.y_360_5_3
@@ -483,7 +473,7 @@ msgstr "الحماس والتضمين نحو المشاريع/المهام"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_template_view_form
 msgid "Every template allowed"
-msgstr ""
+msgstr "يُسمح باستخدام جميع القوالب"
 
 #. module: hr_appraisal_survey
 #: model_terms:survey.question,description:hr_appraisal_survey.appraisal_3
@@ -510,7 +500,7 @@ msgstr "العودة إلى استمارة التقييم"
 #. module: hr_appraisal_survey
 #: model:mail.template,name:hr_appraisal_survey.mail_template_appraisal_ask_feedback
 msgid "HR: Ask Feedback 360"
-msgstr ""
+msgstr "الموارد البشرية: طلب التقييم الشامل"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_360_5
@@ -555,7 +545,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
 msgid "If you need,"
-msgstr ""
+msgstr "إذا كنت بحاجة إلى ذلك،"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_5
@@ -658,7 +648,7 @@ msgstr "مطلقًا"
 #. odoo-python
 #: code:addons/hr_appraisal_survey/models/survey_survey.py:0
 msgid "No surveys found for this appraisal."
-msgstr ""
+msgstr "لم يتم العثور على أي استطلاعات لهذا التقييم."
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_2_1
@@ -673,7 +663,7 @@ msgstr "غالباً"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_ask_feedback_view_form
 msgid "Optional comment..."
-msgstr ""
+msgstr "تعليق اختياري..."
 
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,help:hr_appraisal_survey.field_appraisal_ask_feedback__lang
@@ -796,7 +786,7 @@ msgstr "ألقِ نظرة على الإجابات"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.appraisal_select_survey_view_form
 msgid "See Results"
-msgstr ""
+msgstr "اطلع على النتائج"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_user_input_view_tree
@@ -883,7 +873,7 @@ msgstr "ملاحظات الاستطلاعات"
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_select_survey__survey_input_ids
 msgid "Survey Inputs"
-msgstr ""
+msgstr "مدخلات الاستطلاع"
 
 #. module: hr_appraisal_survey
 #: model:ir.model,name:hr_appraisal_survey.model_survey_question_answer
@@ -1110,18 +1100,18 @@ msgstr ""
 #. odoo-python
 #: code:addons/hr_appraisal_survey/models/survey_survey.py:0
 msgid "You can't ask feedback for multiple appraisals at once."
-msgstr ""
+msgstr "لا يمكنك طلب ملاحظات بشأن تقييمات متعددة في آن واحد."
 
 #. module: hr_appraisal_survey
 #. odoo-python
 #: code:addons/hr_appraisal_survey/models/survey_survey.py:0
 msgid "You can't select multiple feedback templates."
-msgstr ""
+msgstr "لا يمكنك تحديد أكثر من قالب ملاحظات واحد."
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
 msgid "ask feedback"
-msgstr ""
+msgstr "اطلب الملاحظات "
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
@@ -1131,4 +1121,11 @@ msgstr "أو"
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_view_form
 msgid "to a selection of colleagues you work with."
-msgstr ""
+msgstr "إلى مجموعة مختارة من الزملاء الذين تعمل معهم."
+
+#~ msgid ""
+#~ "An appraisal feedback was requested. Please take time to fill the <a "
+#~ "href=\"%s\" target=\"_blank\">survey</a>"
+#~ msgstr ""
+#~ "لقد تم طلب إبداء الملاحظات حول التقييم. نرجو أن تأخذ القليل من وقتك لملء "
+#~ "هذا <a href=\"%s\" target=\"_blank\">الاستطلاع</a>"

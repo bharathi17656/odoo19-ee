@@ -30,20 +30,20 @@
     </function>
 
     <record id="base.demo_company_be" model="res.company">
-        <field name="onss_company_id">125648354</field>
+        <field name="onss_company_id">1256483541</field>
         <field name="onss_registration_number">12548245</field>
         <field name="dmfa_employer_class">578</field>
         <field name="accident_insurance_name">Ethias - Accident de Travail</field>
         <field name="accident_insurance_name">1.234.567/890</field>
     </record>
 
-    <record id="l10n_be_dmfa_location_unit" model="l10n_be.dmfa.location.unit">
+    <record id="l10n_be_dmfa_location_unit" model="l10n_be.dmfa.location.unit"  context="{'allowed_company_ids': [ref('base.demo_company_be')]}">
         <field name="company_id" ref="base.demo_company_be"/>
         <field name="partner_id" ref="l10n_be_hr_contract_salary.res_partner_laurie_poiret_work_address"/>
         <field name="code">578</field>
     </record>
 
-    <record id="l10n_be_dmfa" model="l10n_be.dmfa">
+    <record id="l10n_be_dmfa" model="l10n_be.dmfa" context="{'allowed_company_ids': [ref('base.demo_company_be')]}">
         <field name="reference">DMFA001</field>
         <field name="year" eval="(DateTime.today() + relativedelta(years=-1, month=5, day=1)).year"/>
         <field name="quarter" eval="str((DateTime.today() + relativedelta(years=-1, month=5, day=1)).month // 4 + 1)"/>
@@ -803,7 +803,7 @@
         <field name="contract_template_id" ref="l10n_be_hr_contract_salary.contract_template_be_cdi_experienced_developer"/>
         <field name="sign_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
         <field name="contract_update_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
-        <field name="resource_calendar_id" model="resource.calendar" eval="obj().search([('company_id', '=', obj().env.ref('base.demo_company_be').id)], limit=1)"/>
+        <field name="resource_calendar_id" model="resource.calendar" eval="obj().env.ref('base.demo_company_be').resource_calendar_id"/>
         <field name="rd_percentage">100</field>
         <field name="group_s_code">000002</field>
     </record>
@@ -859,7 +859,7 @@
         <field name="contract_template_id" ref="l10n_be_hr_contract_salary.contract_template_be_cdi_experienced_developer"/>
         <field name="sign_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
         <field name="contract_update_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
-        <field name="resource_calendar_id" model="resource.calendar" eval="obj().search([('company_id', '=', obj().env.ref('base.demo_company_be').id)], limit=1)"/>
+        <field name="resource_calendar_id" model="resource.calendar" eval="obj().env.ref('base.demo_company_be').resource_calendar_id"/>
         <field name="rd_percentage">100</field>
         <field name="group_s_code">000003</field>
     </record>
@@ -915,7 +915,7 @@
         <field name="contract_template_id" ref="l10n_be_hr_contract_salary.contract_template_be_cdi_experienced_developer"/>
         <field name="sign_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
         <field name="contract_update_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
-        <field name="resource_calendar_id" model="resource.calendar" eval="obj().search([('company_id', '=', obj().env.ref('base.demo_company_be').id)], limit=1)"/>
+        <field name="resource_calendar_id" model="resource.calendar" eval="obj().env.ref('base.demo_company_be').resource_calendar_id"/>
         <field name="standard_calendar_id" ref="test_l10n_be_hr_payroll_account.resource_calendar_4_5_wednesday_off"/>
         <field name="work_time_rate">0.80</field>
         <field name="rd_percentage">100</field>
@@ -973,7 +973,7 @@
         <field name="contract_template_id" ref="l10n_be_hr_contract_salary.contract_template_be_cdi_experienced_developer"/>
         <field name="sign_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
         <field name="contract_update_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
-        <field name="resource_calendar_id" model="resource.calendar" eval="obj().search([('company_id', '=', obj().env.ref('base.demo_company_be').id)], limit=1)"/>
+        <field name="resource_calendar_id" model="resource.calendar" eval="obj().env.ref('base.demo_company_be').resource_calendar_id"/>
         <field name="rd_percentage">100</field>
         <field name="group_s_code">000004</field>
     </record>
@@ -1028,7 +1028,7 @@
         <field name="contract_template_id" ref="l10n_be_hr_contract_salary.contract_template_be_cdi_experienced_developer"/>
         <field name="sign_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
         <field name="contract_update_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
-        <field name="resource_calendar_id" model="resource.calendar" eval="obj().search([('company_id', '=', obj().env.ref('base.demo_company_be').id)], limit=1)"/>
+        <field name="resource_calendar_id" model="resource.calendar" eval="obj().env.ref('base.demo_company_be').resource_calendar_id"/>
         <field name="rd_percentage">100</field>
         <field name="group_s_code">000009</field>
     </record>
@@ -1082,7 +1082,7 @@
         <field name="contract_template_id" ref="l10n_be_hr_contract_salary.contract_template_be_cdi_experienced_developer"/>
         <field name="sign_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
         <field name="contract_update_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
-        <field name="resource_calendar_id" model="resource.calendar" eval="obj().search([('company_id', '=', obj().env.ref('base.demo_company_be').id)], limit=1)"/>
+        <field name="resource_calendar_id" model="resource.calendar" eval="obj().env.ref('base.demo_company_be').resource_calendar_id"/>
         <field name="rd_percentage">100</field>
         <field name="group_s_code">000005</field>
     </record>
@@ -1138,7 +1138,7 @@
         <field name="contract_template_id" ref="l10n_be_hr_contract_salary.contract_template_be_cdi_experienced_developer"/>
         <field name="sign_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
         <field name="contract_update_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
-        <field name="resource_calendar_id" model="resource.calendar" eval="obj().search([('company_id', '=', obj().env.ref('base.demo_company_be').id)], limit=1)"/>
+        <field name="resource_calendar_id" model="resource.calendar" eval="obj().env.ref('base.demo_company_be').resource_calendar_id"/>
         <field name="rd_percentage">100</field>
         <field name="group_s_code">000011</field>
     </record>
@@ -1194,7 +1194,7 @@
         <field name="contract_template_id" ref="l10n_be_hr_contract_salary.contract_template_be_cdi_experienced_developer"/>
         <field name="sign_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
         <field name="contract_update_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
-        <field name="resource_calendar_id" model="resource.calendar" eval="obj().search([('company_id', '=', obj().env.ref('base.demo_company_be').id)], limit=1)"/>
+        <field name="resource_calendar_id" model="resource.calendar" eval="obj().env.ref('base.demo_company_be').resource_calendar_id"/>
         <field name="rd_percentage">100</field>
         <field name="group_s_code">000012</field>
     </record>
@@ -1348,7 +1348,7 @@
         <field name="contract_template_id" ref="l10n_be_hr_contract_salary.contract_template_be_cdi_experienced_developer"/>
         <field name="sign_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
         <field name="contract_update_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
-        <field name="resource_calendar_id" model="resource.calendar" eval="obj().search([('company_id', '=', obj().env.ref('base.demo_company_be').id)], limit=1)"/>
+        <field name="resource_calendar_id" model="resource.calendar" eval="obj().env.ref('base.demo_company_be').resource_calendar_id"/>
         <field name="rd_percentage">100</field>
         <field name="group_s_code">000013</field>
     </record>
@@ -1401,7 +1401,7 @@
         <field name="contract_template_id" ref="l10n_be_hr_contract_salary.contract_template_be_cdi_experienced_developer"/>
         <field name="sign_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
         <field name="contract_update_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
-        <field name="resource_calendar_id" model="resource.calendar" eval="obj().search([('company_id', '=', obj().env.ref('base.demo_company_be').id)], limit=1)"/>
+        <field name="resource_calendar_id" model="resource.calendar" eval="obj().env.ref('base.demo_company_be').resource_calendar_id"/>
         <field name="standard_calendar_id" ref="test_l10n_be_hr_payroll_account.resource_calendar_4_5_wednesday_off"/>
         <field name="work_time_rate">0.80</field>
         <field name="rd_percentage">100</field>
@@ -1456,7 +1456,7 @@
         <field name="contract_template_id" ref="l10n_be_hr_contract_salary.contract_template_be_cdi_experienced_developer"/>
         <field name="sign_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
         <field name="contract_update_template_id" ref="hr_contract_salary.sign_template_cdi_developer"/>
-        <field name="resource_calendar_id" model="resource.calendar" eval="obj().search([('company_id', '=', obj().env.ref('base.demo_company_be').id)], limit=1)"/>
+        <field name="resource_calendar_id" model="resource.calendar" eval="obj().env.ref('base.demo_company_be').resource_calendar_id"/>
         <field name="rd_percentage">100</field>
         <field name="group_s_code">000010</field>
     </record>
@@ -2056,11 +2056,11 @@
         <field name="date_version" eval="time.strftime('2019-01-01')"/>
         <field name="contract_date_start" eval="time.strftime('2019-01-01')"/>
         <field name="contract_date_end" eval="time.strftime('2019-12-31')"/>
-        <field name="resource_calendar_id" model="resource.calendar" eval="obj().search([('company_id', '=', obj().env.ref('base.demo_company_be').id)], limit=1)"/>
+        <field name="resource_calendar_id" model="resource.calendar" eval="obj().env.ref('base.demo_company_be').resource_calendar_id"/>
         <field name="group_s_code">000014</field>
     </record>
 
-    <function name="create_version" model="hr.employee">
+    <function name="create_version" model="hr.employee" context="{'allowed_company_ids': [ref('base.demo_company_be')]}">
         <value eval="[ref('test_l10n_be_hr_payroll_account.hr_employee_joseph_noluck')]"/>
         <value eval="{
             'date_version': '2020-01-01',
@@ -2442,7 +2442,7 @@
         obj().env.ref('test_l10n_be_hr_payroll_account.hr_payslip_demo_jon_february_2020'),
     ] if p.state == 'draft']]"/>
 
-    <record id="notice_period_wizard" model="hr.payslip.employee.depature.notice" forcecreate="False">
+    <record id="notice_period_wizard" model="hr.payslip.employee.depature.notice" forcecreate="False" context="{'allowed_company_ids': [ref('base.demo_company_be')]}">
         <field name="employee_id" ref="hr_employee_joseph_noluck"/>
         <field name="leaving_type_id" ref="hr.departure_fired" />
         <field name="departure_date" eval="time.strftime('2020-04-15')"/>
@@ -2450,7 +2450,7 @@
         <field name="notice_respect">without</field>
         <field name="departure_description">Doesn't reach his target anymore</field>
     </record>
-    <function model="hr.payslip.employee.depature.notice" name="compute_termination_fee">
+    <function model="hr.payslip.employee.depature.notice" name="compute_termination_fee" context="{'allowed_company_ids': [ref('base.demo_company_be')]}">
         <value eval="[ref('test_l10n_be_hr_payroll_account.notice_period_wizard')]"/>
     </function>
 

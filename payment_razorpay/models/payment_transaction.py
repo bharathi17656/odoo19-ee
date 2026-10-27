@@ -5,6 +5,7 @@ import time
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
+from werkzeug.exceptions import Forbidden
 from werkzeug.urls import url_encode
 
 from odoo import _, api, fields, models
@@ -41,19 +42,20 @@ class PaymentTransaction(models.Model):
 
         customer_id = self._razorpay_create_customer().get('id')
         order_id = self._razorpay_create_order(customer_id).get('id')
-
-        return {
+        processing_values = {
             'razorpay_key_id': self.provider_id.razorpay_key_id,
             'razorpay_public_token': self.provider_id.razorpay_public_token,
             'razorpay_customer_id': customer_id,
             'is_tokenize_request': self.tokenize,
             'razorpay_order_id': order_id,
-            'callback_url': url_join(
+        }
+        if self.payment_method_id.code in const.REDIRECT_PAYMENT_METHOD_CODES:
+            processing_values['callback_url'] = url_join(
                 self.provider_id.get_base_url(),
                 f'{RazorpayController._return_url}?{url_encode({"reference": self.reference})}'
-            ),
-            'redirect': self.payment_method_id.code in const.REDIRECT_PAYMENT_METHOD_CODES,
-        }
+            )
+
+        return processing_values
 
     def _razorpay_create_customer(self):
         """ Create and return a Customer object.
@@ -62,7 +64,7 @@ class PaymentTransaction(models.Model):
         :rtype: dict
         """
         payload = {
-            'name': self.partner_name,
+            'name': self.partner_name.replace(',', ' ')[:50],
             'email': self.partner_email or '',
             'contact': self.partner_phone and self._validate_phone_number(self.partner_phone) or '',
             'fail_existing': '0',  # Don't throw an error if the customer already exists.
@@ -215,6 +217,8 @@ class PaymentTransaction(models.Model):
 
         try:
             order_data = self._razorpay_create_order()
+            if not order_data:  # The order creation failed and the transaction was set in error.
+                return
             phone = self._validate_phone_number(self.partner_phone)
             customer_id, token_id = self.token_id.provider_ref.split(',')
             payload = {
@@ -252,7 +256,7 @@ class PaymentTransaction(models.Model):
             },
         }
         response_content = self._send_api_request(
-            'POST', f'payments/{self.provider_reference}/refund', json=payload
+            'POST', f'payments/{self.source_transaction_id.provider_reference}/refund', json=payload
         )
         response_content.update(entity_type='refund')
         self._process('razorpay', response_content)
@@ -265,7 +269,7 @@ class PaymentTransaction(models.Model):
         converted_amount = payment_utils.to_minor_currency_units(self.amount, self.currency_id)
         payload = {'amount': converted_amount, 'currency': self.currency_id.name}
         response_content = self._send_api_request(
-            'POST', f'payments/{self.provider_reference}/capture', json=payload
+            'POST', f'payments/{self.source_transaction_id.provider_reference}/capture', json=payload
         )
 
         # Process the capture request response.
@@ -374,6 +378,11 @@ class PaymentTransaction(models.Model):
             except ValidationError as e:
                 self._set_error(str(e))
                 return
+
+        reference = entity_data.get("description") or entity_data["notes"]["reference"]
+        if self.reference != reference:
+            _logger.warning("Received payment data with incorrect reference")
+            raise Forbidden()
 
         # Update the provider reference.
         entity_id = entity_data.get('id')

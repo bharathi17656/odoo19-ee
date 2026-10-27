@@ -19,13 +19,14 @@
 # Donatas <donatasvaliulis16@gmail.com>, 2022
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-16 17:57+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-04-10 18:45+0000\n"
+"PO-Revision-Date: 2026-10-05 21:16+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "quality_control/lt/>\n"
 "Language: lt\n"
@@ -33,9 +34,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < "
-"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 :"
-" n % 1 != 0 ? 2: 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 "
+": n % 1 != 0 ? 2: 3);\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: quality_control
 #: model_terms:ir.ui.view,arch_db:quality_control.quality_point_view_form_inherit_quality_control
@@ -52,17 +53,12 @@ msgstr ""
 #: model:ir.actions.report,print_report_name:quality_control.quality_check_report
 #: model:ir.actions.report,print_report_name:quality_control.quality_check_report_internal
 msgid "'Worksheet_%s' % object.name"
-msgstr ""
+msgstr "'Worksheet_%s' % object.name"
 
 #. module: quality_control
 #: model_terms:ir.ui.view,arch_db:quality_control.worksheet_page
 msgid "15.3 cm"
 msgstr ""
-
-#. module: quality_control
-#: model_terms:ir.ui.view,arch_db:quality_control.worksheet_page
-msgid "2023-08-15"
-msgstr "2023-08-15"
 
 #. module: quality_control
 #: model_terms:ir.ui.view,arch_db:quality_control.quality_alert_team_dashboard_view_kanban
@@ -582,6 +578,13 @@ msgid ""
 " /- all quantities of a product if control is per product\n"
 " /- all quantities of products in the operation if control is per operation"
 msgstr ""
+"Jei kokybės patikrinimas nepavyksta, iš šio sąrašo pasirenkama paskirties "
+"vieta:\n"
+"- kiekvienam nepavykusiam konkrečiam produkto kiekiui, jei patikrinimas "
+"atliekamas pagal kiekį\n"
+" /- visiems produkto kiekiams, jei patikrinimas atliekamas pagal produktą\n"
+" /- visiems operacijoje esantiems produktų kiekiams, jei patikrinimas "
+"atliekamas pagal operaciją"
 
 #. module: quality_control
 #: model_terms:ir.ui.view,arch_db:quality_control.quality_check_view_search
@@ -800,6 +803,11 @@ msgid "Notes"
 msgstr "Pastabos"
 
 #. module: quality_control
+#: model_terms:ir.ui.view,arch_db:quality_control.quality_check_wizard_form_failure
+msgid "OK"
+msgstr "Gerai"
+
+#. module: quality_control
 #: model:ir.model.fields.selection,name:quality_control.selection__quality_point__measure_frequency_type__on_demand
 msgid "On-demand"
 msgstr ""
@@ -825,6 +833,12 @@ msgid ""
 "                 Quantity = A quality check is requested for each new "
 "product quantity registered, with partial quantity checks also possible."
 msgstr ""
+"Operacija = Prašoma atlikti vieną kokybės patikrinimą operacijos lygiu.\n"
+"                  Produktas = Prašoma atlikti vieną kokybės patikrinimą "
+"kiekvienam produktui.\n"
+"                 Kiekis = Prašoma atlikti kokybės patikrinimą kiekvienam "
+"naujai užregistruotam produkto kiekiui, taip pat galima atlikti dalinius "
+"kiekio patikrinimus."
 
 #. module: quality_control
 #: model:ir.ui.menu,name:quality_control.menu_quality_dashboard
@@ -1273,7 +1287,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality_control.field_quality_check_spreadsheet__spreadsheet_file_name
 #: model:ir.model.fields,field_description:quality_control.field_quality_spreadsheet_template__spreadsheet_file_name
 msgid "Spreadsheet File Name"
-msgstr ""
+msgstr "Skaičiuoklės failo pavadinimas"
 
 #. module: quality_control
 #: model:ir.model.fields,field_description:quality_control.field_quality_check_spreadsheet__spreadsheet_revision_ids
@@ -1458,6 +1472,12 @@ msgid "Unit of Measure"
 msgstr "Mato vienetas"
 
 #. module: quality_control
+#. odoo-python
+#: code:addons/quality_control/models/quality_spreadsheet_template.py:0
+msgid "Untitled spreadsheet"
+msgstr ""
+
+#. module: quality_control
 #: model_terms:ir.ui.view,arch_db:quality_control.view_quality_check_wizard
 msgid "Validate"
 msgstr "Patvirtinti"
@@ -1525,6 +1545,14 @@ msgstr ""
 #. module: quality_control
 #. odoo-python
 #: code:addons/quality_control/models/stock_picking.py:0
+msgid ""
+"You need to supply a Lot/Serial Number for product:\n"
+"%(products)s"
+msgstr ""
+
+#. module: quality_control
+#. odoo-python
+#: code:addons/quality_control/models/stock_picking.py:0
 msgid "You still need to do the quality checks!"
 msgstr "Jūs vis tiek turite atlikti kokybės patikrinimus!"
 
@@ -1543,6 +1571,9 @@ msgstr ""
 msgid "e.g. mycompany.com"
 msgstr ""
 
+#~ msgid "2023-08-15"
+#~ msgstr "2023-08-15"
+
 #~ msgid "Cancel"
 #~ msgstr "Atšaukti"
 
@@ -1551,9 +1582,6 @@ msgstr ""
 
 #~ msgid "In #{kanban_getcolorname(record.color.raw_value)}"
 #~ msgstr "Yra #{kanban_getcolorname(record.color.raw_value)}"
-
-#~ msgid "OK"
-#~ msgstr "Gerai"
 
 #~ msgid "Product Unit of Measure"
 #~ msgstr "Produkto matavimo vienetas"

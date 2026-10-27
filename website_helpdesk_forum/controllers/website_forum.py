@@ -15,9 +15,7 @@ class WebsiteForumHelpdesk(WebsiteForum):
         forums = request.env['forum.forum'].search(domain)
         if len(forums) == 1:
             return request.redirect('/forum/%s' % request.env['ir.http']._slug(forums[0]), code=302)
-        return request.render(self.get_template_xml_id(), {
-            'forums': forums
-        })
+        return request.render(self.get_template_xml_id(), self._get_helpdesk_forums_render_values(forums))
 
     @route('/forum/<model("forum.forum"):forum>/<model("forum.post"):question>/get-forum-data', type='jsonrpc', auth="user", website=True)
     def create_ticket_and_view(self, forum, question):
@@ -48,7 +46,10 @@ class WebsiteForumHelpdesk(WebsiteForum):
         }
 
     def get_template_xml_id(self):
-        return "website_helpdesk_forum.forum_all"
+        return "website_forum.forum_all"
+
+    def _get_helpdesk_forums_render_values(self, forums):
+        return {'forums': forums}
 
     def _prepare_question_template_vals(self, forum, post, question):
         values = super()._prepare_question_template_vals(forum, post, question)

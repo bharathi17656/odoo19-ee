@@ -35,6 +35,7 @@ export class SpreadsheetAction extends AbstractSpreadsheetAction {
             onFreezeAndShareSpreadsheet: this.freezeAndShareSpreadsheet.bind(this),
             moveToTrash: this.moveToTrash.bind(this),
             isFrozenSpreadsheet: () => this.data.handler === "frozen_spreadsheet",
+            isArchived: () => Boolean(this.data?.is_archived),
         });
     }
 
@@ -107,8 +108,9 @@ export class SpreadsheetAction extends AbstractSpreadsheetAction {
         }
 
         const { freezeOdooData } = odoo.loader.modules.get("@spreadsheet/helpers/model");
+        this.model.dispatch("LOG_DATASOURCE_EXPORT", { action: "freeze" });
         const data = await freezeOdooData(this.model);
-
+        this.model.dispatch("LOG_DATASOURCE_EXPORT", { action: "freeze" });
         const record = await this.orm.call("documents.document", "action_freeze_and_copy", [
             this.resId,
             JSON.stringify(data),
@@ -136,7 +138,7 @@ registry.category("actions").add("action_open_spreadsheet", SpreadsheetAction, {
 topbarMenuRegistry.addChild("move_to_trash", ["file"], {
     name: _t("Move to trash"),
     sequence: 80,
-    isVisible: (env) => env.moveToTrash,
+    isVisible: (env) => env.isArchived && !env.isArchived() && !!env.moveToTrash,
     execute: (env) => env.moveToTrash(),
     icon: "o-spreadsheet-Icon.TRASH_FILLED",
 });

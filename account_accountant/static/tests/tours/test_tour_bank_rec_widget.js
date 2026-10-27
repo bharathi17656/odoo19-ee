@@ -54,7 +54,7 @@ registry.category("web_tour.tours").add("account_accountant_bank_rec_widget", {
         },
         {
             content: "Set Partner",
-            trigger: "button.btn-primary span:contains('Set Partner')",
+            trigger: "button.set-partner-btn",
             run: "click",
         },
         {
@@ -77,7 +77,7 @@ registry.category("web_tour.tours").add("account_accountant_bank_rec_widget", {
         },
         {
             content: "Statement line is reconciled because move with same partner and amount",
-            trigger: "span[name='reconciled_line_name']",
+            trigger: "div[name='reconciled_line_name']",
         },
         {
             content: "Create New statement",
@@ -123,7 +123,90 @@ registry.category("web_tour.tours").add("account_accountant_bank_rec_widget", {
         },
         {
             content: "Statement line is reconciled",
-            trigger: "span[name='reconciled_line_name']",
+            trigger: "div[name='reconciled_line_name']",
+        },
+        // ensure statement can be added for multiple statement lines at once
+        {
+            content: "Switch to list view",
+            trigger: "button.o_switch_view.o_list",
+            run: "click",
+        },
+        {
+            content: "Select the statement lines",
+            trigger: "div.o-checkbox",
+            run: "click",
+        },
+        {
+            content: "Open the Many2One to set statement",
+            trigger: "td.o_bank_rec_list_many2one_multi_id_cell",
+            run: "click",
+        },
+        {
+            content: "Search for the created statement",
+            trigger: "input.o-autocomplete--input",
+            run: "click",
+        },
+        {
+            content: "Select the created statement",
+            trigger: "a.dropdown-item:contains('test')",
+            run: "click",
+        },
+        {
+            content: "Update setting statement on both lines",
+            trigger: "button.btn-primary:contains('Update')",
+            run: "click",
         },
     ],
+});
+
+registry.category("web_tour.tours").add("account_accountant_bank_reconciliation_ui_context_keys", {
+    steps: () => [
+        {
+            trigger: "div.o_bank_reconciliation_kanban_renderer",
+        },
+        {
+            content: "Create New statement",
+            trigger: "button.o-kanban-button-new",
+            run: "click",
+        },
+        {
+            trigger: "div.o_bank_reconciliation_quick_create",
+        },
+        {
+            content: "Write Label",
+            trigger: "div[name='payment_ref'] input",
+            run: "edit test",
+        },
+        {
+            content: "Add a amount",
+            trigger: "div[name='amount'] input",
+            run: "edit 100",
+        },
+        {
+            content: "Save & close",
+            trigger: "div.button_group button.o_kanban_edit",
+            run: "click",
+        },
+        {
+            content: "Statement is created",
+            trigger: "div[name='bank_statement_line']",
+        },
+        {
+            content: "Statement line is reconciled",
+            trigger: "div[name='reconciled_line_name']",
+        },
+        {
+            content: "Upload button is not shown for a synchronized journal (Kanban View)",
+            trigger: "div.o_control_panel_main_buttons:not(:has(.o_button_upload_bill))",
+        },
+        {
+            content: "Switch to List View",
+            trigger: "button.o_switch_view.o_list",
+            run: "click",
+        },
+        {
+            content: "Upload button is not shown for a synchronized journal (List View)",
+            trigger: "div.o_control_panel_main_buttons:not(:has(.o_button_upload_bill))",
+        },
+    ]
 });

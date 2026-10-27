@@ -2,7 +2,11 @@ import datetime
 import io
 import unittest
 
-from odoo.tests import tagged
+import markupsafe
+
+from odoo.tests import freeze_time, tagged
+from odoo.tools import html2plaintext
+
 from odoo.addons.account_reports.tests.common import TestAccountReportsCommon
 
 try:
@@ -38,20 +42,22 @@ class TestAccountReportAnnotationsExport(TestAccountReportsCommon):
         })
         move.action_post()
         # Create annotation
-        date = datetime.datetime.strptime('2024-06-20', '%Y-%m-%d').date()
-        message = cls.env['mail.message'].create({
-            'model': bank_default_account._name,
-            'res_id': bank_default_account.id,
-            'body': 'Papa a vu le fifi de lolo',
-            'date': date,
-            'author_id': cls.env.user.partner_id.id,
-            'message_type': 'comment',
-            'subtype_id': cls.env.ref('mail.mt_note').id,
-        })
-        cls.env['account.report.annotation'].create({
-            'date': date,
-            'message_id': message.id,
-        })
+        with freeze_time('2024-06-20'):
+            cls.env.cr._now = datetime.datetime.now()  # used to force create_date, as sql is not wrapped by freeze gun
+            date = datetime.datetime.strptime('2024-06-20', '%Y-%m-%d').date()
+            message = cls.env['mail.message'].create({
+                'model': bank_default_account._name,
+                'res_id': bank_default_account.id,
+                'body': 'Papa a vu le fifi de lolo',
+                'date': date,
+                'author_id': cls.env.user.partner_id.id,
+                'message_type': 'comment',
+                'subtype_id': cls.env.ref('mail.mt_note').id,
+            })
+            cls.env['account.report.annotation'].create({
+                'date': date,
+                'message_id': message.id,
+            })
 
     def read_xlsx_data(self, report_data):
         report_file = io.BytesIO(report_data)
@@ -132,3 +138,104 @@ class TestAccountReportAnnotationsExport(TestAccountReportsCommon):
         # data (one per period) and finally one column for the annotations. Hence the index 5 for the annotation column.
         self.assertEqual(export_content[0][5], "Annotations")
         self.assertEqual(export_content[7][5], "1 - Papa a vu le fifi de lolo")
+
+    def test_annotations_ordering(self):
+        bank_default_account = self.company_data["default_journal_bank"].default_account_id
+
+        model = bank_default_account._name
+        res_id = bank_default_account.id
+        with freeze_time('2024-06-21'):
+            self.env.cr._now = datetime.datetime.now()  # used to force create_date, as sql is not wrapped by freeze gun
+            date = datetime.datetime.strptime('2024-06-21', '%Y-%m-%d').date()
+            message = self.env['mail.message'].create({
+                'model': model,
+                'res_id': res_id,
+                'body': 'lolo a vu le fifi de papa',
+                'date': date,
+                'author_id': self.env.user.partner_id.id,
+                'message_type': 'comment',
+                'subtype_id': self.env.ref('mail.mt_note').id,
+            })
+            self.env['account.report.annotation'].create({
+                'date': date,
+                'message_id': message.id,
+            })
+
+        options = self._generate_options(self.report, '2024-06-01', '2024-06-30', default_options={'unfold_all': True, 'export_mode': True})
+        report_data = self.report.get_report_information(options)
+        annotations = report_data['annotations']
+
+        report_line_ids = [f'~account.report.line~{self.report.line_ids[i].id}' for i in range(0, 3)]
+        expected = {
+            f'~account.report~{self.report.id}|{"|".join(report_line_ids)}|{{"groupby": "account_id"}}~{model}~{res_id}': [
+                {
+                    'model': model,
+                    'res_id': res_id,
+                    'date': datetime.date(2024, 6, 20),
+                    'body': 'Papa a vu le fifi de lolo',
+                },
+                {
+                    'id': message.id,
+                    'model': model,
+                    'res_id': res_id,
+                    'date': datetime.date(2024, 6, 21),
+                    'body': 'lolo a vu le fifi de papa',
+                }
+            ]
+        }
+        self.assertTrue(len(annotations.keys()) == len(expected.keys()), "More/Less lines are annotated than expected.")
+        self.assertTrue(all(key in annotations for key in expected), "The same lines are not annotated as expected.")
+        for line_id, line_annotations in expected.items():
+            self.assertEqual(len(annotations[line_id]), len(line_annotations), f"Line {line_id} has more/less annotations than expected.")
+            for i in range(len(line_annotations)):
+                for field in line_annotations[i]:
+                    field_data = annotations[line_id][i][field]
+                    if field == 'body':
+                        field_data = html2plaintext(markupsafe.escape(field_data))
+                    self.assertEqual(field_data, line_annotations[i][field], f"Line {line_id} annotation {i} has a different {field} than expected.")
+
+    def test_annotations_export_deferred_revenue_report(self):
+        """
+        Regression test: exporting the Deferred Revenue Report to XLSX must not crash with
+        UnboundLocalError when annotations exist on a deferred revenue record.
+        """
+        deferred_revenue_report = self.env.ref('account_reports.deferred_revenue_report')
+        revenue_account = self.company_data['default_account_revenue']
+
+        self._create_invoice(
+            move_type='out_invoice',
+            invoice_date='2024-01-01',
+            post=True,
+            invoice_line_ids=[
+                self._prepare_invoice_line(
+                    price_unit=1200.0,
+                    account_id=revenue_account,
+                    deferred_start_date='2024-01-01',
+                    deferred_end_date='2024-04-30',
+                )
+            ],
+        )
+
+        # Generate the report lines to get a valid line_id to annotate
+        options = self._generate_options(deferred_revenue_report, '2024-01-01', '2024-01-31')
+
+        # Add an annotation on the first report line — this triggers the bug on XLSX export
+        date = datetime.datetime.strptime('2024-01-15', '%Y-%m-%d').date()
+        message = self.env['mail.message'].create({
+            'model': revenue_account._name,
+            'res_id': revenue_account.id,
+            'body': 'Annotation on deferred revenue record',
+            'date': date,
+            'author_id': self.env.user.partner_id.id,
+            'message_type': 'comment',
+            'subtype_id': self.env.ref('mail.mt_note').id,
+        })
+        self.env['account.report.annotation'].create({
+            'date': date,
+            'message_id': message.id,
+        })
+
+        # This must not raise UnboundLocalError
+        report_data = deferred_revenue_report.export_to_xlsx(options)
+        self.assertIn('file_content', report_data)
+        self.assertEqual(report_data['file_type'], 'xlsx')

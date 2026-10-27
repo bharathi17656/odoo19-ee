@@ -3,13 +3,14 @@
 # * delivery_starshipit
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.4+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-07 18:41+0000\n"
-"PO-Revision-Date: 2025-09-15 23:04+0000\n"
-"Last-Translator: \"Dylan Kiss (dyki)\" <dyki@odoo.com>\n"
+"POT-Creation-Date: 2026-09-25 17:42+0000\n"
+"PO-Revision-Date: 2026-06-13 09:44+0000\n"
+"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Vietnamese <https://translate.odoo.com/projects/odoo-19/"
 "delivery_starshipit/vi/>\n"
 "Language: vi\n"
@@ -17,7 +18,25 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
+
+#. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+#, fuzzy
+msgid ""
+"%(order_info)sHowever, the shipping label creation failed with the following "
+"error:\n"
+"%(error)s\n"
+"\n"
+"Please either continue the configuration or delete the order in Starshipit "
+"before trying again."
+msgstr ""
+"%(order_info)sTuy nhiên, việc tạo nhãn vận chuyển đã thất bại với lỗi sau:\n"
+"%(error)s\n"
+"\n"
+"Vui lòng tiếp tục cấu hình hoặc xóa đơn hàng trong Starshipit trước khi thử "
+"lại."
 
 #. module: delivery_starshipit
 #: model_terms:ir.ui.view,arch_db:delivery_starshipit.view_delivery_carrier_form
@@ -51,6 +70,18 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-info-circle\"/> Các dịch vụ vận chuyển có sẵn phụ thuộc vào "
 "đơn vị vận chuyển đã được kích hoạt trong tài khoản Starshipit của bạn."
+
+#. module: delivery_starshipit
+#: model_terms:ir.ui.view,arch_db:delivery_starshipit.choose_delivery_carrier_view_form
+msgid "<i class=\"oi oi-arrow-right me-1\"/>Get more delivery methods"
+msgstr ""
+
+#. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/wizard/starshipit_shipping_wizard.py:0
+#, fuzzy
+msgid "Add a shipping method"
+msgstr "Thêm phương thức vận chuyển"
 
 #. module: delivery_starshipit
 #: model_terms:ir.ui.view,arch_db:delivery_starshipit.view_shipping_method_starshipit
@@ -112,11 +143,18 @@ msgid "Delivery"
 msgstr "Giao hàng"
 
 #. module: delivery_starshipit
+#: model:ir.model,name:delivery_starshipit.model_choose_delivery_carrier
+#, fuzzy
+msgid "Delivery Carrier Selection Wizard"
+msgstr "Công cụ chọn đơn vị giao hàng"
+
+#. module: delivery_starshipit
 #: model_terms:ir.ui.view,arch_db:delivery_starshipit.view_shipping_method_starshipit
 msgid "Delivery Service"
 msgstr "Dịch vụ giao hàng"
 
 #. module: delivery_starshipit
+#: model:ir.model.fields,field_description:delivery_starshipit.field_choose_delivery_carrier__display_name
 #: model:ir.model.fields,field_description:delivery_starshipit.field_delivery_carrier__display_name
 #: model:ir.model.fields,field_description:delivery_starshipit.field_starshipit_shipping_wizard__display_name
 #: model:ir.model.fields,field_description:delivery_starshipit.field_stock_package_type__display_name
@@ -139,6 +177,7 @@ msgid "Error: this delivery method is not available for this order."
 msgstr "Lỗi: phương thức vận chuyển này không khả dụng cho đơn hàng này."
 
 #. module: delivery_starshipit
+#: model:ir.model.fields,field_description:delivery_starshipit.field_choose_delivery_carrier__id
 #: model:ir.model.fields,field_description:delivery_starshipit.field_delivery_carrier__id
 #: model:ir.model.fields,field_description:delivery_starshipit.field_starshipit_shipping_wizard__id
 #: model:ir.model.fields,field_description:delivery_starshipit.field_stock_package_type__id
@@ -229,12 +268,6 @@ msgid ""
 msgstr ""
 "Kích thước kiện hàng là thông tin bắt buộc để tính phí chính xác hơn. Bạn có "
 "thể xác định chúng trong loại kiện hàng được đặt làm mặc định."
-
-#. module: delivery_starshipit
-#. odoo-python
-#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
-msgid "Please delete the order on Starshipit then try again."
-msgstr "Vui lòng xóa đơn hàng trên Starshipit rồi thử lại."
 
 #. module: delivery_starshipit
 #. odoo-python
@@ -416,12 +449,6 @@ msgstr ""
 
 #. module: delivery_starshipit
 #. odoo-python
-#: code:addons/delivery_starshipit/models/starshipit_service.py:0
-msgid "Starshipit returned an error: %(message)s"
-msgstr "Starshipit báo lỗi sau: %(message)s"
-
-#. module: delivery_starshipit
-#. odoo-python
 #: code:addons/delivery_starshipit/models/delivery_carrier.py:0
 msgid ""
 "Starshipit: Delivery cost re-evaluated on Sales Order based on updated exact "
@@ -474,6 +501,15 @@ msgid "The Shipping Cost is being fetched in the background."
 msgstr ""
 
 #. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid ""
+"The address of your company/warehouse is incomplete or wrong (Missing "
+"field(s):  \n"
+" %s)"
+msgstr ""
+
+#. module: delivery_starshipit
 #: model:ir.model.fields,help:delivery_starshipit.field_delivery_carrier__starshipit_carrier_code
 msgid ""
 "The carrier on starshipit used by this carrier. The service code belongs to "
@@ -492,6 +528,18 @@ msgstr ""
 
 #. module: delivery_starshipit
 #. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid "The order '%(order_number)s' has been created!\n"
+msgstr ""
+
+#. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid "The order has been created!\n"
+msgstr ""
+
+#. module: delivery_starshipit
+#. odoo-python
 #: code:addons/delivery_starshipit/models/starshipit_service.py:0
 msgid ""
 "The picking %(picking_name)s sequence is too long for Starshipit. Please "
@@ -499,6 +547,14 @@ msgid ""
 msgstr ""
 "Số thứ tự phiếu xuất kho %(picking_name)s quá dài đối với Starshipit. Vui "
 "lòng cập nhật số thứ tự phiếu xuất kho của bạn với giới hạn tối đa 50 ký tự."
+
+#. module: delivery_starshipit
+#. odoo-python
+#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
+msgid ""
+"The recipient address is incomplete or wrong (Missing field(s):  \n"
+" %s)"
+msgstr ""
 
 #. module: delivery_starshipit
 #. odoo-python
@@ -527,16 +583,6 @@ msgid ""
 msgstr ""
 "Dịch vụ sẽ được sử dụng cho đơn vị vận chuyển này. Dịch vụ này được thiết "
 "lập khi bạn chọn đơn vị vận chuyển."
-
-#. module: delivery_starshipit
-#. odoo-python
-#: code:addons/delivery_starshipit/models/delivery_carrier.py:0
-msgid ""
-"The shipping label creation failed with the following error:\n"
-"%(error)s"
-msgstr ""
-"Việc tạo nhãn vận chuyển không thành công với lỗi sau:\n"
-"%(error)s"
 
 #. module: delivery_starshipit
 #. odoo-python
@@ -571,5 +617,19 @@ msgstr "Lệnh chuyển hàng"
 #. module: delivery_starshipit
 #. odoo-python
 #: code:addons/delivery_starshipit/controllers/download_starshipit_labels.py:0
+#, fuzzy
 msgid "starshipit_labels"
-msgstr ""
+msgstr "starshipit_labels"
+
+#~ msgid "Please delete the order on Starshipit then try again."
+#~ msgstr "Vui lòng xóa đơn hàng trên Starshipit rồi thử lại."
+
+#~ msgid "Starshipit returned an error: %(message)s"
+#~ msgstr "Starshipit báo lỗi sau: %(message)s"
+
+#~ msgid ""
+#~ "The shipping label creation failed with the following error:\n"
+#~ "%(error)s"
+#~ msgstr ""
+#~ "Việc tạo nhãn vận chuyển không thành công với lỗi sau:\n"
+#~ "%(error)s"

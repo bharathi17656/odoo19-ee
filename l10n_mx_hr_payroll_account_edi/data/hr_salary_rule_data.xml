@@ -14,7 +14,7 @@
     </record>
 
     <record id="l10n_mx_hr_payroll.l10n_mx_regular_pay_imss_ceav_employee" model="hr.salary.rule">
-        <field name="l10n_mx_concept" ref="l10n_mx_concept_d3"/>
+        <field name="l10n_mx_concept" eval="False"/>
     </record>
 
     <record id="l10n_mx_hr_payroll.l10n_mx_hr_payroll_structure_mx_employee_salary_deduction_salary_rule" model="hr.salary.rule">
@@ -27,6 +27,10 @@
 
     <record id="l10n_mx_hr_payroll.l10n_mx_regular_pay_employer_savings_fund" model="hr.salary.rule">
         <field name="l10n_mx_concept" ref="l10n_mx_concept_d4_3"/>
+    </record>
+
+    <record id="l10n_mx_hr_payroll.l10n_mx_regular_pay_imss_disabilities" model="hr.salary.rule">
+        <field name="l10n_mx_concept" ref="l10n_mx_concept_d6"/>
     </record>
 
     <record id="l10n_mx_hr_payroll.l10n_mx_hr_payroll_structure_mx_employee_salary_child_support" model="hr.salary.rule">
@@ -56,6 +60,10 @@
 
     <record id="l10n_mx_hr_payroll.l10n_mx_christmas_bonus_taxable" model="hr.salary.rule">
         <field name="l10n_mx_concept" ref="l10n_mx_concept_p2"/>
+    </record>
+
+    <record id="l10n_mx_hr_payroll.l10n_mx_christmas_bonus_non_taxable" model="hr.salary.rule">
+        <field name="l10n_mx_concept" ref="l10n_mx_concept_p2_2"/>
     </record>
 
     <record id="l10n_mx_hr_payroll.l10n_mx_regular_pay_employer_savings_fund_alw" model="hr.salary.rule">

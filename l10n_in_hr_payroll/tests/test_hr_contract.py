@@ -90,23 +90,11 @@ class TestHrContract(TestPayrollCommon):
         if self.env.ref('base.module_hr_contract_salary').state == 'installed':
             self.skipTest("Skip Test: Inconsistency with `hr_contract_salary` module")
 
-        version = self.rahul_emp.create_version({
-            'date_version': date(2025, 3, 1),
-            'contract_date_start': date(2025, 3, 1),
-            'contract_date_end':  date(2025, 6, 30),
+        version = self.percentage_emp.version_id
+        version.write({
             'name': 'Test Version',
-            'wage': 50000.0,
-            'l10n_in_basic_salary_amount': 20000,
-            'l10n_in_hra': 10000,
-            'l10n_in_standard_allowance': 1100,
-            'l10n_in_performance_bonus': 1000,
-            'l10n_in_leave_travel_allowance': 1000,
             'l10n_in_pf_employer_type': 'calculate',
             'l10n_in_pf_employee_type': 'calculate',
-            'l10n_in_gratuity': 962,
-            'resource_calendar_id': self.env.company.resource_calendar_id.id,
-            'contract_type_id': self.env.ref('l10n_in_hr_payroll.l10n_in_contract_type_probation').id,
-            'hr_responsible_id': self.env.ref('base.user_admin').id,
         })
 
         with Form(version) as version_form:
@@ -143,9 +131,65 @@ class TestHrContract(TestPayrollCommon):
         }])
 
         offer.final_yearly_costs = 500000.0
-        version = offer._get_version()
+        # Add the ctx key manually, as the test is running in a savepoint, can't use the ctx manager
+        version = offer.with_context(
+            hr_version_ctx_savepoint=True,  # can't import `HR_VERSION_CTX_KEY`, as this module doesn't depend on `hr_contract_salary`...
+            salary_simulation=True,
+            tracking_disable=True,
+        )._get_version()
         version.company_id.country_code = 'IN'
 
-        self.assertEqual(version.l10n_in_basic_percentage, default_percentage,
+        self.assertAlmostEqual(version.l10n_in_basic_percentage, default_percentage,
         msg="Default basic percentage should be 60%")
         self.assertEqual(version.l10n_in_basic_salary_amount, 25000.0)
+
+    def test_l10n_in_hourly_wage_monthly_conversion(self):
+        """Hourly contracts should derive their monthly wage from the proper calendar."""
+
+        company_calendar = self.env['resource.calendar'].create({
+            'name': 'Company Calendar 30h',
+            'company_id': self.company_in.id,
+            'hours_per_day': 6.0,
+            'hours_per_week': 30.0,
+            'full_time_required_hours': 36.0,
+        })
+        version_calendar = self.env['resource.calendar'].create({
+            'name': 'Version Calendar 48h',
+            'company_id': self.company_in.id,
+            'hours_per_day': 8.0,
+            'hours_per_week': 48.0,
+            'full_time_required_hours': 48.0,
+        })
+        self.company_in.resource_calendar_id = company_calendar.id
+
+        hourly_version = self.rahul_emp.create_version({
+            'date_version': date(2025, 7, 1),
+            'contract_date_start': date(2025, 7, 1),
+            'contract_date_end': date(2026, 6, 30),
+            'hourly_wage': 100.0,
+            'resource_calendar_id': version_calendar.id,
+            'l10n_in_basic_percentage': 0.25,
+        })
+        hourly_version.write({'wage_type': 'hourly'})
+
+        monthly_hours_version = version_calendar.hours_per_week * 52 / 12
+        expected_monthly_wage = hourly_version.hourly_wage * monthly_hours_version
+        self.assertAlmostEqual(hourly_version._l10n_in_get_montly_wage(), expected_monthly_wage)
+        self.assertAlmostEqual(hourly_version.l10n_in_basic_salary_amount,
+            expected_monthly_wage * hourly_version.l10n_in_basic_percentage)
+
+        company_hourly_version = self.jethalal_emp.create_version({
+            'date_version': date(2025, 8, 1),
+            'contract_date_start': date(2025, 8, 1),
+            'contract_date_end': date(2026, 7, 31),
+            'hourly_wage': 80.0,
+            'l10n_in_basic_percentage': 0.2,
+            'resource_calendar_id': False,
+        })
+        company_hourly_version.write({'wage_type': 'hourly'})
+
+        monthly_hours_company = company_calendar.hours_per_week * 52 / 12
+        expected_company_wage = company_hourly_version.hourly_wage * monthly_hours_company
+        self.assertAlmostEqual(company_hourly_version._l10n_in_get_montly_wage(), expected_company_wage)
+        self.assertAlmostEqual(company_hourly_version.l10n_in_basic_salary_amount,
+            expected_company_wage * company_hourly_version.l10n_in_basic_percentage)

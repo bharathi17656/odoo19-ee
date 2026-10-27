@@ -27,9 +27,15 @@
         'views/res_config_settings_view.xml',
         'views/res_partner_views.xml',
         'views/report_invoice.xml',
+        'views/templates.xml',
 
         'data/country.xml',
     ],
+    'assets': {
+        'web.assets_frontend': [
+            'l10n_mx_edi_extended/static/src/js/address.js',
+        ],
+    },
     'demo': [
         'demo/demo_cfdi.xml',
     ],

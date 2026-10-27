@@ -29,10 +29,15 @@ class DeliveryCarrier(models.Model):
         ('59', 'UPS 2nd Day AM'),
         ('12', 'UPS 3-day Select'),
         ('65', 'UPS Saver'),
+        ('74', 'UPS Express Midday'),
+        ('75', 'UPS Heavy Goods'),
+        ('17', 'UPS Worldwide Economy DDU'),
+        ('72', 'UPS Worldwide Economy DDP'),
         ('07', 'UPS Worldwide Express'),
         ('08', 'UPS Worldwide Expedited'),
         ('54', 'UPS Worldwide Express Plus'),
-        ('96', 'UPS Worldwide Express Freight')
+        ('96', 'UPS Worldwide Express Freight'),
+        ('71', 'UPS Worldwide Express Freight Midday')
     ], string="UPS Service Type", default='03')
     ups_package_weight_unit = fields.Selection([('LBS', 'Pounds'), ('KGS', 'Kilograms')], default='LBS')
     ups_package_dimension_unit = fields.Selection([('IN', 'Inches'), ('CM', 'Centimeters')], string="Package Size Unit", default='IN')
@@ -132,6 +137,7 @@ class DeliveryCarrier(models.Model):
             'invoice_date': fields.Date.today().strftime('%Y%m%d'),
             'description': picking.origin or picking.name,
             'total_qty': sum(sml.quantity for sml in picking.move_line_ids),
+            'freight_charge': sum(sol.price_total for sol in picking.sale_id.order_line.filtered(lambda l: l.is_delivery)),
             'ilt_monetary_value': '%d' % sum(sml.sale_price for sml in picking.move_line_ids),
             'itl_currency_code': currency_code,
             'phone': picking.partner_id.phone or picking.sale_id.partner_id.phone,
@@ -259,6 +265,8 @@ class DeliveryCarrier(models.Model):
             attachments = [('%s-%s-%s.%s' % (self.get_return_label_prefix(), pl[0], index, self.ups_label_file_type), pl[1]) for index, pl in enumerate(package_labels)]
         else:
             attachments = [('%s-%s-%s.%s' % (self.get_return_label_prefix(), package_labels[0][0], 1, 'pdf'), pdf.merge_pdf([pl[1] for pl in package_labels]))]
+        if result.get('invoice_binary_data'):
+            attachments.append(('UPSCommercialInvoice_return.pdf', result['invoice_binary_data']))
         picking.message_post(body=logmessage, attachments=attachments)
         shipping_data = {
             'exact_price': price,

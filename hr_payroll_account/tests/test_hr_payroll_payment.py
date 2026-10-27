@@ -13,9 +13,14 @@ class TestHrPayrollPayment(TestHrPayrollAccountCommon):
     def setUpClass(cls):
         super().setUpClass()
         cls.credit_account = cls.env['account.account'].create({
-            'name': 'Salary Payble',
+            'name': 'Salary Payable',
             'code': '2300',
             'reconcile': True,
+            'account_type': 'liability_current',
+        })
+        cls.debit_account = cls.env['account.account'].create({
+            'name': 'Salary Expenses',
+            'code': '6110',
             'account_type': 'liability_current',
         })
         cls.env['hr.salary.rule'].create({
@@ -28,6 +33,18 @@ class TestHrPayrollPayment(TestHrPayrollAccountCommon):
             'account_credit': cls.credit_account.id,
             'struct_id': cls.hr_structure_softwaredeveloper.id,
         })
+        cls.env['hr.salary.rule'].create({
+            'name': 'Net Salary Provision',
+            'amount_select': 'code',
+            'amount_python_compute': 'result = categories["BASIC"] + categories["ALW"] + categories["DED"]',
+            'code': 'NET_PROVISION',
+            'category_id': cls.env.ref('hr_payroll.COMP').id,
+            'sequence': 11,
+            'account_debit': cls.debit_account.id,
+            'struct_id': cls.hr_structure_softwaredeveloper.id,
+        })
+        cls.hr_structure_softwaredeveloper.journal_id.default_account_id = cls.credit_account
+
         john_bank_account = cls.env['res.partner.bank'].create([{
             'acc_number': '0144748555',
             'partner_id': cls.hr_employee_john.work_contact_id.id,
@@ -65,7 +82,7 @@ class TestHrPayrollPayment(TestHrPayrollAccountCommon):
         action_create_payment = wizard.save().action_create_payments()
         payment = self.env[action_create_payment['res_model']].browse(action_create_payment['res_id'])
         self.assertAlmostEqual(payment.amount, self.hr_payslip_john.move_id.amount_total, 'Payment amount is not correct!')
-        self.assertEqual(payment.partner_bank_id, self.hr_employee_john.bank_account_ids)
+        self.assertEqual(payment.partner_bank_id, self.hr_employee_john.bank_account_ids[0])
 
     def test_hr_payslip_payment_reverse(self):
         payslip = self.hr_payslip_john

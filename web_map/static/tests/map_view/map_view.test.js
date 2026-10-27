@@ -4,6 +4,7 @@ import { animationFrame, Deferred, mockTimeZone } from "@odoo/hoot-mock";
 import {
     contains,
     defineModels,
+    defineParams,
     fields,
     findComponent,
     mockService,
@@ -885,6 +886,22 @@ describe("map_view_desktop", () => {
         expect(`.o_pager_counter span.o_pager_limit`).toHaveText("3");
     });
 
+    test("Load limit set at the action level is applied", async () => {
+        patchWithCleanup(session, { map_box_token: MAP_BOX_TOKEN });
+
+        Task._records = TEST_RECORDS.task.threeRecords;
+        Partner._records = TEST_RECORDS.partner.twoRecordsAddressCoordinates;
+
+        await mountView({
+            type: "map",
+            resModel: "project.task",
+            arch: `<map res_partner="partner_id" />`,
+            limit: 2,
+        });
+        expect(`.o_pager_counter .o_pager_value`).toHaveText("1-2");
+        expect(`.o_pager_counter span.o_pager_limit`).toHaveText("3");
+    });
+
     //--------------------------------------------------------------------------
     // Renderer testing
     //--------------------------------------------------------------------------
@@ -1643,6 +1660,34 @@ describe("map_view_desktop", () => {
         expect("tbody tr .o-map-renderer--popup-table-content-value").toHaveText(
             "2022-02-07 23:09:31",
             { message: 'The time  "2022-02-07 21:09:31" should be in the local timezone' }
+        );
+    });
+
+    test("Content of the marker popup with date time in Arabic numbering system", async () => {
+        mockTimeZone(+2); // UTC+2
+        defineParams({ lang: "ar_001" });
+        patchWithCleanup(session, { map_box_token: MAP_BOX_TOKEN });
+
+        Task._records = TEST_RECORDS.task.twoRecordsFieldDateTime;
+        Partner._records = TEST_RECORDS.partner.twoRecordsAddressCoordinates.map((r) => ({ ...r }));
+        Partner._records[0].partner_latitude = 11.0;
+
+        await mountView({
+            config: { views: [[false, "form"]] },
+            type: "map",
+            resModel: "project.task",
+            arch: `<map res_partner="partner_id" routing="true" hide_name="true" hide_address="true">
+                    <field name="scheduled_date" string="Date"/>
+                </map>`,
+        });
+
+        await contains("div.leaflet-marker-icon:last-child").click();
+        expect("tbody tr .o-map-renderer--popup-table-content-value").toHaveText(
+            "2022-02-07 23:09:31",
+            {
+                message:
+                    "The datetime should be parsed correctly and not show as invalid when the numbering system is Arabic",
+            }
         );
     });
 

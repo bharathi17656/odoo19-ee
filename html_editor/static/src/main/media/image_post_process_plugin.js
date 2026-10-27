@@ -98,7 +98,9 @@ export class ImagePostProcessPlugin extends Plugin {
         const originalImg = await loadImage(data.originalSrc);
         const originalSrc = originalImg.getAttribute("src");
 
-        if (shouldPreventGifTransformation(data)) {
+        if (
+            !(await isImageSupportedForProcessing(img, formatMimetype || mimetypeBeforeConversion))
+        ) {
             const [postUrl, postDataset] = await this.postProcessImage(
                 await loadImageDataURL(originalSrc),
                 newDataset,
@@ -262,11 +264,7 @@ export class ImagePostProcessPlugin extends Plugin {
     }
     async getProcessedImageSize(img) {
         const processed = await this._processImage({ img });
-        // return undefined if the image is a gif
-        if (!shouldPreventGifTransformation(processed.newDataset)) {
-            return getDataURLBinarySize(processed.url);
-        }
-        return undefined;
+        return getDataURLBinarySize(processed.url);
     }
     async postProcessImage(url, newDataset, processContext) {
         for (const cb of this.getResource("process_image_post_handlers")) {
@@ -341,6 +339,13 @@ export const defaultImageFilterOptions = {
     brightness: "0",
     sepia: "0",
 };
+
+export async function isImageSupportedForProcessing(imgEl, originalImgMimetype) {
+    if (!["image/jpeg", "image/png", "image/webp"].includes(originalImgMimetype)) {
+        return false;
+    }
+    return !!(imgEl.dataset.originalSrc || (await loadImageInfo(imgEl)).originalSrc);
+}
 
 // webgl color filters
 const _applyAll = (result, filter, filters) => {

@@ -1,19 +1,21 @@
+from unittest.mock import patch
+
 from odoo.tests.common import TransactionCase
 
 
 class TestAISources(TransactionCase):
-    def _create_attachment(self, name, mimetype, index_content):
-        return self.env['ir.attachment'].create({
-            'name': name,
-            'mimetype': mimetype,
-            'index_content': index_content,
-        })
+    # tests the processing of rich spreadsheets indexed by `attachment_indexation`
+    def _create_attachment(self, name, mimetype, content):
+        with patch.object(self.registry['ir.attachment'], '_index', lambda self, data, _type: data):
+            return self.env['ir.attachment'].create({
+                'name': name,
+                'mimetype': mimetype,
+                'raw': content,
+            })
 
     def test_multi_sheet_csv_with_headers(self):
         # Two sheets separated by blank line, both with headers
-        sheet1 = 'Name,Age\nAlice,30\nBob,25'
-        sheet2 = 'Product,Price\nPen,1.2\nNotebook,2.5'
-        index_content = f"{sheet1}\n\n{sheet2}"
+        index_content = b"Name,Age\nAlice,30\nBob,25\n\nProduct,Price\nPen,1.2\nNotebook,2.5"
 
         attachment = self._create_attachment('people_and_products.csv', 'text/csv', index_content)
         content = attachment._get_attachment_content()
@@ -29,7 +31,7 @@ class TestAISources(TransactionCase):
     def test_ragged_rows_extra_and_missing_columns(self):
         # CSV with header, rows having extra and missing columns
         # Row 2 has extra fields (captured under _extra_fields), row 3 has a missing value
-        sheet = '3,10\n1,2,3,4\n5\n6,7'
+        sheet = b'3,10\n1,2,3,4\n5\n6,7'
 
         attachment = self._create_attachment('ragged.csv', 'text/csv', sheet)
         content = attachment._get_attachment_content()

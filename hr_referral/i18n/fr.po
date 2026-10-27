@@ -8,14 +8,14 @@
 # Cécile Collart <cco@odoo.com>, 2022
 # Jolien De Paepe, 2023
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Manon Rondou (ronm)" <ronm@odoo.com>, 2025.
+# "Manon Rondou (ronm)" <ronm@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-18 13:51+0000\n"
+"POT-Creation-Date: 2026-04-10 18:45+0000\n"
+"PO-Revision-Date: 2026-06-10 09:31+0000\n"
 "Last-Translator: \"Manon Rondou (ronm)\" <ronm@odoo.com>\n"
 "Language-Team: French <https://translate.odoo.com/projects/odoo-19/"
 "hr_referral/fr/>\n"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : ((n != 0 && n % "
 "1000000 == 0) ? 1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: hr_referral
 #. odoo-python
@@ -42,11 +42,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_recruitment_report__referral_hired
 msgid "# Hired by Referral"
 msgstr "# Engagé par recommandation"
-
-#. module: hr_referral
-#: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_send_sms_view_form
-msgid "+1 123 456 789"
-msgstr "+1 123 456 789"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.referral_campaign_email_body_template
@@ -100,8 +95,8 @@ msgid ""
 "                                        <span title=\"Send by Mail\">Send "
 "Email</span>"
 msgstr ""
-"<i class=\"fa fa-2x fa-envelope-o\" role=\"img\" aria-label="
-"\"Envoyer par e-mail\"/>\n"
+"<i class=\"fa fa-2x fa-envelope-o\" role=\"img\" aria-label=\"Envoyer par e-"
+"mail\"/>\n"
 "                                        <br/>\n"
 "                                        <span title=\"Send by Mail\">Envoyer "
 "un e-mail</span>"
@@ -114,8 +109,8 @@ msgid ""
 "                                        <span title=\"More info\">Job Page</"
 "span>"
 msgstr ""
-"<i class=\"fa fa-2x fa-globe\" role=\"img\" aria-label="
-"\"Page d'offre d'emploi\"/>\n"
+"<i class=\"fa fa-2x fa-globe\" role=\"img\" aria-label=\"Page d'offre "
+"d'emploi\"/>\n"
 "                                        <br/>\n"
 "                                        <span title=\"More info\">Page de "
 "l'offre d'emploi</span>"
@@ -128,11 +123,11 @@ msgid ""
 "                                        <span title=\"Send by SMS\">Send "
 "SMS</span>"
 msgstr ""
-"<i class=\"fa fa-2x fa-mobile\" role=\"img\" aria-label=\"Envoyer par SMS\"/>"
-"\n"
+"<i class=\"fa fa-2x fa-mobile\" role=\"img\" aria-label=\"Envoyer par SMS\"/"
+">\n"
 "                                        <br/>\n"
-"                                        <span title=\"Envoyer par SMS\""
-">Envoyer un SMS</span>"
+"                                        <span title=\"Envoyer par "
+"SMS\">Envoyer un SMS</span>"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_applicant_employee_referral_kanban
@@ -184,8 +179,8 @@ msgid ""
 "                                        </span>"
 msgstr ""
 "<span title=\"Partager sur Facebook\">\n"
-"                                            <i class=\"fa fa-2x fa-facebook\""
-" role=\"img\" aria-label=\"Partager sur Facebook\"/>\n"
+"                                            <i class=\"fa fa-2x fa-"
+"facebook\" role=\"img\" aria-label=\"Partager sur Facebook\"/>\n"
 "                                        </span>"
 
 #. module: hr_referral
@@ -197,8 +192,8 @@ msgid ""
 "                                        </span>"
 msgstr ""
 "<span title=\"Partager sur Linkedin\">\n"
-"                                            <i class=\"fa fa-2x fa-linkedin\""
-" role=\"img\" aria-label=\"Partager sur linkedin\"/>\n"
+"                                            <i class=\"fa fa-2x fa-"
+"linkedin\" role=\"img\" aria-label=\"Partager sur linkedin\"/>\n"
 "                                        </span>"
 
 #. module: hr_referral
@@ -243,7 +238,7 @@ msgstr "Activités"
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr "Activité exception décoration"
+msgstr "Indicateur d’exception d’activité"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_state
@@ -1852,7 +1847,8 @@ msgstr ""
 #. module: hr_referral
 #: model_terms:ir.actions.act_window,help:hr_referral.employee_referral_report_action
 msgid "This report allows you to follow the referrals and their evolution."
-msgstr "Ce rapport vous permet de suivre les recommandations et leur évolution."
+msgstr ""
+"Ce rapport vous permet de suivre les recommandations et leur évolution."
 
 #. module: hr_referral
 #: model_terms:ir.actions.act_window,help:hr_referral.employee_referral_reward_report_action
@@ -1974,6 +1970,11 @@ msgid "Welcome Onboarding in Referral App"
 msgstr "Bienvenue à bord de l'application Recommandations"
 
 #. module: hr_referral
+#: model:ir.model.fields.selection,name:hr_referral.selection__hr_referral_link_to_share__channel__twitter
+msgid "X"
+msgstr "X"
+
+#. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_job__twitter_clicks
 msgid "X Clicks"
 msgstr "X Clics"
@@ -2069,7 +2070,7 @@ msgstr "clic(s)"
 #. odoo-javascript
 #: code:addons/hr_referral/static/src/views/dashboard.xml:0
 msgid "has been hired!"
-msgstr "a été engagé !"
+msgstr "a été embauché(e) !"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_alert_form
@@ -2125,10 +2126,12 @@ msgid ""
 msgstr ""
 "🚀 Une superbe opportunité pour un poste de %(job_name)s au sein de mon "
 "entreprise ! Si vous êtes à la recherche d’un nouveau défi, n’hésitez pas à "
-"jeter un œil "
-"👇%(new_line_code)s🔗%(short_url)s%(new_line_code)s%(hashtag_code)"
-"sRecrutement %(hashtag_code)sOffreEmploi "
-"%(hashtag_code)sOpportunitéDeCarrière"
+"jeter un œil 👇%(new_line_code)s🔗%(short_url)s%(new_line_code)s%"
+"(hashtag_code)sRecrutement %(hashtag_code)sOffreEmploi %"
+"(hashtag_code)sOpportunitéDeCarrière"
+
+#~ msgid "+1 123 456 789"
+#~ msgstr "+1 123 456 789"
 
 #~ msgid ""
 #~ " You've gained %(gained)s points with this progress.<br/>It makes you a "

@@ -56,6 +56,7 @@ class HrPayrollHeadcount(models.Model):
             self.date_to = self.date_from
         versions = self.env['hr.version'].search([
             ('company_id', '=', self.company_id.id),
+            ('employee_id', '!=', False),
             '|',
                 ('contract_date_end', '=', False),
                 ('contract_date_end', '>=', self.date_from),

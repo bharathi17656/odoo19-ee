@@ -28,6 +28,11 @@ const tags = [
     "printDuplicateReceipt",
     "openDrawer",
     "printContentByNumbers",
+    "printerNonFiscal",
+    "printNormal",
+    "beginNonFiscal",
+    "endNonFiscal",
+    "getSerialNumber",
 ];
 
 const attributes = [
@@ -76,6 +81,10 @@ class Command extends String {
     }
 }
 
+function removeUnsupportedChars(str) {
+    return str.replace(/[åÅæÆ¢¥₧ƒªº¿⌐¬¡αßΓπΣσµτΘΩδ∞ε∩≡±⌠⌡∙·√ⁿ²]/g, " ").replace(/&nbsp;/g, " "); // Remove non-breaking space
+}
+
 const EpsonFiscalPrinterCommandService = {
     dependencies: ["renderer"],
     start(env, { renderer }) {
@@ -89,7 +98,7 @@ const EpsonFiscalPrinterCommandService = {
                 xmlString +
                 "</s:Body></s:Envelope>";
 
-            return new Command(command);
+            return new Command(removeUnsupportedChars(command));
         }
 
         return { create };

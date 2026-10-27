@@ -1,3 +1,4 @@
+import { onWillUpdateProps } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { TicketScreen } from "@point_of_sale/app/screens/ticket_screen/ticket_screen";
@@ -28,6 +29,10 @@ patch(TicketScreen.prototype, {
             cancelled: "Cancelled",
         };
         this.state.upState = this.props.upState;
+        onWillUpdateProps((nextProps) => {
+            Object.assign(this.state, nextProps.stateOverride || {});
+            this.state.upState = nextProps.upState;
+        });
     },
 
     /**
@@ -88,6 +93,7 @@ patch(TicketScreen.prototype, {
         const response = await this._updateOrderStatus(syncedOrder, "Acknowledged");
         const status = await this._handleResponse(response, syncedOrder, "acknowledged");
         if (status) {
+            await this.pos._sendDeliveryOrderForPreparation(syncedOrder);
             this._updateScreenState(syncedOrder, "ACTIVE_ORDERS");
             syncedOrder.uiState.orderAcceptTime = luxon.DateTime.now().ts;
         }

@@ -8,17 +8,18 @@
 # Martin Trigaux, 2022
 # Foldi Robert <foldirobert@nexterp.ro>, 2022
 # Claudia Baisan, 2023
-# Dorin Hongu <dhongu@gmail.com>, 2023
+# Dorin Hongu <dhongu@gmail.com>, 2023, 2025.
 # Cozmin Candea <office@terrabit.ro>, 2023
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Odoo Translation Bot <c3p@odoo.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-16 18:00+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-05-15 17:40+0000\n"
+"PO-Revision-Date: 2025-12-06 10:00+0000\n"
+"Last-Translator: Odoo Translation Bot <c3p@odoo.com>\n"
 "Language-Team: Romanian <https://translate.odoo.com/projects/odoo-19/"
 "sale_subscription/ro/>\n"
 "Language: ro\n"
@@ -27,7 +28,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.14.3\n"
 
 #. module: sale_subscription
 #. odoo-python
@@ -59,12 +60,13 @@ msgstr "% Fericit"
 msgid ""
 "%(explanation)s, but the billing period has already been invoiced. %(record)s"
 msgstr ""
+"%(explanation)s, dar perioada de facturare a fost deja facturată. %(record)s"
 
 #. module: sale_subscription
 #. odoo-python
 #: code:addons/sale_subscription/models/product_pricelist_item.py:0
 msgid "%(price_details)s %(recurrence)s"
-msgstr ""
+msgstr "%(price_details)s %(recurrence)s"
 
 #. module: sale_subscription
 #. odoo-python
@@ -76,19 +78,19 @@ msgstr "%(start)s până la %(next)s"
 #. odoo-python
 #: code:addons/sale_subscription/models/sale_subscription_plan.py:0
 msgid "%s Months"
-msgstr ""
+msgstr "%s Luni"
 
 #. module: sale_subscription
 #. odoo-python
 #: code:addons/sale_subscription/models/sale_subscription_plan.py:0
 msgid "%s Weeks"
-msgstr ""
+msgstr "%s Săptămâni"
 
 #. module: sale_subscription
 #. odoo-python
 #: code:addons/sale_subscription/models/sale_subscription_plan.py:0
 msgid "%s Years"
-msgstr ""
+msgstr "%s Ani"
 
 #. module: sale_subscription
 #. odoo-python
@@ -104,8 +106,8 @@ msgid ""
 "(*) These recurring products are discounted according to the prorated period "
 "from %(start)s to %(end)s"
 msgstr ""
-"(*) Aceste produse recurente sunt reduse proporțional cu perioada de la "
-"%(start)s până la %(end)s"
+"(*) Aceste produse recurente sunt reduse proporțional cu perioada de la %"
+"(start)s până la %(end)s"
 
 #. module: sale_subscription
 #. odoo-python
@@ -124,6 +126,8 @@ msgid ""
 "(*) These recurring products are surcharged according to the prorated period "
 "from %(start)s to %(end)s"
 msgstr ""
+"(*) Aceste produse recurente sunt suprataxate în funcție de perioada "
+"proporțională de la %(start)s la %(end)s"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_content
@@ -136,11 +140,13 @@ msgid ""
 ")\n"
 "                        <br/>"
 msgstr ""
+")\n"
+"                        <br/>"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.report_saleorder_document
 msgid "- Until"
-msgstr ""
+msgstr "- Până la"
 
 #. module: sale_subscription
 #. odoo-python
@@ -155,6 +161,9 @@ msgid ""
 "             Any new delivered quantity during this period for the following "
 "product(s) may never be invoiced:"
 msgstr ""
+".\n"
+"             Any new delivered quantity during this period for the following "
+"product(s) may never be invoiced:"
 
 #. module: sale_subscription
 #. odoo-python
@@ -172,7 +181,7 @@ msgstr "1 Sătpămână"
 #. odoo-python
 #: code:addons/sale_subscription/models/sale_subscription_plan.py:0
 msgid "1 Year"
-msgstr ""
+msgstr "1 An"
 
 #. module: sale_subscription
 #: model:sale.subscription.plan,name:sale_subscription.subscription_plan_6_month
@@ -187,7 +196,7 @@ msgstr "<b>Metodă de plată</b>"
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.view_sale_advance_payment_inv_sale_subscription
 msgid "<b>Subscriptions</b><br/>"
-msgstr ""
+msgstr "<b>Abonamente</b><br/>"
 
 #. module: sale_subscription
 #: model:mail.template,body_html:sale_subscription.mail_template_subscription_alert
@@ -232,34 +241,34 @@ msgstr ""
 "family:Arial,Helvetica,sans-serif;font-size:14px;\">\n"
 "                <table style=\"width:600px;margin:5px auto;\">\n"
 "                    <tbody>\n"
-"                        <tr><td t-if="
-"\"not object.company_id.uses_default_logo\">\n"
-"                            <a href=\"/\"><img t-attf-src="
-"\"/logo.png?company={{ object.company_id.id }}\" style=\"vertical-"
-"align:baseline;max-width:100px;\"/></a>\n"
+"                        <tr><td t-if=\"not "
+"object.company_id.uses_default_logo\">\n"
+"                            <a href=\"/\"><img t-attf-src=\"/logo.png?"
+"company={{ object.company_id.id }}\" style=\"vertical-align:baseline;max-"
+"width:100px;\"/></a>\n"
 "                        </td><td style=\"text-align:right;vertical-"
 "align:middle;\">\n"
 "                                Reînnoire abonament\n"
 "                        </td></tr>\n"
 "                    </tbody>\n"
 "                </table>\n"
-"                <table style="
-"\"width:600px;margin:0px auto;background:white;border:1px solid #e1e1e1;\">\n"
+"                <table style=\"width:600px;margin:0px "
+"auto;background:white;border:1px solid #e1e1e1;\">\n"
 "                    <tbody>\n"
 "                        <tr><td style=\"padding:15px 20px 10px 20px;\">\n"
-"                            <p>Stimate <t t-out="
-"\"object.partner_id.name or ''\">Brandon Freeman</t>,</p>\n"
-"                            <p>Abonamentul dumneavoastră <strong t-out="
-"\"object.name or ''\">Office Cleaning Service\"</strong> necesită atenția "
-"dumneavoastră.</p>\n"
+"                            <p>Stimate <t t-out=\"object.partner_id.name or "
+"''\">Brandon Freeman</t>,</p>\n"
+"                            <p>Abonamentul dumneavoastră <strong t-"
+"out=\"object.name or ''\">Office Cleaning Service\"</strong> necesită "
+"atenția dumneavoastră.</p>\n"
 "                            <p>Vă invităm să îl reînnoiți făcând clic pe "
 "următorul link.</p>\n"
 "                            <p>Cu stimă.</p>\n"
 "                        </td></tr>\n"
-"                        <tr data-o-mail-quote-container=\"1\"><td style="
-"\"padding:15px 20px 10px 20px;\" t-out=\"object.user_id.signature or ''\" "
-"data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell "
-"Admin</td></tr>\n"
+"                        <tr data-o-mail-quote-container=\"1\"><td "
+"style=\"padding:15px 20px 10px 20px;\" t-out=\"object.user_id.signature or "
+"''\" data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</"
+"td></tr>\n"
 "                    </tbody>\n"
 "                </table>\n"
 "            </div>\n"
@@ -369,6 +378,106 @@ msgid ""
 "            </div>\n"
 "        "
 msgstr ""
+"<div style=\"background:#F0F0F0;color:#515166;padding:10px 0px;font-"
+"family:Arial,Helvetica,sans-serif;font-size:14px;\">\n"
+"            <t t-set=\"access_token\" t-"
+"value=\"object._rating_get_access_token()\"/>\n"
+"                <table style=\"width:600px;margin:5px auto;\">\n"
+"                    <tbody>\n"
+"                        <tr><td t-if=\"not "
+"object.company_id.uses_default_logo\">\n"
+"                            <a href=\"/\"><img t-attf-src=\"/logo.png?"
+"company={{ object.company_id.id }}\" style=\"vertical-align:baseline;max-"
+"width:100px;\"/></a>\n"
+"                        </td><td style=\"text-align:right;vertical-"
+"align:middle;\">\n"
+"                                Chestionar de satisfacție\n"
+"                        </td></tr>\n"
+"                    </tbody>\n"
+"                </table>\n"
+"                <table style=\"width:600px;margin:0px "
+"auto;background:white;border:1px solid #e1e1e1;\">\n"
+"                    <tbody>\n"
+"                        <tr><td style=\"padding:15px 20px 10px 20px;\">\n"
+"                            <p>Bună,</p>\n"
+"                            <p>Vă rugăm să acordați câteva momente pentru a "
+"evalua serviciile noastre referitoare la abonamentul dvs. \"<strong t-"
+"out=\"object.name or ''\">Office Cleaning Service</strong>\" atribuit lui "
+"<strong t-out=\"object._rating_get_operator().name or ''\">Mitchell Admin</"
+"strong>.</p>\n"
+"                            <p>Apreciem feedbackul dvs. Ne ajută să ne "
+"îmbunătățim continuu.</p>\n"
+"                        </td></tr>\n"
+"                        <tr><td style=\"padding:10px 20px\">\n"
+"                            <table summary=\"o_mail_notification\" "
+"style=\"width:100%;border-top:1px solid #e1e1e1;\">\n"
+"                                <tr>\n"
+"                                    <td style=\"text-align:center;\">\n"
+"                                        <h2 style=\"font-weight:300;font-"
+"size:18px;\">\n"
+"                                            Spuneți-ne cum vă simțiți în "
+"legătură cu serviciile noastre:\n"
+"                                        </h2>\n"
+"                                        <div style=\"text-color: "
+"#888888\">(faceți clic pe una dintre aceste emoticoane)</div>\n"
+"                                    </td>\n"
+"                                </tr>\n"
+"                                <tr>\n"
+"                                    <td style=\"padding:10px 10px;\">\n"
+"                                        <table style=\"width:100%;text-"
+"align:center;\">\n"
+"                                            <tr>\n"
+"                                                <td>\n"
+"                                                    <a t-attf-href=\"/rate/"
+"{{ access_token }}/5\">\n"
+"                                                        <img alt=\"Fericit\" "
+"src=\"/rating/static/src/img/rating_5.png\" title=\"Fericit\"/>\n"
+"                                                    </a>\n"
+"                                                </td>\n"
+"                                                <td>\n"
+"                                                    <a t-attf-href=\"/rate/"
+"{{ access_token }}/3\">\n"
+"                                                        <img alt=\"Neutru\" "
+"src=\"/rating/static/src/img/rating_3.png\" title=\"Neutru\"/>\n"
+"                                                    </a>\n"
+"                                                </td>\n"
+"                                                <td>\n"
+"                                                    <a t-attf-href=\"/rate/"
+"{{ access_token }}/1\">\n"
+"                                                        <img "
+"alt=\"Nefericit\" src=\"/rating/static/src/img/rating_1.png\" "
+"title=\"Nefericit\"/>\n"
+"                                                    </a>\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                        </table>\n"
+"                                    </td>\n"
+"                                </tr>\n"
+"                            </table>\n"
+"                        </td></tr>\n"
+"                        <tr data-o-mail-quote-container=\"1\"><td "
+"style=\"padding:15px 20px 10px 20px;\" t-out=\"object.user_id.signature or "
+"''\" data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</"
+"td></tr>\n"
+"                    </tbody>\n"
+"                </table>\n"
+"                <table style=\"width:600px;margin:auto;text-"
+"align:center;font-size:12px;\">\n"
+"                    <tbody>\n"
+"                        <tr><td style=\"padding-top:10px;color:#afafaf;\">\n"
+"                            <p>Email trimis automat de <a target=\"_blank\" "
+"href=\"https://www.odoo.com/app/subscriptions\" t-attf-style=\"color: "
+"{{object.company_id.email_secondary_color or '#875A7B'}}; text-"
+"decoration:none;\">Odoo Subscription</a> pentru <a t-att-"
+"href=\"object.company_id.website\" t-attf-style=\"color: "
+"{{object.company_id.email_secondary_color or '#875A7B'}}; text-"
+"decoration:none;\" t-out=\"object.company_id.name or ''\">YourCompany</a></"
+"p>\n"
+"                        </td></tr>\n"
+"                    </tbody>\n"
+"                </table>\n"
+"            </div>\n"
+"        "
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_sidebar
@@ -408,7 +517,7 @@ msgstr "<i class=\"fa fa-fw fa-repeat\"/> Pentru reînnoire"
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_portal_content_inherit
 msgid "<i class=\"fa fa-plus\"/> Create address"
-msgstr ""
+msgstr "<i class=\"fa fa-plus\"/> Creează adresă"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_so_portal_template
@@ -427,8 +536,8 @@ msgid ""
 "<small class=\"text-600\">Automate payments for the linked subscriptions</"
 "small>"
 msgstr ""
-"<small class=\"text-600\">Automatizați plățile pentru abonamentele "
-"asociate</small>"
+"<small class=\"text-600\">Automatizați plățile pentru abonamentele asociate</"
+"small>"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.portal_my_subscriptions
@@ -436,8 +545,8 @@ msgid ""
 "<span class=\"badge rounded-pill text-bg-danger\"><i class=\"fa fa-fw fa-"
 "repeat\"/> To Renew</span>"
 msgstr ""
-"<span class=\"badge rounded-pill text-bg-danger\"><i class="
-"\"fa fa-fw fa-repeat\"/> Pentru reînnoire</span>"
+"<span class=\"badge rounded-pill text-bg-danger\"><i class=\"fa fa-fw fa-"
+"repeat\"/> Pentru reînnoire</span>"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.portal_my_subscriptions
@@ -445,8 +554,8 @@ msgid ""
 "<span class=\"badge rounded-pill text-bg-dark\"><i class=\"fa fa-fw fa-"
 "remove\"/> Closed</span>"
 msgstr ""
-"<span class=\"badge rounded-pill text-bg-dark\"><i class="
-"\"fa fa-fw fa-remove\"/> Închis</span>"
+"<span class=\"badge rounded-pill text-bg-dark\"><i class=\"fa fa-fw fa-"
+"remove\"/> Închis</span>"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.portal_my_subscriptions
@@ -462,8 +571,8 @@ msgid ""
 "<span class=\"badge rounded-pill text-bg-primary\"><i class=\"fa fa-fw fa-"
 "check\"/> Upsell</span>"
 msgstr ""
-"<span class=\"badge rounded-pill text-bg-primary\"><i class="
-"\"fa fa-fw fa-check\"/> Vânzare suplimentară</span>"
+"<span class=\"badge rounded-pill text-bg-primary\"><i class=\"fa fa-fw fa-"
+"check\"/> Vânzare suplimentară</span>"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.portal_my_subscriptions
@@ -471,8 +580,8 @@ msgid ""
 "<span class=\"badge rounded-pill text-bg-secondary\"><i class=\"fa fa-fw fa-"
 "check\"/> Renewed</span>"
 msgstr ""
-"<span class=\"badge rounded-pill text-bg-secondary\"><i class="
-"\"fa fa-fw fa-check\"/> Reînnoit</span>"
+"<span class=\"badge rounded-pill text-bg-secondary\"><i class=\"fa fa-fw fa-"
+"check\"/> Reînnoit</span>"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.portal_my_subscriptions
@@ -489,8 +598,8 @@ msgid ""
 "<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
 "check\"/> Paused</span>"
 msgstr ""
-"<span class=\"badge rounded-pill text-bg-success\"><i class="
-"\"fa fa-fw fa-check\"/> Întrerupt</span>"
+"<span class=\"badge rounded-pill text-bg-success\"><i class=\"fa fa-fw fa-"
+"check\"/> Întrerupt</span>"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_order_view_form
@@ -502,6 +611,7 @@ msgstr "<span class=\"badge rounded-pill text-bg-warning\">Se închide</span>"
 msgid ""
 "<span class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Close</span>"
 msgstr ""
+"<span class=\"btn btn-secondary\" data-bs-dismiss=\"modal\">Închide</span>"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_order_view_form
@@ -716,6 +826,139 @@ msgid ""
 "</table>\n"
 "        "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: "
+"16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; "
+"color: #454748; width: 100%; border-collapse:separate;\"><tr><td "
+"align=\"center\">\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
+"style=\"padding: 16px; background-color: white; color: #454748; border-"
+"collapse:separate;\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
+"0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\">\n"
+"                    <t t-set=\"company\" t-value=\"object.company_id or "
+"object.user_id.company_id or user.company_id\"/>\n"
+"                    <span style=\"font-size: 10px;\">Abonamentul tău</"
+"span><br/>\n"
+"                    <span style=\"font-size: 20px; font-weight: bold;\" t-"
+"out=\"object.name or ''\">Office Cleaning Service</span>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"right\" t-if=\"not "
+"company.uses_default_logo\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ company.id }}\" "
+"style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-"
+"alt=\"company.name\"/>\n"
+"                </td></tr>\n"
+"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-"
+"color:rgb(204,204,204);border:medium none;clear:both;display:block;font-"
+"size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- CONTENT -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
+"0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                    Bună <t t-out=\"object.partner_id.name or ''\">Brandon "
+"Freeman</t>,<br/><br/>\n"
+"                    <t t-if=\"ctx.get('payment_token') and "
+"ctx.get('next_invoice_amount')\">\n"
+"                        Ultima noastră încercare de a procesa o plată pentru "
+"abonamentul tău folosind metoda de plată\n"
+"                        <t t-out=\"ctx.get('payment_token') or ''\">TOKEN</"
+"t>\n"
+"                        pentru suma de <t t-out=\"ctx['next_invoice_amount'] "
+"or ''\">100</t> <t t-out=\"ctx.get('currency') or ''\">$</t> a eșuat.\n"
+"                        <t t-if=\"ctx.get('error')\">\n"
+"                            Banca sau instituția financiară a furnizat "
+"următoarele detalii despre problemă: <pre t-out=\"ctx['error'] or ''\"/>.\n"
+"                        </t>\n"
+"                    </t>\n"
+"                    <t t-else=\"\">\n"
+"                        Ultima noastră încercare de a procesa plata pentru "
+"abonamentul tău a eșuat deoarece nu avem nicio metodă de plată "
+"înregistrată.\n"
+"                    </t>\n"
+"                    <br/><br/>\n"
+"                    Deoarece plata ar fi trebuit să fie efectuată <strong><t "
+"t-out=\"ctx.get('auto_close_limit') or ''\">5</t> zile în urmă</strong>, "
+"abonamentul tău a fost închis.\n"
+"                    Dacă dorești să rezolvi această situație, nu ezita să ne "
+"contactezi.<br/><br/>\n"
+"                    Îți mulțumim că ai ales <t t-out=\"company.name or "
+"''\">YourCompany</t>!\n"
+"                    <div t-if=\"user.signature\" data-o-mail-quote-"
+"container=\"1\">\n"
+"                        <br/><br/>\n"
+"                        <div data-o-mail-quote=\"1\">--<br data-o-mail-"
+"quote=\"1\"/><t t-out=\"user.signature or ''\" data-o-mail-"
+"quote=\"1\">Mitchell Admin</t></div>\n"
+"                    </div>\n"
+"                </td></tr>\n"
+"                <tr><td style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-"
+"color:rgb(204,204,204);border:medium none;clear:both;display:block;font-"
+"size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- FOOTER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+"width=\"590\" style=\"min-width: 590px; background-color: white; font-size: "
+"11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\" align=\"left\">\n"
+"                    <t t-out=\"company.name or ''\">YourCompany</t>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: "
+"0.7;\">\n"
+"                    <t t-if=\"company.phone\">\n"
+"                        <t t-out=\"company.phone or ''\">+1 650-123-4567</t> "
+"|\n"
+"                    </t>\n"
+"                    <t t-if=\"company.email\">\n"
+"                        <a t-attf-href=\"'mailto:%s' % {{ company.email }}\" "
+"style=\"text-decoration:none; color: #454748;\" t-out=\"company.email or "
+"''\">info@yourcompany.com</a> |\n"
+"                    </t>\n"
+"                    <t t-if=\"company.website\">\n"
+"                        <a t-attf-href=\"'%s' % {{ company.website }}\" "
+"style=\"text-decoration:none; color: #454748;\" t-out=\"company.website or "
+"''\">http://www.example.com</a>\n"
+"                    </t>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"</tbody>\n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY -->\n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
+"style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; "
+"padding: 8px; border-collapse:separate;\">\n"
+"      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"        Oferit de <a target=\"_blank\" href=\"https://www.odoo.com?"
+"utm_source=db&amp;utm_medium=mail\" t-attf-style=\"color: "
+"{{company.email_secondary_color or '#875A7B'}};\">Odoo</a>\n"
+"      </td></tr>\n"
+"    </table>\n"
+"</td></tr>\n"
+"</table>\n"
+"        "
 
 #. module: sale_subscription
 #: model:mail.template,body_html:sale_subscription.email_payment_reminder
@@ -778,16 +1021,17 @@ msgid ""
 "                        </t>\n"
 "                    </t>\n"
 "                    <t t-else=\"\">\n"
-"                        Your subscription <t t-out=\"ctx.get('code') or "
-"''\">CODE</t> is due for renewal but we haven’t received your payment yet. "
-"To keep your subscription active, please make your payment as soon as "
+"                        Your subscription <t t-out=\"object.client_order_ref "
+"or ''\">CODE</t> is due for renewal but we haven’t received your payment "
+"yet. To keep your subscription active, please make your payment as soon as "
 "possible.\n"
 "                    </t>\n"
 "                    <br/><br/>\n"
-"                    Your subscription <t t-out=\"ctx.get('code') or "
+"                    Your subscription <t t-out=\"object.client_order_ref or "
 "''\">CODE</t> is still valid but will be <strong>suspended</strong>\n"
-"                    on <t t-out=\"format_date(ctx.get('date_close')) or "
-"''\">05/05/2021</t><br/>\n"
+"                    on <t t-"
+"out=\"format_date(object._get_subscription_close_date()) or ''\">05/05/2021</"
+"t><br/>\n"
 "                    <div style=\"margin: 16px 0px; text-align: center;\">\n"
 "                        <a t-attf-href=\"{{ ctx.get('payment_link', "
 "object.get_portal_url()) }}\" t-attf-style=\"display: inline-block; padding: "
@@ -875,12 +1119,14 @@ msgid ""
 "A cancelled SO cannot be in progress. You should close %s before cancelling "
 "it."
 msgstr ""
+"Un SO anulat nu poate fi în derulare. Trebuie să închideți %s înainte de a-l "
+"anula."
 
 #. module: sale_subscription
 #. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 msgid "A pause can't take place before the next invoice date."
-msgstr ""
+msgstr "O pauză nu poate avea loc înainte de data următoarei facturi."
 
 #. module: sale_subscription
 #. odoo-python
@@ -898,7 +1144,7 @@ msgstr "O ofertă de reînnoire %s a fost creată"
 #. odoo-python
 #: code:addons/sale_subscription/models/product_template.py:0
 msgid "A subscription combo product can only contain subscription products."
-msgstr ""
+msgstr "Un produs combo de abonament poate conține doar produse de abonament."
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.view_sale_order_log_analysis_graph
@@ -916,7 +1162,7 @@ msgstr "Modificare ARR (normalizată)"
 #: model:ir.model.fields,field_description:sale_subscription.field_product_product__allow_one_time_sale
 #: model:ir.model.fields,field_description:sale_subscription.field_product_template__allow_one_time_sale
 msgid "Accept One-Time"
-msgstr ""
+msgstr "Aceptă vânzare unică"
 
 #. module: sale_subscription
 #: model:ir.model,name:sale_subscription.model_account_move_send
@@ -1026,6 +1272,8 @@ msgid ""
 "Allow customers to temporarily pause their subscription for a specific "
 "period. Not available for postpaid subscriptions."
 msgstr ""
+"Permite clienților să își pună temporar abonamentul în pauză pentru o "
+"perioadă specifică. Nu este disponibil pentru abonamentele postplătite."
 
 #. module: sale_subscription
 #: model:ir.model.fields,help:sale_subscription.field_sale_subscription_plan__related_plan_id
@@ -1061,11 +1309,6 @@ msgstr "O ofertă de up-sell %s a fost creată"
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order_log_report__recurring_yearly
 msgid "Annual Recurring Revenue"
 msgstr "Venituri anuale recurente"
-
-#. module: sale_subscription
-#: model_terms:ir.ui.view,arch_db:sale_subscription.product_template_only_view_form_recurring
-msgid "Applied On"
-msgstr "Aplicat în"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_template_view_search
@@ -1117,12 +1360,12 @@ msgstr "Închiderea automată după"
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_search
 msgid "Automatic Invoicing"
-msgstr ""
+msgstr "Facturare automată"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_search
 msgid "Automatic Payments"
-msgstr ""
+msgstr "Plăți automate"
 
 #. module: sale_subscription
 #. odoo-python
@@ -1148,15 +1391,6 @@ msgstr ""
 #: code:addons/sale_subscription/models/sale_order.py:0
 msgid "Automatic payment failed. Email sent to customer. Error: %s"
 msgstr "Plata automată a eșuat. E-mail trimis către client. Eroare: %s"
-
-#. module: sale_subscription
-#. odoo-python
-#: code:addons/sale_subscription/models/sale_order.py:0
-msgid ""
-"Automatic payment failed. No country specified on payment_token's partner"
-msgstr ""
-"Plata automată a eșuat. Nu a fost specificată nicio țară pe token-ul plății "
-"partenerului"
 
 #. module: sale_subscription
 #. odoo-python
@@ -1277,6 +1511,9 @@ msgid ""
 "the invoice been created and possibly even paid, it's a done deal. "
 "Cancelling the subscription would definitely cause some chaos!"
 msgstr ""
+"Anularea unui abonament facturat nu ar fi corectă față de client. Odată ce "
+"factura a fost creată și posibil chiar plătită, este o afacere încheiată. "
+"Anularea abonamentului ar provoca cu siguranță haos!"
 
 #. module: sale_subscription
 #: model:product.template,name:sale_subscription.product_car_leasing_product_template
@@ -1302,7 +1539,7 @@ msgstr "Plan de modificare pentru"
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_portal_content_inherit
 msgid "Change addresses"
-msgstr ""
+msgstr "Schimbă adresele"
 
 #. module: sale_subscription
 #: model:ir.actions.server,name:sale_subscription.model_sale_order_subscription_change_customer
@@ -1473,7 +1710,7 @@ msgstr "Contactați-l pe Marc"
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_portal_content_inherit
 msgid "Contact your subscription manager to change it."
-msgstr ""
+msgstr "Contactați managerul de abonamente pentru a-l schimba."
 
 #. module: sale_subscription
 #: model:ir.model.fields,help:sale_subscription.field_sale_order_template__duration_unit
@@ -1658,7 +1895,7 @@ msgstr "Clienți"
 #. module: sale_subscription
 #: model:ir.model.fields,help:sale_subscription.field_sale_order_log_report__effective_date
 msgid "Date the MRR change was first billed."
-msgstr ""
+msgstr "Data la care a fost facturată prima dată modificarea MRR."
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_content
@@ -1677,17 +1914,21 @@ msgid ""
 "Define if price must be prorated or not for incomplete periods (upsell, "
 "calendar alignment, etc.)"
 msgstr ""
+"Definește dacă prețul trebuie să fie proporțional sau nu pentru perioadele "
+"incomplete (upsell, aliniere calendaristică etc.)"
 
 #. module: sale_subscription
 #: model:ir.model.fields,help:sale_subscription.field_product_product__allow_one_time_sale
 #: model:ir.model.fields,help:sale_subscription.field_product_template__allow_one_time_sale
 msgid "Define if the subscription product can also be bought as a one-time."
 msgstr ""
+"Definește dacă produsul de abonament poate fi achiziționat și ca un produs "
+"unic."
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_portal_content_inherit
 msgid "Delivery Address"
-msgstr "Adresă livrare:"
+msgstr "Adresă livrare"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_plan_view_form
@@ -1761,6 +2002,8 @@ msgid ""
 "Do you want to resume the subscription today?<br/>\n"
 "                                Next invoice date:"
 msgstr ""
+"Doriți să reluați abonamentul astăzi?<br/>\n"
+"                                Data următoarei facturi:"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_sidebar
@@ -1841,8 +2084,8 @@ msgid ""
 "Error during renewal of contract %(order_ids)s %(order_refs)s %"
 "(payment_state)s"
 msgstr ""
-"Eroare la reînnoirea contractului %(order_ids)s %(order_refs)s "
-"%(payment_state)s"
+"Eroare la reînnoirea contractului %(order_ids)s %(order_refs)s %"
+"(payment_state)s"
 
 #. module: sale_subscription
 #. odoo-python
@@ -1878,7 +2121,7 @@ msgstr "Data expirării:"
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_content
 msgid "Extend Until"
-msgstr ""
+msgstr "Extinde până la"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_log_report_search
@@ -1913,7 +2156,7 @@ msgstr "First contract date"
 #: model:ir.model.fields,field_description:sale_subscription.field_product_product__subscription_rule_ids_fixed
 #: model:ir.model.fields,field_description:sale_subscription.field_product_template__subscription_rule_ids_fixed
 msgid "Fixed Subscription Pricings"
-msgstr ""
+msgstr "Prețuri fixe de abonament"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__message_follower_ids
@@ -2095,11 +2338,13 @@ msgid ""
 "If you wish to reopen it, you can pay your invoice for the current invoicing "
 "period"
 msgstr ""
+"Dacă doriți să îl redeschideți, puteți plăti factura pentru perioada de "
+"facturare curentă"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_search
 msgid "In Error"
-msgstr ""
+msgstr "În eroare"
 
 #. module: sale_subscription
 #. odoo-python
@@ -2291,17 +2536,17 @@ msgstr "Activități întârziate"
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_kanban
 msgid "Latest Rating: Happy"
-msgstr ""
+msgstr "Ultimul rating: Fericit"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_kanban
 msgid "Latest Rating: Neutral"
-msgstr ""
+msgstr "Ultimul rating: Neutru"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_kanban
 msgid "Latest Rating: Unhappy"
-msgstr ""
+msgstr "Ultimul rating: Nefericit"
 
 #. module: sale_subscription
 #. odoo-javascript
@@ -2390,7 +2635,7 @@ msgstr ""
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_digest
 msgid "MRR:"
-msgstr "Venit lunar recurent"
+msgstr "Venit lunar recurent:"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.portal_my_home_subscription
@@ -2480,7 +2725,7 @@ msgstr "Venituri Recurente Lunare"
 #. module: sale_subscription
 #: model:product.template,description_sale:sale_subscription.product_car_leasing_product_template
 msgid "Monthly lease for city or business driving"
-msgstr ""
+msgstr "Închiriere lunară pentru condus în oraș sau în scopuri de afaceri"
 
 #. module: sale_subscription
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_template__duration_unit__month
@@ -2682,6 +2927,8 @@ msgid ""
 "Onboarding example showing how the app tracks customer subscriptions and "
 "visualizes MRR growth."
 msgstr ""
+"Exemplu de inițiere care arată cum aplicația urmărește abonamentele "
+"clienților și vizualizează creșterea MRR."
 
 #. module: sale_subscription
 #. odoo-python
@@ -2690,6 +2937,8 @@ msgid ""
 "Oops! Before you can delete a confirmed subscription, you'll need to close "
 "and cancel it."
 msgstr ""
+"Ups! Înainte de a putea șterge un abonament confirmat, trebuie să îl "
+"închideți și să îl anulați."
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_subscription_plan__related_plan_id
@@ -2772,7 +3021,7 @@ msgstr "Abonament partener"
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_subscription_plan__pausable_by_user
 msgid "Pausable"
-msgstr ""
+msgstr "Pauzabil"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_so_portal_template
@@ -2788,17 +3037,17 @@ msgstr "Întrerupeți abonamentul"
 #. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 msgid "Pause duration cannot exceed 1 period."
-msgstr ""
+msgstr "Durata pauzei nu poate depăși 1 perioadă."
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_sidebar
 msgid "Pause subscription"
-msgstr ""
+msgstr "Pauză abonament"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_so_portal_template
 msgid "Pause the subscription from"
-msgstr ""
+msgstr "Pauză abonament de la"
 
 #. module: sale_subscription
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order__subscription_state__4_paused
@@ -2926,6 +3175,8 @@ msgstr ""
 msgid ""
 "Please contact your sales manager if you want to reopen this subscription."
 msgstr ""
+"Vă rugăm să contactați managerul de vânzări dacă doriți să redeschideți "
+"acest abonament."
 
 #. module: sale_subscription
 #. odoo-javascript
@@ -2950,6 +3201,7 @@ msgstr ""
 #: code:addons/sale_subscription/controllers/portal.py:0
 msgid "Please select a date to pause the subscription until."
 msgstr ""
+"Vă rugăm să selectați o dată până la care să puneți abonamentul în pauză."
 
 #. module: sale_subscription
 #. odoo-python
@@ -3017,6 +3269,11 @@ msgid "Product Variant"
 msgstr "Variantă de produs"
 
 #. module: sale_subscription
+#: model_terms:ir.ui.view,arch_db:sale_subscription.product_template_only_view_form_recurring
+msgid "Product Variants"
+msgstr ""
+
+#. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_sale_order_line_list
 msgid "Product Varient"
 msgstr "Variantă produs"
@@ -3032,7 +3289,7 @@ msgstr "Produse"
 #: model:ir.model.fields,field_description:sale_subscription.field_product_product__allow_prorated_price
 #: model:ir.model.fields,field_description:sale_subscription.field_product_template__allow_prorated_price
 msgid "Prorated Price"
-msgstr ""
+msgstr "Preț proporțional"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_subscription_report__qty_delivered
@@ -3067,8 +3324,6 @@ msgid "Quantity"
 msgstr "Cantitate"
 
 #. module: sale_subscription
-#. odoo-python
-#: code:addons/sale_subscription/models/sale_order.py:0
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order__subscription_state__1_draft
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_log__subscription_state__1_draft
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_log_report__state__draft
@@ -3171,7 +3426,7 @@ msgstr "Recurent"
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__recurring_total
 msgid "Recurring Amount"
-msgstr ""
+msgstr "Suma recurentă"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__recurring_details
@@ -3232,7 +3487,7 @@ msgstr ""
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.product_template_only_view_form_recurring
 msgid "Recurring prices"
-msgstr ""
+msgstr "Prețuri recurente"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_content
@@ -3334,12 +3589,12 @@ msgstr "Reluare"
 #. module: sale_subscription
 #: model:mail.message.subtype,name:sale_subscription.subtype_resume_and_pause_subscription
 msgid "Resume and Pause Subscription"
-msgstr ""
+msgstr "Reluare și pauză abonament"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_sidebar
 msgid "Resume subscription"
-msgstr ""
+msgstr "Reluare abonament"
 
 #. module: sale_subscription
 #: model:ir.ui.menu,name:sale_subscription.menu_sale_subscription_report_cohort
@@ -3574,7 +3829,7 @@ msgstr "Dată început"
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_digest
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_content
 msgid "Start Date:"
-msgstr "Dată Început"
+msgstr "Dată Început:"
 
 #. module: sale_subscription
 #: model:mail.message.subtype,name:sale_subscription.subtype_state_change
@@ -3682,7 +3937,7 @@ msgstr "Număr Abonamente"
 #. module: sale_subscription
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_line__display_type__subscription_discount
 msgid "Subscription Discount"
-msgstr ""
+msgstr "Reducere abonament"
 
 #. module: sale_subscription
 #. odoo-python
@@ -3715,13 +3970,13 @@ msgstr "Plan de abonament"
 #: model_terms:ir.ui.view,arch_db:sale_subscription.product_pricelist_view
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_plan_view_form
 msgid "Subscription Pricelist Rules"
-msgstr ""
+msgstr "Reguli de listă de prețuri pentru abonament"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_product_product__subscription_rule_ids
 #: model:ir.model.fields,field_description:sale_subscription.field_product_template__subscription_rule_ids
 msgid "Subscription Pricings"
-msgstr ""
+msgstr "Prețuri de abonament"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_product_product__recurring_invoice
@@ -3780,13 +4035,14 @@ msgstr "Starea abonamentului s-a schimbat"
 #. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 msgid "Subscription was resumed on the %s."
-msgstr ""
+msgstr "Abonamentul a fost reluat la %s."
 
 #. module: sale_subscription
 #. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 msgid "Subscription will be paused from %(date_from)s to %(date_to)s."
 msgstr ""
+"Abonamentul va fi pus în pauză de la %(date_from)s până la %(date_to)s."
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_portal_content_inherit
@@ -3866,6 +4122,9 @@ msgid ""
 "continuously,customer didn't pay, etc.) will be automatically closed after "
 "this period."
 msgstr ""
+"Abonamentele întârziate la reînnoire (de exemplu, plata automată eșuează în "
+"mod continuu, clientul nu a plătit etc.) vor fi închise automat după această "
+"perioadă."
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_search
@@ -3956,7 +4215,7 @@ msgstr ""
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_portal_content_inherit
 msgid "The delivery address can not be changed."
-msgstr ""
+msgstr "Adresa de livrare nu poate fi schimbată."
 
 #. module: sale_subscription
 #: model:ir.model.constraint,message:sale_subscription.constraint_sale_order_template_check_duration_value
@@ -4044,6 +4303,9 @@ msgid ""
 "The reason: \"%s\" is here for good. It's essential for our subscription "
 "application like coffee is for a Monday morning!"
 msgstr ""
+"Motivul: „%s” este aici pentru totdeauna. Este esențial pentru aplicația "
+"noastră de abonamente, la fel cum cafeaua este esențială într-o dimineață de "
+"luni!"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_close_reason_view_form
@@ -4061,6 +4323,16 @@ msgstr "Reînnoirea %s a fost anulată."
 #: model:ir.model.fields,help:sale_subscription.field_sale_order_line__subscription_start_date
 msgid "The start date indicate when the subscription periods begin."
 msgstr "Data de început indică când încep perioadele de abonament."
+
+#. module: sale_subscription
+#. odoo-python
+#: code:addons/sale_subscription/models/sale_order.py:0
+msgid ""
+"The start date of an upsell cannot be greater or equal to the next invoice "
+"date of the subscription %s.\n"
+"You should first invoice the original subscription, use an earlier start "
+"date for the upsell or create a renewal quotation."
+msgstr ""
 
 #. module: sale_subscription
 #: model:sale.order.close.reason,name:sale_subscription.close_reason_renew
@@ -4132,7 +4404,7 @@ msgstr ""
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_order_view_form
 msgid "This subscription has been paused by the customer until"
-msgstr ""
+msgstr "Acest abonament a fost pus în pauză de client până la"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_order_view_form
@@ -4140,6 +4412,8 @@ msgid ""
 "This subscription is overdue and exceeds the auto-close limit of the "
 "recurring plan. It will be closed soon by the system."
 msgstr ""
+"Acest abonament este restant și depășește limita de închidere automată a "
+"planului recurent. Va fi închis în curând de sistem."
 
 #. module: sale_subscription
 #. odoo-python
@@ -4160,7 +4434,7 @@ msgstr "Această comandă de upsell a fost creată din abonament"
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__is_closing
 msgid "To Be Closed"
-msgstr ""
+msgstr "De închis"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_search
@@ -4231,13 +4505,13 @@ msgstr "Neatribuit"
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_view_kanban
 msgid "Unhappy face"
-msgstr ""
+msgstr "Față nefericită"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_subscription_plan__billing_period_unit
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_subscription_report__product_uom_id
 msgid "Unit"
-msgstr "buc"
+msgstr "Unitate"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_subscription_report__price_unit
@@ -4297,8 +4571,8 @@ msgid ""
 "Upsell %(order)s for customer %(customer)s for the period %(date_start)s to %"
 "(date_end)s %(nl)s%(lines)s"
 msgstr ""
-"Vânzare suplimentară %(order)s pentru clientul %(customer)s pentru perioada "
-"%(date_start)s până la %(date_end)s %(nl)s%(lines)s"
+"Vânzare suplimentară %(order)s pentru clientul %(customer)s pentru perioada %"
+"(date_start)s până la %(date_end)s %(nl)s%(lines)s"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__upsell_count
@@ -4337,7 +4611,7 @@ msgstr "Vânzări suplimentare"
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__user_pause_start
 msgid "User Pause Start"
-msgstr ""
+msgstr "Început pauză utilizator"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order_line__product_template_variant_value_ids
@@ -4382,7 +4656,7 @@ msgstr "Depozit"
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__warn_system_closing
 msgid "Warn System Closing"
-msgstr ""
+msgstr "Avertizare închidere sistem"
 
 #. module: sale_subscription
 #. odoo-python
@@ -4462,6 +4736,10 @@ msgid ""
 "                Any new delivered quantity during that period may never be "
 "invoiced."
 msgstr ""
+"Sunteți pe cale să facturați o perioadă de abonament în viitor pentru "
+"produs(e) cu politica de facturare bazată pe cantitatea livrată.\n"
+"                Orice cantitate nouă livrată în acea perioadă poate să nu "
+"fie niciodată facturată."
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.invoice_warning_message
@@ -4476,6 +4754,14 @@ msgid ""
 msgstr ""
 "Urmează să închideți definitiv un abonament care este valabil până la\n"
 "                    &amp;nbsp;"
+
+#. module: sale_subscription
+#. odoo-python
+#: code:addons/sale_subscription/models/product_template.py:0
+msgid ""
+"You can not change the recurring property of this product because it has "
+"been sold already (%s)"
+msgstr ""
 
 #. module: sale_subscription
 #. odoo-python
@@ -4537,8 +4823,8 @@ msgid ""
 " - Has not started yet.\n"
 " - Has no invoiced period in the future."
 msgstr ""
-"Nu puteți crea o vânzare suplimentară pentru acest abonament deoarece acesta "
-":\n"
+"Nu puteți crea o vânzare suplimentară pentru acest abonament deoarece "
+"acesta :\n"
 "- Nu a început încă.\n"
 "- Nu are nicio perioadă de facturare în viitor."
 
@@ -4549,6 +4835,8 @@ msgid ""
 "You cannot generate a payment link for a recurring plan without a recurring "
 "product."
 msgstr ""
+"Nu puteți genera un link de plată pentru un plan recurent fără un produs "
+"recurent."
 
 #. module: sale_subscription
 #. odoo-python
@@ -4557,6 +4845,8 @@ msgid ""
 "You cannot generate a payment link for a recurring product without a "
 "recurring plan."
 msgstr ""
+"Nu puteți genera un link de plată pentru un produs recurent fără un plan "
+"recurent."
 
 #. module: sale_subscription
 #. odoo-python
@@ -4573,19 +4863,19 @@ msgstr "Nu puteți avea o comandă de vânzare în ciornă ca abonament confirma
 #. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 msgid "You cannot pause a subscription that is not yet due."
-msgstr ""
+msgstr "Nu puteți pune în pauză un abonament care nu este încă scadent."
 
 #. module: sale_subscription
 #. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 msgid "You cannot pause a subscription with postpaid lines."
-msgstr ""
+msgstr "Nu puteți pune în pauză un abonament cu linii postplătite."
 
 #. module: sale_subscription
 #. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 msgid "You cannot pause the subscription for 0 days."
-msgstr ""
+msgstr "Nu puteți pune în pauză abonamentul pentru 0 zile."
 
 #. module: sale_subscription
 #. odoo-python
@@ -4609,7 +4899,7 @@ msgstr "Nu puteți redeschide un abonament care nu este închis."
 #. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 msgid "You cannot resume a subscription that is not yet due."
-msgstr ""
+msgstr "Nu puteți relua un abonament care nu este încă scadent."
 
 #. module: sale_subscription
 #. odoo-python
@@ -4635,17 +4925,6 @@ msgstr ""
 #: code:addons/sale_subscription/models/sale_order.py:0
 msgid "You cannot upsell a subscription using a different currency."
 msgstr "Nu puteți vinde suplimentar un abonament folosind o monedă diferită."
-
-#. module: sale_subscription
-#. odoo-python
-#: code:addons/sale_subscription/models/sale_order.py:0
-msgid ""
-"You cannot upsell a subscription whose next invoice date is in the past.\n"
-"Please, invoice directly the %s contract."
-msgstr ""
-"Nu puteți revinde un abonament a cărui dată a următoarei facturi este în "
-"trecut.\n"
-"Vă rugăm să facturați direct %s contractul."
 
 #. module: sale_subscription
 #. odoo-python
@@ -4700,7 +4979,7 @@ msgstr "Abonamentul dvs. a expirat, va fi închis în curând."
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_template
 msgid "Your subscription is paused until"
-msgstr ""
+msgstr "Abonamentul dumneavoastră este pus în pauză până la"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_portal_templates_warnings
@@ -4710,7 +4989,7 @@ msgstr "Abonamentul dvs. va fi închis la"
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_template
 msgid "Your subscription will be paused from"
-msgstr ""
+msgstr "Abonamentul dumneavoastră va fi pus în pauză de la"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription_portal_template
@@ -4868,7 +5147,7 @@ msgid ""
 "{{ object.company_id.name }}: Please check the subscription {{ object.name }}"
 msgstr ""
 "{{ object.company_id.name }}: Vă rugăm să verificați abonamentul "
-"{{ object.name"
+"{{ object.name }}"
 
 #. module: sale_subscription
 #: model:mail.template,subject:sale_subscription.mail_template_subscription_rating
@@ -4897,6 +5176,324 @@ msgstr ""
 "{{ object.company_id.name }}: Abonamentul dvs. {{ object.name }} are nevoie "
 "de atenția dvs. Dacă aveți vreo problemă cu el, vă rugăm să contactați "
 "{{ object.user_id.name }}, persoana de contact."
+
+#~ msgid ""
+#~ "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-"
+#~ "top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-"
+#~ "serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td "
+#~ "align=\"center\">\n"
+#~ "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
+#~ "style=\"padding: 16px; background-color: white; color: #454748; border-"
+#~ "collapse:separate;\">\n"
+#~ "<tbody>\n"
+#~ "    <!-- HEADER -->\n"
+#~ "    <tr>\n"
+#~ "        <td align=\"center\" style=\"min-width: 590px;\">\n"
+#~ "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+#~ "width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
+#~ "0px 8px 0px 8px; border-collapse:separate;\">\n"
+#~ "                <tr><td valign=\"middle\">\n"
+#~ "                    <t t-set=\"company\" t-value=\"object.company_id or "
+#~ "object.user_id.company_id or user.company_id\"/>\n"
+#~ "                    <span style=\"font-size: 10px;\">Your Subscription</"
+#~ "span><br/>\n"
+#~ "                    <span style=\"font-size: 20px; font-weight: bold;\" t-"
+#~ "out=\"object.name or ''\">Office Cleaning Service</span>\n"
+#~ "                </td></tr>\n"
+#~ "                <tr><td valign=\"middle\" align=\"right\" t-if=\"not "
+#~ "company.uses_default_logo\">\n"
+#~ "                    <img t-attf-src=\"/logo.png?company={{ company.id }}"
+#~ "\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-"
+#~ "alt=\"company.name\"/>\n"
+#~ "                </td></tr>\n"
+#~ "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+#~ "                    <hr width=\"100%\" style=\"background-"
+#~ "color:rgb(204,204,204);border:medium none;clear:both;display:block;font-"
+#~ "size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+#~ "                </td></tr>\n"
+#~ "            </table>\n"
+#~ "        </td>\n"
+#~ "    </tr>\n"
+#~ "    <!-- CONTENT -->\n"
+#~ "    <tr>\n"
+#~ "        <td align=\"center\" style=\"min-width: 590px;\">\n"
+#~ "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+#~ "width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
+#~ "0px 8px 0px 8px; border-collapse:separate;\">\n"
+#~ "                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+#~ "                    Hello <t t-out=\"object.partner_id.name or "
+#~ "''\">Brandon Freeman</t>,<br/><br/>\n"
+#~ "                    <t t-if=\"ctx.get('payment_token') and "
+#~ "ctx.get('next_invoice_amount')\">\n"
+#~ "                        We were unable to process a payment for your "
+#~ "subscription using your payment method\n"
+#~ "                        <t t-out=\"ctx['payment_token'] or ''\">TOKEN</"
+#~ "t>\n"
+#~ "                        for <t t-out=\"ctx['next_invoice_amount'] or "
+#~ "''\">10</t> <t t-out=\"ctx.get('currency_name') or ''\">$</t>.\n"
+#~ "                        <t t-if=\"ctx.get('error')\">\n"
+#~ "                            Your bank or credit institution gave the "
+#~ "following details about the issue: <pre t-out=\"ctx['error'] or ''\"/>.\n"
+#~ "                        </t>\n"
+#~ "                    </t>\n"
+#~ "                    <t t-else=\"\">\n"
+#~ "                        Your subscription <t t-out=\"ctx.get('code') or "
+#~ "''\">CODE</t> is due for renewal but we haven’t received your payment "
+#~ "yet. To keep your subscription active, please make your payment as soon "
+#~ "as possible.\n"
+#~ "                    </t>\n"
+#~ "                    <br/><br/>\n"
+#~ "                    Your subscription <t t-out=\"ctx.get('code') or "
+#~ "''\">CODE</t> is still valid but will be <strong>suspended</strong>\n"
+#~ "                    on <t t-out=\"format_date(ctx.get('date_close')) or "
+#~ "''\">05/05/2021</t><br/>\n"
+#~ "                    <div style=\"margin: 16px 0px; text-align: center;"
+#~ "\">\n"
+#~ "                        <a t-attf-href=\"{{ ctx.get('payment_link', "
+#~ "object.get_portal_url()) }}\" t-attf-style=\"display: inline-block; "
+#~ "padding: 10px 30px; text-decoration: none; background-color: "
+#~ "{{company.email_secondary_color or '#875A7B'}}; color: "
+#~ "{{company.email_primary_color or '#FFFFFF'}}; border-radius: 5px;\">\n"
+#~ "                            Pay Now\n"
+#~ "                        </a>\n"
+#~ "                    </div>\n"
+#~ "                    <br/>\n"
+#~ "                    If you have any questions, do not hesitate to contact "
+#~ "us.<br/><br/>\n"
+#~ "                    Thank you for choosing <t t-out=\"company.name or "
+#~ "''\">YourCompany</t>!\n"
+#~ "                    <div>\n"
+#~ "                    <t t-if=\"user.signature\" data-o-mail-quote-"
+#~ "container=\"1\">\n"
+#~ "                        <br/><br/>\n"
+#~ "                        <div data-o-mail-quote=\"1\">--<br data-o-mail-"
+#~ "quote=\"1\"/><t t-out=\"user.signature or ''\" data-o-mail-"
+#~ "quote=\"1\">Mitchell Admin</t></div>\n"
+#~ "                    </t>\n"
+#~ "                    </div>\n"
+#~ "                </td></tr>\n"
+#~ "                <tr><td style=\"text-align:center;\">\n"
+#~ "                    <hr width=\"100%\" style=\"background-"
+#~ "color:rgb(204,204,204);border:medium none;clear:both;display:block;font-"
+#~ "size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+#~ "                </td></tr>\n"
+#~ "            </table>\n"
+#~ "        </td>\n"
+#~ "    </tr>\n"
+#~ "    <!-- FOOTER -->\n"
+#~ "    <tr>\n"
+#~ "        <td align=\"center\" style=\"min-width: 590px;\">\n"
+#~ "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+#~ "width=\"590\" style=\"min-width: 590px; background-color: white; font-"
+#~ "size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+#~ "                <tr><td valign=\"middle\" align=\"left\">\n"
+#~ "                    <t t-out=\"company.name or ''\">YourCompany</t>\n"
+#~ "                </td></tr>\n"
+#~ "                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: "
+#~ "0.7;\">\n"
+#~ "                    <t t-if=\"company.phone\">\n"
+#~ "                        <t t-out=\"company.phone or ''\">+1 650-123-4567</"
+#~ "t> |\n"
+#~ "                    </t>\n"
+#~ "                    <t t-if=\"company.email\">\n"
+#~ "                        <a t-attf-href=\"'mailto:%s' % {{ company.email }}"
+#~ "\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.email "
+#~ "or ''\">info@yourcompany.com</a> |\n"
+#~ "                    </t>\n"
+#~ "                    <t t-if=\"company.website\">\n"
+#~ "                        <a t-attf-href=\"'%s' % {{ company.website }}\" "
+#~ "style=\"text-decoration:none; color: #454748;\" t-out=\"company.website "
+#~ "or ''\">http://www.example.com</a>\n"
+#~ "                    </t>\n"
+#~ "                </td></tr>\n"
+#~ "            </table>\n"
+#~ "        </td>\n"
+#~ "    </tr>\n"
+#~ "</tbody>\n"
+#~ "</table>\n"
+#~ "</td></tr>\n"
+#~ "<!-- POWERED BY -->\n"
+#~ "<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+#~ "    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
+#~ "style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; "
+#~ "padding: 8px; border-collapse:separate;\">\n"
+#~ "      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+#~ "        Powered by <a target=\"_blank\" href=\"https://www.odoo.com?"
+#~ "utm_source=db&amp;utm_medium=mail\" t-attf-style=\"color: "
+#~ "{{company.email_secondary_color or '#875A7B'}};\">Odoo</a>\n"
+#~ "      </td></tr>\n"
+#~ "    </table>\n"
+#~ "</td></tr>\n"
+#~ "</table>\n"
+#~ "        "
+#~ msgstr ""
+#~ "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-"
+#~ "top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-"
+#~ "serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td "
+#~ "align=\"center\">\n"
+#~ "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
+#~ "style=\"padding: 16px; background-color: white; color: #454748; border-"
+#~ "collapse:separate;\">\n"
+#~ "<tbody>\n"
+#~ "    <!-- HEADER -->\n"
+#~ "    <tr>\n"
+#~ "        <td align=\"center\" style=\"min-width: 590px;\">\n"
+#~ "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+#~ "width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
+#~ "0px 8px 0px 8px; border-collapse:separate;\">\n"
+#~ "                <tr><td valign=\"middle\">\n"
+#~ "                    <t t-set=\"company\" t-value=\"object.company_id or "
+#~ "object.user_id.company_id or user.company_id\"/>\n"
+#~ "                    <span style=\"font-size: 10px;\">Abonamentul Dvs.</"
+#~ "span><br/>\n"
+#~ "                    <span style=\"font-size: 20px; font-weight: bold;\" t-"
+#~ "out=\"object.name or ''\">Office Cleaning Service</span>\n"
+#~ "                </td></tr>\n"
+#~ "                <tr><td valign=\"middle\" align=\"right\" t-if=\"not "
+#~ "company.uses_default_logo\">\n"
+#~ "                    <img t-attf-src=\"/logo.png?company={{ company.id }}"
+#~ "\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-"
+#~ "alt=\"company.name\"/>\n"
+#~ "                </td></tr>\n"
+#~ "                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+#~ "                    <hr width=\"100%\" style=\"background-"
+#~ "color:rgb(204,204,204);border:medium none;clear:both;display:block;font-"
+#~ "size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+#~ "                </td></tr>\n"
+#~ "            </table>\n"
+#~ "        </td>\n"
+#~ "    </tr>\n"
+#~ "    <!-- CONTENT -->\n"
+#~ "    <tr>\n"
+#~ "        <td align=\"center\" style=\"min-width: 590px;\">\n"
+#~ "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+#~ "width=\"590\" style=\"min-width: 590px; background-color: white; padding: "
+#~ "0px 8px 0px 8px; border-collapse:separate;\">\n"
+#~ "                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+#~ "                    Bună <t t-out=\"object.partner_id.name or "
+#~ "''\">Brandon Freeman</t>,<br/><br/>\n"
+#~ "                    <t t-if=\"ctx.get('payment_token') and "
+#~ "ctx.get('next_invoice_amount')\">\n"
+#~ "                        Nu am reușit să procesăm o plată pentru "
+#~ "abonamentul dvs. folosind metoda de plată\n"
+#~ "                        <t t-out=\"ctx['payment_token'] or ''\">TOKEN</"
+#~ "t>\n"
+#~ "                        pentru suma de <t t-"
+#~ "out=\"ctx['next_invoice_amount'] or ''\">10</t> <t t-"
+#~ "out=\"ctx.get('currency_name') or ''\">$</t>.\n"
+#~ "                        <t t-if=\"ctx.get('error')\">\n"
+#~ "                            Banca sau instituția financiară a oferit "
+#~ "următoarele detalii despre problemă: <pre t-out=\"ctx['error'] or ''\"/"
+#~ ">.\n"
+#~ "                        </t>\n"
+#~ "                    </t>\n"
+#~ "                    <t t-else=\"\">\n"
+#~ "                        Abonamentul dvs. <t t-out=\"ctx.get('code') or "
+#~ "''\">CODE</t> urmează să fie reînnoit, însă nu am primit încă plata. "
+#~ "Pentru a menține abonamentul activ, vă rugăm să efectuați plata cât mai "
+#~ "curând posibil.\n"
+#~ "                    </t>\n"
+#~ "                    <br/><br/>\n"
+#~ "                    Abonamentul dvs. <t t-out=\"ctx.get('code') or "
+#~ "''\">CODE</t> este încă valabil, dar va fi <strong>suspendat</strong>\n"
+#~ "                    la data de <t t-"
+#~ "out=\"format_date(ctx.get('date_close')) or ''\">05/05/2021</t><br/>\n"
+#~ "                    <div style=\"margin: 16px 0px; text-align: center;"
+#~ "\">\n"
+#~ "                        <a t-attf-href=\"{{ ctx.get('payment_link', "
+#~ "object.get_portal_url()) }}\" t-attf-style=\"display: inline-block; "
+#~ "padding: 10px 30px; text-decoration: none; background-color: "
+#~ "{{company.email_secondary_color or '#875A7B'}}; color: "
+#~ "{{company.email_primary_color or '#FFFFFF'}}; border-radius: 5px;\">\n"
+#~ "                            Plătește acum\n"
+#~ "                        </a>\n"
+#~ "                    </div>\n"
+#~ "                    <br/>\n"
+#~ "                    Dacă aveți întrebări, nu ezitați să ne contactați.<br/"
+#~ "><br/>\n"
+#~ "                    Vă mulțumim că ați ales <t t-out=\"company.name or "
+#~ "''\">YourCompany</t>!\n"
+#~ "                    <div>\n"
+#~ "                    <t t-if=\"user.signature\" data-o-mail-quote-"
+#~ "container=\"1\">\n"
+#~ "                        <br/><br/>\n"
+#~ "                        <div data-o-mail-quote=\"1\">--<br data-o-mail-"
+#~ "quote=\"1\"/><t t-out=\"user.signature or ''\" data-o-mail-"
+#~ "quote=\"1\">Mitchell Admin</t></div>\n"
+#~ "                    </t>\n"
+#~ "                    </div>\n"
+#~ "                </td></tr>\n"
+#~ "                <tr><td style=\"text-align:center;\">\n"
+#~ "                    <hr width=\"100%\" style=\"background-"
+#~ "color:rgb(204,204,204);border:medium none;clear:both;display:block;font-"
+#~ "size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+#~ "                </td></tr>\n"
+#~ "            </table>\n"
+#~ "        </td>\n"
+#~ "    </tr>\n"
+#~ "    <!-- FOOTER -->\n"
+#~ "    <tr>\n"
+#~ "        <td align=\"center\" style=\"min-width: 590px;\">\n"
+#~ "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "
+#~ "width=\"590\" style=\"min-width: 590px; background-color: white; font-"
+#~ "size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+#~ "                <tr><td valign=\"middle\" align=\"left\">\n"
+#~ "                    <t t-out=\"company.name or ''\">YourCompany</t>\n"
+#~ "                </td></tr>\n"
+#~ "                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: "
+#~ "0.7;\">\n"
+#~ "                    <t t-if=\"company.phone\">\n"
+#~ "                        <t t-out=\"company.phone or ''\">+1 650-123-4567</"
+#~ "t> |\n"
+#~ "                    </t>\n"
+#~ "                    <t t-if=\"company.email\">\n"
+#~ "                        <a t-attf-href=\"'mailto:%s' % {{ company.email }}"
+#~ "\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.email "
+#~ "or ''\">info@yourcompany.com</a> |\n"
+#~ "                    </t>\n"
+#~ "                    <t t-if=\"company.website\">\n"
+#~ "                        <a t-attf-href=\"'%s' % {{ company.website }}\" "
+#~ "style=\"text-decoration:none; color: #454748;\" t-out=\"company.website "
+#~ "or ''\">http://www.example.com</a>\n"
+#~ "                    </t>\n"
+#~ "                </td></tr>\n"
+#~ "            </table>\n"
+#~ "        </td>\n"
+#~ "    </tr>\n"
+#~ "</tbody>\n"
+#~ "</table>\n"
+#~ "</td></tr>\n"
+#~ "<!-- POWERED BY -->\n"
+#~ "<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+#~ "    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" "
+#~ "style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; "
+#~ "padding: 8px; border-collapse:separate;\">\n"
+#~ "      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+#~ "        Oferit de <a target=\"_blank\" href=\"https://www.odoo.com?"
+#~ "utm_source=db&amp;utm_medium=mail\" t-attf-style=\"color: "
+#~ "{{company.email_secondary_color or '#875A7B'}};\">Odoo</a>\n"
+#~ "      </td></tr>\n"
+#~ "    </table>\n"
+#~ "</td></tr>\n"
+#~ "</table>\n"
+#~ "        "
+
+#~ msgid ""
+#~ "Automatic payment failed. No country specified on payment_token's partner"
+#~ msgstr ""
+#~ "Plata automată a eșuat. Nu a fost specificată nicio țară pe token-ul "
+#~ "plății partenerului"
+
+#~ msgid ""
+#~ "You cannot upsell a subscription whose next invoice date is in the past.\n"
+#~ "Please, invoice directly the %s contract."
+#~ msgstr ""
+#~ "Nu puteți revinde un abonament a cărui dată a următoarei facturi este în "
+#~ "trecut.\n"
+#~ "Vă rugăm să facturați direct %s contractul."
+
+#~ msgid "Applied On"
+#~ msgstr "Aplicat în"
 
 #~ msgid ""
 #~ "\n"

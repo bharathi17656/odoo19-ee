@@ -36,7 +36,7 @@ class SignSendRequest(models.TransientModel):
     cc_partner_ids = fields.Many2many('res.partner', string="Copy to", help="Contacts in copy will be notified by email once the document is either fully signed or refused.")
     is_user_signer = fields.Boolean(compute='_compute_is_user_signer')
 
-    subject = fields.Char(string="Subject", compute='_compute_subject', store=True)
+    subject = fields.Char(string="Subject", compute='_compute_subject', store=True, readonly=False)
     body = fields.Html('body', compute='_compute_mail_message_body', readonly=False, help="Message to be sent to signers of the specified document", store=True)
     message_cc = fields.Html("CC Message", help="Message to be sent to contacts in copy of the signed document")
     attachment_ids = fields.Many2many('ir.attachment', string='Attachments', bypass_search_access=True)
@@ -148,7 +148,7 @@ class SignSendRequest(models.TransientModel):
         for wiz in self:
             display_name = self.env._("Sign Request ")
             if wiz.reference_doc:
-                display_name = self.env._("Sign Request - %s", wiz.reference_doc.display_name)
+                display_name = self.env._("Sign Request - %(template_name)s - %(res_name)s", template_name=wiz.template_id.display_name, res_name=wiz.reference_doc.display_name or '')
             wiz.display_name = display_name
 
     @api.depends('template_id', 'reference_doc')
@@ -166,7 +166,7 @@ class SignSendRequest(models.TransientModel):
         for wiz in self:
             filename = self.env._("Sign Request")
             if wiz.reference_doc:
-                filename = self.env._("Sign Request - %s", wiz.reference_doc.display_name)
+                filename = self.env._("Sign Request - %(template_name)s - %(res_name)s", template_name=wiz.template_id.display_name, res_name=wiz.reference_doc.display_name or '')
             elif wiz.template_id:
                 filename = wiz.template_id.display_name
             wiz.filename = filename
@@ -270,10 +270,6 @@ class SignSendRequest(models.TransientModel):
         if self.activity_id:
             self._activity_done()
 
-        current_partner_id = self.env.user.partner_id.id
-        # Check if the current user's partner is one of the signers
-        if any(signer.partner_id.id == current_partner_id for signer in self.signer_ids):
-            return request.go_to_document()
         if not self.reference_doc:
             return self.env['ir.actions.actions']._for_xml_id('sign.sign_request_action')
 

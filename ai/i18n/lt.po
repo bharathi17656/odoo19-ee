@@ -4,15 +4,16 @@
 #
 # Vytenis Viruišis <vytenis@users.noreply.translate.odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-28 18:41+0000\n"
-"PO-Revision-Date: 2025-11-08 20:03+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/ai/lt/"
-">\n"
+"POT-Creation-Date: 2026-09-25 17:44+0000\n"
+"PO-Revision-Date: 2026-10-05 22:33+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
+"Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/ai/"
+"lt/>\n"
 "Language: lt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,29 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
-
-#. module: ai
-#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_read_group
-msgid ""
-"\n"
-"            **Tool Name: Read group**\n"
-"\n"
-"            Searches a particular model using a domain. The provided domain "
-"must be in valid JSON format.\n"
-"        "
-msgstr ""
-
-#. module: ai
-#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_search
-msgid ""
-"\n"
-"            **Tool Name: search**\n"
-"\n"
-"            Searches a particular model using a domain. The provided domain "
-"must be in valid JSON format.\n"
-"        "
-msgstr ""
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: ai
 #: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_get_fields
@@ -252,6 +231,16 @@ msgid ""
 msgstr ""
 
 #. module: ai
+#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_read_group
+#: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_search
+msgid ""
+"\n"
+"            Searches a particular model using a domain. The provided domain "
+"must be in valid JSON format.\n"
+"        "
+msgstr ""
+
+#. module: ai
 #: model:ir.actions.server,ai_tool_description:ai.ir_actions_server_adjust_search
 msgid ""
 "\n"
@@ -295,12 +284,59 @@ msgid ""
 "the current view info.\n"
 "        "
 msgstr ""
+"\n"
+"            Vartotojas gali toliau užduoti klausimus, o jei manote, kad "
+"esamą paiešką galima tiesiog pakoreguoti neatidarant kito meniu, galite "
+"naudoti šį įrankį.\n"
+"\n"
+"            Komandos eilutės <session_info_context> lauke pateikiama esamo "
+"vaizdo informacija, kurioje yra aktyvūs paieškos aspektai.\n"
+"            Aspektas gali būti `OR` sujungtų filtrų grupė, grupavimo "
+"kriterijų grupė arba `OR` sujungtų paieškos terminų grupė.\n"
+"\n"
+"            **Parametrų paaiškinimas**:\n"
+"            - `remove_facets` – pašalinus aspektą, pašalinama visa filtrų, "
+"grupavimo kriterijų ar paieškos terminų grupė. Pašalinus filtrą ar paieškos "
+"aspektą, sumažinami apribojimai.\n"
+"            - `toggle_filters` – Perjungus filtrą, jis bus pridėtas prie "
+"aktyvaus filtrų aspekto arba pašalintas iš jo.\n"
+"            - `toggle_groupbys` – Perjungus grupavimo kriterijų, jis bus "
+"pridėtas prie aktyvaus grupavimo kriterijų aspekto arba pašalintas iš jo.\n"
+"            - `apply_searches` – Taikant paiešką, paieškos terminas bus "
+"sujungtas su „OR“ operatoriumi aktyviame paieškos aspektu, kuriame yra tas "
+"pats laukas. Pvz., jei yra lauko aspektas „name=John“, o jūs įvedate paiešką "
+"„name=Jane“, galutinė paieška bus „name=John OR name=Jane“.\n"
+"            - `measures` – Nurodžius matavimus, pasirinkti matavimai bus "
+"aktyvuoti dabartiniame vaizde, jei tai yra suvestinė arba diagramos "
+"vaizdas.\n"
+"            - `mode` – Tik diagramos vaizde: tai diagramos tipas. "
+"Pasirinkite „line“, „bar“ arba „pie“, kad pakeistumėte diagramos tipą "
+"dabartiniame diagramos vaizde.\n"
+"            - `order` – tik diagramos peržiūrai: nurodžius tvarką, bus "
+"pakeistas rezultatų rūšiavimas dabartinėje diagramos peržiūroje.\n"
+"            - `stacked` – tik diagramos peržiūrai: nurodžius „stacked“, bus "
+"pakeistas rezultatų sluoksniavimas dabartinėje diagramos peržiūroje.\n"
+"            - `cumulated` – tik diagramos peržiūrai: nurodžius „cumulated“, "
+"bus pakeistas rezultatų kaupimas dabartinėje diagramos peržiūroje.\n"
+"            - `custom_domain` – Paieškos peržiūros elementai gali būti "
+"nepakankami norimam domenui išreikšti. Tokiu atveju galite nurodyti "
+"pasirinktinį domeną kaip JSON eilutę.\n"
+"            - `switch_view_type` – Perjungus peržiūros tipą, dabartinė "
+"peržiūra bus pakeista į nurodytą tipą. Pasirinkite iš galimų peržiūros tipų, "
+"nurodytų dabartinėje peržiūros informacijoje.\n"
+"        "
 
 #. module: ai
 #. odoo-python
 #: code:addons/ai/models/ai_agent.py:0 code:addons/ai/models/ai_composer.py:0
 msgid "%s (copy)"
 msgstr "%s (kopija)"
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/llm_providers.py:0
+msgid "%s is no longer available. Please select a newer model."
+msgstr "%s jau nebeprieinama. Prašome pasirinkti naujesnį modelį."
 
 #. module: ai
 #: model_terms:ir.ui.view,arch_db:ai.ai_log_action
@@ -432,7 +468,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/ai/models/discuss_channel.py:0
 msgid "AI: %(name)s"
-msgstr ""
+msgstr "AI: %(name)s"
 
 #. module: ai
 #: model:ir.actions.server,name:ai.ir_actions_server_adjust_search
@@ -567,7 +603,7 @@ msgstr ""
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ai_agent__name
 msgid "Agent Name"
-msgstr ""
+msgstr "Agento vardas"
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_discuss_channel__ai_agent_id
@@ -602,12 +638,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/ai/static/src/editor/embedded_components/core/voice_transcription.js:0
 msgid "An error occured"
-msgstr ""
-
-#. module: ai
-#. odoo-javascript
-#: code:addons/ai/static/src/discuss/core/common/thread_model_patch.js:0
-msgid "An error occurred while generating the AI response."
 msgstr ""
 
 #. module: ai
@@ -777,6 +807,11 @@ msgid "Customize to control relevance and formatting."
 msgstr ""
 
 #. module: ai
+#: model:ir.model.fields,field_description:ai.field_ai_agent__deprecated_model_replacement_hint
+msgid "Deprecated Model Replacement Hint"
+msgstr ""
+
+#. module: ai
 #. odoo-javascript
 #: code:addons/ai/static/src/ai_json_schema/ai_json_schema.xml:0
 #: model:ir.model.fields,field_description:ai.field_ai_agent__subtitle
@@ -815,6 +850,7 @@ msgstr "Diskusijų kanalas"
 #: model:ir.model.fields,field_description:ai.field_ir_actions_server__display_name
 #: model:ir.model.fields,field_description:ai.field_ir_attachment__display_name
 #: model:ir.model.fields,field_description:ai.field_ir_http__display_name
+#: model:ir.model.fields,field_description:ai.field_ir_model_fields__display_name
 #: model:ir.model.fields,field_description:ai.field_mail_composer_mixin__display_name
 #: model:ir.model.fields,field_description:ai.field_mail_render_mixin__display_name
 #: model:ir.model.fields,field_description:ai.field_mail_template__display_name
@@ -867,6 +903,7 @@ msgstr ""
 #: code:addons/ai/models/ai_agent_source.py:0
 msgid "Embedding generation failed using the current LLM model selected."
 msgstr ""
+"Įterpimo generavimas nepavyko naudojant pasirinktą dabartinį LLM modelį."
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_res_config_settings__google_key_enabled
@@ -890,6 +927,12 @@ msgstr "Nepavyko"
 
 #. module: ai
 #. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "Failed to fetch URL: %s"
+msgstr ""
+
+#. module: ai
+#. odoo-python
 #: code:addons/ai/models/ai_agent_source.py:0
 msgid "Failed to fetch the content of the source."
 msgstr ""
@@ -904,6 +947,16 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/ai/static/src/ai_prompt/ai_field_selector_plugin.js:0
 msgid "Field Selector"
+msgstr "Lauko pasirinkimas"
+
+#. module: ai
+#: model:ir.model.fields,field_description:ai.field_ir_model_fields__ttype
+msgid "Field Type"
+msgstr ""
+
+#. module: ai
+#: model:ir.model,name:ai.model_ir_model_fields
+msgid "Fields"
 msgstr ""
 
 #. module: ai
@@ -917,6 +970,13 @@ msgid "File Size"
 msgstr "Failo dydis"
 
 #. module: ai
+#: model:ir.model.fields,help:ai.field_ai_agent__response_style
+msgid ""
+"For thinking models (e.g. gpt-5): Analytical: Medium thinking, Balanced: Low "
+"thinking, Creative: Minimal thinking"
+msgstr ""
+
+#. module: ai
 #. odoo-javascript
 #: code:addons/ai/static/src/editor/plugins/chatgpt_plugin.js:0
 msgid "Generate or transform content with AI"
@@ -928,7 +988,7 @@ msgid "Get help on a record"
 msgstr ""
 
 #. module: ai
-#: model:ir.model.fields.selection,name:ai.selection__ai_embedding__embedding_model__gemini-embedding-001
+#: model:ir.model.fields.selection,name:ai.selection__ai_embedding__embedding_model__gemini-embedding-2
 msgid "Google"
 msgstr "Google"
 
@@ -964,6 +1024,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ai.field_ir_actions_server__id
 #: model:ir.model.fields,field_description:ai.field_ir_attachment__id
 #: model:ir.model.fields,field_description:ai.field_ir_http__id
+#: model:ir.model.fields,field_description:ai.field_ir_model_fields__id
 #: model:ir.model.fields,field_description:ai.field_mail_composer_mixin__id
 #: model:ir.model.fields,field_description:ai.field_mail_render_mixin__id
 #: model:ir.model.fields,field_description:ai.field_mail_template__id
@@ -1146,7 +1207,7 @@ msgstr "MIME tipas"
 #. odoo-python
 #: code:addons/ai/utils/tools_schema/validators.py:0
 msgid "Missing definition for %(name)s"
-msgstr ""
+msgstr "Trūksta apibrėžimo %(name)s"
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ai_composer__focused_models
@@ -1174,9 +1235,15 @@ msgstr ""
 
 #. module: ai
 #. odoo-python
+#: code:addons/ai/utils/llm_providers.py:0
+msgid "No embedding configuration found for the provider"
+msgstr ""
+
+#. module: ai
+#. odoo-python
 #: code:addons/ai/models/ai_agent.py:0
 msgid "No embedding model found for the selected provider"
-msgstr ""
+msgstr "Nerastas įterpimo modelis pasirinktam teikėjui"
 
 #. module: ai
 #. odoo-python
@@ -1188,7 +1255,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/ai/utils/llm_providers.py:0
 msgid "No provider found for the selected model"
-msgstr ""
+msgstr "Nerastas paslaugų teikėjas pasirinktam modeliui"
 
 #. module: ai
 #: model_terms:ir.ui.view,arch_db:ai.ai_log_action
@@ -1226,6 +1293,18 @@ msgstr "Nuotoliniu Būdu"
 #. odoo-python
 #: code:addons/ai/models/ai_agent_source.py:0
 msgid "Only administrators can create sources from URLs."
+msgstr ""
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/llm_api_service.py:0
+msgid "Oops! Your API key seems incorrect. Update it from the Settings."
+msgstr ""
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/models/ai_agent.py:0
+msgid "Oops, it looks like our AI is unreachable"
 msgstr ""
 
 #. module: ai
@@ -1301,7 +1380,7 @@ msgstr "Įrašas"
 #. odoo-javascript
 #: code:addons/ai/static/src/ai_prompt/ai_records_selector_plugin.js:0
 msgid "Records Selector"
-msgstr ""
+msgstr "Įrašų pasirinkimas"
 
 #. module: ai
 #. odoo-javascript
@@ -1345,7 +1424,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/ai/static/src/records_selector_popover/records_selector_popover.xml:0
 msgid "Select a records"
-msgstr ""
+msgstr "Pasirinkite įrašus"
 
 #. module: ai
 #. odoo-javascript
@@ -1374,7 +1453,7 @@ msgstr "Serverio veiksmas"
 #. odoo-javascript
 #: code:addons/ai/static/src/editor/embedded_components/core/voice_transcription.xml:0
 msgid "Share by email"
-msgstr ""
+msgstr "Pasidalinti el.paštu"
 
 #. module: ai
 #. odoo-javascript
@@ -1429,7 +1508,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/ai/static/src/editor/embedded_components/plugins/voice_transcription_plugin.js:0
 msgid "Start recording to get a real-time transcript of the conversation"
-msgstr ""
+msgstr "Pradėkite įrašyti, kad gautumėte pokalbio transkripciją realiuoju laiku"
 
 #. module: ai
 #: model:ir.model.fields,field_description:ai.field_ai_agent_source__status
@@ -1480,7 +1559,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/ai/static/src/editor/plugins/chatgpt_plugin.js:0
 msgid "Text Selection"
-msgstr ""
+msgstr "Teksto pasirinkimas"
 
 #. module: ai
 #. odoo-python
@@ -1508,6 +1587,12 @@ msgstr ""
 #. module: ai
 #: model:ir.model.fields,help:ai.field_ai_prompt_button__name
 msgid "The prompt sent to the AI when clicked on"
+msgstr ""
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "The site's rules (robots.txt) prevent reading this page."
 msgstr ""
 
 #. module: ai
@@ -1627,6 +1712,18 @@ msgid "URL"
 msgstr "URL"
 
 #. module: ai
+#. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "URL %(url)s returned non-HTML content: %(content_type)s"
+msgstr ""
+
+#. module: ai
+#. odoo-python
+#: code:addons/ai/utils/html_extractor.py:0
+msgid "URL %s returned empty content"
+msgstr ""
+
+#. module: ai
 #. odoo-javascript
 #: code:addons/ai/static/src/editor/embedded_components/core/voice_transcription.js:0
 msgid "Unable to start the recording."
@@ -1690,6 +1787,12 @@ msgid "User is online"
 msgstr ""
 
 #. module: ai
+#. odoo-python
+#: code:addons/ai/models/ai_agent.py:0
+msgid "Using %(llm_model_label)s based on your agent setup."
+msgstr ""
+
+#. module: ai
 #. odoo-javascript
 #: code:addons/ai/static/src/editor/embedded_components/core/readonly_voice_transcription.xml:0
 #: code:addons/ai/static/src/editor/embedded_components/core/voice_transcription.xml:0
@@ -1742,7 +1845,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/ai/static/src/ai_json_schema/ai_json_schema.xml:0
 msgid "eg: name"
-msgstr ""
+msgstr "pvz.: vardas"
 
 #. module: ai
 #. odoo-javascript
@@ -1759,4 +1862,9 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/ai/static/src/ai_prompt/ai_field_selector_plugin.js:0
 msgid "fa-hashtag"
+msgstr ""
+
+#. module: ai
+#: model:ir.model.fields.selection,name:ai.selection__ir_model_fields__ttype__vector
+msgid "vector"
 msgstr ""

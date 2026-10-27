@@ -3,13 +3,14 @@
 # * delivery_sendcloud
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.4+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-10 13:20+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-07-10 17:45+0000\n"
+"PO-Revision-Date: 2026-10-05 21:16+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "delivery_sendcloud/lt/>\n"
 "Language: lt\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -33,6 +34,13 @@ msgid ""
 "possible or choose another carrier:\n"
 "\t%s"
 msgstr ""
+"\n"
+"Be to, kai kurie atskiri produktai yra per sunkūs net ir sunkiausiam iš "
+"galimų pristatymo būdų.\n"
+"                             \n"
+"Jei įmanoma, paskirstykite šių produktų kiekį į kelis siuntinius arba "
+"pasirinkite kitą vežėją:\n"
+"\t%s"
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -42,18 +50,30 @@ msgid ""
 "Try to distribute your products across your packages so that they weigh less "
 "than %(max_weight)s %(unit)s or choose another carrier."
 msgstr ""
+"\n"
+"Pabandykite paskirstyti savo produktus po skirtingus siuntinius taip, kad jų "
+"svoris būtų mažesnis nei „ %(max_weight)s %(unit)s “, arba pasirinkite kitą "
+"vežėją."
+
+#. module: delivery_sendcloud
+#. odoo-python
+#: code:addons/delivery_sendcloud/models/sendcloud_service.py:0
+msgid ""
+" Please make sure there is an address with the same name under \"Address "
+"Name (optional)\" in your Sendcloud Address configuration."
+msgstr ""
 
 #. module: delivery_sendcloud
 #. odoo-python
 #: code:addons/delivery_sendcloud/models/sendcloud_service.py:0
 msgid "%(partner_name)s email required"
-msgstr ""
+msgstr "%(partner_name)s būtina nurodyti el. paštą"
 
 #. module: delivery_sendcloud
 #. odoo-python
 #: code:addons/delivery_sendcloud/models/sendcloud_service.py:0
 msgid "%(partner_name)s phone required"
-msgstr ""
+msgstr "%(partner_name)s reikalaujamas telefono numeris"
 
 #. module: delivery_sendcloud
 #: model_terms:ir.ui.view,arch_db:delivery_sendcloud.view_delivery_carrier_form
@@ -116,17 +136,17 @@ msgstr "Kurjeris"
 #. odoo-python
 #: code:addons/delivery_sendcloud/models/delivery_carrier.py:0
 msgid "Choose Sendcloud Shipping Products"
-msgstr ""
+msgstr "Pasirinkite „Sendcloud“ siuntimo produktus"
 
 #. module: delivery_sendcloud
 #: model:ir.model,name:delivery_sendcloud.model_sendcloud_shipping_wizard
 msgid "Choose from the available sendcloud shipping methods"
-msgstr ""
+msgstr "Pasirinkite vieną iš siūlomų „SendCloud“ pristatymo būdų"
 
 #. module: delivery_sendcloud
 #: model:ir.model,name:delivery_sendcloud.model_sendcloud_shipping_product
 msgid "Choose from the available sendcloud shipping products"
-msgstr ""
+msgstr "Pasirinkite iš siūlomų „SendCloud“ siuntimo produktų"
 
 #. module: delivery_sendcloud
 #: model_terms:ir.ui.view,arch_db:delivery_sendcloud.view_shipping_method_sendcloud
@@ -342,6 +362,14 @@ msgstr ""
 #: code:addons/delivery_sendcloud/models/delivery_carrier.py:0
 msgid ""
 "Note that this price is for %s packages since the order weight is more than "
+"the maximum packaging weight."
+msgstr ""
+
+#. module: delivery_sendcloud
+#. odoo-python
+#: code:addons/delivery_sendcloud/models/delivery_carrier.py:0
+msgid ""
+"Note that this price is for %s packages since the order weight is more than "
 "the maximum weight allowed by the shipping method."
 msgstr ""
 
@@ -389,7 +417,7 @@ msgstr "Grąžinti produktus"
 #. module: delivery_sendcloud
 #: model:ir.model.fields,help:delivery_sendcloud.field_delivery_carrier__country_id
 msgid "Select the country to be used by this delivery method"
-msgstr ""
+msgstr "Pasirinkite šalį, kurioje bus naudojamas šis pristatymo būdas"
 
 #. module: delivery_sendcloud
 #: model_terms:ir.ui.view,arch_db:delivery_sendcloud.view_delivery_carrier_form
@@ -598,6 +626,7 @@ msgstr ""
 msgid ""
 "There is no rate available for this order with the selected shipping product."
 msgstr ""
+"Pasirinkus šį pristatymo būdą, šiam užsakymui nėra taikomas joks tarifas."
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -606,7 +635,7 @@ msgstr ""
 msgid ""
 "There is no shipping method available for this order with the selected "
 "carrier"
-msgstr ""
+msgstr "Pasirinkus šį vežėją, šiam užsakymui nėra galimų pristatymo būdų"
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -615,6 +644,7 @@ msgid ""
 "There is no shipping method available for this picking with the selected "
 "carrier"
 msgstr ""
+"Pasirinkus šį vežėją, komplektuojant šį užsakymą nėra galimų pristatymo būdų"
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -625,6 +655,10 @@ msgid ""
 "You can either choose another carrier, change your filters or redefine the "
 "content of your package(s)."
 msgstr ""
+"Nėra siuntų, kurių svoris atitiktų nurodytą intervalą:\n"
+"%s\n"
+"Galite pasirinkti kitą vežėją, pakeisti filtrus arba peržiūrėti siuntų "
+"turinį."
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -633,6 +667,8 @@ msgid ""
 "There's no shipping method matching all your selected filters for this "
 "picking/order."
 msgstr ""
+"Nėra jokio pristatymo būdo, atitinkančio visus jūsų pasirinktus filtrus šiam "
+"užsakymui, kurį reikia komplektuoti."
 
 #. module: delivery_sendcloud
 #. odoo-python
@@ -647,7 +683,7 @@ msgstr "Perkelti"
 
 #. module: delivery_sendcloud
 #: model:ir.model.fields,field_description:delivery_sendcloud.field_delivery_carrier__sendcloud_use_batch_shipping
-msgid "Use Batch Shipping"
+msgid "Use Multicollo"
 msgstr ""
 
 #. module: delivery_sendcloud
@@ -699,4 +735,10 @@ msgstr "cm"
 msgid ""
 "created in Sendcloud. <br/>\n"
 "            <b>Tracking Numbers:</b>"
+msgstr ""
+
+#. module: delivery_sendcloud
+#. odoo-javascript
+#: code:addons/delivery_sendcloud/static/src/views/sendcloud_product_selection_widget.xml:0
+msgid "g"
 msgstr ""

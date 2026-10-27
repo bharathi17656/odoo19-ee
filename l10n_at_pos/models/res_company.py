@@ -1,6 +1,6 @@
 import re
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError, UserError
+from odoo.exceptions import ValidationError, RedirectWarning, UserError
 from odoo.addons.l10n_at_pos.models.fiskaly_client import FiskalyClient, fiskaly_iap_rpc
 
 
@@ -8,17 +8,17 @@ class ResCompany(models.Model):
     _inherit = 'res.company'
 
     l10n_at_pos_is_tax_exempted = fields.Boolean(string="Tax exempted?", default=False, copy=False)
-    l10n_at_pos_test_mode = fields.Boolean(string="Test Fiskaly", default=True, copy=False)
+    l10n_at_pos_test_mode = fields.Boolean(string="Test Fiskaly", default=False, copy=False)
     # Fiskaly api fields
-    l10n_at_fiskaly_api_key = fields.Char(string="Fiskaly API Key (AUT)", copy=False)
-    l10n_at_fiskaly_api_secret = fields.Char(string="Fiskaly API Secret (AUT)", copy=False)
-    l10n_at_fiskaly_access_token = fields.Char(string="API Access Token", copy=False)
+    l10n_at_fiskaly_api_key = fields.Char(string="Fiskaly API Key (AUT)", groups='base.group_user', copy=False)
+    l10n_at_fiskaly_api_secret = fields.Char(string="Fiskaly API Secret (AUT)", groups='base.group_user', copy=False)
+    l10n_at_fiskaly_access_token = fields.Char(string="API Access Token", groups='base.group_user', copy=False)
     l10n_at_fiskaly_organization_id = fields.Char(string="Fiskaly organization identifier", copy=False)
     l10n_at_is_odoo_managed_org = fields.Boolean(string="Managed By Odoo", default=True, copy=False)
     # FON fields
     l10n_at_fon_participant_id = fields.Char(string="Participation Identifier", copy=False)
     l10n_at_fon_user_id = fields.Char(string="User Identifier", copy=False)
-    l10n_at_fon_user_pin = fields.Char(string="User Pin", copy=False)
+    l10n_at_fon_user_pin = fields.Char(string="User Pin", groups='base.group_user', copy=False)
     l10n_at_is_fon_authenticated = fields.Boolean(string="FON Authenticated?", copy=False)
     # Company SCU
     l10n_at_pos_company_scuid = fields.Char(string="Fiskaly SCU id (uuid)", readonly=True, copy=False)
@@ -82,6 +82,10 @@ class ResCompany(models.Model):
         # If necessary fields are removed, need to authenticate again
         if any(key in vals for key in ('l10n_at_fiskaly_api_key', 'l10n_at_fiskaly_api_secret')) and self.l10n_at_fiskaly_access_token:
             vals.update({"l10n_at_fiskaly_access_token": ""})
+            # New API key/secret means a new organization, so the old SCU and registers
+            # no longer exist for it. Clear them to recreate on re-auth.
+            vals.update({"l10n_at_pos_company_scuid": False})
+            self.env['pos.config'].search([('company_id', 'in', self.ids)]).l10n_at_cash_regid = False
 
         if any(key in vals for key in ('l10n_at_fon_participant_id', 'l10n_at_fon_user_id', 'l10n_at_fon_user_pin')) and self.l10n_at_is_fon_authenticated:
             # If any necessary fields are removed, need authentication again
@@ -98,11 +102,6 @@ class ResCompany(models.Model):
 
     def action_l10n_at_authenticate_fon_credentials(self):
         self.ensure_one()
-        fiskaly_client = FiskalyClient(self, self.l10n_at_fiskaly_api_key, self.l10n_at_fiskaly_api_secret)
-        if open_sessions := self.env['pos.session'].search([('company_id', '=', self.id), ('state', '!=', 'closed')]):
-            raise UserError(_('Please close and validate the following open PoS Sessions before authenticating FON.\n'
-                            'Open sessions: %s', (' '.join(open_sessions.mapped('name')),)))
-
         fiskaly_client = FiskalyClient(self, self.l10n_at_fiskaly_api_key, self.l10n_at_fiskaly_api_secret)
         fiskaly_client.fon_auth(
             bearer_token=self.l10n_at_fiskaly_access_token,
@@ -122,6 +121,12 @@ class ResCompany(models.Model):
 
     def action_generate_fiskaly_credentials(self):
         self.ensure_one()
+        if open_sessions := self.env['pos.session'].search([('company_id', '=', self.id), ('state', '!=', 'closed')]):
+            action = self.env.ref('point_of_sale.action_pos_config_kanban')
+            msg = _('Please close and validate the following open PoS Sessions before generating Fiskaly Credentials.\n'
+                    'Open sessions: %s', (' '.join(open_sessions.mapped('name')),))
+            raise RedirectWarning(msg, action.id, _('Go to Point of Sale'))
+
         params = self._l10n_at_create_organization_payload()
         response = fiskaly_iap_rpc(self, '/register', params)
         self.write({
@@ -130,12 +135,17 @@ class ResCompany(models.Model):
             'l10n_at_fiskaly_api_secret': response[0]['l10n_at_fiskaly_api_secret'],
         })
 
+        return self.action_auth_fiskaly_credentials()
+
     def action_auth_fiskaly_credentials(self, refresh=False):
+        self.auth_fiskaly_credentials(refresh=refresh)
+        return self._notify("success", _("Fiskaly Authentication Successful!"))
+
+    def auth_fiskaly_credentials(self, refresh=False):
         """Authenticate with Fiskaly and store the access token."""
         self.ensure_one()
         fiskaly_client = FiskalyClient(self, self.l10n_at_fiskaly_api_key, self.l10n_at_fiskaly_api_secret)
         self.l10n_at_fiskaly_access_token = fiskaly_client.auth()
-        return self._notify("success", _("Fiskaly Authenticated Successfully!"))
 
     def _verify_required_fields(self):
         missing_fields_by_company = {}

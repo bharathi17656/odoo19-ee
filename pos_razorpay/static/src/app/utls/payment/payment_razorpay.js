@@ -120,7 +120,7 @@ export class PaymentRazorpay extends PaymentInterface {
             payment_method_payment_mode: response?.paymentMode,
             card_type: response?.paymentCardType,
             card_brand: response?.paymentCardBrand || "",
-            cardholder_name: response?.nameOnCard.replace("/", ""),
+            cardholder_name: response?.nameOnCard?.replace("/", ""),
             razorpay_reverse_ref_no: response?.reverseReferenceNumber,
             transaction_id: response?.txnId,
             payment_ref_no: response?.externalRefNumber,
@@ -136,10 +136,11 @@ export class PaymentRazorpay extends PaymentInterface {
             return Promise.resolve();
         }
 
-        const orderId = order.pos_reference.replace(" ", "").replaceAll("-", "").toUpperCase();
-        const referencePrefix = this.pos.config.name.replace(/\s/g, "").slice(0, 4);
-        line.payment_ref_no =
-            referencePrefix + "/" + orderId + "/" + crypto.randomUUID().replaceAll("-", "");
+        const sequenceNumber = order.payment_ids.filter(
+            (pi) => pi.payment_method_id.use_payment_terminal === "razorpay"
+        ).length;
+        const referenceId = `${this.pos.config.id}/${order.uuid}/${this.payment_method_id.id}/${this.pos.config.currency_id.name}/${line.amount}/${sequenceNumber}`;
+        line.payment_ref_no = referenceId;
         if (order.isRefund) {
             line.setPaymentStatus("waitingCard");
             const data = {

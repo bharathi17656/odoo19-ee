@@ -243,7 +243,7 @@ class AccountReportSend(models.TransientModel):
         if not recipient_partner_ids:
             recipient_partner_ids = partners.filtered('email').ids
 
-        email_from = mail_template_id._render_field('email_from', partner_ids)
+        email_from = mail_template_id._render_field('email_from', partner_ids) if mail_template_id else {}
         downloadable_attachments = self.env['ir.attachment']
 
         for partner in partners:
@@ -261,7 +261,7 @@ class AccountReportSend(models.TransientModel):
                 partner.message_post(
                     body=body,
                     subject=subject,
-                    email_from=email_from[partner.id],
+                    email_from=email_from.get(partner.id),
                     partner_ids=recipient_partner_ids,
                     attachment_ids=attachments_ids + report_attachment.ids,
                     email_add_signature=False,

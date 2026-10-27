@@ -435,6 +435,8 @@ class DiscussChannel(models.Model):
             channel._bus_send("discuss.channel/delete", {"id": channel.id})
 
     def write(self, vals):
+        if "name" in vals and not vals["name"] and set(self.mapped("channel_type")) == {"group"}:
+            vals = {**vals, "name": ""}
         if 'channel_type' in vals:
             failing_channels = self.filtered(lambda channel: channel.channel_type != vals.get('channel_type'))
             if failing_channels:
@@ -540,11 +542,7 @@ class DiscussChannel(models.Model):
             members = members.with_prefetch(new_members.ids)
             Store(bus_channel=bus_channel).add(members.channel_id).add(
                 members,
-                [
-                    Store.One("channel_id", [], as_thread=True),
-                    *self.env["discuss.channel.member"]._to_store_persona(),
-                    "unpin_dt",
-                ],
+                extra_fields=["unpin_dt"],
             ).bus_send()
 
     def _subscribe_users_automatically_get_members(self):
@@ -637,7 +635,10 @@ class DiscussChannel(models.Model):
                 'guest_id': guest.id,
                 'channel_id': channel.id,
             } for guest in guests - existing_members.guest_id]
-            new_members = self.env['discuss.channel.member'].create(members_to_create)
+            if channel.parent_channel_id and channel.parent_channel_id.has_access("write"):
+                new_members = self.env["discuss.channel.member"].sudo().create(members_to_create)
+            else:
+                new_members = self.env["discuss.channel.member"].create(members_to_create)
             all_new_members += new_members
             for member in new_members:
                 payload = {
@@ -737,6 +738,7 @@ class DiscussChannel(models.Model):
                     "body_html": body,
                     "email_from": self.env.user.partner_id.email_formatted,
                     "email_to": addr,
+                    "message_type": "user_notification",
                     "model": "discuss.channel",
                     "res_id": self.id,
                     "subject": self.env._("%(author_name)s has invited you to a channel")
@@ -828,19 +830,27 @@ class DiscussChannel(models.Model):
         if pids:
             email_from = tools.email_normalize(msg_vals.get('email_from') or message.email_from)
             self.env['res.partner'].flush_model(['active', 'email', 'partner_share'])
-            self.env['res.users'].flush_model(['notification_type', 'partner_id'])
+            self.env['res.users'].flush_model(['active', 'notification_type', 'partner_id', 'share'])
             sql_query = SQL(
                 """
-                SELECT DISTINCT ON (partner.id) partner.id,
+                SELECT partner.id,
                        partner.email_normalized,
                        partner.lang,
                        partner.name,
                        partner.partner_share,
-                       users.id as uid,
-                       COALESCE(users.notification_type, 'email') as notif,
-                       COALESCE(users.share, FALSE) as ushare
+                       sub_user.uid as uid,
+                       COALESCE(sub_user.notification_type, 'email') as notif,
+                       COALESCE(sub_user.share, FALSE) as ushare
                   FROM res_partner partner
-             LEFT JOIN res_users users on partner.id = users.partner_id
+     LEFT JOIN LATERAL (
+                        SELECT users.id AS uid,
+                               users.notification_type AS notification_type,
+                               users.share AS share
+                          FROM res_users users
+                         WHERE users.partner_id = partner.id AND users.active
+                      ORDER BY users.share ASC NULLS FIRST, users.id ASC
+                         FETCH FIRST ROW ONLY
+                       ) sub_user ON TRUE
                  WHERE partner.active IS TRUE
                        AND partner.email != %(email)s
                        AND partner.id IN %(partner_ids)s AND partner.id != %(author_id)s
@@ -938,7 +948,18 @@ class DiscussChannel(models.Model):
         if kwargs.get("silent"):
             payload["silent"] = True
         self._bus_send("discuss.channel/new_message", payload)
+        self._bus_send_attachment_ownership(message)
         return rdata
+
+    def _bus_send_attachment_ownership(self, message):
+        if not message.attachment_ids:
+            return
+        users = message.author_id.user_ids
+        if message.author_guest_id or any(not user._is_public() for user in users):
+            Store(bus_channel=message.author_guest_id or message.author_id).add(
+                message.attachment_ids,
+                self.env["ir.attachment"]._get_store_ownership_fields(),
+            ).bus_send()
 
     def _notify_by_web_push_prepare_payload(self, message, msg_vals=False, force_record_name=False):
         payload = super()._notify_by_web_push_prepare_payload(
@@ -1000,8 +1021,9 @@ class DiscussChannel(models.Model):
         return partners.ids
 
     def message_post(self, *, message_type="notification", partner_ids=None, **kwargs):
-        # sudo: discuss.channel - write to discuss.channel is not accessible for most users
-        self.sudo().last_interest_dt = fields.Datetime.now()
+        if message_type not in ["notification", "user_notification"]:
+            # sudo: discuss.channel - write to discuss.channel is not accessible for most users
+            self.sudo().last_interest_dt = fields.Datetime.now()
         if "everyone" in kwargs.pop("special_mentions", []):
             partner_ids = list(OrderedSet((partner_ids or []) + self.channel_member_ids.partner_id.ids))
         if partner_ids:
@@ -1023,12 +1045,35 @@ class DiscussChannel(models.Model):
         if self.self_member_id and message.is_current_user_or_guest_author:
             self.self_member_id._set_last_seen_message(message, notify=False)
             self.self_member_id._set_new_message_separator(message.id + 1)
+        # Invite mentioned partners to sub-channel.
+        if self.parent_channel_id and message.partner_ids:
+            members = self.env["discuss.channel.member"].search([
+                ("channel_id", "=", self.parent_channel_id.id),
+                ("partner_id", "in", message.partner_ids.ids),
+            ])
+
+            def wants_channel_notifications(partner):
+                return not partner.user_ids or any(
+                    user.res_users_settings_id.channel_notifications != "no_notif"
+                    for user in partner.user_ids
+                )
+
+            to_invite = members.filtered(lambda m:
+                m.custom_notifications != "no_notif" if m.custom_notifications
+                else wants_channel_notifications(m.partner_id)
+            ).partner_id
+            if self.parent_channel_id.channel_type == "channel":
+                to_invite |= (message.partner_ids - members.partner_id).filtered(
+                    wants_channel_notifications
+                )
+            self._add_members(partners=to_invite)
         return super()._message_post_after_hook(message, msg_vals)
 
     def _message_update_content(self, message, /, *, partner_ids=None, **kwargs):
         if partner_ids:
             kwargs["partner_ids"] = self._get_allowed_message_partner_ids(partner_ids)
         super()._message_update_content(message, **kwargs)
+        self._bus_send_attachment_ownership(message)
 
     def _check_can_update_message_content(self, message):
         # Don't call super in this override as we want to ignore the mail.thread behavior completely
@@ -1156,13 +1201,14 @@ class DiscussChannel(models.Model):
         post_joined_message=True,
     ):
         """
-        :param channel: channel to add the persona to
         :param guest_name: name of the persona
         :param post_joined_message: whether to post a message to the channel
             to notify that the persona joined
-        :param create_member_params dict: optional parameters to pass to the
+
+        :param dict create_member_params: optional parameters to pass to the
             channel member create function.
-        :return tuple(partner, guest):
+
+        :rtype: tuple[partner, guest]
         """
         self.ensure_one()
         guest = self.env["mail.guest"]
@@ -1221,8 +1267,6 @@ class DiscussChannel(models.Model):
         all_members.mapped("create_date")  # any field in table will do except channel_id
         # prefetch in batch, including nested relations (member, guest, ...)
         Store(bus_channel=target.channel, bus_subchannel=target.subchannel).add(all_members)
-        # sudo: bus.bus: reading non-sensitive last id
-        bus_last_id = self.env["bus.bus"].sudo()._bus_last_id()
         res = [
             Store.Attr("avatar_cache_key", predicate=is_channel_or_group),
             "channel_type",
@@ -1265,6 +1309,8 @@ class DiscussChannel(models.Model):
             "uuid",
         ]
         if target.is_current_user(self.env):
+            # sudo: bus.bus: reading non-sensitive last id
+            bus_last_id = self.env["bus.bus"].sudo()._bus_last_id()
             res = res + [
                 {"fetchChannelInfoState": "fetched"},
                 "is_editable",

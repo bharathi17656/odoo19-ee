@@ -3,6 +3,7 @@ import json
 from markupsafe import Markup
 
 from odoo import models
+from odoo.exceptions import UserError
 from odoo.tools import format_date
 
 
@@ -37,7 +38,12 @@ class AccountReturn(models.Model):
 
     def _l10n_be_submit_xml(self):
         att = next(a for a in self.attachment_ids if a.res_name == self.name and a.name.endswith('.xml'))
-        response = self.company_id._l10n_be_post_vat_declaration(att.raw, att.name)
+        try:
+            response = self.company_id._l10n_be_post_vat_declaration(att.raw, att.name)
+        except UserError as e:
+            self._message_log(body=self.env._("Submission Error: \n") + e.args[0])
+            return 'error'
+
         if response is None:
             return self.company_id._l10n_be_intervat_authentication_action(self.id, 'submit')
 

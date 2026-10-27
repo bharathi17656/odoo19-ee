@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, models, _
-from odoo.tools import ormcache
 from odoo.exceptions import UserError
 
 
@@ -10,7 +9,6 @@ class HrRuleParameter(models.Model):
     _inherit = 'hr.rule.parameter'
 
     @api.model
-    @ormcache('code', 'date', 'tuple(self.env.context.get("allowed_company_ids", []))')
     def _get_parameter_from_code(self, code, date=None, raise_if_not_found=True):
         if not code.startswith('l10n_ch_withholding_tax_rates_'):
             return super()._get_parameter_from_code(code, date=date, raise_if_not_found=raise_if_not_found)

@@ -142,7 +142,7 @@ class TestLuMonthlyDeclaration(TestLuPayrollCommon):
             laura_employee.identification_id: {
                 1: self.lux_company.l10n_lu_official_social_security,
                 3: 202203,  # period reference YYYYMM
-                4: 410000,
+                4: 400000,
                 5: 64,  # 8 days * 8h
                 13: '04',  # period start date - start of contract
                 14: 15,  # period end date - end of contract
@@ -150,7 +150,7 @@ class TestLuMonthlyDeclaration(TestLuPayrollCommon):
             madison_employee.identification_id: {
                 0: 1,
                 1: self.lux_company.l10n_lu_official_social_security,
-                4: 843174,
+                4: 822609,
                 5: 136,  # 17 days (9 days 1st contract + 9 days 2nd contract - 1 day unemployment) * 8h
                 10: 12000,  # 120.00 encoded in the wizard
                 11: 8,  # 1 day of situational unemployment
@@ -160,7 +160,7 @@ class TestLuMonthlyDeclaration(TestLuPayrollCommon):
             self.employee_david.identification_id: {
                 1: self.lux_company.l10n_lu_official_social_security,
                 2: self.employee_david.identification_id,
-                4: 630368,
+                4: 614994,
                 5: 184,  # 23 days * 8h
                 10: 0,
                 11: 0,
@@ -276,7 +276,6 @@ class TestLuMonthlyDeclaration(TestLuPayrollCommon):
         })
         payslip.compute_sheet()
 
-        index_ratio = hourly_contract.l10n_lu_current_index / hourly_contract.l10n_lu_index_on_contract_signature
-        indexed_hourly = round(25 * index_ratio, 2)
-        expected_salary = indexed_hourly * 168
+        index_at_date = hourly_contract._get_l10n_lu_indexed_wage(payslip.date_to)
+        expected_salary = index_at_date * 168
         self.assertAlmostEqual(payslip.line_ids.filtered(lambda l: l.code == 'BASIC').total, expected_salary, 2)

@@ -1,7 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Domain
-from odoo.tools.translate import LazyGettext
 
 from odoo.addons.hr_expense_stripe.utils import format_amount_from_stripe
 
@@ -37,16 +36,26 @@ class HrExpense(models.Model):
         for expense in self:
             expense.is_card_expense = bool(expense.card_id)
 
+    def copy_data(self, default=None):
+        if any(self.mapped('is_card_expense')) and not self.env.context.get('from_split_wizard'):
+            raise UserError(self.env._("You cannot duplicate an expense that was created from a Stripe card transaction."))
+
+        return super().copy_data(default=default)
+
     def _get_default_responsible_for_approval(self):
-        # EXTEND hr_expense to bypass approval for expenses created from a stripe authorization/
+        # EXTEND hr_expense to bypass approval for expenses created from a stripe authorization
         self.ensure_one()
         if self.sudo().card_id:
             return self.env['res.users']
         else:
             return super()._get_default_responsible_for_approval()
 
+    def _can_be_autovalidated(self):
+        # EXTEND hr_expense to bypass approval for expenses created from a stripe authorization
+        return super()._can_be_autovalidated() or bool(self.sudo().card_id)
+
     def _do_approve(self, check=True):
-        # EXTEND hr_expense to bypass approval for expenses created from a stripe transaction
+        # EXTEND hr_expense to bypass approval for expenses created from a stripe authorization
         expenses_from_stripe = self.filtered(lambda exp: exp.sudo().card_id and exp.state in {'submitted', 'draft'})
         for expense in expenses_from_stripe:
             expense.sudo().write({
@@ -58,31 +67,12 @@ class HrExpense(models.Model):
         super(HrExpense, self - expenses_from_stripe)._do_approve(check)
 
     def _fetch_create_partner_from_stripe(self, merchant_data):
-        """ Helper to create/get a partner from the payload Stripe sent, if there are no tax_id we ignore it as relying on other fields is
-            deemed unreliable.
-        """
-        vendor = False
-        if merchant_data['tax_id']:  # Only create vendor if there is a tax_id, which is only in France for now
-            vendor = self.env['res.partner'].search(
-                domain=[('vat', 'ilike', merchant_data['tax_id'])],
-                limit=1,
-            )
-            if not vendor:
-                vendor = self.env['res.partner'].create([{
-                    'vat': merchant_data['tax_id'],
-                    'name': merchant_data['name'],
-                    'zip': merchant_data['postal_code'],
-                    'city': merchant_data['city'].capitalize(),
-                    'country_id': self.env['res.country'].search([('code', 'ilike', merchant_data['country'])], limit=1).id,
-                    'state_id': self.env['res.country.state'].search([('code', 'ilike', merchant_data['state'])], limit=1).id,
-                    # We're not setting the website, as it's a potential security risk
-                }])
-        return vendor
+        """ DEPRECATED  """
+        return False
 
     @api.model
     def _create_from_stripe_authorization(self, auth_object, refusal_reason=None):
-        """ Create an expense from a stripe `authorization.request` event, when refused. Used to log the refusal and the reason
-        why it was refused.
+        """ Create an expense from a stripe `authorization.request` event, refused if refusal_reason is specified.
         """
         merchant_data = auth_object['merchant_data']
         amount_object = auth_object['pending_request'] or auth_object  # The key is always present, but the value may be empty
@@ -90,54 +80,61 @@ class HrExpense(models.Model):
         if not card:
             raise UserError(_("An Expense card that doesn't exist on the database was used"))
 
-        if self.env['hr.expense'].search([('stripe_authorization_id', '=', auth_object['id'])], limit=1):
-            return self._update_from_stripe_authorization(auth_object)
-        card = card.with_company(card.company_id)
-        domain = Domain('can_be_expensed', '=', True)
-        domain &= Domain('stripe_mcc_ids', 'any', [('code', '=', merchant_data['category_code'])])
-        default_product = self.env.ref('hr_expense.product_product_no_cost', raise_if_not_found=False)
-        product = self.env['product.product'].search(domain, limit=1) or default_product
-        if not product:
-            raise UserError(_("There is no product available for this expense. Please contact your administrator."))
-        vendor = self._fetch_create_partner_from_stripe(merchant_data)
+        expense = self.env['hr.expense'].search([('stripe_authorization_id', '=', auth_object['id'])], limit=1)
+        if expense and not refusal_reason:
+            # We don't update expenses that are refused because they may be reversed (their amount would be set to 0)
+            expense._update_from_stripe_authorization(auth_object)
+        elif not expense:
+            # Create the expense if it doesn't exist yet, which should be the common case
+            # when receiving the event `issuing_authorization.created`
+            card = card.with_company(card.company_id)
+            domain = Domain('can_be_expensed', '=', True)
+            domain &= Domain('stripe_mcc_ids', 'any', [('code', '=', merchant_data['category_code'])])
+            default_product = self.env.ref('hr_expense.product_product_no_cost', raise_if_not_found=False)
+            product = self.env['product.product'].search(domain, limit=1) or default_product
+            if not product:
+                raise UserError(_("There is no product available for this expense. Please contact your administrator."))
 
-        amount_company_currency = amount_currency = format_amount_from_stripe(amount_object['amount'], card.currency_id)
-        merchant_currency = (
-            self.env['res.currency'].with_context(active_test=False).search([
-                    ('name', '=ilike', amount_object['merchant_currency']),
-                ],
-                limit=1,
+            amount_company_currency = amount_currency = format_amount_from_stripe(amount_object['amount'], card.currency_id)
+            merchant_currency = (
+                self.env['res.currency'].with_context(active_test=False).search([
+                        ('name', '=ilike', amount_object['merchant_currency']),
+                    ],
+                    limit=1,
+                )
+                or card.currency_id
             )
-            or card.currency_id
-        )
-        if merchant_currency and not merchant_currency.active:
-            merchant_currency.active = True
-        if merchant_currency != card.currency_id:
-            amount_currency = format_amount_from_stripe(amount_object['merchant_amount'], merchant_currency)
+            if merchant_currency and not merchant_currency.active:
+                merchant_currency.active = True
+            if merchant_currency != card.currency_id:
+                amount_currency = format_amount_from_stripe(amount_object['merchant_amount'], merchant_currency)
 
-        mcc_tag = self.env['product.mcc.stripe.tag'].search([('code', '=', merchant_data['category_code'])], limit=1)
-        create_dict = {
-            'payment_mode': 'company_account',
-            'name': merchant_data['name'],
-            'employee_id': card.employee_id.id,
-            'card_id': card.id,
-            'mcc_tag_id': mcc_tag.id,
-            'manager_id': False,
-            'stripe_authorization_id': auth_object['id'],
-            'stripe_transaction_id': False,
-            'product_id': product and product.id,
-            'total_amount': amount_company_currency,
-            'total_amount_currency': amount_currency,
-            'currency_id': merchant_currency.id,
-            'journal_id': card.journal_id.id,
-            'payment_method_line_id': card.payment_method_line_id.id,
-            'vendor_id': vendor and vendor.id,
-        }
-        if isinstance(refusal_reason, LazyGettext):
-            refusal_reason = refusal_reason._translate(card.sudo().employee_id.lang)  # pylint: disable=gettext-variable
-        new_expense = self.env['hr.expense'].with_company(card.company_id).create([create_dict])
-        new_expense._do_refuse(refusal_reason)
-        return new_expense
+            mcc_tag = self.env['product.mcc.stripe.tag'].search([('code', '=', merchant_data['category_code'])], limit=1)
+            create_dict = {
+                'payment_mode': 'company_account',
+                'name': merchant_data['name'],
+                'employee_id': card.employee_id.id,
+                'card_id': card.id,
+                'mcc_tag_id': mcc_tag.id,
+                'manager_id': False,
+                'stripe_authorization_id': auth_object['id'],
+                'stripe_transaction_id': False,
+                'product_id': product and product.id,
+                'total_amount': amount_company_currency,
+                'total_amount_currency': amount_currency,
+                'currency_id': merchant_currency.id,
+                'journal_id': card.journal_id.id,
+                'payment_method_line_id': card.payment_method_line_id.id,
+            }
+            expense = self.env['hr.expense'].with_company(card.company_id).with_context(lang=card.user_id.lang or self.env.lang).create([create_dict])
+
+        if refusal_reason and expense.state != 'refused':
+            # Refused and reversed authorizations should be refused in Odoo as well
+            expense._do_refuse(refusal_reason or self.env._("Expense was refused by Stripe, or an error occurred"))
+        else:
+            # Ask the user to upload the receipt
+            expense._stripe_create_user_activity()
+        return expense
 
     def _update_from_stripe_authorization(self, auth_object):
         """
@@ -148,16 +145,12 @@ class HrExpense(models.Model):
         if not self:
             return
 
-        if auth_object['status'] in {'reversed', 'expired'}:
-            self._do_refuse(_("Expense was refused by Stripe, or an error occurred"))
-            return
-
         update_vals = {}
         card = self.card_id
         amount_company_currency = amount_currency = format_amount_from_stripe(auth_object['amount'], card.currency_id)
         merchant_currency = (
             self.env['res.currency'].with_context(active_test=False).search([
-                    ('name', '=', auth_object['merchant_currency']),
+                    ('name', '=ilike', auth_object['merchant_currency']),
                 ],
                 limit=1,
             )
@@ -188,11 +181,6 @@ class HrExpense(models.Model):
             if merchant_currency.compare_amounts(amount_currency, all_expenses_total_amount_currency) != 0:
                 update_vals['total_amount_currency'] = amount_currency - sum(older_expenses.mapped('total_amount_currency'))
 
-        if not self.vendor_id:
-            new_vendor = self._fetch_create_partner_from_stripe(auth_object['merchant_data'])
-            if new_vendor:
-                update_vals['vendor_id'] = new_vendor.id
-
         if update_vals:
             most_recent_expense.write(update_vals)
 
@@ -213,8 +201,6 @@ class HrExpense(models.Model):
             self.env['product.product'].search(domain)
             or self.env.ref('hr_expense.product_product_no_cost', raise_if_not_found=False)
         )
-
-        vendor = self._fetch_create_partner_from_stripe(tr_object['merchant_data'])
 
         amount_currency = amount_company_currency = -format_amount_from_stripe(tr_object['amount'], card.currency_id)
         merchant_currency = (
@@ -248,10 +234,9 @@ class HrExpense(models.Model):
             'product_id': product.id,
             'total_amount': amount_company_currency,
             'total_amount_currency': amount_currency,
-            'vendor_id': vendor and vendor.id,
             'split_expense_origin_id': split_id,
         }
-        new_expense = self.env['hr.expense'].with_company(card.company_id).create([create_dict])
+        new_expense = self.env['hr.expense'].with_company(card.company_id).with_context(lang=card.user_id.lang or self.env.lang).create([create_dict])
         new_expense._stripe_create_user_activity()
 
     def _update_from_stripe_transaction(self, tr_object):
@@ -284,11 +269,6 @@ class HrExpense(models.Model):
         if merchant_currency.compare_amounts(amount_currency, self.total_amount_currency) != 0:
             update_vals['total_amount_currency'] = amount_currency
 
-        if not self.vendor_id:
-            new_vendor = self._fetch_create_partner_from_stripe(tr_object['merchant_data'])
-            if new_vendor:
-                update_vals['vendor_id'] = new_vendor.id
-
         if not self.stripe_transaction_id:
             update_vals['stripe_transaction_id'] = tr_object['id']
 
@@ -312,9 +292,9 @@ class HrExpense(models.Model):
         move = self.account_move_id
         if move:
             move._reverse_moves(cancel=True)
-        self._do_refuse(_("Expense was refunded by vendor"))
+        self.with_context(lang=self.card_id.user_id.lang or self.env.lang)._do_refuse(self.env._("Expense was refunded by vendor"))
         if not self.company_currency_id.is_zero(remaining_amount):
-            self.copy({
+            self.with_context(lang=self.card_id.user_id.lang or self.env.lang).copy({
                 'manager_id': False,
                 'stripe_transaction_id': tr_object['id'],
                 'total_amount': remaining_amount,
@@ -348,7 +328,7 @@ class HrExpense(models.Model):
                 # Skipping automation of tricky corner cases
                 continue
             moves_to_reconcile = expenses_for_transaction.account_move_id
-            statement_line.set_line_bank_statement_line(moves_to_reconcile.line_ids.filtered(lambda line: line.account_id.reconcile))
+            statement_line.set_line_bank_statement_line(moves_to_reconcile.line_ids.filtered(lambda line: line.account_id.reconcile).ids)
 
     def write(self, vals):
         if 'is_card_expense' in vals:
@@ -374,3 +354,16 @@ class HrExpense(models.Model):
             'res_id': self.card_id.id,
         })
         return action
+
+    def action_submit(self):
+        # EXTEND hr_expense
+        if any(expense for expense in self if expense.state == 'draft' and expense.stripe_authorization_id and not expense.stripe_transaction_id):
+            raise UserError(self.env._("You cannot submit an expense that is reserved. Please wait for the transaction to be captured."))
+        return super().action_submit()
+
+    def action_split_wizard(self):
+        # EXTEND hr_expense
+        self.ensure_one()
+        if self.state == 'draft' and self.stripe_authorization_id and not self.stripe_transaction_id:
+            raise UserError(self.env._("You cannot split an expense that is reserved. Please wait for the transaction to be captured."))
+        return super().action_split_wizard()

@@ -1,6 +1,7 @@
 from .common import TestAccountReportsCommon
 
 from odoo import fields, Command
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tools import frozendict
 
@@ -294,6 +295,48 @@ class TestReportEngines(TestAccountReportsCommon):
                 action_dict = report.action_audit_cell(options, self._get_audit_params_from_report_line(options, report_line, report_line_dict))
                 self.assertEqual(move.line_ids.filtered_domain(action_dict['domain']), expected_amls)
 
+    def test_engine_domain_count_grouped_field(self):
+        domain = [('account_id.account_type', '=', 'asset_current')]
+        line = self._prepare_test_report_line(self._prepare_test_expression_domain(domain, 'sum'), groupby='account_id')
+        report = self._create_report([line])
+        self._create_test_account_moves([
+            self._prepare_test_account_move_line(200.0, account_code='101001'),
+            self._prepare_test_account_move_line(-50.0, account_code='101001'),
+            self._prepare_test_account_move_line(-150.0, account_code='101002'),
+        ])
+        options = self._generate_options(report, '2020-01-01', '2020-01-01')
+        self.env.flush_all()
+        report._init_currency_table(options)
+        formulas = {str(domain): report.line_ids.expression_ids}
+        # Batching groups by account even when there is no visible groupby yet.
+        totals, = report._compute_formula_batch_with_engine_domain(
+            options, 'strict_range', formulas, None, 'account_id',
+        ).values()
+        self.assertEqual(totals['count_rows'], 2)
+        grouped, = report._compute_formula_batch_with_engine_domain(
+            options, 'strict_range', formulas, 'account_id', 'id',
+        ).values()
+        self.assertEqual(sorted(value['count_rows'] for _, value in grouped), [1, 2])
+
+    def test_engine_domain_count_null_grouped_field(self):
+        domain = []
+        line = self._prepare_test_report_line(self._prepare_test_expression_domain(domain, 'count_rows'), groupby='partner_id')
+        report = self._create_report([line])
+        partner = self.env['res.partner'].create({'name': 'Grouped partner'})
+        self._create_test_account_moves([
+            self._prepare_test_account_move_line(200.0, partner_id=partner.id),
+            self._prepare_test_account_move_line(-50.0, partner_id=partner.id),
+            self._prepare_test_account_move_line(-150.0),
+        ])
+        options = self._generate_options(report, '2020-01-01', '2020-01-01')
+        self.env.flush_all()
+        report._init_currency_table(options)
+        grouped, = report._compute_formula_batch_with_engine_domain(
+            options, 'strict_range', {str(domain): report.line_ids.expression_ids}, 'partner_id', 'partner_id',
+        ).values()
+        counts = {key: value['count_rows'] for key, value in grouped}
+        self.assertEqual(counts, {partner.id: 1, None: 0})
+
     def test_engine_domain(self):
         domain = [('account_id.code', '=like', '1%'), ('balance', '<', 0.0)]
 
@@ -489,6 +532,7 @@ class TestReportEngines(TestAccountReportsCommon):
         self.env['account.account'].search([('code', 'in', ('100001', '101001'))]).tag_ids = account_tags[0]
         self.env['account.account'].search([('code', 'in', ('10.20.0', '101002'))]).tag_ids = account_tags[1]
 
+        move.line_ids[5].account_id.active = False
         # Check the values.
         options = self._generate_options(report, '2020-01-01', '2020-01-01', default_options={'unfold_all': True})
         report_lines = report._get_lines(options)
@@ -700,7 +744,7 @@ class TestReportEngines(TestAccountReportsCommon):
         )
 
     def test_engine_external_editable_percentage(self):
-        self.env.companies = self.env.company
+        self.env = self.env(context=dict(self.env.context, allowed_company_ids=self.env.company.ids))
 
         # Create the report.
         test_rounding_4 = self._prepare_test_report_line(
@@ -2104,3 +2148,148 @@ class TestReportEngines(TestAccountReportsCommon):
             ],
             options,
         )
+
+    def test_consolidated_report_includes_unmapped_accounts_from_other_companies(self):
+        company_a = self.env['res.company'].sudo().create({
+            'name': "Company A",
+        })
+        company_b = self.env['res.company'].sudo().create({
+            'name': "Company B",
+        })
+
+        context = {
+            **self.env.context,
+            'allowed_company_ids': [company_a.id, company_b.id],
+        }
+        journal_vals = {
+            'name': "Misc",
+            'type': 'general',
+            'code': "MSC",
+        }
+        AccountJournal = self.env['account.journal'].with_context(context)
+        AccountJournal.create(journal_vals | {'company_id': company_a.id})
+        AccountJournal.with_company(company_b).create(journal_vals | {'company_id': company_b.id})
+
+        AccountAccount = self.env['account.account'].with_context(context)
+        account_tag = self.env['account.account.tag']._load_records([
+            {
+                'xml_id': 'account_reports.account_codes_engine_test_tag1',
+                'noupdate': True,
+                'values': {
+                    'name': "account_codes test tag 1",
+                    'applicability': 'accounts',
+                },
+            }
+        ])
+        account_a = AccountAccount.create({
+            'name': "Account A",
+            'code': "100000",
+            'company_ids': company_a.ids,
+            'tag_ids': [(4, account_tag.id)],
+        })
+        counterpart_account_a = AccountAccount.create({
+            'name': "Counterpart A",
+            'code': "200000",
+            'company_ids': company_a.ids,
+            'tag_ids': [(4, account_tag.id)],
+        })
+        account_b = AccountAccount.create({
+            'name': "Account B",
+            'code': "500000",
+            'company_ids': company_b.ids,
+            'tag_ids': [(4, account_tag.id)],
+        })
+        counterpart_account_b = AccountAccount.create({
+            'name': "Counterpart B",
+            'code': "600000",
+            'company_ids': company_b.ids,
+            'tag_ids': [(4, account_tag.id)],
+        })
+
+        date = '2026-01-01'
+
+        AccountMove = self.env['account.move'].with_context(context)
+        AccountMove.create({
+            'move_type': 'entry',
+            'date': date,
+            'line_ids': [
+                Command.create({
+                    'account_id': account_a.id,
+                    'balance': 100,
+                }),
+                Command.create({
+                    'account_id': counterpart_account_a.id,
+                    'balance': -100,
+                }),
+            ],
+            'company_id': company_a.id,
+        }).action_post()
+        AccountMove.create({
+            'move_type': 'entry',
+            'date': date,
+            'line_ids': [
+                Command.create({
+                    'account_id': account_b.id,
+                    'balance': 1000,
+                }),
+                Command.create({
+                    'account_id': counterpart_account_b.id,
+                    'balance': -1000,
+                }),
+            ],
+            'company_id': company_b.id,
+        }).action_post()
+
+        report = self.env['account.report'].with_context(context).create({
+            'name': "Simple Report",
+            'filter_multi_company': 'selector',
+            'column_ids': [Command.create({
+                'name': "Balance",
+                'expression_label': 'balance',
+            })],
+            'line_ids': [Command.create({
+                'name': "The line",
+                'groupby': 'account_id',
+                'expression_ids': [Command.create({
+                    'label': 'balance',
+                    'engine': 'account_codes',
+                    'formula': "tag(account_reports.account_codes_engine_test_tag1)",
+                })],
+            })],
+        })
+        options = self._generate_options(report, date, date)
+        lines = report._get_lines(options)
+        self.assertLinesValues(
+            # pylint: disable=bad-whitespace
+            lines,
+            [   0,                                                                       1],
+            [
+                (report.line_ids.name,                                                   0),
+                (f'{account_a.code} {account_a.name}',                                  100),
+                (f'{counterpart_account_a.code} {counterpart_account_a.name}',         -100),
+                (f'{account_b.name}',                                                  1000),
+                (f'{counterpart_account_b.name}',                                     -1000),
+            ],
+            options,
+        )
+
+    def test_report_line_expression_with_invalid_subformula(self):
+        """Test report generation with an invalid expression subformula raises UserError."""
+        report = self._create_report([
+            self._prepare_test_report_line(
+                self._prepare_test_expression_aggregation('14.0'),
+                code='test',
+            ),
+        ])
+        options = self._generate_options(report, '2026-01-01', '2026-12-31')
+
+        for subformula in ('Test', 'round(abc)', 'round(2)Test'):
+            with self.subTest(subformula=subformula):
+                report.line_ids.expression_ids.subformula = subformula
+                with self.assertRaises(UserError) as error:
+                    report.get_report_information(options)
+
+                self.assertEqual(
+                    str(error.exception),
+                    f'Invalid subformula in expression "balance" of line "test_line_1": {subformula}',
+                )

@@ -56,7 +56,7 @@ class HrVersion(models.Model):
         tracking=True, string="Wage with Holidays", groups="hr.group_hr_manager")
     wage_on_signature = fields.Monetary(string="Wage on Signature", tracking=True, aggregator="avg",
                                         groups="hr.group_hr_manager")
-    salary_offer_ids = fields.One2many('hr.contract.salary.offer', 'employee_version_id', groups="hr.group_hr_user", tracking=True)
+    salary_offer_ids = fields.One2many('hr.contract.salary.offer', 'employee_version_id', groups="hr.group_hr_manager", tracking=True)
     originated_offer_id = fields.Many2one('hr.contract.salary.offer', help="The original offer",
                                           groups="hr.group_hr_user", tracking=True)
     salary_offers_count = fields.Integer(compute='_compute_salary_offers_count', compute_sudo=True)
@@ -180,7 +180,7 @@ class HrVersion(models.Model):
         return html_sanitize(description)
 
     def _get_benefit_fields(self, triggers=True):
-        types = ('float', 'integer', 'monetary', 'boolean', 'properties')
+        types = ('float', 'integer', 'monetary', 'boolean')
         if not triggers:
             types += ('text',)
         nonstored_whitelist = self._benefit_white_list()

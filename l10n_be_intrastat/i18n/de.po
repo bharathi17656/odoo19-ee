@@ -6,14 +6,15 @@
 # Martin Trigaux, 2023
 # Larissa Manderfeld, 2023
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# "Larissa Manderfeld (lman)" <lman@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 19:55+0000\n"
-"PO-Revision-Date: 2025-11-18 17:09+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-01-09 19:01+0000\n"
+"PO-Revision-Date: 2026-04-20 07:31+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: German <https://translate.odoo.com/projects/odoo-19-l10n/"
 "l10n_be_intrastat/de/>\n"
 "Language: de\n"
@@ -21,12 +22,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: l10n_be_intrastat
 #: model_terms:ir.ui.view,arch_db:l10n_be_intrastat.intrastat_goods_submission_wizard_form
 msgid "<span>Download your Intrastat return</span><br/>"
-msgstr ""
+msgstr "<span>Intrastat-Meldung herunterladen</span><br/>"
 
 #. module: l10n_be_intrastat
 #: model:ir.model,name:l10n_be_intrastat.model_account_report
@@ -47,17 +48,23 @@ msgstr "Buchhaltungsrückgabeart"
 #. odoo-python
 #: code:addons/l10n_be_intrastat/models/account_intrastat_report.py:0
 msgid "Add company registry"
-msgstr ""
+msgstr "Unternehmensregister hinzufügen"
 
 #. module: l10n_be_intrastat
 #: model_terms:ir.ui.view,arch_db:l10n_be_intrastat.intrastat_services_report_export_xml
 msgid "BBP"
-msgstr ""
+msgstr "BBP"
+
+#. module: l10n_be_intrastat
+#. odoo-python
+#: code:addons/l10n_be_intrastat/models/account_intrastat_report.py:0
+msgid "CSV"
+msgstr "CSV"
 
 #. module: l10n_be_intrastat
 #: model_terms:ir.ui.view,arch_db:l10n_be_intrastat.intrastat_goods_submission_wizard_form
 msgid "Confirm and send the form"
-msgstr ""
+msgstr "Formular bestätigen und versenden"
 
 #. module: l10n_be_intrastat
 #: model:account.report.column,name:l10n_be_intrastat.intrastat_report_column_services_f01dgs_country_code
@@ -131,12 +138,12 @@ msgstr "Intrastat (Dienstleistungen F02CMS)"
 #. module: l10n_be_intrastat
 #: model:ir.model,name:l10n_be_intrastat.model_account_intrastat_services_be_report_handler
 msgid "Intrastat BE Services Report Custom Handler"
-msgstr ""
+msgstr "Intrastat-BE-Dienstleistungsbericht Benutzerdefinierter Handler"
 
 #. module: l10n_be_intrastat
 #: model:ir.model,name:l10n_be_intrastat.model_l10n_be_intrastat_intrastat_goods_submission_wizard
 msgid "Intrastat Goods Submission Wizard"
-msgstr ""
+msgstr "Assistent für die Intrastat-Warenmeldung"
 
 #. module: l10n_be_intrastat
 #: model:ir.model,name:l10n_be_intrastat.model_account_intrastat_report_handler
@@ -162,18 +169,18 @@ msgstr "Melden Sie sich bei"
 #. odoo-python
 #: code:addons/l10n_be_intrastat/models/account_intrastat_report.py:0
 msgid "Missing company registry information on the company"
-msgstr ""
+msgstr "Fehlende Informationen zum Handelsregister des Unternehmens"
 
 #. module: l10n_be_intrastat
 #: model_terms:ir.ui.view,arch_db:l10n_be_intrastat.intrastat_report_export_xml
 #: model_terms:ir.ui.view,arch_db:l10n_be_intrastat.intrastat_services_report_export_xml
 msgid "NBB"
-msgstr ""
+msgstr "NBB"
 
 #. module: l10n_be_intrastat
 #: model_terms:ir.ui.view,arch_db:l10n_be_intrastat.intrastat_goods_submission_wizard_form
 msgid "Onegate"
-msgstr ""
+msgstr "Onegate"
 
 #. module: l10n_be_intrastat
 #: model:account.report.column,name:l10n_be_intrastat.intrastat_report_column_services_f01dgs_product_origin_country
@@ -201,7 +208,7 @@ msgstr "Rückkehr"
 #. module: l10n_be_intrastat
 #: model_terms:ir.ui.view,arch_db:l10n_be_intrastat.intrastat_report_export_xml
 msgid "SXX"
-msgstr ""
+msgstr "SXX"
 
 #. module: l10n_be_intrastat
 #: model:account.report.column,name:l10n_be_intrastat.intrastat_report_column_services_f01dgs_commodity_code
@@ -218,7 +225,7 @@ msgstr "System"
 #. module: l10n_be_intrastat
 #: model_terms:ir.ui.view,arch_db:l10n_be_intrastat.intrastat_goods_submission_wizard_form
 msgid "Upload the XML file"
-msgstr ""
+msgstr "XML-Datei hochladen"
 
 #. module: l10n_be_intrastat
 #: model:account.report.column,name:l10n_be_intrastat.intrastat_report_column_services_f01dgs_value
@@ -229,10 +236,16 @@ msgstr "Wert"
 #. module: l10n_be_intrastat
 #. odoo-python
 #: code:addons/l10n_be_intrastat/models/account_intrastat_report.py:0
+msgid "XML"
+msgstr "XML"
+
+#. module: l10n_be_intrastat
+#. odoo-python
+#: code:addons/l10n_be_intrastat/models/account_intrastat_report.py:0
 msgid "company %s"
-msgstr ""
+msgstr "Unternehmen %s"
 
 #. module: l10n_be_intrastat
 #: model_terms:ir.ui.view,arch_db:l10n_be_intrastat.intrastat_goods_submission_wizard_form
 msgid "via CSAM"
-msgstr ""
+msgstr "über CSAM"

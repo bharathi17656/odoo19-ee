@@ -7,14 +7,14 @@
 # Cécile Collart <cco@odoo.com>, 2022
 # Jolien De Paepe, 2023
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Manon Rondou (ronm)" <ronm@odoo.com>, 2025.
+# "Manon Rondou (ronm)" <ronm@odoo.com>, 2025, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:49+0000\n"
-"PO-Revision-Date: 2025-10-23 08:07+0000\n"
-"Last-Translator: \"Dylan Kiss (dyki)\" <dyki@odoo.com>\n"
+"POT-Creation-Date: 2026-09-04 17:51+0000\n"
+"PO-Revision-Date: 2026-04-14 13:03+0000\n"
+"Last-Translator: \"Manon Rondou (ronm)\" <ronm@odoo.com>\n"
 "Language-Team: French <https://translate.odoo.com/projects/odoo-19/"
 "social_twitter/fr/>\n"
 "Language: fr\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : ((n != 0 && n % "
 "1000000 == 0) ? 1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 5.16.2\n"
 
 #. module: social_twitter
 #. odoo-python
@@ -66,6 +66,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:social_twitter.social_stream_post_view_kanban
 msgid "<i class=\"fa fa-retweet me-1\" title=\"Repost a post\"/>"
 msgstr "<i class=\"fa fa-retweet me-1\" title=\"Partager une publication\"/>"
+
+#. module: social_twitter
+#: model_terms:ir.ui.view,arch_db:social_twitter.twitter_preview
+msgid "@x ·"
+msgstr "@x ·"
 
 #. module: social_twitter
 #. odoo-python
@@ -270,16 +275,6 @@ msgid "Likes"
 msgstr "J'aime"
 
 #. module: social_twitter
-#. odoo-python
-#: code:addons/social_twitter/models/social_stream.py:0
-msgid ""
-"Looks like you've made too many requests. Please wait a few minutes before "
-"giving it another try."
-msgstr ""
-"Il semble que vous ayez fait trop de demandes. Veuillez patienter quelques "
-"minutes avant de réessayer."
-
-#. module: social_twitter
 #: model:ir.model.fields,field_description:social_twitter.field_social_media__media_type
 msgid "Media Type"
 msgstr "Type de réseau"
@@ -372,6 +367,12 @@ msgid "Read More about X Accounts"
 msgstr "En savoir plus sur les comptes X"
 
 #. module: social_twitter
+#. odoo-javascript
+#: code:addons/social_twitter/static/src/xml/social_twitter_templates.xml:0
+msgid "Reply"
+msgstr ""
+
+#. module: social_twitter
 #: model_terms:ir.ui.view,arch_db:social_twitter.social_stream_post_view_kanban
 msgid "Repost"
 msgstr "Republication"
@@ -449,16 +450,6 @@ msgstr "Post du flux social"
 #: model:ir.model,name:social_twitter.model_social_twitter_account
 msgid "Social X Account"
 msgstr "Compte social X"
-
-#. module: social_twitter
-#. odoo-python
-#: code:addons/social_twitter/models/social_stream.py:0
-msgid ""
-"The keyword you've typed in does not look valid. Please try again with other "
-"words."
-msgstr ""
-"Le mot clé que vous avez saisi ne semble pas valide. Veuillez réessayer avec "
-"d'autres mots."
 
 #. module: social_twitter
 #. odoo-python
@@ -555,8 +546,8 @@ msgid ""
 "We could not upload your image, it may be corrupted, it may exceed size "
 "limit or API may have send improper response (error: %s)."
 msgstr ""
-"Impossible d’uploader votre image. Il se peut qu’elle soit corrompue, qu’"
-"elle dépasse la taille maximale autorisée ou que l’API ait renvoyé une "
+"Impossible d’uploader votre image. Il se peut qu’elle soit corrompue, "
+"qu’elle dépasse la taille maximale autorisée ou que l’API ait renvoyé une "
 "réponse incorrecte (erreur : %s)."
 
 #. module: social_twitter
@@ -564,6 +555,12 @@ msgstr ""
 #: model:ir.model.fields,help:social_twitter.field_social_post_template__twitter_image_ids
 msgid "Will attach images to your posts."
 msgstr "Permet de joindre des images à vos publications."
+
+#. module: social_twitter
+#: model:ir.model.fields.selection,name:social_twitter.selection__social_media__media_type__twitter
+#: model:social.media,name:social_twitter.social_media_twitter
+msgid "X"
+msgstr "X"
 
 #. module: social_twitter
 #: model:ir.model.fields,field_description:social_twitter.field_social_stream_post__twitter_author_id
@@ -712,6 +709,22 @@ msgstr "ID de la publication X"
 
 #. module: social_twitter
 #. odoo-python
+#: code:addons/social_twitter/models/social_stream.py:0
+msgid ""
+"X: Looks like you've made too many requests. Please wait a few minutes "
+"before giving it another try."
+msgstr ""
+
+#. module: social_twitter
+#. odoo-python
+#: code:addons/social_twitter/models/social_stream.py:0
+msgid ""
+"X: The keyword you've typed in does not look valid. Please try again with "
+"other words."
+msgstr ""
+
+#. module: social_twitter
+#. odoo-python
 #: code:addons/social_twitter/models/social_stream_post.py:0
 msgid "You are not authenticated"
 msgstr "Vous n'êtes pas authentifié"
@@ -735,6 +748,14 @@ msgstr ""
 "vous de le suivre avant d'essayer à nouveau."
 
 #. module: social_twitter
+#. odoo-javascript
+#: code:addons/social_twitter/static/src/xml/social_twitter_templates.xml:0
+msgid ""
+"You cannot reply from an external service because this post doesn't mention "
+"or quote your account."
+msgstr ""
+
+#. module: social_twitter
 #. odoo-python
 #: code:addons/social_twitter/models/social_media.py:0
 msgid ""
@@ -747,6 +768,20 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:social_twitter.social_stream_view_form
 msgid "e.g. #odoo"
 msgstr "par ex. #odoo"
+
+#~ msgid ""
+#~ "Looks like you've made too many requests. Please wait a few minutes "
+#~ "before giving it another try."
+#~ msgstr ""
+#~ "Il semble que vous ayez fait trop de demandes. Veuillez patienter "
+#~ "quelques minutes avant de réessayer."
+
+#~ msgid ""
+#~ "The keyword you've typed in does not look valid. Please try again with "
+#~ "other words."
+#~ msgstr ""
+#~ "Le mot clé que vous avez saisi ne semble pas valide. Veuillez réessayer "
+#~ "avec d'autres mots."
 
 #~ msgid "%s / %s characters to fit in a Tweet"
 #~ msgstr "%s / %s caractères à intégrer dans un Tweet"

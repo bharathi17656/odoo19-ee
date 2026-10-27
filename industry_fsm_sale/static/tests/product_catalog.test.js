@@ -1,4 +1,4 @@
-import { describe, expect, test } from "@odoo/hoot";
+import { beforeEach, describe, expect, test } from "@odoo/hoot";
 import { click, queryAll } from "@odoo/hoot-dom";
 import { advanceTime, runAllTimers } from "@odoo/hoot-mock";
 
@@ -40,6 +40,27 @@ const saleOrderLineInfo = {
         uomDisplayName: "Unit",
     },
 };
+
+const kanbanViewWithSearchPanelParams = {
+    resModel: "product.product",
+    type: "kanban",
+    viewId: false,
+    searchViewArch: `
+        <search>
+            <searchpanel>
+                <field name="type"/>
+            </searchpanel>
+        </search>
+    `,
+};
+
+beforeEach(() => {
+    onRpc("/product/catalog/get_sections", () => [
+        { id: false, name: "No Section", sequence: 9, line_count: 2 },
+        { id: 1, name: "section A", sequence: 12, line_count: 0 },
+        { id: 2, name: "section B", sequence: 13, line_count: 0 },
+    ]);
+});
 
 describe.current.tags("desktop");
 defineModels([ProductProduct, SaleOrderLine]);
@@ -370,4 +391,54 @@ test("Should not display unit price without any sales access", async () => {
         },
     });
     expect(`.o_product_catalog_price`).toHaveCount(0, { message: "Unit price should not be visible" });
+});
+
+test("should allow users with the Sales group to manage search panel sections", async () => {
+    onRpc("has_group", ({ args }) => args[1] === "sales_team.group_sale_salesman");
+    await mountView({
+        ...kanbanViewWithSearchPanelParams,
+        context: {
+            show_sections: true,
+        },
+    });
+
+    expect('.o_search_panel button:contains("+ Add Section")').toBeDisplayed({
+        message: "The '+ Add Section' button should be visible",
+    });
+    expect(".o_search_panel .fa-pencil").toHaveCount(1, {
+        message: "The edit section icon should be displayed",
+    });
+    expect(".o_search_panel .o_row_handle:visible").toHaveCount(2, {
+        message: "Drag handles should be visible",
+    });
+    expect(".o_search_panel li:contains('section A')").toHaveProperty("draggable", true, {
+        message: "Sections should be draggable",
+    });
+});
+
+test("should prevent users without the Sales group from managing search panel sections", async () => {
+    onRpc("has_group", ({ args }) => {
+        if (args[1] === "sales_team.group_sale_salesman") {
+            return false;
+        }
+    });
+    await mountView({
+        ...kanbanViewWithSearchPanelParams,
+        context: {
+            show_sections: true,
+        },
+    });
+
+    expect('.o_search_panel button:contains("+ Add Section")').toHaveCount(0, {
+        message: "The '+ Add Section' button should not be visible",
+    });
+    expect(".o_search_panel .fa-pencil").toHaveCount(0, {
+        message: "The edit section icon should not be displayed",
+    });
+    expect(".o_search_panel .o_row_handle:visible").toHaveCount(0, {
+        message: "Drag handles should not be visible",
+    });
+    expect(".o_search_panel li:contains('section A')").toHaveProperty("draggable", false, {
+        message: "Sections should not be draggable",
+    });
 });

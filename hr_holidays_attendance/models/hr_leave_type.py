@@ -19,8 +19,8 @@ class HrLeaveType(models.Model):
             return super()._compute_display_name()
 
         employee = self.env['hr.employee'].browse(self.env.context.get('employee_id')).sudo()
-        unspent_overtime = self.env['hr.leave']._get_deductible_employee_overtime(employee)[employee]
-        if unspent_overtime <= 0:
+        unspent_overtime = employee._get_deductible_employee_overtime()[employee]
+        if not unspent_overtime:
             return super()._compute_display_name()
 
         overtime_leaves = self.filtered(lambda l_type: l_type.overtime_deductible and not l_type.requires_allocation)
@@ -37,15 +37,16 @@ class HrLeaveType(models.Model):
         deductible_time_off_types = self.env['hr.leave.type'].search([
             ('overtime_deductible', '=', True),
             ('requires_allocation', '=', False)])
+        unspent_overtime = employees._get_deductible_employee_overtime()
         for employee in employees:
             for leave_type in deductible_time_off_types:
                 if leave_type in self and employee.sudo().total_overtime > 0:
                     lt_info = (
                         leave_type.name,
                         {
-                            'remaining_leaves': 0,
-                            'virtual_remaining_leaves': employee.sudo().total_overtime,
-                            'max_leaves': 0,
+                            'remaining_leaves': unspent_overtime[employee],
+                            'virtual_remaining_leaves': unspent_overtime[employee],
+                            'max_leaves': unspent_overtime[employee],
                             'leaves_taken': 0,
                             'virtual_leaves_taken': 0,
                             'closest_allocation_remaining': 0,
@@ -56,7 +57,8 @@ class HrLeaveType(models.Model):
                             'icon': leave_type.sudo().icon_id.url,
                             'allows_negative': leave_type.allows_negative,
                             'max_allowed_negative': leave_type.max_allowed_negative,
-                            'overtime_deductible': True
+                            'overtime_deductible': True,
+                            'employee_company': employee.company_id.id,
                         },
                         leave_type.requires_allocation,
                         leave_type.id)

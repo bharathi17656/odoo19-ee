@@ -95,19 +95,9 @@ class ResConfigSettings(models.TransientModel):
         up = UrbanPiperClient(self.pos_config_id)
         up.configure_webhook()
         menu_response = up.request_sync_menu()
-        categ_response = up.request_category_timing()
-        combined_response = {
-            "status": "success",
-            "message": ""
-        }
-        for response in [menu_response, categ_response]:
-            if response.get('status') == 'error':
-                combined_response['status'] = "error"
-                combined_response['message'] = response.get('message', '') or response.get('error_message', '')
-                break
-            else:
-                combined_response['message'] += response.get('message', '') + ' '
-        return self.pos_config_id._urbanpiper_handle_response(combined_response)
+        if menu_response.get('status') == 'success':
+            up.request_category_timing()
+        return self.pos_config_id._urbanpiper_handle_response(menu_response)
 
     def action_refresh_webhooks(self):
         """

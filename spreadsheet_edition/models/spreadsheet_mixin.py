@@ -17,7 +17,6 @@ from odoo.tools.image import image_process
 
 from odoo.addons.spreadsheet.utils.json import extend_serialized_json
 
-
 _logger = logging.getLogger(__name__)
 
 CollaborationMessage = Dict[str, Any]
@@ -33,6 +32,7 @@ class SpreadsheetMixin(models.AbstractModel):
         "spreadsheet.revision",
         "res_id",
         domain=lambda self: [('res_model', '=', self._name)],
+        copy=False,
         groups="base.group_system",
     )
     # The last revision id known by the current transaction.
@@ -61,12 +61,16 @@ class SpreadsheetMixin(models.AbstractModel):
 
     def copy(self, default=None):
         default = default or {}
+
+        revisions_to_copy = default.pop("spreadsheet_revision_ids", None)
         new_spreadsheets = super().copy(default)
+
         is_data_changed = bool(default.keys() & {"spreadsheet_data", "spreadsheet_binary_data"})
         if not is_data_changed:
-            if "spreadsheet_revision_ids" not in default:
+            if revisions_to_copy is None:
                 for old_spreadsheet, new_spreadsheet in zip(self, new_spreadsheets):
                     old_spreadsheet._copy_revisions_to(new_spreadsheet)
+
             new_spreadsheets = new_spreadsheets.with_context(preserve_spreadsheet_revisions=True)
             for old_spreadsheet, new_spreadsheet in zip(self, new_spreadsheets):
                 new_spreadsheet.spreadsheet_data = old_spreadsheet.spreadsheet_data
@@ -75,7 +79,7 @@ class SpreadsheetMixin(models.AbstractModel):
         return new_spreadsheets
 
     @api.model_create_multi
-    def create(self, vals_list):
+    def create(self, vals_list: List[Dict[str, Any]]):
         spreadsheets = super().create(vals_list)
         spreadsheets._copy_spreadsheet_image_attachments()
         return spreadsheets
@@ -252,6 +256,55 @@ class SpreadsheetMixin(models.AbstractModel):
             return snapshot_attachment.raw.decode() or '{}'
         return self.spreadsheet_data or '{}'
 
+    def _get_binary_field_hash(self, field_name):
+        """sha1 of a binary field's content, read from the attachment metadata
+        so that the content itself is never loaded in memory.
+
+        :return: the hexadecimal digest, or False if the field is empty
+        """
+        self.ensure_one()
+        attachment = self.env["ir.attachment"].sudo().search([
+            ("res_model", "=", self._name),
+            ("res_field", "=", field_name),
+            ("res_id", "=", self.id),
+        ], limit=1)
+        return attachment.checksum or False
+
+    def _get_spreadsheet_data_hash(self):
+        """sha1 of the `spreadsheet_data` content, without loading it.
+        Overridden by models storing the data somewhere else than in the
+        `spreadsheet_binary_data` attachment.
+        """
+        return self._get_binary_field_hash("spreadsheet_binary_data")
+
+    def _get_spreadsheet_snapshot_hash(self):
+        """sha1 of the `spreadsheet_snapshot` content, without loading it."""
+        return self._get_binary_field_hash("spreadsheet_snapshot")
+
+    def _can_replay_complete_history(self):
+        """Whether the whole edition history can be restored from
+        `spreadsheet_data`.
+
+        A snapshot is built from `spreadsheet_data` plus the revisions, which
+        are archived when the snapshot is taken. The history can be restored as
+        long as the snapshot did not diverge from `spreadsheet_data`, or as long
+        as archived revisions still bridge them. Otherwise `spreadsheet_data` is
+        stale and callers must work from the snapshot only.
+        """
+        self.ensure_one()
+        snapshot_hash = self._get_spreadsheet_snapshot_hash()
+        if not snapshot_hash or snapshot_hash == self._get_spreadsheet_data_hash():
+            # without a snapshot, `_get_spreadsheet_snapshot` falls back on
+            # `spreadsheet_data`: there is nothing to diverge from
+            return True
+        # count instead of browsing `spreadsheet_revision_ids`, which would
+        # prefetch the (potentially large) `commands` of every revision
+        return bool(self.env["spreadsheet.revision"].sudo().search_count([
+            ("res_model", "=", self._name),
+            ("res_id", "=", self.id),
+            ("active", "=", False),
+        ]))
+
     def _should_be_snapshotted(self):
         if not self.spreadsheet_revision_ids:
             return False
@@ -304,9 +357,16 @@ class SpreadsheetMixin(models.AbstractModel):
         """Build spreadsheet collaboration messages from the saved
         revision data"""
         self.ensure_one()
+        # Do not use self.spreadsheet_revision_ids because it loads all revisions
+        # into the cache, including archived ones.
+        revisions = self.env["spreadsheet.revision"].search([
+            ("res_model", "=", self._name),
+            ("res_id", "=", self.id),
+            ("active", "=", True),
+        ])
         result = []
-        for revision in self.spreadsheet_revision_ids:
-            server_revision_id = revision.parent_revision_id.revision_uuid or self._get_initial_revision_uuid()
+        for revision in revisions:
+            server_revision_id = self._get_parent_uuid(revision)
             serialized = extend_serialized_json(
                 revision.commands,
                 [("serverRevisionId", f'"{server_revision_id}"'), ("nextRevisionId", f'"{revision.revision_uuid}"')]
@@ -389,7 +449,6 @@ class SpreadsheetMixin(models.AbstractModel):
             "records": self.search_read(domain, ["display_name", "display_thumbnail"], offset=offset, limit=limit)
         }
 
-    @api.readonly
     def get_spreadsheet_history(self, from_snapshot=False):
         """Fetch the spreadsheet history.
          - if from_snapshot is provided, then provides the last snapshot and the revisions since then
@@ -400,8 +459,10 @@ class SpreadsheetMixin(models.AbstractModel):
         spreadsheet_sudo = self.sudo()
         initial_date = spreadsheet_sudo.create_date
 
+        from_snapshot = from_snapshot or not spreadsheet_sudo._can_replay_complete_history()
+
         if from_snapshot:
-            data = spreadsheet_sudo._get_spreadsheet_serialized_snapshot()
+            data = json.loads(spreadsheet_sudo._get_spreadsheet_serialized_snapshot())
             revisions = spreadsheet_sudo.spreadsheet_revision_ids
             snapshot = spreadsheet_sudo.env["ir.attachment"].search([
                 ("res_model", "=", self._name),
@@ -422,7 +483,7 @@ class SpreadsheetMixin(models.AbstractModel):
                     id=rev.id,
                     name=rev.name,
                     user=(rev.author_id.id, rev.author_id.name),
-                    serverRevisionId=rev.parent_revision_id.revision_uuid or self._get_initial_revision_uuid(),
+                    serverRevisionId=self._get_parent_uuid(rev),
                     nextRevisionId=rev.revision_uuid,
                     timestamp=rev.revision_date,
                 )
@@ -445,7 +506,7 @@ class SpreadsheetMixin(models.AbstractModel):
         new_spreadsheet = self.copy(default)
         self.with_context(active_test=False)._copy_revisions_to(new_spreadsheet, revision_id)
         new_spreadsheet.spreadsheet_snapshot = base64.b64encode(json.dumps(spreadsheet_snapshot).encode())
-        new_spreadsheet.spreadsheet_revision_ids.active = False
+        new_spreadsheet.sudo().spreadsheet_revision_ids.active = False
         new_spreadsheet._delete_comments_from_data()
         return new_spreadsheet.action_open_spreadsheet()
 
@@ -537,9 +598,17 @@ class SpreadsheetMixin(models.AbstractModel):
             )
         )
 
-    def _get_initial_revision_uuid(self):
-        data = json.loads(self.spreadsheet_data)
-        return data.get("revisionId", "START_REVISION")
+    def _get_parent_uuid(self, revision):
+        parent_revision = revision.parent_revision_id
+        if parent_revision:
+            return parent_revision.revision_uuid
+        if revision.active:
+            # After snapshot: get revisionId from snapshot
+            data = self._get_spreadsheet_serialized_snapshot()
+        else:
+            # Before snapshot: get from initial data
+            data = self.spreadsheet_data
+        return json.loads(data).get("revisionId", "START_REVISION")
 
     def _delete_comments_from_data(self):
         """ Deletes comments data from the spreadsheet data and its snapshot """

@@ -1,11 +1,13 @@
 import base64
 import io
 from collections import defaultdict
+import logging
+import textwrap
 
 from odoo import models, fields, api
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import misc, format_date
-from odoo.tools.pdf import PdfFileReader, PdfFileWriter, PdfReadError, reshape_text
+from odoo.tools.pdf import PdfFileReader, PdfFileWriter, PdfReadError, reshape_text, NameObject
 
 from odoo.addons.sign.utils.pdf_handling import get_valid_pdf_data
 
@@ -18,6 +20,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph
+
+_logger = logging.getLogger()
 
 
 def _fix_image_transparency(image):
@@ -69,12 +73,13 @@ class SignDocument(models.Model):
             else:
                 attachment.res_model = self._name
         documents = super().create(vals_list)
+        default_name = self.env['sign.template'].default_get(fields=['name'])['name']
         for document, attachment in zip(documents, documents.attachment_id):
             attachment.write({
                 'res_model': self._name,
                 'res_id': document.id
             })
-            if document.template_id.name == self.env._('New Template'):
+            if document.template_id.name == default_name:
                 document.template_id.name = document.name
         documents.attachment_id.check_access('read')
         return documents
@@ -113,10 +118,14 @@ class SignDocument(models.Model):
             self.attachment_id.check_access('read')
         return res
 
+    @api.onchange("attachment_id")
+    def _onchange_attachment_id(self):
+        self.attachment_id.check_access('read')
+
     def get_radio_sets_dict(self):
         """
         :return: dict radio_sets_dict that maps each radio set that belongs to
-        this template to a dictionary containing num_options and radio_item_ids.
+            this template to a dictionary containing num_options and radio_item_ids.
         """
         radio_sets = self.sign_item_ids.filtered(lambda item: item.radio_set_id).radio_set_id
         radio_sets_dict = {
@@ -139,11 +148,13 @@ class SignDocument(models.Model):
         Updates the attachment's name. If the provided name is empty or None,
         the current name is retained. This forced update prevents the creation
         of duplicate sign items during simultaneous RPC requests.
+
         :param name: The new name for the attachment.
         :return:
+
             - True: Indicates the attachment name was successfully updated.
             - False: Indicates the update was skipped because a sign request linked
-                    to the template already exists
+              to the template already exists
         """
         self.ensure_one()
         sign_requests = self.env['sign.request'].search([('template_id', '=', self.template_id.id)], limit=1)
@@ -327,17 +338,29 @@ CRM, eCommerce, accounting, inventory, point of sale,\nproject management, etc.
                 elif item.type_id.item_type in ["textarea", "stamp"]:
                     font_size = height * normalFontSize * 0.8
                     can.setFont(font, font_size)
-                    lines = value.split('\n')
+                    # Normalize line endings to handle various formats (Windows \r\n, Unix \n, Mac \r)
+                    normalized_value = (value or '').replace('\r\n', '\n').replace('\r', '\n')
+                    # Wrap long lines that exceed field width
+                    wrapped_lines = []
+                    field_width = width * item.width
+                    for line in normalized_value.splitlines():
+                        if not line:
+                            wrapped_lines.append("")
+                        else:
+                            # Calculate an approximate character limit based on average width
+                            avg_char_width = can.stringWidth(line, font, font_size) / len(line)
+                            max_chars = int(field_width / avg_char_width)
+                            wrapped_lines.extend(textwrap.wrap(line, width=max_chars, replace_whitespace=False))
                     y = (1 - item.posY)
-                    for line in lines:
-                        empty_space = width * item.width - can.stringWidth(line, font, font_size)
+                    for line in wrapped_lines:
+                        line = reshape_text(line)
+                        empty_space = field_width - can.stringWidth(line, font, font_size)
                         x_shift = 0
                         if item.alignment == 'center':
                             x_shift = empty_space / 2
                         elif item.alignment == 'right':
                             x_shift = empty_space
                         y -= normalFontSize * 0.9
-                        line = reshape_text(line)
                         can.drawString(width * item.posX + x_shift, height * y, line)
                         y -= normalFontSize * 0.1
 
@@ -406,9 +429,43 @@ CRM, eCommerce, accounting, inventory, point of sale,\nproject management, etc.
         new_pdf = PdfFileWriter()
 
         for p in range(0, old_pdf.getNumPages()):
-            page = old_pdf.getPage(p)
-            page.mergePage(item_pdf.getPage(p))
-            new_pdf.addPage(page)
+            new_pdf.addPage(old_pdf.getPage(p))
+            page = new_pdf.getPage(-1)
+            overlay_page = item_pdf.getPage(p)
+
+            box = page.cropBox if page.get('/CropBox') else page.mediaBox
+            if box and box.lower_left:
+                offset_x = float(box.lower_left[0])
+                offset_y = float(box.lower_left[1])
+            else:
+                offset_x, offset_y = 0.0, 0.0
+                _logger.warning("Unable to parse PDF coordinates offset; defaulting to (0,0)")
+
+            overlay_page.mediaBox = page.mediaBox
+            if page.get("/CropBox"):
+                overlay_page.cropBox = page.cropBox
+            if offset_x != 0 or offset_y != 0:
+                # translate the overlay_page to match the offset of the original page,
+                # ensuring that the signature is placed in the correct location
+                overlay_page.add_transformation((1, 0, 0, 1, offset_x, offset_y))
+
+            page.mergePage(overlay_page)
+            page.compressContentStreams()
+            # Preserve page indirect object identity so internal PDF references remain valid.
+            ref = page.indirect_reference if hasattr(page, "indirect_reference") else None
+            if ref:
+                old_pdf.resolved_objects[ref.generation, ref.idnum] = page
+
+        # Copy bookmarks from the original PDF to the new one, if any exist
+        root = old_pdf.trailer.get("/Root")
+        old_outlines_ref = root.get("/Outlines") if root else None
+        if old_outlines_ref:
+            outlines_obj = old_outlines_ref.getObject()
+            copied_outlines = new_pdf._addObject(outlines_obj)
+            new_pdf._root_object.update({
+                NameObject("/Outlines"): copied_outlines,
+                NameObject("/PageMode"): NameObject("/UseOutlines")
+            })
 
         output = io.BytesIO()
         try:
@@ -419,21 +476,26 @@ CRM, eCommerce, accounting, inventory, point of sale,\nproject management, etc.
         return output
 
     def _copy_sign_items_to(self, new_document):
-        """ copy all sign items of the self document to the new_document """
+        """ Copy all sign items of the self document to the new_document that fit within its page count."""
         self.ensure_one()
         if new_document.template_id.has_sign_requests:
             raise UserError(self.env._("Somebody is already filling a document which uses this template"))
+
+        new_document_pages = new_document.num_pages
         item_id_map = {}
         for sign_item in self.sign_item_ids:
-            new_sign_item = sign_item.copy({'document_id': new_document.id})
-            item_id_map[str(sign_item.id)] = str(new_sign_item.id)
+            # Only copy sign items that fit within the new document's page range.
+            if sign_item.page <= new_document_pages:
+                new_sign_item = sign_item.copy({'document_id': new_document.id})
+                new_sign_item.responsible_id = sign_item.responsible_id.id
+                item_id_map[str(sign_item.id)] = str(new_sign_item.id)
         return item_id_map
 
     @api.model
     def _check_pdf_data_validity(self, datas):
         try:
             self._get_pdf_number_of_pages(base64.b64decode(datas))
-        except (ValueError, PdfReadError) as e:
+        except ValueError as e:
             raise UserError(self.env._("One uploaded file cannot be read. Is it a valid PDF?")) from e
 
     @api.model

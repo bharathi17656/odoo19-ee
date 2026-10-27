@@ -16,7 +16,7 @@ patch(OrderPaymentValidation.prototype, {
                 this.order.isRefund &&
                 this.order.getPartner().id === this.pos.config._consumidor_final_anonimo_id
             ) {
-                this.dialog.add(AlertDialog, {
+                this.pos.dialog.add(AlertDialog, {
                     title: _t("Refund not possible"),
                     body: _t("You cannot refund orders for the Consumidor Final Anònimo."),
                 });

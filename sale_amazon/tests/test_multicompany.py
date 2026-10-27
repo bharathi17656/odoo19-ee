@@ -1,19 +1,22 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime
+import json
+from datetime import datetime, timedelta
 from unittest.mock import patch
+from urllib.parse import urlencode
 
-from odoo.tests.common import tagged
+from freezegun import freeze_time
+
+from odoo.tests.common import HttpCase, tagged, users
 from odoo.tools import mute_logger
 
-from odoo.addons.sale_amazon.tests.common import (
-    OPERATIONS_RESPONSES_MAP,
-    TestAmazonCommon,
-)
+from odoo.addons.http_routing.tests.common import MockRequest
+from odoo.addons.sale_amazon.controllers.onboarding import compute_oauth_signature
+from odoo.addons.sale_amazon.tests.common import OPERATIONS_RESPONSES_MAP, TestAmazonCommon
 
 
 @tagged('post_install', '-at_install')
-class TestAmazonMultiCompany(TestAmazonCommon):
+class TestAmazonMultiCompany(TestAmazonCommon, HttpCase):
 
     def setUp(self):
         super().setUp()
@@ -33,9 +36,11 @@ class TestAmazonMultiCompany(TestAmazonCommon):
             'available_marketplace_ids': [self.marketplace.id],
             'active_marketplace_ids': [self.marketplace.id],
             'company_id': self.branch_company.id,
+            "last_orders_sync": datetime(2019, 12, 30),
         })
 
     @mute_logger('odoo.addons.sale_amazon.models.amazon_account')
+    @freeze_time("2020-01-01")
     def test_tax_application_on_sync_order_for_branch_company(self):
         """ Test the orders synchronization can assign taxes from parent company. """
 
@@ -67,9 +72,8 @@ class TestAmazonMultiCompany(TestAmazonCommon):
             self.other_amazon_account._sync_orders(auto_commit=False)
             self.assertEqual(
                 self.other_amazon_account.last_orders_sync,
-                datetime(2020, 1, 1),
-                msg="The last_order_sync should be equal to the date returned by get_orders_data"
-                    " when the synchronization is completed."
+                datetime(2020, 1, 1) - timedelta(minutes=2),
+                msg="Should be equal to the maximum upper limit allowed by Amazon",
             )
             order = self.env['sale.order'].search([('amazon_order_ref', '=', '123456789')])
             self.assertEqual(len(order), 1, msg="There should have been exactly one order created.")
@@ -101,3 +105,71 @@ class TestAmazonMultiCompany(TestAmazonCommon):
                 lambda l: l.product_id.default_code == 'WRAP-CODE'
             )
             self.assertEqual(gift_wrapping_line.tax_ids, self.parent_tax)
+
+    @users('admin')
+    def test_onboarding_return_not_restricted_to_website_company(self):
+        if self.env['ir.module.module']._get('website').state != 'installed':
+            self.skipTest("Website module is not installed")
+
+        user = self.env.user
+        company_1 = self.env.company
+        company_2 = self.branch_company
+        website = self.env['website'].search([], limit=1)
+        account = self.other_amazon_account
+
+        self.assertIn(company_1, user.company_ids)
+        user.company_ids += company_2
+        self.assertEqual(account.company_id, company_2)
+        self.assertEqual(website.company_id, company_1)
+
+        self.authenticate(user.login, user.login)
+        with MockRequest(self.env):
+            query_params = {
+                'selling_partner_id': "dummy",
+                'spapi_oauth_code': "dummy",
+                'state': (
+                    f'{{"account_id":{account.id},'
+                    f'"signature":"{compute_oauth_signature(account.id)}"}}'
+                ),
+            }
+
+        with (
+            patch('odoo.addons.sale_amazon.utils.exchange_authorization_code'),
+            patch.object(
+                self.env.registry['amazon.account'], 'action_update_available_marketplaces'
+            ),
+        ):
+            response = self.url_open(f'/amazon/return?{urlencode(query_params)}')
+
+        self.assertNotEqual(response.status_code, 403, msg="Should be able to access the account")
+
+    @mute_logger('odoo.addons.sale_amazon.models.amazon_account')
+    @mute_logger('odoo.addons.sale_amazon.models.amazon_offer')
+    def test_sync_inventory_multi_company(self):
+        """Test that inventory synchronization only accounts for stock in the offer's own company,
+        and ignores quantities held in other companies' locations. """
+        self.account.synchronize_inventory = True
+
+        other_company = self.env['res.company'].create({'name': "Other company"})
+        other_company_location = self.env['stock.location'].search([
+            ('company_id', '=', other_company.id), ('usage', '=', 'internal'),
+        ])[0]
+        self.env['stock.quant'].create({
+            'product_id': self.product.id,
+            'location_id': other_company_location.id,
+            'quantity': 30,
+        })
+
+        with patch(
+            'odoo.addons.sale_amazon.utils.submit_feed', return_value='An_amazing_id'
+        ) as mock:
+            self.account._sync_inventory()
+
+            sent_feed = json.loads(mock.call_args.args[1])
+            quantity = sent_feed['messages'][0]['patches'][0]['value'][0]['quantity']
+            self.assertEqual(
+                quantity,
+                0,
+                msg="The quantity available in another company's stock should not be included "
+                    "in the inventory feed sent for this company's offer.",
+            )

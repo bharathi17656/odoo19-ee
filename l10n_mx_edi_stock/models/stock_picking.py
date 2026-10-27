@@ -739,7 +739,10 @@ class StockPicking(models.Model):
     def l10n_mx_edi_cfdi_try_sat(self):
         self.ensure_one()
         documents = self.l10n_mx_edi_document_ids
-        for document in documents.filtered_domain(documents._get_update_sat_status_domain(from_cron=False)):
+
+        # sudo: pos_order_ids might appear in the domain and the user might not have access to PoS
+        documents = documents.sudo().filtered_domain(documents._get_update_sat_status_domain(from_cron=False)).sudo(flag=False)
+        for document in documents:
             document._update_sat_state()
 
     # -------------------------------------------------------------------------

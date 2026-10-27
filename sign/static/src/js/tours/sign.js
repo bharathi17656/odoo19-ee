@@ -65,9 +65,28 @@ registry.category("web_tour.tours").add("sign_tour", {
             run: "click",
         },
         {
+            trigger: ".o_field_signer_x2many .o-autocomplete--input",
+            run: "edit admin",
+        },
+        {
+            trigger:
+                ".o-autocomplete--dropdown-item:contains('Administrator'), " +
+                ".o-autocomplete--dropdown-item:contains('Mitchell Admin')",
+            run: "click",
+        },
+        {
+            trigger: ".o_field_signer_x2many .o-autocomplete--input",
+            run: "click",
+        },
+        {
             trigger: 'button[name="send_request"]',
             content: _t("Let's send the request by email."),
             tooltipPosition: "bottom",
+            run: "click",
+        },
+        {
+            trigger: ".o_list_table .o_data_row:has(.o_list_char:contains('Sample Contract')) .o_list_char:contains('Sample Contract')",
+            content: "Open first record",
             run: "click",
         },
         {

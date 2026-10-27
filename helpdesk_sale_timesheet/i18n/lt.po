@@ -10,13 +10,14 @@
 # digitouch UAB <digitouchagencyeur@gmail.com>, 2022
 # Linas Versada <linaskrisiukenas@gmail.com>, 2022
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:46+0000\n"
-"PO-Revision-Date: 2025-11-16 17:48+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2025-12-30 18:45+0000\n"
+"PO-Revision-Date: 2026-10-05 20:33+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "helpdesk_sale_timesheet/lt/>\n"
 "Language: lt\n"
@@ -24,9 +25,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < "
-"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 :"
-" n % 1 != 0 ? 2: 3);\n"
-"X-Generator: Weblate 5.12.2\n"
+"11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 "
+": n % 1 != 0 ? 2: 3);\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: helpdesk_sale_timesheet
 #: model:helpdesk.sla,name:helpdesk_sale_timesheet.helpdesk_sla_4
@@ -42,6 +43,11 @@ msgid ""
 "the cancellation of the sales order.\" invisible=\"sale_order_state != "
 "'cancel'\"/>"
 msgstr ""
+"<span class=\"fa fa-exclamation-triangle text-warning\" title=\"The sales "
+"order associated with this ticket has been cancelled. We recommend either "
+"updating the sales order item or cancelling this ticket in alignment with "
+"the cancellation of the sales order.\" invisible=\"sale_order_state != "
+"'cancel'\"/>"
 
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_sale_timesheet
@@ -61,17 +67,17 @@ msgstr "Spalva"
 #. module: helpdesk_sale_timesheet
 #: model:ir.model,name:helpdesk_sale_timesheet.model_helpdesk_ticket_convert_wizard
 msgid "Convert Helpdesk Tickets to Tasks"
-msgstr ""
+msgstr "Paversti Pagalbos Tarnybos užklausas į užduotis"
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model,name:helpdesk_sale_timesheet.model_project_task_convert_wizard
 msgid "Convert Project Tasks to Tickets"
-msgstr ""
+msgstr "Paversti projektų užduotis į užklausas"
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model,website_form_label:helpdesk_sale_timesheet.model_helpdesk_ticket
 msgid "Create a Ticket"
-msgstr ""
+msgstr "Sukurkite bilietą/pagalbos užklausą"
 
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.tickets_followup_timesheet
@@ -115,7 +121,7 @@ msgstr "Pagalbos tarnybos komanda"
 #. module: helpdesk_sale_timesheet
 #: model:ir.model,name:helpdesk_sale_timesheet.model_helpdesk_ticket
 msgid "Helpdesk Ticket"
-msgstr "Pagalbos tarnybos kreipiniai"
+msgstr "Pagalbos kreipiniai"
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model.fields,field_description:helpdesk_sale_timesheet.field_account_analytic_line__id
@@ -141,7 +147,7 @@ msgstr "Sąskaitos-faktūros"
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.portal_my_timesheets_inherit
 msgid "No Ticket"
-msgstr ""
+msgstr "Nėra bilieto"
 
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_sale_timesheet
@@ -170,6 +176,8 @@ msgid ""
 "Project to which the timesheets of this helpdesk team's tickets will be "
 "linked."
 msgstr ""
+"Projektas, su kuriuo bus susieti šios Pagalbos Tarnybos komandos užklausų "
+"darbo laiko žiniaraščių lapai."
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model.fields,field_description:helpdesk_sale_timesheet.field_helpdesk_ticket__sale_order_id
@@ -221,6 +229,14 @@ msgid ""
 "You can also change or remove the sales order item of each timesheet entry "
 "individually."
 msgstr ""
+"Pardavimo užsakymo pozicija, prie kurios bus pridėtas šiam užsakymui skirtas "
+"laikas, kad būtų galima išrašyti sąskaitą jūsų klientui.\n"
+"Pagal numatytuosius nustatymus bus pasirinkta paskutinė iš anksto apmokėta "
+"pardavimo užsakymo pozicija, kuriai dar liko laiko.\n"
+"Pašalinkite pardavimo užsakymo poziciją, kad šis užsakymas nebūtų "
+"apmokestinamas.\n"
+"Taip pat galite atskirai keisti arba pašalinti kiekvieno darbo laiko "
+"žiniaraščių pardavimo užsakymo poziciją."
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model,name:helpdesk_sale_timesheet.model_sale_order_line
@@ -237,7 +253,7 @@ msgstr "Ieškoti pagal pardavimo užsakymo produktus"
 #. odoo-python
 #: code:addons/helpdesk_sale_timesheet/controllers/portal.py:0
 msgid "Search in Ticket"
-msgstr ""
+msgstr "Paieška biliete"
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model.fields,field_description:helpdesk_sale_timesheet.field_helpdesk_sla__product_ids
@@ -247,7 +263,7 @@ msgstr "Paslaugos"
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.portal_my_timesheets_inherit
 msgid "Task/Ticket"
-msgstr ""
+msgstr "Užduotis/Prašymas"
 
 #. module: helpdesk_sale_timesheet
 #. odoo-python
@@ -270,7 +286,7 @@ msgstr "Bilieto analizė"
 #. module: helpdesk_sale_timesheet
 #: model:ir.model.fields,field_description:helpdesk_sale_timesheet.field_sale_order__ticket_count
 msgid "Ticket Count"
-msgstr ""
+msgstr "Bilietų skaičius"
 
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.sale_order_form_inherit_helpdesk_sale
@@ -320,12 +336,14 @@ msgid ""
 "You cannot link order item %(order_id)s - %(product_id)s to this ticket "
 "because it is not a service product."
 msgstr ""
+"Jūs negalite susieti užsakymo „ %(order_id)s “ – „ %(product_id)s “ su šiuo "
+"užklausimu, nes tai nėra paslaugos produktas."
 
 #. module: helpdesk_sale_timesheet
 #. odoo-python
 #: code:addons/helpdesk_sale_timesheet/models/sale_order.py:0
 msgid "[Helpdesk] %(ticket_name)s"
-msgstr ""
+msgstr "[Pagalba] %(ticket_name)s"
 
 #~ msgid "Analytic Account"
 #~ msgstr "Analitinė sąskaita"

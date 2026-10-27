@@ -7,7 +7,7 @@ import uuid
 from urllib.parse import urljoin
 
 from odoo import api, fields, models
-from odoo.addons.l10n_tw_edi_ecpay.utils import call_ecpay_api, transfer_time
+from odoo.addons.l10n_tw_edi_ecpay.utils import call_ecpay_api, transfer_time, convert_utc_time_to_tw_time
 from odoo.exceptions import UserError
 from odoo.tools import float_round
 
@@ -175,10 +175,11 @@ class AccountMove(models.Model):
     def _compute_show_reset_to_draft_button(self):
         # EXTEND 'account'
         super()._compute_show_reset_to_draft_button()
-        if self.move_type == "out_invoice":
-            self.filtered(lambda m: m.l10n_tw_edi_state and m.l10n_tw_edi_state != "invalid").show_reset_to_draft_button = False
-        elif self.move_type == "out_refund":
-            self.filtered(lambda m: m.l10n_tw_edi_refund_state).show_reset_to_draft_button = False
+        for move in self:
+            if move.move_type == 'out_invoice' and move.l10n_tw_edi_state and move.l10n_tw_edi_state != 'invalid':
+                move.show_reset_to_draft_button = False
+            if move.move_type == 'out_refund' and move.l10n_tw_edi_refund_state:
+                move.show_reset_to_draft_button = False
 
     def _need_cancel_request(self):
         # EXTENDS 'account'
@@ -460,8 +461,10 @@ class AccountMove(models.Model):
     def _l10n_tw_edi_prepare_item_list(self, json_data, is_allowance=False):
         self.ensure_one()
         item_list = []
+        base_lines = []
         sale_amount = 0
         tax_amount = 0
+        has_negative_lines = False
         AccountTax = self.env['account.tax']
         tax_type, _, _ = self._l10n_tw_edi_determine_tax_types()
         for index, line in enumerate(self.invoice_line_ids.filtered(lambda line: line.display_type == "product"), start=1):
@@ -469,6 +472,7 @@ class AccountMove(models.Model):
             if is_allowance and self.reversed_entry_id.currency_id == self.currency_id:
                 base_line['rate'] = self.reversed_entry_id.invoice_currency_rate  # replace the rate by the original invoice's rate
             AccountTax._add_tax_details_in_base_line(base_line, self.company_id)
+            base_lines.append(base_line)
 
             twd_excluded_amount = base_line['tax_details']['raw_total_excluded']
             twd_included_amount = base_line['tax_details']['raw_total_included']
@@ -477,6 +481,8 @@ class AccountMove(models.Model):
             if self.l10n_tw_edi_is_b2b:
                 item_price = float_round(twd_excluded_amount / quantity, precision_rounding=0.01)
                 item_amount = float_round(twd_excluded_amount, precision_rounding=0.01)
+                if item_price < 0:
+                    has_negative_lines = True
             else:
                 if not is_allowance and line.tax_ids and not line.tax_ids[0].price_include:
                     item_price = float_round(twd_excluded_amount / quantity, precision_rounding=0.01)
@@ -496,10 +502,11 @@ class AccountMove(models.Model):
             if not is_allowance:
                 line.l10n_tw_edi_ecpay_item_sequence = index
 
+            # ItemRemark is in TW Chinese Characters because the official document uses TW Chinese Characters
             if self.l10n_tw_edi_is_b2b and is_allowance:
                 item_list.append({
                     "OriginalInvoiceNumber": self.l10n_tw_edi_ecpay_invoice_id,
-                    "OriginalInvoiceDate": self.l10n_tw_edi_invoice_create_date.strftime("%Y-%m-%d"),
+                    "OriginalInvoiceDate": convert_utc_time_to_tw_time(self.l10n_tw_edi_invoice_create_date),
                     "OriginalSequenceNumber": line.l10n_tw_edi_ecpay_item_sequence,
                     "ItemName": line.name[:100],
                     "ItemCount": quantity,
@@ -515,12 +522,17 @@ class AccountMove(models.Model):
                     "ItemPrice": item_price,
                     "ItemTaxType": line.tax_ids[0].l10n_tw_edi_tax_type if tax_type != "4" and line.tax_ids else "",
                     "ItemAmount": item_amount,
+                    "ItemRemark": f"商品單位: {line.product_uom_id.name[:6]}" if line.product_uom_id else ""
                 })
             if self.l10n_tw_edi_is_b2b:
                 sale_amount += item_amount
-                tax_amount += base_line["tax_details"]["taxes_data"][0]["raw_tax_amount"]
             else:
                 sale_amount += item_amount_taxed
+
+            if self.l10n_tw_edi_is_b2b:
+                # Only B2B reports TaxAmount/ItemTax to ECPay. Round per tax record here,
+                # like the invoice itself does, so the totals actually match it.
+                AccountTax._round_base_lines_tax_details(base_lines, self.company_id)
 
         # Sale amount adjustment
         amount_on_invoice = self.amount_untaxed_signed if self.l10n_tw_edi_is_b2b and tax_type != "4" else self.amount_total_signed
@@ -560,7 +572,12 @@ class AccountMove(models.Model):
                 json_data["AllowanceAmount"] = self.company_id.currency_id.round(sale_amount)
 
         if self.l10n_tw_edi_is_b2b:
-            json_data["TaxAmount"] = self.company_id.currency_id.round(tax_amount) if tax_type != "4" else 0
+            per_line_tax_amounts = [base_line['tax_details']['taxes_data'][0]['tax_amount'] for base_line in base_lines]
+            json_data["TaxAmount"] = sum(per_line_tax_amounts) if tax_type != "4" else 0
+            if has_negative_lines:
+                # ECPay derives ItemTax itself for positive lines; negative lines (e.g. down payments) need it set explicitly.
+                for index, tax_amount in enumerate(per_line_tax_amounts):
+                    item_list[index]["ItemTax"] = tax_amount
 
     def _l10n_tw_edi_generate_invoice_json(self):
         self.ensure_one()
@@ -575,14 +592,15 @@ class AccountMove(models.Model):
             "MerchantID": self.company_id.sudo().l10n_tw_edi_ecpay_merchant_id,
             "RelateNumber": self.l10n_tw_edi_related_number,
             "CustomerIdentifier": self.partner_id.vat if self.l10n_tw_edi_is_b2b and self.partner_id.vat else "",
-            "CustomerAddr": self.partner_id.contact_address,
+            "CustomerAddr": self.partner_id._l10n_tw_edi_formatted_address(),
             "CustomerEmail": self.partner_id.email or "",
             "CustomerPhone": formatted_phone,
             "InvType": self.l10n_tw_edi_invoice_type,
             "TaxType": tax_type,
-            "InvoiceRemark": self.ref,
         }
 
+        if self.ref:
+            json_data["InvoiceRemark"] = self.ref
         if special_tax_type:
             json_data["SpecialTaxType"] = special_tax_type
 
@@ -647,11 +665,10 @@ class AccountMove(models.Model):
 
             json_data.update({
                 "InvoiceNo": self.l10n_tw_edi_ecpay_invoice_id,
-                "InvoiceDate": self.l10n_tw_edi_invoice_create_date.strftime("%Y-%m-%d %H:%M:%S"),
+                "InvoiceDate": convert_utc_time_to_tw_time(self.l10n_tw_edi_invoice_create_date),
             })
         else:
             json_data.update({
-                "AllowanceDate": self.l10n_tw_edi_invoice_create_date.strftime("%Y-%m-%d %H:%M:%S"),
                 "CustomerEmail": self.partner_id.email,
             })
 
@@ -672,10 +689,9 @@ class AccountMove(models.Model):
             "EmailAddress": self.partner_id.commercial_partner_id.email,
         }
 
-        if self.partner_id.commercial_partner_id.contact_address_inline:
-            buyer_json_data["Address"] = self.partner_id.commercial_partner_id.contact_address_inline
-        if self.partner_id.commercial_partner_id.phone or self.partner_id.commercial_partner_id.mobile:
-            number = self.partner_id.commercial_partner_id.phone or self.partner_id.commercial_partner_id.mobile
+        if partner := self.partner_id.commercial_partner_id:
+            buyer_json_data["Address"] = partner._l10n_tw_edi_formatted_address()
+        if number := self.partner_id.commercial_partner_id.phone:
             buyer_json_data["TelephoneNumber"] = self._reformat_phone_number(number)
 
         return call_ecpay_api("/MaintainMerchantCustomerData", buyer_json_data, self.company_id,
@@ -733,7 +749,7 @@ class AccountMove(models.Model):
             json_data.update({
                 "InvoiceCategory": 0,
                 "InvoiceNumber": self.l10n_tw_edi_ecpay_invoice_id,
-                "InvoiceDate": self.l10n_tw_edi_invoice_create_date.strftime("%Y-%m-%d %H:%M:%S"),
+                "InvoiceDate": convert_utc_time_to_tw_time(self.l10n_tw_edi_invoice_create_date),
             })
 
         response_data = call_ecpay_api("/GetIssue", json_data, self.company_id, self.l10n_tw_edi_is_b2b)
@@ -760,7 +776,7 @@ class AccountMove(models.Model):
 
         json_data = {
             "MerchantID": self.company_id.sudo().l10n_tw_edi_ecpay_merchant_id,
-            "InvoiceDate": self.l10n_tw_edi_invoice_create_date.strftime("%Y-%m-%d %H:%M:%S"),
+            "InvoiceDate": convert_utc_time_to_tw_time(self.l10n_tw_edi_invoice_create_date),
             "Reason": self.l10n_tw_edi_invalidate_reason
         }
 

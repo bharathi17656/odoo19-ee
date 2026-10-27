@@ -2,14 +2,15 @@
 # This file contains the translation of the following modules:
 # * l10n_eu_oss_reports
 #
-# Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Weblate <noreply-mt-weblate@weblate.org>, 2025, 2026.
+# "Larissa Manderfeld (lman)" <lman@odoo.com>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-13 20:00+0000\n"
-"PO-Revision-Date: 2025-11-18 17:11+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-09-18 18:16+0000\n"
+"PO-Revision-Date: 2026-09-21 09:35+0000\n"
+"Last-Translator: \"Larissa Manderfeld (lman)\" <lman@odoo.com>\n"
 "Language-Team: German <https://translate.odoo.com/projects/odoo-19-l10n/"
 "l10n_eu_oss_reports/de/>\n"
 "Language: de\n"
@@ -17,41 +18,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
-
-#. module: l10n_eu_oss_reports
-#. odoo-python
-#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
-msgid ""
-"\n"
-"                    Exclude any domestic or extra-EU sales from the OSS "
-"report.\n"
-"                "
-msgstr ""
-
-#. module: l10n_eu_oss_reports
-#. odoo-python
-#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
-msgid ""
-"\n"
-"                    OSS reports must be submitted in euros.\n"
-"                "
-msgstr ""
-
-#. module: l10n_eu_oss_reports
-#. odoo-python
-#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
-msgid ""
-"\n"
-"                    Only B2C transactions should be included in the OSS "
-"report.\n"
-"                "
-msgstr ""
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "<span>Download your OSS return</span><br/>"
-msgstr ""
+msgstr "<span>OSS-Erklärung herunterladen</span><br/>"
 
 #. module: l10n_eu_oss_reports
 #: model:ir.model,name:l10n_eu_oss_reports.model_account_report
@@ -72,6 +44,12 @@ msgstr "Buchhaltungsrückgabeart"
 #: model:ir.model.fields,field_description:l10n_eu_oss_reports.field_account_report__availability_condition
 msgid "Availability"
 msgstr "Verfügbarkeit"
+
+#. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "Business customers"
+msgstr "Geschäftskunden"
 
 #. module: l10n_eu_oss_reports
 #. odoo-python
@@ -122,7 +100,15 @@ msgstr "XML herunterladen"
 #. odoo-python
 #: code:addons/l10n_eu_oss_reports/models/account_return.py:0
 msgid "EUR Currency"
+msgstr "EUR-Währung"
+
+#. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "Exclude any domestic or extra-EU sales from the OSS report."
 msgstr ""
+"Schließen Sie alle inländischen oder außergemeinschaftlichen Verkäufe aus "
+"dem OSS-Bericht aus."
 
 #. module: l10n_eu_oss_reports
 #: model:ir.model.fields,field_description:l10n_eu_oss_reports.field_account_report__id
@@ -173,7 +159,7 @@ msgstr "Nummer des Vermittlers"
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "Intervat"
-msgstr ""
+msgstr "Intervat"
 
 #. module: l10n_eu_oss_reports
 #: model:ir.model.fields,field_description:l10n_eu_oss_reports.field_l10n_eu_oss_reports_return_submission_wizard__write_uid
@@ -193,17 +179,17 @@ msgstr "Melden Sie sich bei"
 #. module: l10n_eu_oss_reports
 #: model:account.return.type,name:l10n_eu_oss_reports.eu_oss_imports_tax_return_type
 msgid "OSS Imports Return (CG)"
-msgstr ""
+msgstr "Erklärung der OSS-Importe (CG)"
 
 #. module: l10n_eu_oss_reports
 #: model:ir.model,name:l10n_eu_oss_reports.model_l10n_eu_oss_reports_return_submission_wizard
 msgid "OSS Return Submission Wizard"
-msgstr ""
+msgstr "Asisstent zur Einreichung der OSS-Erklärung"
 
 #. module: l10n_eu_oss_reports
 #: model:account.return.type,name:l10n_eu_oss_reports.eu_oss_sales_tax_return_type
 msgid "OSS Sales Return (CG)"
-msgstr ""
+msgstr "Erklärung der OSS-Verkäufe (CG)"
 
 #. module: l10n_eu_oss_reports
 #: model:ir.model,name:l10n_eu_oss_reports.model_l10n_eu_oss_tax_report_handler
@@ -223,8 +209,21 @@ msgstr "Benutzerdefinierter Handler für OSS-Steuerbericht (Verkäufe)"
 #. module: l10n_eu_oss_reports
 #. odoo-python
 #: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "OSS reports must be submitted in euros."
+msgstr "OSS-Meldungen müssen in Euro eingereicht werden."
+
+#. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
 msgid "Only B2C transactions"
+msgstr "Nur B2C-Transaktionen"
+
+#. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "Only B2C transactions should be included in the OSS report."
 msgstr ""
+"Im OSS-Bericht sollten ausschließlich B2C-Transaktionen aufgeführt werden."
 
 #. module: l10n_eu_oss_reports
 #. odoo-python
@@ -245,7 +244,7 @@ msgstr "Rückkehr"
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "Select Intervat &gt; Dashboard"
-msgstr ""
+msgstr "Intervat &gt; Dashboard auswählen"
 
 #. module: l10n_eu_oss_reports
 #. odoo-python
@@ -270,12 +269,12 @@ msgstr ""
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "Upload it to the tax administration"
-msgstr ""
+msgstr "Bei der Steuerverwaltung hochladen"
 
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "Upload the XML file on the right panel and click \"Continue\""
-msgstr ""
+msgstr "XML-Datei im rechten Fensterbereich hochladen und auf „Weiter“ klicken"
 
 #. module: l10n_eu_oss_reports
 #: model:ir.model.fields,help:l10n_eu_oss_reports.field_res_company__intermediary_no
@@ -305,7 +304,7 @@ msgstr "VOES-Nummer"
 #. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "Validate the return"
-msgstr ""
+msgstr "Meldung validieren"
 
 #. module: l10n_eu_oss_reports
 #. odoo-python
@@ -314,6 +313,12 @@ msgid "XML"
 msgstr "XML"
 
 #. module: l10n_eu_oss_reports
+#. odoo-python
+#: code:addons/l10n_eu_oss_reports/models/account_return.py:0
+msgid "id"
+msgstr "id"
+
+#. module: l10n_eu_oss_reports
 #: model_terms:ir.ui.view,arch_db:l10n_eu_oss_reports.oss_return_submission_wizard_form
 msgid "using Itsme or your card reader"
-msgstr ""
+msgstr "mit Itsme oder Ihrem Kartenlesegerät"

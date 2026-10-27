@@ -39,7 +39,7 @@ class AccountTestSAFTImport(AccountTestInvoicingCommon):
         self.assertTrue(len(journals.ids) == 3, "Journal creation failed")
 
         # Check partners
-        file_partners = ['Azure Interior', 'Beautiful partner', 'Deco Addict']
+        file_partners = ['Acme Corporation', 'Azure Interior', 'Beautiful partner']
         partners = self.env['res.partner'].search([('name', 'in', file_partners)])
         self.assertEqual(file_partners, partners.mapped('name'), "Partners creation failed")
 
@@ -54,4 +54,33 @@ class AccountTestSAFTImport(AccountTestInvoicingCommon):
         self.assertEqual(
             len(self.env['account.move'].search(self.env['account.move']._check_company_domain(self.env.company)).line_ids.mapped('tax_ids')),
             1, "The tax is put on the move imported"
+        )
+
+    def test_saft_v2_import(self):
+        with file_open('l10n_dk_saft_import/tests/data/saft_example_dk_2_0.xml') as f:
+            saft_v2_filedata = b64encode(f.read().encode())
+        wizard = self.env['account.saft.import.wizard'].create({
+            'attachment_id': saft_v2_filedata,
+        })
+        wizard.action_import()
+
+        journals = self.env['account.journal'].search([('code', 'like', 'SAF%')])
+        self.assertEqual(len(journals.ids), 2, "Journal creation failed")
+
+        # v2 journal types must be remapped to Odoo types:
+        # AR → sale, AP → purchase, GL → general, AJ → bank
+        journal_types = set(journals.mapped('type'))
+        self.assertIn('sale', journal_types, "AR journal not remapped to sale")
+        self.assertIn('purchase', journal_types, "AP journal not remapped to purchase")
+
+        file_partners = ['Debitor 1', 'Leverandør 1', 'Skattestyrelsen']
+        partners = self.env['res.partner'].search([('name', 'in', file_partners)])
+        self.assertEqual(file_partners, partners.mapped('name'), "Partners creation failed")
+
+        moves = self.env['account.move'].search([('journal_id', 'in', journals.ids)])
+        self.assertEqual(len(moves), 2, "Move import failed")
+        self.assertEqual(
+            sum(moves.line_ids.mapped('debit')),
+            60000.0,
+            "Move debit amount imported is wrong"
         )

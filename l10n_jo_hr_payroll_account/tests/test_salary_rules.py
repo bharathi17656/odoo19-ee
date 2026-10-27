@@ -1,5 +1,3 @@
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
-
 from datetime import date
 
 from odoo.addons.hr_payroll_account.tests.common import TestPayslipValidationCommon
@@ -37,9 +35,9 @@ class TestPayslipValidation(TestPayslipValidationCommon):
             'EOSPROV': 3393.333,
             'ANNUALP': 1583.556,
             'GROSS': 40720.0,
-            'GROSSY': 476640.0,
-            'TXB': -9721.666,
-            'NET': 30747.159
+            'GROSSY': 479640.0,
+            'TXB': -9784.166,
+            'NET': 30684.659
         }
         self._validate_payslip(payslip, payslip_results)
 
@@ -60,9 +58,9 @@ class TestPayslipValidation(TestPayslipValidationCommon):
             'EOSPROV': 3393.333,
             'ANNUALP': 1583.556,
             'GROSS': 40720.0,
-            'GROSSY': 476640.0,
-            'TXB': -9721.666,
-            'NET': 28032.492
+            'GROSSY': 479640.0,
+            'TXB': -9784.166,
+            'NET': 27969.992
         }
         self._validate_payslip(payslip, payslip_results)
 
@@ -95,12 +93,12 @@ class TestPayslipValidation(TestPayslipValidationCommon):
             'EOSPROV': 3393.333,
             'ANNUALP': 1583.556,
             'GROSS': 40720.0,
-            'GROSSY': 476640.0,
-            'TXB': -9721.666,
+            'GROSSY': 479640.0,
+            'TXB': -9784.166,
             'EOSB': 376613.516,
             'EOSLEAVES': 4750.667,
             'EOSTXD': -90403.372,
-            'NET': 321707.97,
+            'NET': 321645.47,
         }
         self._validate_payslip(payslip, payslip_results)
 
@@ -126,8 +124,8 @@ class TestPayslipValidation(TestPayslipValidationCommon):
             'EOSPROV': 3393.333,
             'ANNUALP': 1583.556,
             'GROSS': 41376.774,
-            'GROSSY': 484521.29,
-            'TXB': -9885.86,
-            'NET': 31239.74,
+            'GROSSY': 487521.29,
+            'TXB': -9948.36,
+            'NET': 31177.24,
         }
         self._validate_payslip(payslip, payslip_results)

@@ -19,13 +19,14 @@
 # Anna, 2023
 # Leaanika Randmets, 2023
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Kristina Pešehodko <kristina@avalah.ee>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-16 13:29+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2026-08-21 17:44+0000\n"
+"PO-Revision-Date: 2026-10-13 07:40+0000\n"
+"Last-Translator: Kristina Pešehodko <kristina@avalah.ee>\n"
 "Language-Team: Estonian <https://translate.odoo.com/projects/odoo-19/"
 "account_asset/et/>\n"
 "Language: et\n"
@@ -33,7 +34,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__total_depreciation_entries_count
@@ -149,8 +150,8 @@ msgid ""
 "this sale on account <b>%(account)s</b>."
 msgstr ""
 "Amortisatsioonikanne kinnitatakse kuupäeval %(date)s.<br/> Teise kandega "
-"tasaarveldatakse kontod ja postitatakse põhivara müügi kontole  "
-"<b>%(account)s</b>."
+"tasaarveldatakse kontod ja postitatakse põhivara müügi kontole  <b>%"
+"(account)s</b>."
 
 #. module: account_asset
 #. odoo-python
@@ -183,8 +184,8 @@ msgid ""
 "A non deductible tax value of %(tax_value)s was added to %(name)s's initial "
 "value of %(purchase_value)s"
 msgstr ""
-"Mitte mahaarvatava maksu väärtus %(tax_value)s on lisatud %(name)"
-"ssoetusmaksumuse väärtusesse %(purchase_value)s"
+"Mitte mahaarvatava maksu väärtus %(tax_value)s on lisatud %"
+"(name)ssoetusmaksumuse väärtusesse %(purchase_value)s"
 
 #. module: account_asset
 #: model:ir.model,name:account_asset.model_account_account
@@ -490,8 +491,8 @@ msgstr "Vara on loodud ostuarvelt: %s"
 #. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
-msgid "Asset disposed. %s"
-msgstr "Vara amortiseerunud. %s"
+msgid "Asset disposed. %(message)s"
+msgstr ""
 
 #. module: account_asset
 #: model:account.return.check.template,name:account_asset.account_return_check_template_asset_movement_and_accounting_treatment
@@ -507,8 +508,14 @@ msgstr "Vara on peatatud. %s"
 #. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
-msgid "Asset sold. %s"
-msgstr "Vara müüdud. %s"
+msgid "Asset sold. %(message)s See %(invoice_links)s"
+msgstr ""
+
+#. module: account_asset
+#. odoo-python
+#: code:addons/account_asset/models/account_asset.py:0
+msgid "Asset sold: %s"
+msgstr ""
 
 #. module: account_asset
 #. odoo-python
@@ -998,6 +1005,15 @@ msgid ""
 msgstr ""
 
 #. module: account_asset
+#: model:account.return.check.template,description:account_asset.account_return_check_template_monitoring_of_depreciation
+msgid ""
+"Ensure compliance with local tax rules on depreciation.\n"
+"Verify that the depreciation methods, depreciation period, and start dates "
+"align with tax requirements (e.g. linear depreciation, pro rata temporis "
+"application, no double declining for tax purposes)."
+msgstr ""
+
+#. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/controller/asset_template_controller.py:0
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__account_depreciation_expense_id
@@ -1239,7 +1255,7 @@ msgstr "Kanderidadel %(account)s peab olema kirjeldus, et luua vara."
 #: model:ir.model.fields,field_description:account_asset.field_account_asset_group__write_uid
 #: model:ir.model.fields,field_description:account_asset.field_asset_modify__write_uid
 msgid "Last Updated by"
-msgstr "Viimati uuendatud (kelle poolt)"
+msgstr "Viimati uuendas"
 
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__write_date
@@ -1333,6 +1349,11 @@ msgstr "Muuda"
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_form
 msgid "Modify Depreciation"
 msgstr "Muuda amortisatsiooni"
+
+#. module: account_asset
+#: model:account.return.check.template,name:account_asset.account_return_check_template_monitoring_of_depreciation
+msgid "Monitoring of Depreciation "
+msgstr ""
 
 #. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__method_period__1
@@ -1899,6 +1920,12 @@ msgid ""
 msgstr ""
 
 #. module: account_asset
+#. odoo-javascript
+#: code:addons/account_asset/static/src/components/depreciation_schedule/warnings.xml:0
+msgid "The fixed asset account differs from the account on the bill. Click"
+msgstr ""
+
+#. module: account_asset
 #: model:ir.model.fields,help:account_asset.field_account_asset__method_number
 msgid "The number of depreciations needed to depreciate your asset"
 msgstr "Vajalike amortisatsioonide arv"
@@ -2262,6 +2289,12 @@ msgid "gain/loss"
 msgstr "kasum/kahjum"
 
 #. module: account_asset
+#. odoo-javascript
+#: code:addons/account_asset/static/src/components/depreciation_schedule/warnings.xml:0
+msgid "here"
+msgstr ""
+
+#. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/controller/asset_template_controller.py:0
 msgid "journal_id"
@@ -2338,6 +2371,12 @@ msgstr ""
 #: code:addons/account_asset/wizard/asset_modify.py:0
 msgid "sell"
 msgstr ""
+
+#~ msgid "Asset disposed. %s"
+#~ msgstr "Vara amortiseerunud. %s"
+
+#~ msgid "Asset sold. %s"
+#~ msgstr "Vara müüdud. %s"
 
 #~ msgid " (%s of %s)"
 #~ msgstr " (%s %sst)"

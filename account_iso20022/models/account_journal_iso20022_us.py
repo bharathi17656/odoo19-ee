@@ -17,7 +17,7 @@ class AccountJournal(models.Model):
 
     def _get_SvcLvlText(self, payment_method_code):
         if payment_method_code == 'iso20022_us':
-            return 'NURG'
+            return 'URGP' if self.env.context.get('iso20022_priority') in ('HIGH', 'URGP') else 'NURG'
         return super()._get_SvcLvlText(payment_method_code)
 
     def _get_PmtTpInf(self, payment_method_code, priority):
@@ -67,8 +67,8 @@ class AccountJournal(models.Model):
                 Ustrd.text = re.sub(r'[\*\+:\'\~]', '', Ustrd.text)
         return RmtInf
 
-    def _get_FinInstnId(self, bank_account, payment_method_code):
-        FinInstnId = super()._get_FinInstnId(bank_account, payment_method_code)
+    def _get_FinInstnId(self, bank_account, payment_method_code, mode=None):
+        FinInstnId = super()._get_FinInstnId(bank_account, payment_method_code, mode)
         if payment_method_code == 'iso20022_us':
             bank_country_code = bank_account.bank_id.country_code
             if bank_country_code:

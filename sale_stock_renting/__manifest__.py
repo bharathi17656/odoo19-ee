@@ -16,6 +16,7 @@
 
     'data': [
         'security/sale_stock_renting_security.xml',
+        'security/ir.model.access.csv',
         'data/rental_stock_data.xml',
         'wizard/rental_processing_views.xml',
         'wizard/stock_picking_return_views.xml',
@@ -34,9 +35,8 @@
     'auto_install': True,
     'post_init_hook': '_ensure_rental_stock_moves_consistency',
     'assets': {
-        'web.assets_backend': [
-            'sale_stock_renting/static/src/**/*',
-        ],
+        'web.assets_backend': ['sale_stock_renting/static/src/widgets/**/*'],
+        'web.assets_backend_lazy': ['sale_stock_renting/static/src/views/**/*'],
     },
     'author': 'Odoo S.A.',
     'license': 'OEEL-1',

@@ -138,8 +138,8 @@ class TestSubscriptionPayments(PaymentCommon, TestSubscriptionCommon, MockEmail)
                 # Two products are invoiced
                 self.assertEqual(len(invoice.invoice_line_ids), 2, 'Two lines are invoiced')
                 self.assertEqual(self.subscription.next_invoice_date, datetime.date(2021, 2, 3), 'the next invoice date should be updated')
-                self.assertEqual(invoice.invoice_line_ids[0].name, 'BaseTestProduct month cheap\n1 Month 01/03/2021 to 02/02/2021', 'Invoice line description must be based on order line description')
-                self.assertEqual(invoice.invoice_line_ids[1].name, 'TestProduct2 month expensive\n1 Month 01/03/2021 to 02/02/2021', 'Invoice line description must be based on order line description')
+                self.assertEqual(invoice.invoice_line_ids[0].name, 'BaseTestProduct\nmonth cheap\n1 Month 01/03/2021 to 02/02/2021', 'Invoice line description must be based on order line description')
+                self.assertEqual(invoice.invoice_line_ids[1].name, 'TestProduct2\nmonth expensive\n1 Month 01/03/2021 to 02/02/2021', 'Invoice line description must be based on order line description')
 
             with freeze_time("2021-02-03"):
                 self.env.invalidate_all()
@@ -287,6 +287,102 @@ class TestSubscriptionPayments(PaymentCommon, TestSubscriptionCommon, MockEmail)
         self.assertEqual(
             self.subscription.next_invoice_date, expected_next_invoice_date,
             "The next invoice date should have been updated, as the invoice was kept after the payment succeeded",
+        )
+
+    @mute_logger('odoo.addons.sale_subscription.models.sale_order')
+    def test_bad_payment_exception_after_authorization(self):
+        """The invoice of an authorized payment must survive an error raised afterwards.
+
+        _do_payment() commits the transaction right after creating it and before charging it,
+        so the transaction row outlives the rollback while the state it reached when charged
+        does not. Reading renewal_state after _subscription_rollback_cursor() therefore yields
+        the state the transaction was committed with, 'draft', and the invoice of a payment
+        that actually went through gets unlinked.
+        """
+        self.subscription.write({'payment_token_id': self.payment_token.id})
+        self.subscription.action_confirm()
+        invoice = self.subscription._create_invoices(final=True)
+        commit_point = None
+
+        def _mock_do_payment_authorized_then_raise(payment_token, inv, auto_commit=False):
+            nonlocal commit_point
+            tx = self._mock_subscription_do_payment(payment_token, inv, auto_commit=auto_commit)
+            tx.state = 'draft'
+            self.env.flush_all()
+            # _do_payment() commits the transaction it just created, before charging it
+            commit_point = self.env.cr.savepoint(flush=False)
+            # the provider authorizes the payment, then something raises afterwards
+            tx.state = 'done'
+            self.env.flush_all()
+            self.assertEqual(tx.renewal_state, 'authorized')
+            raise Exception("Kaput after authorization")
+
+        def _mock_subscription_rollback_cursor(auto_commit):
+            # cr.rollback() is forbidden inside a test. Rolling back to the savepoint taken
+            # where _do_payment() committed reproduces what the cron sees: the transaction row
+            # is still there, the state it reached while being charged is gone.
+            commit_point.rollback()
+            self.env.invalidate_all()
+
+        with patch(
+            'odoo.addons.sale_subscription.models.sale_order.SaleOrder._do_payment',
+            wraps=_mock_do_payment_authorized_then_raise,
+        ), patch(
+            'odoo.addons.sale_subscription.models.sale_order.SaleOrder._subscription_rollback_cursor',
+            wraps=_mock_subscription_rollback_cursor,
+        ), self.mock_mail_gateway():
+            self.subscription._handle_automatic_invoices(invoice, auto_commit=True)
+
+        self.assertTrue(
+            invoice.exists(),
+            "The invoice must be kept: the payment was authorized before the error. The "
+            "rollback restored the state the transaction was committed with, which is not "
+            "the outcome of the payment.",
+        )
+
+    @mute_logger('odoo.addons.sale_subscription.models.sale_order')
+    def test_bad_payment_exception_with_aborted_cursor(self):
+        """A database error must not mask itself behind InFailedSqlTransaction.
+
+        A failing query leaves the cursor aborted, so every later query raises until the
+        transaction is rolled back. The error handler queries the database before rolling back,
+        which raises InFailedSqlTransaction, hides the original error and skips the whole
+        handler: no message is logged, no mail is sent and the draft invoice is never cleaned up.
+        """
+        self.subscription.write({'payment_token_id': self.payment_token.id})
+        self.subscription.action_confirm()
+        invoice = self.subscription._create_invoices(final=True)
+        commit_point = None
+
+        def _mock_do_payment_aborting_the_cursor(payment_token, inv, auto_commit=False):
+            nonlocal commit_point
+            self._mock_subscription_do_payment(payment_token, inv, auto_commit=auto_commit)
+            self.env.flush_all()
+            # _do_payment() commits the transaction it just created, before charging it
+            commit_point = self.env.cr.savepoint(flush=False)
+            # a database error, as a unique violation on the transaction reference would be
+            with mute_logger('odoo.sql_db'):
+                self.env.cr.execute("SELECT 1 / 0")
+
+        def _mock_subscription_rollback_cursor(auto_commit):
+            # cr.rollback() is forbidden inside a test. Rolling back to the savepoint clears the
+            # aborted state the same way, which is what makes the cursor usable again.
+            commit_point.rollback()
+            self.env.invalidate_all()
+
+        with patch(
+            'odoo.addons.sale_subscription.models.sale_order.SaleOrder._do_payment',
+            wraps=_mock_do_payment_aborting_the_cursor,
+        ), patch(
+            'odoo.addons.sale_subscription.models.sale_order.SaleOrder._subscription_rollback_cursor',
+            wraps=_mock_subscription_rollback_cursor,
+        ), self.mock_mail_gateway():
+            # must not raise: the handler has to survive the aborted cursor and report the error
+            self.subscription._handle_automatic_invoices(invoice, auto_commit=True)
+
+        self.assertTrue(
+            self._find_mail_mail_wemail('accountman@test.com', 'sent', author=self.env.user.partner_id),
+            "The error mail must be sent: the handler has to roll back before it queries anything.",
         )
 
     @mute_logger('odoo.addons.sale_subscription.models.sale_order')
@@ -806,7 +902,9 @@ class TestSubscriptionPayments(PaymentCommon, TestSubscriptionCommon, MockEmail)
             subscription._create_recurring_invoice()
 
         with freeze_time("2025-09-14"):
-            subscription.set_close()
+            # only some reasons can allow reopening.
+            close_reason = self.env.ref('sale_subscription.close_reason_auto_close_limit_reached')
+            subscription.set_close(close_reason_id=close_reason.id)
 
             # Ensure that the subscription is churned, and that the next invoice
             # date happens after today. The transaction date must be less than
@@ -849,7 +947,9 @@ class TestSubscriptionPayments(PaymentCommon, TestSubscriptionCommon, MockEmail)
             invoice = subscription._create_recurring_invoice()
 
         with freeze_time("2025-09-14"):
-            subscription.set_close()
+            # only some reasons can allow reopening.
+            close_reason = self.env.ref('sale_subscription.close_reason_auto_close_limit_reached')
+            subscription.set_close(close_reason_id=close_reason.id)
 
             # Ensure that the subscription is churned, and that the next invoice
             # date happens after today. The transaction date must be less than
@@ -880,6 +980,44 @@ class TestSubscriptionPayments(PaymentCommon, TestSubscriptionCommon, MockEmail)
                 subscription.subscription_state,
                 "3_progress",
                 "Churned subscription must be re-opened after paying the invoice."
+            )
+
+    def test_credit_note_payment_not_reopen_churned_subscription(self):
+        """
+        Ensure that a churned subscription is NOT reopened when a credit note
+        is paid. Only invoice payments should reopen churned subscriptions.
+        """
+        with freeze_time("2025-08-08"):
+            subscription = self.subscription
+            subscription.action_confirm()
+            invoice = subscription._create_recurring_invoice()
+            self.env['account.payment.register'].with_context(active_model='account.move', active_ids=invoice.ids).create({
+                'payment_date': invoice.date,
+            })._create_payments()
+            subscription.set_close()
+            self.assertEqual(
+                subscription.subscription_state,
+                "6_churn",
+                "The subscription must be churned after closing it."
+            )
+
+            refund_wizard = self.env['account.move.reversal'].with_context(active_model="account.move", active_ids=invoice.ids).create({
+                'reason': 'Test credit note',
+                'journal_id': invoice.journal_id.id,
+            })
+            res = refund_wizard.refund_moves()
+            credit_note = self.env['account.move'].browse(res['res_id'])
+            self.assertEqual(credit_note.move_type, 'out_refund', "Must be a credit note")
+            credit_note.action_post()
+            self.env['account.payment.register'].with_context(active_model='account.move', active_ids=credit_note.ids).create({
+                'payment_date': credit_note.date,
+            })._create_payments()
+
+            self.assertEqual(credit_note.payment_state, credit_note._get_invoice_in_payment_state())
+            self.assertEqual(
+                subscription.subscription_state,
+                "6_churn",
+                "Churned subscription must NOT be re-opened after paying a credit note."
             )
 
     def test_unsuccessful_reopen_churned_subscription(self):

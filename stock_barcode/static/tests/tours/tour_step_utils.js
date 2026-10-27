@@ -21,7 +21,10 @@ export const stepUtils = {
             { trigger: "input#manual_barcode+button", run: "click" },
         ];
     },
-    validateBarcodeOperation(trigger = ".o_barcode_client_action .o_barcode_lines") {
+    validateBarcodeOperation(
+        trigger = ".o_barcode_client_action .o_barcode_lines",
+        checkTrigger = ".o_stock_barcode_main_menu"
+    ) {
         return [
             {
                 trigger: "body:not(:has(.modal))",
@@ -31,7 +34,7 @@ export const stepUtils = {
                 run: "scan OBTVALI",
             },
             {
-                trigger: ".o_notification_bar.bg-success",
+                trigger: checkTrigger,
             },
         ];
     },
@@ -48,6 +51,30 @@ export const stepUtils = {
                 trigger: ".o_add_line",
             },
         ];
+    },
+    /**
+     * Check notification's message. Assume the tested message is the first one (more recent)
+     * and also close the notification by default (see `close` parameter.)
+     * @param {string} message The exact notification's message
+     * @param {boolean} [close=true]
+     * @returns {Array}
+     */
+    checkNotificationMessage(message, close = true) {
+        const baseSelector = ".o_notification_manager .o_notification:first-child";
+        const steps = [
+            {
+                content: "Check notification's message",
+                trigger: `${baseSelector} .o_notification_content:text('${message}')`,
+            },
+        ];
+        if (close) {
+            steps.push({
+                content: "Close the notification",
+                trigger: `${baseSelector} button.o_notification_close`,
+                run: "click",
+            });
+        }
+        return steps;
     },
     // RFID utils.
     countUniqRFID(count) {

@@ -9,7 +9,7 @@ export class PrintContentByNumbers extends Component {
     };
 
     setup() {
-        this.receiptNumber = this.props.order.it_fiscal_receipt_number;
+        this.receiptNumber = this.props.order.fiscal_it_receipt_number;
         const dateParts = this.props.order.it_fiscal_receipt_date.split("/");
         this.day = dateParts[0];
         this.month = dateParts[1];

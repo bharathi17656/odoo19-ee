@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+from datetime import datetime
+from freezegun import freeze_time
 
 from odoo.addons.stock_account.tests.common import TestStockValuationCommon
+from odoo.exceptions import UserError
 from odoo.tests import Form, tagged
 from odoo import fields, Command
 
@@ -10,7 +13,8 @@ from odoo import fields, Command
 class TestAccountMove(TestStockValuationCommon):
     def test_standard_perpetual_01_mc_01(self):
         product = self.product_standard_auto
-        rate = self.other_currency.rate_ids.sorted()[0].rate
+        self._use_multi_currencies([('2017-01-01', 2.0)])
+        rate = self.other_currency.rate_ids.rate
 
         move_form = Form(self.env["account.move"].with_context(default_move_type="out_invoice"))
         move_form.partner_id = self.partner
@@ -34,7 +38,8 @@ class TestAccountMove(TestStockValuationCommon):
 
     def test_fifo_perpetual_01_mc_01(self):
         product = self.product_fifo_auto
-        rate = self.other_currency.rate_ids.sorted()[0].rate
+        self._use_multi_currencies([('2017-01-01', 2.0)])
+        rate = self.other_currency.rate_ids.rate
 
         move_form = Form(self.env["account.move"].with_context(default_move_type="out_invoice"))
         move_form.partner_id = self.partner
@@ -57,7 +62,8 @@ class TestAccountMove(TestStockValuationCommon):
 
     def test_average_perpetual_01_mc_01(self):
         product = self.product_avco_auto
-        rate = self.other_currency.rate_ids.sorted()[0].rate
+        self._use_multi_currencies([('2017-01-01', 2.0)])
+        rate = self.other_currency.rate_ids.rate
 
         move_form = Form(self.env["account.move"].with_context(default_move_type="out_invoice"))
         move_form.partner_id = self.partner
@@ -83,6 +89,8 @@ class TestAccountMove(TestStockValuationCommon):
         """Storno accounting uses negative numbers on debit/credit to cancel other moves.
         This test checks that we do the same for the anglosaxon lines when storno is enabled.
         """
+        self._use_multi_currencies([('2017-01-01', 2.0)])
+
         product = self.product_standard_auto
         self.env.company.account_storno = True
         self.env.company.anglo_saxon_accounting = True
@@ -165,7 +173,11 @@ class TestAccountMove(TestStockValuationCommon):
             self.assertEqual(bill.invoice_line_ids.account_id, product_accounts['expense'])
 
     def test_cogs_analytic_accounting(self):
-        """Check analytic distribution is correctly propagated to COGS lines"""
+
+        """Check analytic distribution is correctly propagated to COGS lines.
+        Both the debit interim account line and the credit expense account line
+        should carry the analytic distribution; otherwise analytic accounting
+        becomes unbalanced."""
         product = self.product_standard_auto
         default_plan = self.env['account.analytic.plan'].create({
             'name': 'Default',
@@ -191,8 +203,95 @@ class TestAccountMove(TestStockValuationCommon):
         })
         move.action_post()
 
-        cogs_line = move.line_ids.filtered(lambda l: l.account_id == product._get_product_accounts()['expense'])
-        self.assertEqual(cogs_line.analytic_distribution, {str(analytic_account.id): 100})
+        cogs_lines = move.line_ids.filtered(lambda l: l.display_type == 'cogs')
+        self.assertRecordValues(cogs_lines.sorted('balance'), [
+            {'analytic_distribution': {str(analytic_account.id): 100}, 'account_id': product._get_product_accounts()['expense'].id},
+            {'analytic_distribution': {str(analytic_account.id): 100}, 'account_id': product._get_product_accounts()['stock_valuation'].id},
+        ])
+
+    def test_stock_picking_applies_analytic_distribution_to_journal_entry(self):
+        """
+        Check analytic distribution is correctly propagated to journal entry
+        while validating a picking related to a partner
+        """
+        self.env.user.group_ids += self.env.ref('analytic.group_analytic_accounting')
+        product = self.product_standard_auto
+        cost_of_production = self.env['account.account'].create({
+            'name': 'STCK Test Account',
+            'code': '100119',
+            'reconcile': True,
+            'account_type': 'asset_current',
+        })
+        default_plan = self.env['account.analytic.plan'].create({
+            'name': 'Default',
+        })
+        analytic_account = self.env['account.analytic.account'].create({
+            'name': 'Account 1',
+            'plan_id': default_plan.id,
+            'company_id': False,
+        })
+        self.env['account.analytic.distribution.model'].create({
+            'analytic_distribution': {analytic_account.id: 100},
+            'product_id': product.id,
+            'company_id': self.company.id,
+            'partner_id': self.partner.id,
+        })
+        self.stock_location.valuation_account_id = cost_of_production.id
+
+        receipt = self.env['stock.picking'].create([
+            {
+                'location_id': self.supplier_location.id,
+                'location_dest_id': self.stock_location.id,
+                'picking_type_id': self.picking_type_in.id,
+                'partner_id': self.partner.id,
+                'move_ids': [Command.create({
+                    'product_id': product.id,
+                    'location_id': self.supplier_location.id,
+                    'location_dest_id': self.stock_location.id,
+                    'product_uom_qty': 1.0,
+                })],
+            },
+        ])
+        receipt.button_validate()
+
+        aml = self.env['account.move.line'].search([('product_id', '=', product.id)], order='debit')
+        self.assertRecordValues(aml, [
+            {'analytic_distribution': {str(analytic_account.id): 100}, 'credit': 10, 'debit': 0},
+            {'analytic_distribution': {str(analytic_account.id): 100}, 'credit': 0, 'debit': 10},
+        ])
+
+    def test_validate_receipts_from_different_partners_together(self):
+        """
+        Validating together receipts from different partners must create one
+        valuation entry per partner instead of failing.
+        """
+        product = self.product_standard_auto
+        self.stock_location.valuation_account_id = self.env['account.account'].create({
+            'name': 'STCK Test Account',
+            'code': '100119',
+            'account_type': 'asset_current',
+        })
+        partners = self.partner + self.vendor
+        receipts = self.env['stock.picking'].create([{
+            'location_id': self.supplier_location.id,
+            'location_dest_id': self.stock_location.id,
+            'picking_type_id': self.picking_type_in.id,
+            'partner_id': partner.id,
+            'move_ids': [Command.create({
+                'product_id': product.id,
+                'location_id': self.supplier_location.id,
+                'location_dest_id': self.stock_location.id,
+                'product_uom_qty': 1.0,
+            })],
+        } for partner in partners])
+        receipts.button_validate()
+
+        self.assertEqual(receipts.mapped('state'), ['done', 'done'])
+        for receipt in receipts:
+            account_move = receipt.move_ids.account_move_id
+            self.assertEqual(len(account_move), 1)
+            self.assertEqual(account_move.partner_id, receipt.partner_id)
+            self.assertEqual(account_move.ref, receipt.name)
 
     def test_cogs_account_branch_company(self):
         """Check branch company accounts are selected"""
@@ -210,6 +309,7 @@ class TestAccountMove(TestStockValuationCommon):
         bill = self.env['account.move'].with_company(branch.id).with_context(default_move_type='in_invoice').create({
             'partner_id': self.partner.id,
             'invoice_date': fields.Date.today(),
+            'company_id': branch.id,
             'invoice_line_ids': [
                 Command.create({
                     'product_id': product.id,
@@ -243,5 +343,160 @@ class TestAccountMove(TestStockValuationCommon):
                 {'account_id': prod_a_accounts['stock_valuation'].id, 'product_id': product.id},
                 {'account_id': prod_b_accounts['stock_valuation'].id, 'product_id': product_b.id},
                 {'account_id': self.account_inventory.id, 'product_id': product_b.id},
+            ]
+        )
+
+    @freeze_time("2020-01-22")
+    def test_backdate_picking_with_lock_date(self):
+        """
+        Check that pickings can not be backdate or validated prior to the
+        fiscal and hard lock date.
+        """
+        self.env['account.lock_exception'].search([]).sudo().unlink()
+        lock_date = fields.Date.from_string('2011-01-01')
+        prior_to_lock_date = fields.Datetime.add(lock_date, days=-1)
+        post_to_lock_date = fields.Datetime.add(lock_date, days=+1)
+        self.env['stock.quant']._update_available_quantity(self.product_standard, self.stock_location, 10)
+        receipts = receipt, receipt_done = self.env['stock.picking'].create([
+            {
+                'location_id': self.supplier_location.id,
+                'location_dest_id': self.stock_location.id,
+                'picking_type_id': self.picking_type_in.id,
+                'owner_id': self.env.company.partner_id.id,
+                'move_ids': [Command.create({
+                    'product_id': self.product_standard.id,
+                    'location_id': self.supplier_location.id,
+                    'location_dest_id': self.stock_location.id,
+                    'product_uom_qty': 1.0,
+                })]
+            } for _ in range(2)
+        ])
+        receipts.action_confirm()
+        receipt_done.button_validate()
+        # Check that the purchase, sale and tax lock dates do not impose any restrictions
+        self.env.company.write({
+            'sale_lock_date': lock_date,
+            'purchase_lock_date': lock_date,
+            'tax_lock_date': lock_date,
+        })
+        # Receipts can be backdated
+        receipt.scheduled_date = prior_to_lock_date
+        receipt_done.date_done = prior_to_lock_date
+
+        # Check that the fiscal year lock date imposes restrictions
+        self.env.company.write({
+            'sale_lock_date': False,
+            'purchase_lock_date': False,
+            'tax_lock_date': False,
+            'fiscalyear_lock_date': lock_date,
+        })
+        # Receipts can not be backdated prior to lock date
+        receipt.scheduled_date = post_to_lock_date
+        receipt_done.date_done = post_to_lock_date
+        # Lock dates should not affect un-validated scheduled_date
+        receipt.scheduled_date = prior_to_lock_date
+        with self.assertRaises(UserError):
+            receipt_done.date_done = prior_to_lock_date
+
+        # Check that the hard lock date imposes restrictions
+        self.env.company.write({
+            'fiscalyear_lock_date': False,
+            'hard_lock_date': lock_date,
+        })
+        # Receipts can not be backdated prior to lock date
+        receipt.scheduled_date = post_to_lock_date
+        receipt_done.date_done = post_to_lock_date
+        # Lock dates should not affect un-validated scheduled_date
+        receipt.scheduled_date = prior_to_lock_date
+        with self.assertRaises(UserError):
+            receipt_done.date_done = prior_to_lock_date
+
+    def test_invoice_with_journal_item_without_label(self):
+        """Test posting an invoice whose invoice lines have no label.
+        The 'name' field is optional on account.move.line and should be
+        handled safely when generating accounting entries.
+        """
+        move = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner.id,
+            'invoice_line_ids': [
+                Command.create({
+                    'product_id': self.product_standard.id,
+                    'name': False,
+                }),
+            ],
+        })
+        move.action_post()
+        # name should remain falsy on the invoice line
+        self.assertFalse(move.invoice_line_ids.name)
+        # ensure the invoice is posted successfully
+        self.assertEqual(move.state, 'posted')
+
+    def test_cogs_foreign_currency_invoice_no_date(self):
+        """
+        Test that no currency rate is applied on COGS lines from an invoice without invoice
+        date in a foreign currency as COGS lines are using the currency of the company.
+        """
+        self._use_multi_currencies([
+            ('2026-01-16', 2.0),
+            ('2026-01-17', 3.0),
+        ])
+        product_category = self.env['product.category'].create({
+            'name': 'Category A',
+            'property_valuation': 'real_time',
+            'property_cost_method': 'standard',
+        })
+        product = self.env['product.product'].create({
+            'name': 'Product XYZ',
+            'is_storable': True,
+            'standard_price': 100.00,
+            'categ_id': product_category.id,
+        })
+        # create an invoice without invoice_date in a foreign currency
+        with freeze_time('2026-01-16'):
+            move = self.env['account.move'].create({
+                'move_type': 'out_invoice',
+                'partner_id': self.partner.id,
+                'currency_id': self.other_currency.id,
+                'invoice_line_ids': [
+                    Command.create({
+                        'product_id': product.id,
+                    }),
+                ],
+            })
+            # force create_date to the frozen time
+            self.env.cr.execute(
+                "UPDATE account_move SET create_date = %s WHERE id = %s",
+                (datetime.now(), move.id),
+            )
+            move.invalidate_recordset(['create_date'])
+        # confirm the invoice the following day when the currency rate is different
+        with freeze_time('2026-01-17'):
+            move.action_post()
+
+        expense_account = product._get_product_accounts()['expense']
+        valuation_account = product._get_product_accounts()['stock_valuation']
+        expense_line = move.line_ids.filtered(lambda l: l.account_id == expense_account)
+        stock_valuation_line = move.line_ids.filtered(lambda l: l.account_id == valuation_account)
+
+        self.assertRecordValues(
+            stock_valuation_line + expense_line,
+            [
+                {
+                    'account_id': valuation_account.id,
+                    'currency_id': move.company_currency_id.id,
+                    'currency_rate': 1.0,
+                    'amount_currency': -100.0,
+                    'debit': 0.0,
+                    'credit': 100.0,
+                },
+                {
+                    'account_id': expense_account.id,
+                    'currency_id': move.company_currency_id.id,
+                    'currency_rate': 1.0,
+                    'amount_currency': 100.0,
+                    'debit': 100.0,
+                    'credit': 0.0,
+                },
             ]
         )

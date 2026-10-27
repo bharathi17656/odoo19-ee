@@ -1,10 +1,10 @@
 import { Plugin } from "@html_editor/plugin";
 import { uniqueId } from "@web/core/utils/functions";
 import { isRemovable } from "./remove_plugin";
-import { isClonable } from "./clone_plugin";
 import { getElementsWithOption, isElementInViewport } from "@html_builder/utils/utils";
 import { shouldEditableMediaBeEditable } from "@html_builder/utils/utils_css";
 import { OptionsContainer } from "@html_builder/sidebar/option_container";
+import { scrollTo } from "@html_builder/utils/scrolling";
 
 /** @typedef {import("@html_builder/core/utils").BaseOptionComponent} BaseOptionComponent */
 /** @typedef {import("@odoo/owl").Component} Component */
@@ -45,6 +45,7 @@ import { OptionsContainer } from "@html_builder/sidebar/option_container";
  * @property { BuilderOptionsPlugin['getPageContainers'] } getPageContainers
  * @property { BuilderOptionsPlugin['getRemoveDisabledReason'] } getRemoveDisabledReason
  * @property { BuilderOptionsPlugin['getCloneDisabledReason'] } getCloneDisabledReason
+ * @property { BuilderOptionsPlugin['isClonable'] } isClonable
  * @property { BuilderOptionsPlugin['getReloadSelector'] } getReloadSelector
  * @property { BuilderOptionsPlugin['setNextTarget'] } setNextTarget
  * @property { BuilderOptionsPlugin['getBuilderOptionContext'] } getBuilderOptionContext
@@ -126,6 +127,7 @@ export class BuilderOptionsPlugin extends Plugin {
         "getReloadSelector",
         "setNextTarget",
         "getBuilderOptionContext",
+        "isClonable",
     ];
     /** @type {import("plugins").BuilderResources} */
     resources = {
@@ -188,6 +190,11 @@ export class BuilderOptionsPlugin extends Plugin {
             ".transfo-container",
             ".o_datetime_picker",
         ].join(", ");
+        const unclonableButtonSelector = [
+            ".oe_unremovable",
+            ...this.getResource("submit_button_selectors"),
+        ].join(", ");
+        this.clonableSelector = `a.btn:not(${unclonableButtonSelector})`;
     }
 
     destroy() {
@@ -241,6 +248,9 @@ export class BuilderOptionsPlugin extends Plugin {
         }
 
         const newContainers = this.computeContainers(this.target);
+        if (newContainers.length === 0 && this.lastContainers.length === 0) {
+            return;
+        }
         // Do not update the containers if they did not change and are not
         // forced to update.
         if (
@@ -343,7 +353,7 @@ export class BuilderOptionsPlugin extends Plugin {
                 hasOverlayOptions: this.hasOverlayOptions(element),
                 isRemovable: isRemovable(element),
                 removeDisabledReason: this.getRemoveDisabledReason(element),
-                isClonable: isClonable(element),
+                isClonable: this.isClonable(element),
                 cloneDisabledReason: this.getCloneDisabledReason(element),
                 optionsContainerTopButtons: this.getOptionsContainerTopButtons(element),
             }));
@@ -467,7 +477,7 @@ export class BuilderOptionsPlugin extends Plugin {
                 this.updateContainers(targetEl, { forceUpdate: true });
                 // Scroll to the target if not visible.
                 if (!isElementInViewport(targetEl)) {
-                    targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
+                    scrollTo(targetEl);
                 }
             } else {
                 this.deactivateContainers();
@@ -485,6 +495,17 @@ export class BuilderOptionsPlugin extends Plugin {
         const reasons = [];
         this.dispatchTo("clone_disabled_reason_providers", { el, reasons });
         return reasons.length ? reasons.join(" ") : undefined;
+    }
+
+    /**
+     * Checks if the given element can be cloned.
+     *
+     * @param {HTMLElement} el
+     * @returns {boolean}
+     */
+    isClonable(el) {
+        // TODO and isDraggable
+        return el.matches(this.clonableSelector) || isRemovable(el);
     }
 
     patchBuilderOptions({ target_name, target_element, method, value }) {

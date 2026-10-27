@@ -7,30 +7,34 @@ import { user } from "@web/core/user";
 import { WithLazyGetterTrap } from "@point_of_sale/lazy_getter";
 import { useState } from "@odoo/owl";
 import { debounce } from "@web/core/utils/timing";
+import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
+import { _t } from "@web/core/l10n/translation";
 
 const { DateTime } = luxon;
 
 export class PrepDisplay extends WithLazyGetterTrap {
-    static DEPENDENCIES = ["orm", "bus_service", "notification", "pos_data"];
+    static DEPENDENCIES = ["orm", "bus_service", "notification", "pos_data", "dialog"];
 
     constructor() {
         super(...arguments);
         this.ready = this.setup(...arguments).then(() => this);
     }
-    async setup({ env, deps: { pos_data, bus_service, notification, orm } }) {
+    async setup({ env, deps: { pos_data, bus_service, notification, orm, dialog } }) {
         this.id = odoo.preparation_display.id;
         this.env = env;
         this.orm = orm;
         this.data = pos_data;
         this.bus = bus_service;
         this.notification = notification;
+        this.dialog = dialog;
         this.sound = this.env.services["mail.sound_effects"];
 
         this.selectedStageId = this.data.models["pos.prep.stage"].getFirst().id;
         this.selectedCategoryIds = new Set();
         this.selectedProductIds = new Set();
+        this.selectedPresetIds = new Set();
+        this.selectedTimeIds = new Set();
         this.showCategoryFilter = false;
-        this.selectedTime = "all";
         this.posHasProducts = await this.loadPosHasProducts();
         this.loadingProducts = false;
         this.ringTheBell = debounce(() => {
@@ -39,6 +43,10 @@ export class PrepDisplay extends WithLazyGetterTrap {
 
         this.restoreFilterFromLocalStorage();
         this.getPreparationDisplayOrder(null);
+
+        this.orderCountPresets = {};
+        this.orderDays = {};
+        this.computeOrderCounts();
 
         this.onNotified = getOnNotified(this.bus, odoo.preparation_display.access_token);
         this.onNotified("LOAD_ORDERS", async (data) => {
@@ -61,6 +69,7 @@ export class PrepDisplay extends WithLazyGetterTrap {
             if (data.notification) {
                 this.notification.add(data.notification);
             }
+            this.computeOrderCounts();
         });
         this.onNotified("CHANGE_STATE_STAGE", (data) => {
             for (const stage of data["pdis_state_stages"]) {
@@ -72,6 +81,7 @@ export class PrepDisplay extends WithLazyGetterTrap {
                 state.stage_id = this.data.models["pos.prep.stage"].get(stage.stage_id);
                 state.todo = true;
                 state.write_date = stage.last_stage_change;
+                state.last_stage_change = stage.last_stage_change;
             }
             for (const [orderId, completion_time] of Object.entries(
                 data["prep_order_completion_time"]
@@ -82,6 +92,7 @@ export class PrepDisplay extends WithLazyGetterTrap {
                 }
                 order.completion_time = completion_time;
             }
+            this.computeOrderCounts();
         });
         this.onNotified("CHANGE_STATE_STATUS", (lineStatus) => {
             for (const status of lineStatus) {
@@ -94,6 +105,7 @@ export class PrepDisplay extends WithLazyGetterTrap {
                     this.filterHistory(state);
                 }
             }
+            this.computeOrderCounts();
         });
         this.onNotified("NOTIFICATION", async (data) => {
             if (data.sound) {
@@ -102,7 +114,11 @@ export class PrepDisplay extends WithLazyGetterTrap {
             if (data.notification) {
                 this.notification.add(data.notification);
             }
+            this.computeOrderCounts();
         });
+        this.onNotified("POS_ORDER_DELETED", (data) =>
+            this.removeOrdersByPosOrderIds(data.pos_order_ids)
+        );
         this.bus.addEventListener("BUS:RECONNECT", () => {
             this.ringTheBell();
             this.getPreparationDisplayOrder(null);
@@ -116,6 +132,24 @@ export class PrepDisplay extends WithLazyGetterTrap {
     get categories() {
         return this.data.models["pos.category"].getAll();
     }
+    removeOrdersByPosOrderIds(posOrderIds = []) {
+        // Remove orders and their dependent records
+        if (!posOrderIds.length) {
+            return;
+        }
+        const prepOrders = this.data.models["pos.prep.order"].filter(({ pos_order_id }) =>
+            posOrderIds.includes(pos_order_id.id)
+        );
+        const prepLineIds = prepOrders.flatMap(({ prep_line_ids }) =>
+            prep_line_ids.map(({ id }) => id)
+        );
+        // Prep states must be removed explicitly since they have no cascade relation
+        // with prep lines or preparation orders.
+        this.data.models["pos.prep.state"]
+            .filter(({ prep_line_id }) => prepLineIds.includes(prep_line_id.id))
+            .forEach((state) => state.delete());
+        prepOrders.forEach((order) => this.data.localDeleteCascade(order));
+    }
     filterHistory(state) {
         const previousStage = this.orderNextStage(state.stage_id.id, -1);
         if (!previousStage) {
@@ -127,15 +161,17 @@ export class PrepDisplay extends WithLazyGetterTrap {
     }
     selectStage(stageId) {
         this.selectedStageId = stageId;
+        this.computeOrderCounts();
     }
     saveFilterToLocalStorage() {
         const localStorageName = `preparation_display_${this.id}.db_${session.db}.user_${user.userId}`;
-
         localStorage.setItem(
             localStorageName,
             JSON.stringify({
                 products: Array.from(this.selectedProductIds),
                 categories: Array.from(this.selectedCategoryIds),
+                times: Array.from(this.selectedTimeIds),
+                presets: Array.from(this.selectedPresetIds),
             })
         );
     }
@@ -146,6 +182,8 @@ export class PrepDisplay extends WithLazyGetterTrap {
         if (localStorageData) {
             this.selectedCategoryIds = new Set(localStorageData.categories);
             this.selectedProductIds = new Set(localStorageData.products);
+            this.selectedTimeIds = new Set(localStorageData.times);
+            this.selectedPresetIds = new Set(localStorageData.presets);
         }
     }
     toggleSelection(id, selectedIdsSet, relatedIds, relatedIdsSet) {
@@ -183,12 +221,22 @@ export class PrepDisplay extends WithLazyGetterTrap {
         );
     }
     toggleTime(time) {
-        this.selectedTime = time;
+        this.selectedTimeIds.has(time)
+            ? this.selectedTimeIds.delete(time)
+            : this.selectedTimeIds.add(time);
+        this.saveFilterToLocalStorage();
+    }
+    togglePreset(presetId) {
+        this.selectedPresetIds.has(presetId)
+            ? this.selectedPresetIds.delete(presetId)
+            : this.selectedPresetIds.add(presetId);
+        this.saveFilterToLocalStorage();
     }
     checkStateVisibility(state) {
         const selectedCategoryIds = this.selectedCategoryIds;
         const selectedProductIds = this.selectedProductIds;
-        const selectedTime = this.selectedTime;
+        const selectedPresetIds = this.selectedPresetIds;
+        const selectedTimeIds = this.selectedTimeIds;
         const now = DateTime.now().startOf("day");
         const timeMap = {
             today: now,
@@ -197,30 +245,35 @@ export class PrepDisplay extends WithLazyGetterTrap {
         };
         let timeCheck = true;
 
-        if (selectedTime !== "all") {
+        if (selectedTimeIds.size) {
             const orderDate = state.prep_line_id.prep_order_id.pos_order_id.preset_time;
             if (!orderDate) {
-                timeCheck = selectedTime === "today";
+                timeCheck = selectedTimeIds.has("today");
             } else {
                 timeCheck =
-                    (selectedTime === "today" && orderDate.hasSame(timeMap.today, "day")) ||
-                    (selectedTime === "tomorrow" && orderDate.hasSame(timeMap.tomorrow, "day")) ||
-                    (selectedTime === "next_days" && orderDate >= timeMap.nextDays);
+                    (selectedTimeIds.has("today") && orderDate.hasSame(timeMap.today, "day")) ||
+                    (selectedTimeIds.has("tomorrow") &&
+                        orderDate.hasSame(timeMap.tomorrow, "day")) ||
+                    (selectedTimeIds.has("next_days") && orderDate >= timeMap.nextDays);
             }
         }
 
-        const categoryMatch = state.categories.some((category) =>
-            selectedCategoryIds.has(category.id)
-        );
-        const productMatch = selectedProductIds.has(state.product.id);
-        const noFilter = selectedCategoryIds.size === 0 && selectedProductIds.size === 0;
+        const categoryMatch =
+            selectedCategoryIds.size === 0 ||
+            state.categories.some((category) => selectedCategoryIds.has(category.id));
+        const productMatch =
+            selectedProductIds.size === 0 || selectedProductIds.has(state.product.id);
+        const presetId = state.prep_line_id.prep_order_id.pos_order_id.preset_id;
+        const presetMatch =
+            selectedPresetIds.size === 0 || Boolean(presetId && selectedPresetIds.has(presetId.id));
         const notDoneOrLastStage = state.todo || state.stage_id.id !== this.lastStage.id;
 
         return (
             notDoneOrLastStage &&
-            (categoryMatch || productMatch || noFilter) &&
-            timeCheck &&
-            state.timeToShow === 0
+            categoryMatch &&
+            productMatch &&
+            presetMatch &&
+            (timeCheck || (state.timeToShow === 0 && selectedTimeIds.has("now")))
         );
     }
     orderNextStage(stageId, direction = 1) {
@@ -233,8 +286,8 @@ export class PrepDisplay extends WithLazyGetterTrap {
 
         return stages[currentStagesIdx + direction] ?? false;
     }
-    get orderDays() {
-        const orderDays = { all: 0, today: 0, tomorrow: 0, next_days: 0 };
+    computeOrderDays() {
+        const orderDays = { now: 0, today: 0, tomorrow: 0, next_days: 0 };
         const now = DateTime.now().startOf("day");
         const tomorrow = now.plus({ days: 1 });
         const nextDays = now.plus({ days: 2 });
@@ -244,11 +297,11 @@ export class PrepDisplay extends WithLazyGetterTrap {
             const prepOrder = state.prep_line_id.prep_order_id;
             if (
                 (!this.selectedStageId || state.stage_id.id === this.selectedStageId) &&
-                !countedOrders.has(prepOrder)
+                !countedOrders.has(prepOrder.id) &&
+                !state.isStageDone(this.lastStage.id)
             ) {
-                countedOrders.add(prepOrder);
+                countedOrders.add(prepOrder.id);
                 const orderDate = prepOrder.pos_order_id.preset_time;
-                orderDays.all++;
                 if (!orderDate || orderDate.hasSame(now, "day")) {
                     orderDays.today++;
                 }
@@ -258,9 +311,42 @@ export class PrepDisplay extends WithLazyGetterTrap {
                 if (orderDate && orderDate >= nextDays) {
                     orderDays.next_days++;
                 }
+                if (!orderDate || state.timeToShow === 0) {
+                    orderDays.now++;
+                }
             }
         });
-        return orderDays;
+        orderDays[0] = countedOrders.size;
+        this.orderDays = orderDays;
+    }
+    computeOrderCountPresets() {
+        const allStates = this.data.models["pos.prep.state"].getAll();
+        const orderPresets = {};
+        this.data.models["pos.preset"].getAll().forEach((preset) => {
+            orderPresets[preset.id] = 0;
+        });
+        const countedOrders = new Set();
+        allStates.forEach((state) => {
+            const prepOrder = state.prep_line_id.prep_order_id;
+            const presetId = prepOrder.pos_order_id.preset_id;
+            if (
+                (!this.selectedStageId || state.stage_id.id === this.selectedStageId) &&
+                presetId &&
+                !countedOrders.has(prepOrder.id) &&
+                !state.isStageDone(this.lastStage.id)
+            ) {
+                countedOrders.add(prepOrder.id);
+                orderPresets[presetId.id] += 1;
+            }
+        });
+        orderPresets[0] = countedOrders.size;
+        this.orderCountPresets = orderPresets;
+    }
+    computeOrderCounts() {
+        if (this.showCategoryFilter) {
+            this.computeOrderDays();
+            this.computeOrderCountPresets();
+        }
     }
     get filteredOrders() {
         const ordersToDisplay = new Map();
@@ -290,8 +376,8 @@ export class PrepDisplay extends WithLazyGetterTrap {
             }
             // within the stage, keep the default order unless the state is done then show most recent first.
             let difference;
-            const aWriteDate = Math.max(...a.states.map((sate) => sate.write_date.ts));
-            const bWriteDate = Math.max(...b.states.map((sate) => sate.write_date.ts));
+            const aWriteDate = Math.max(...a.states.map((state) => state.last_stage_change.ts));
+            const bWriteDate = Math.max(...b.states.map((state) => state.last_stage_change.ts));
             if (stageA.id === this.lastStage.id) {
                 difference = bWriteDate - aWriteDate;
             } else {
@@ -343,6 +429,30 @@ export class PrepDisplay extends WithLazyGetterTrap {
             currentStage.recallHistory.push(states);
         }
     }
+    clearAllOrders() {
+        const message =
+            this.filteredOrders[0].stage.id === this.lastStage.id
+                ? _t(
+                      "All orders are in the last stage. This action will mark all orders as Done. Would you like to continue?"
+                  )
+                : _t(
+                      "Clearing all orders will move all the orders of the current stage to the next one. Would you like to continue?"
+                  );
+        this.dialog.add(ConfirmationDialog, {
+            title: _t("Warning"),
+            body: message,
+            confirmLabel: _t("Continue"),
+            cancelLabel: _t("Discard"),
+            confirm: async () => await this.moveAllOrdersToNextStage(),
+            cancel: () => {},
+        });
+    }
+    async moveAllOrdersToNextStage() {
+        const states = this.filteredOrders.flatMap((order) => order.states);
+        this.filteredOrders[0].stage.id === this.lastStage.id
+            ? await this.doneOrders(states)
+            : await this.changeStateStage(states);
+    }
     async resetOrders() {
         this.data.models["pos.prep.state"].deleteMany(this.data.models["pos.prep.state"].getAll());
         const stages = this.data.models["pos.prep.stage"].getAll();
@@ -369,9 +479,13 @@ export class PrepDisplay extends WithLazyGetterTrap {
         );
         const missingRecords = await this.data.missingRecursive(orders);
         this.data.models.loadConnectedData(missingRecords);
+        this.computeOrderCounts();
     }
     exit() {
         redirect("/odoo/action-pos_enterprise.action_preparation_display");
+    }
+    get displayPresetsFilter() {
+        return this.data.models["pos.config"].some((config) => config.use_presets);
     }
 }
 

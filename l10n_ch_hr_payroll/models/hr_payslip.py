@@ -5,10 +5,10 @@ from datetime import date
 from calendar import monthrange
 
 from odoo import api, fields, models, Command, _
+from odoo.exceptions import ValidationError, UserError
+from odoo.fields import Domain
 from odoo.tools.float_utils import float_round
 from dateutil.relativedelta import relativedelta
-from odoo.tools import date_utils
-from odoo.exceptions import ValidationError
 
 SWISS_LANGUAGES = ["it_IT", "de_DE", "de_CH", "fr_FR", "fr_CH", "en_EN", "en_US"]
 
@@ -66,8 +66,9 @@ class HrPayslip(models.Model):
     l10n_ch_txb_code = fields.Char(compute="_compute_l10n_ch_is_code", store=True)
     l10n_ch_is_correction = fields.Many2one('hr.employee.is.line', compute="_compute_l10n_ch_is_correction", store=True)
     l10n_ch_monthly_snapshot = fields.Many2one('l10n.ch.employee.monthly.values', compute="_compute_l10n_ch_monthly_snapshot", store=True)
-    l10n_ch_swiss_wage_ids = fields.One2many('l10n.ch.swiss.wage.component', 'payslip_id', compute="_compute_l10n_ch_swiss_wage_ids", store=True)
-
+    l10n_ch_swiss_wage_ids = fields.One2many(
+        'l10n.ch.swiss.wage.component', 'payslip_id',
+        compute="_compute_l10n_ch_swiss_wage_ids", store=True, readonly=False, copy=False)
     l10n_ch_entry = fields.Date(compute="_compute_l10n_ch_occupation", store=True)
     l10n_ch_withdrawal = fields.Date(compute="_compute_l10n_ch_occupation", store=True)
 
@@ -76,6 +77,17 @@ class HrPayslip(models.Model):
         swiss_employees = self.env['hr.employee'].browse([val["employee_id"] for val in vals_list if "employee_id" in val]).filtered(lambda e: e.company_id.country_id.code == 'CH')
         swiss_employees._create_or_update_snapshot()
         return super().create(vals_list)
+
+    def _get_iso20022_communication(self, bank_account):
+        self.ensure_one()
+        bank = bank_account.bank_id
+        is_revolut = (bank.bic or '').upper().startswith('REVO') or 'revolut' in (bank.name or '').lower()
+        if is_revolut and self.company_id.country_id.code == 'CH' and bank_account in self.employee_id.bank_account_ids:
+            # Revolut accounts are pooled under Revolut's own IBANs: the beneficiary's name
+            # and country must appear in the communication so the payment can be credited
+            # to the right account.
+            return f'{self.employee_id.l10n_ch_legal_first_name} {self.employee_id.l10n_ch_legal_last_name}, CH'
+        return super()._get_iso20022_communication(bank_account)
 
     def _get_schedule_timedelta(self):
         self.ensure_one()
@@ -192,13 +204,10 @@ class HrPayslip(models.Model):
         total = super()._get_payslip_line_total(amount, quantity, rate, rule)
         if self.company_id.country_id.code != "CH" or not rule.l10n_ch_5_cents_rounding:
             return total
-        total = float_round(total, precision_rounding=0.01, rounding_method="HALF-UP")
-        if total % 0.05 >= 0.025:
-            return total + 0.05 - (total % 0.05)
-        return total - (total % 0.05)
+        return float_round(total, precision_rounding=0.05, rounding_method="HALF-UP")
 
-    def _filter_out_of_versions_payslips(self):
-        return super()._filter_out_of_versions_payslips().filtered(lambda p: p.struct_id.country_id.code != "CH")
+    def _filter_not_in_contract_payslips(self):
+        return super()._filter_not_in_contract_payslips().filtered(lambda p: p.struct_id.country_id.code != "CH")
 
     def _get_contract_days_in_payslip_range(self, date_start, date_end):
         """
@@ -273,6 +282,7 @@ class HrPayslip(models.Model):
         overtime_work_entry = self.env.ref('hr_work_entry.l10n_ch_swissdec_overtime_wt', raise_if_not_found=False)
         overtime_125_work_entry = self.env.ref('hr_work_entry.l10n_ch_swissdec_overtime_125_wt', raise_if_not_found=False)
         overtime_150_work_entry = self.env.ref('l10n_ch_hr_payroll.l10n_ch_swissdec_overtime_150_wt', raise_if_not_found=False)
+        overtime_200_work_entry = self.env.ref('l10n_ch_hr_payroll.l10n_ch_swissdec_overtime_200_wt', raise_if_not_found=False)
         on_call_duty_125_work_entry = self.env.ref('l10n_ch_hr_payroll.l10n_ch_swissdec_oncall_125_wt', raise_if_not_found=False)
         night_shift_110_work_entry = self.env.ref('l10n_ch_hr_payroll.l10n_ch_swissdec_night_110_wt', raise_if_not_found=False)
         
@@ -310,18 +320,20 @@ class HrPayslip(models.Model):
             range_min = max(payslip.date_from, contract.date_start)
             range_max = min(payslip.date_to, contract.date_end or payslip.date_to)
 
-            leaves = leaves_grouped_by_employee.get(payslip.employee_id, self.env['hr.leave']).filtered(lambda l: l.date_from.date() <= range_max and l.date_to.date() >= range_min)
+            leaves = leaves_grouped_by_employee.get(payslip.employee_id, self.env['hr.leave']).filtered(lambda l: l.request_date_from <= range_max and l.request_date_to >= range_min)
 
             leave_days_map = {}
             for leave in leaves:
-                overlap_start = max(range_min, leave.date_from.date())
-                overlap_end = min(range_max, leave.date_to.date())
+                overlap_start = max(range_min, leave.request_date_from)
+                overlap_end = min(range_max, leave.request_date_to)
 
                 overlap_days = payslip._get_contract_days_in_payslip_range(overlap_start, overlap_end)
                 leave_type = leave.holiday_status_id
                 leave_days_map.setdefault(leave_type, [])
-                if leave.request_unit_half:
-                    overlap_days = overlap_days / 2
+                if leave.request_date_from_period == 'pm':
+                    overlap_days -= 0.5
+                if leave.request_date_to_period == 'am':
+                    overlap_days -= 0.5
                 leave_days_map[leave_type] += [(overlap_days, leave)]
 
             total_leave_days = 0.0
@@ -452,6 +464,23 @@ class HrPayslip(models.Model):
                     'rate': sum(grouped_one_time_by_input_wage_types.get("WT_Overtime_150").mapped('amount')),
                 })]
 
+            if grouped_recurring_by_input_wage_types.get("WT_Overtime_200", False):
+                worked_day_vals += [(0, 0, {
+                    'sequence': 15,
+                    'work_entry_type_id': overtime_200_work_entry.id,
+                    'salary_base': hourly_wage * 2.0,
+                    'rate': sum(grouped_recurring_by_input_wage_types.get("WT_Overtime_200").mapped(
+                        'amount')) * base_days / total_days,
+                })]
+
+            if grouped_one_time_by_input_wage_types.get("WT_Overtime_200", False):
+                worked_day_vals += [(0, 0, {
+                    'sequence': 15,
+                    'work_entry_type_id': overtime_200_work_entry.id,
+                    'salary_base': hourly_wage * 2.0,
+                    'rate': sum(grouped_one_time_by_input_wage_types.get("WT_Overtime_200").mapped('amount')),
+                })]
+
             if grouped_recurring_by_input_wage_types.get("WT_on_call_125", False):
                 worked_day_vals += [(0, 0, {
                     'sequence': 15,
@@ -521,7 +550,30 @@ class HrPayslip(models.Model):
         swiss_payslips = self.filtered(lambda p: p.struct_id.code == "CHMONTHLYELM")
         if not swiss_payslips:
             return
-        mapped_snapshots = self.env['l10n.ch.employee.yearly.values']._get_mapped_snapshots(domain=[('employee_id', 'in', swiss_payslips.mapped('employee_id').ids)])
+
+        mapped_snapshots = self.env['l10n.ch.employee.yearly.values']._get_mapped_snapshots(
+            domain=[('employee_id', 'in', swiss_payslips.mapped('employee_id').ids)]
+        )
+
+        slips_grouped_by_date = swiss_payslips.grouped('date_to')
+        new_snapshots_created = False
+
+        for date_group, slips in slips_grouped_by_date.items():
+            year = date_group.year
+            month = date_group.month
+
+            employees_missing_snapshot = slips.employee_id.filtered(
+                lambda e: not mapped_snapshots[e][year][month]
+            )
+
+            if employees_missing_snapshot:
+                employees_missing_snapshot.with_context(l10n_ch_reference_date=date_group)._create_or_update_snapshot()
+                new_snapshots_created = True
+
+        if new_snapshots_created:
+            mapped_snapshots = self.env['l10n.ch.employee.yearly.values']._get_mapped_snapshots(
+                domain=[('employee_id', 'in', swiss_payslips.mapped('employee_id').ids)]
+            )
         for payslip in swiss_payslips:
             month = payslip.date_to.month
             year = payslip.date_to.year
@@ -550,11 +602,34 @@ class HrPayslip(models.Model):
         if not elm_slips:
             return super()._compute_basic_net()
         line_values = (self._origin)._get_line_values(["WT_1000", "BASICHOURLY", "BASICLESSON", "GROSS_SALARY", 'NET', 'Net_Paid'])
+        employer_cost_codes = set(self.env['hr.salary.rule'].search([
+            ('appears_on_employee_cost_dashboard', '=', True),
+            ('struct_id.code', '=', 'CHMONTHLYELM')
+        ]).mapped('code'))
+        employer_cost_values = {}
+        if employer_cost_codes:
+            employer_cost_values = (self._origin)._get_line_values(employer_cost_codes)
         for payslip in elm_slips:
+            employer_cost_total = 0.0
+            payslip_employer_codes = payslip.struct_id.rule_ids.filtered(
+                'appears_on_employee_cost_dashboard'
+            ).mapped('code')
+            for code in payslip_employer_codes:
+                employer_cost_total += employer_cost_values[code][payslip._origin.id]['total']
+
             payslip.basic_wage = line_values['WT_1000'][payslip._origin.id]['total'] + line_values['BASICHOURLY'][payslip._origin.id]['total'] + line_values['BASICLESSON'][payslip._origin.id]['total']
             payslip.gross_wage = line_values['GROSS_SALARY'][payslip._origin.id]['total']
             payslip.net_wage = line_values['NET'][payslip._origin.id]['total'] + line_values['Net_Paid'][payslip._origin.id]['total']
+            payslip.employer_cost = employer_cost_total
         super(HrPayslip, self - elm_slips)._compute_basic_net()
+
+    def refund_sheet(self):
+        if any(payslip.struct_id.country_id.code == "CH" for payslip in self):
+            raise UserError(_(
+                "Refunds are not supported for Swiss payroll as only one payslip per month is permitted. "
+                "Please cancel this payslip instead and generate a new one to apply corrections."
+            ))
+        return super().refund_sheet()
 
     def _get_base_local_dict(self):
         res = super()._get_base_local_dict()
@@ -589,6 +664,8 @@ class HrPayslip(models.Model):
                     ('struct_id.code', '=', 'CHMONTHLYELM'),
                     ('l10n_ch_after_departure_payment', '=', False),
                 ], order="date_from DESC", limit=1)
+                if not reference_payslip:
+                    raise ValidationError(_("A previous payslip in the system is required for after departure payement to work."))
                 if reference_payslip.date_from.year != self.date_from.year:
                     date_from = date(reference_payslip.date_from.year, 1, 1)
                     date_to = self.date_from
@@ -638,6 +715,7 @@ class HrPayslip(models.Model):
         payslips._compute_l10n_ch_is_correction()
         payslips._compute_l10n_ch_is_code()
         payslips._compute_l10n_ch_is_model()
+        payslips._compute_issues()
 
         self.env.flush_all()
         today = fields.Date.today()
@@ -655,7 +733,11 @@ class HrPayslip(models.Model):
         if not swiss_payslips:
             return res
         swiss_payslips.l10n_ch_is_correction.action_done()
-        swiss_payslips.employee_id.with_context(update_salaries=True, lock_pay_period=True)._create_or_update_snapshot()
+        for ref_date, payslips_by_date in swiss_payslips.grouped('date_from').items():
+            payslips_by_date.employee_id.with_context(
+                update_salaries=True,
+                l10n_ch_reference_date=ref_date
+            )._create_or_update_snapshot()
         return res
 
     def action_payslip_cancel(self):
@@ -665,7 +747,12 @@ class HrPayslip(models.Model):
             return res
         swiss_payslips.l10n_ch_is_correction.action_pending()
         swiss_payslips.l10n_ch_is_log_line_ids.unlink()
-        swiss_payslips.employee_id.with_context(update_salaries=True, unlock_pay_period=True)._create_or_update_snapshot()
+        for ref_date, payslips_by_date in swiss_payslips.grouped('date_from').items():
+            payslips_by_date.employee_id.with_context(
+                update_salaries=True,
+                unlock_pay_period=True,
+                l10n_ch_reference_date=ref_date
+            )._create_or_update_snapshot()
         return res
 
     @api.depends('employee_id', 'l10n_ch_monthly_snapshot')
@@ -685,6 +772,11 @@ class HrPayslip(models.Model):
                     source_tax_code = f"{source_tax_canton}-{source_tax_scale}-{source_tax_municipality}"
             payslip.l10n_ch_is_code = source_tax_code
             payslip.l10n_ch_txb_code = txb_code
+
+    def _has_lpp_in_percentage(self):
+        # To be overriden in ELM 5.3 certification module
+        self.ensure_one()
+        return False
 
     @api.depends('employee_id', 'version_id', 'struct_id', 'date_from', 'date_to', 'struct_id')
     def _compute_input_line_ids(self):
@@ -726,8 +818,9 @@ class HrPayslip(models.Model):
             input_line_vals = []
             wage_types = grouped_one_time_wages_dict[slip.version_id][slip.date_to.year][slip.date_to.month]
             recurring_wage_types = grouped_recurring_wages.get(slip.version_id, self.env['l10n.ch.hr.contract.wage'])
+            has_lpp_in_percentage = slip._has_lpp_in_percentage()
 
-            if not slip.l10n_ch_lpp_not_insured and slip.l10n_ch_lpp_insurance_id and not slip.l10n_ch_after_departure_payment and not has_pay_interruption.l10n_ch_lpp_interruption:
+            if not slip.l10n_ch_lpp_not_insured and slip.l10n_ch_lpp_insurance_id and not slip.l10n_ch_after_departure_payment and not has_pay_interruption.l10n_ch_lpp_interruption and not has_lpp_in_percentage:
                 if slip.version_id.lpp_employee_amount:
                     input_line_vals.append(Command.create({
                         'amount': slip.version_id.lpp_employee_amount,
@@ -844,7 +937,7 @@ class HrPayslip(models.Model):
                         self._log_is_line(is_canton=new_canton, is_code=new_code, municipality=new_municipality, code='ISDTSALARY', amount=is_dt_salary, corrected_payslip_id=payslip_to_reverse.id, is_correction=True, correction_type='new')
 
                         min_is, rate = self._find_rate(f"{new_canton}-{new_code}-{new_municipality}", is_dt_salary)
-                        is_amount = max(is_salary * rate / 100, 0)
+                        is_amount = max(is_salary * rate / 100, min_is)
                         total_compensation -= is_amount
                         self._log_is_line(is_canton=new_canton, is_code=new_code, municipality=new_municipality, code='IS', amount=is_amount, corrected_payslip_id=payslip_to_reverse.id, is_correction=True, correction_type='new')
 
@@ -895,11 +988,7 @@ class HrPayslip(models.Model):
         if code in ['ASDAYS', 'ISWORKEDDAYSINCH', 'ISWORKEDDAYS']:
             total_is = amount
         else:
-            total = float_round(amount, precision_rounding=0.01, rounding_method="HALF-UP")
-            if total % 0.05 >= 0.025:
-                total_is = total + 0.05 - (total % 0.05)
-            else:
-                total_is = total - (total % 0.05)
+            total_is = float_round(amount, precision_rounding=0.05, rounding_method="HALF-UP")
         if total_is or code in ['ISDTSALARY', 'ISSALARY', 'IS']:
             self.env['hr.payslip.is.log.line'].create({
                 'source_tax_canton': is_canton,
@@ -1003,6 +1092,7 @@ class HrPayslip(models.Model):
                 'data/hr_salary_rule_category_data.xml',
                 'data/hr_salary_rule_data.xml',
                 'data/hr_swiss_leave_types.xml',
+                'data/hr_payroll_dashboard_warning_data.xml',
             ])]
 
     @api.depends('date_from', 'date_to', 'struct_id')
@@ -1086,3 +1176,154 @@ class HrPayslip(models.Model):
             raise ValidationError(self.env._("This feature is not available for payslips in Switzerland. If you wish to correct amounts please cancel the payslip or report corrections to the next month."))
         else:
             return super().action_adjust_payslip()
+
+    @api.model
+    def _get_dashboard_warnings_domain(self):
+        res = super()._get_dashboard_warnings_domain()
+        if self.env.company.country_id.code == "CH":
+            res = Domain.AND([
+                res,
+                Domain('country_id.code', '!=', False),
+            ])
+
+        return res
+
+    def _get_third_party_payment_wage_types(self):
+        return {
+            'WT_2000',
+            'WT_2005',
+            'WT_2010',
+            'WT_2020',
+            'WT_2021',
+            'WT_2022',
+            'WT_2025',
+            'WT_2026',
+            'WT_2027',
+            'WT_2030',
+            'WT_2031',
+            'WT_2032',
+            'WT_2035',
+            "WT_2040",
+        } | self._get_net_compensation_wage_types()
+
+    def _get_net_compensation_wage_types(self):
+        # Third party payments guaranteed net to the employee (see WT_4900)
+        return {
+            'WT_2000_NET',
+            'WT_2005_NET',
+            'WT_2010_NET',
+            'WT_2020_NET',
+            'WT_2025_NET',
+            'WT_2030_NET',
+            'WT_2035_NET',
+            'WT_2040_NET',
+        }
+
+    def _l10n_ch_eval_net(self, compensation=0.0, without_input_codes=None):
+        """ Return the payslip's 'NET' total when evaluated with a forced wage
+        type 4900 amount, inside a rolled back savepoint: nothing is persisted.
+        """
+        self.ensure_one()
+        slip = self.with_context(l10n_ch_force_net_compensation=compensation)
+        # fresh localdict, overriding any evaluation context set by the caller
+        localdict = slip._get_localdict()
+        for code in without_input_codes or ():
+            localdict['inputs'].pop(code, None)
+            localdict['same_type_input_lines'].pop(code, None)
+        slip = slip.with_context(force_payslip_localdict=localdict, prevent_payslip_computation_line_ids=[])
+        savepoint = self.env.cr.savepoint()
+        try:
+            # already logged lines would be double counted, the rollback restores them
+            self.l10n_ch_is_log_line_ids.unlink()
+            line_vals = slip._get_payslip_lines()
+            return next(vals['total'] for vals in line_vals if vals['code'] == 'NET')
+        finally:
+            savepoint.close(rollback=True)
+
+    def _l10n_ch_get_net_compensation(self):
+        """ Called by the wage type 4900 rule: the amount bringing the Net Paid
+        back to what it would be without the net compensation wage types, solved
+        numerically as the deduction chain has no closed form.
+        """
+        self.ensure_one()
+        forced = self.env.context.get('l10n_ch_force_net_compensation')
+        if forced is not None:
+            return forced  # inner evaluation of the solver itself
+        net_codes = self._get_net_compensation_wage_types()
+        net_compensation_inputs = self.input_line_ids.filtered(lambda l: l.code in net_codes)
+        if not net_compensation_inputs:
+            return 0.0
+        if 'WT_2050' in self.input_line_ids.mapped('code'):
+            raise UserError(_(
+                "%(payslip)s: A manual Third Party Correction (2050) input disables the "
+                "automatic third party offsetting: the net compensation (4900) cannot be "
+                "solved. Remove either the manual 2050 input or the net compensation "
+                "wage types.", payslip=self.name))
+
+        tolerance = 0.05  # Net Paid moves in 5 cents steps
+        max_evaluations = 25
+        max_amount = 4 * sum(abs(amount) for amount in net_compensation_inputs.mapped('amount')) + 1000
+
+        net_base = self._l10n_ch_eval_net(without_input_codes=net_codes)
+        deviation = self._l10n_ch_eval_net() - net_base
+        evaluations = 1
+        if abs(deviation) <= tolerance:
+            return 0.0
+
+        # deviation() increases with the compensation: keep a bracket [low, high]
+        # with deviation(low) < 0 < deviation(high)
+        if deviation > 0:
+            low, deviation_low, high, deviation_high = None, None, 0.0, deviation
+        else:
+            low, deviation_low, high, deviation_high = 0.0, deviation, None, None
+        best_compensation, best_deviation = 0.0, deviation
+
+        # expand the bracket, doubling away from the first guess
+        compensation = max(-max_amount, min(max_amount, -deviation / 0.65))
+        while (low is None or high is None) and abs(best_deviation) > tolerance:
+            if evaluations >= max_evaluations:
+                raise UserError(_(
+                    "%(payslip)s: The net compensation (4900) did not converge within "
+                    "%(count)s payslip evaluations.", payslip=self.name, count=evaluations))
+            evaluations += 1
+            deviation = self._l10n_ch_eval_net(compensation=compensation) - net_base
+            if abs(deviation) < abs(best_deviation):
+                best_compensation, best_deviation = compensation, deviation
+            if deviation >= 0:
+                high, deviation_high = compensation, deviation
+            else:
+                low, deviation_low = compensation, deviation
+            if low is None or high is None:
+                if abs(compensation) >= max_amount:
+                    raise UserError(_(
+                        "%(payslip)s: The net compensation (4900) could not be bracketed "
+                        "within ±%(bound).2f.", payslip=self.name, bound=max_amount))
+                compensation = max(-max_amount, min(max_amount, compensation * 2))
+
+        # narrow the bracket: secant interpolation, midpoint fallback
+        while abs(best_deviation) > tolerance and high - low > 0.01:
+            if evaluations >= max_evaluations:
+                raise UserError(_(
+                    "%(payslip)s: The net compensation (4900) did not converge within "
+                    "%(count)s payslip evaluations.", payslip=self.name, count=evaluations))
+            evaluations += 1
+            if deviation_high - deviation_low > 1e-9:
+                compensation = low - deviation_low * (high - low) / (deviation_high - deviation_low)
+            else:
+                compensation = (low + high) / 2
+            if not low + 0.001 < compensation < high - 0.001:
+                compensation = (low + high) / 2
+            deviation = self._l10n_ch_eval_net(compensation=compensation) - net_base
+            if abs(deviation) < abs(best_deviation):
+                best_compensation, best_deviation = compensation, deviation
+            if deviation >= 0:
+                high, deviation_high = compensation, deviation
+            else:
+                low, deviation_low = compensation, deviation
+
+        # book a 5 cents rounded amount when it is as accurate
+        rounded = float_round(best_compensation, precision_rounding=0.05, rounding_method='HALF-UP')
+        if abs(rounded - best_compensation) > 0.0001 and evaluations < max_evaluations:
+            if abs(self._l10n_ch_eval_net(compensation=rounded) - net_base) <= max(abs(best_deviation), tolerance):
+                best_compensation = rounded
+        return float_round(best_compensation, precision_rounding=0.01)

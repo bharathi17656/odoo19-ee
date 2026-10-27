@@ -4,19 +4,19 @@
 #
 # Translators:
 # Martin Trigaux, 2022
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2023
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2023, 2026.
 # Jolien De Paepe, 2023
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# Bren Driesen <brdri@odoo.com>, 2025.
+# Bren Driesen <brdri@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 # Odoo Translation Bot <c3p@odoo.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
-"PO-Revision-Date: 2025-11-27 18:16+0000\n"
-"Last-Translator: Odoo Translation Bot <c3p@odoo.com>\n"
+"POT-Creation-Date: 2026-04-10 18:45+0000\n"
+"PO-Revision-Date: 2026-06-06 10:26+0000\n"
+"Last-Translator: Bren Driesen <brdri@odoo.com>\n"
 "Language-Team: Dutch <https://translate.odoo.com/projects/odoo-19/"
 "hr_referral/nl/>\n"
 "Language: nl\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 2026.6.1\n"
 
 #. module: hr_referral
 #. odoo-python
@@ -41,11 +41,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_recruitment_report__referral_hired
 msgid "# Hired by Referral"
 msgstr "# Aangenomen door verwijzing"
-
-#. module: hr_referral
-#: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_send_sms_view_form
-msgid "+1 123 456 789"
-msgstr "+1 123 456 789"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.referral_campaign_email_body_template
@@ -67,12 +62,12 @@ msgid ""
 msgstr ""
 ".\n"
 "Als je iemand kent die geschikt zou zijn voor deze functie, deel deze link "
-"dan met hem of haar:"
+"dan met die persoon:"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.referral_email_body_template
 msgid "/ Job Offers"
-msgstr "/ Jobaanbiedingen"
+msgstr "/ Vacatures"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_applicant_employee_referral_kanban
@@ -99,8 +94,8 @@ msgid ""
 "                                        <span title=\"Send by Mail\">Send "
 "Email</span>"
 msgstr ""
-"<i class=\"fa fa-2x fa-envelope-o\" role=\"img\" aria-label=\"Send by Mail\""
-"/>\n"
+"<i class=\"fa fa-2x fa-envelope-o\" role=\"img\" aria-label=\"Send by Mail\"/"
+">\n"
 "                                        <br/>\n"
 "                                        <span title=\"Send by Mail\">E-mail "
 "verzenden</span>"
@@ -115,8 +110,8 @@ msgid ""
 msgstr ""
 "<i class=\"fa fa-2x fa-globe\" role=\"img\" aria-label=\"Job Page\"/>\n"
 "                                        <br/>\n"
-"                                        <span title=\"More info\""
-">Vacaturepagina</span>"
+"                                        <span title=\"More "
+"info\">Vacaturepagina</span>"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
@@ -144,7 +139,7 @@ msgstr "<i class=\"text-danger fa fa-times\" title=\"Gesloten\"/>"
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_applicant_employee_referral_kanban
 msgid "<i class=\"text-success fa fa-check\" title=\"Done\"/>"
-msgstr "<i class=\"text-success fa fa-check\" title=\"Gereed\"/>"
+msgstr "<i class=\"text-success fa fa-check\" title=\"Voltooid\"/>"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_level_form
@@ -180,6 +175,10 @@ msgid ""
 "facebook\" role=\"img\" aria-label=\"Share on facebook\"/>\n"
 "                                        </span>"
 msgstr ""
+"<span title=\"Share on Facebook\">\n"
+"                                            <i class=\"fa fa-2x fa-"
+"facebook\" role=\"img\" aria-label=\"Delen op Facebook\"/>\n"
+"                                        </span>"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
@@ -189,6 +188,10 @@ msgid ""
 "linkedin\" role=\"img\" aria-label=\"Share on linkedin\"/>\n"
 "                                        </span>"
 msgstr ""
+"<span title=\"Share on Linkedin\">\n"
+"                                            <i class=\"fa fa-2x fa-"
+"linkedin\" role=\"img\" aria-label=\"Delen op LinkedIn\"/>\n"
+"                                        </span>"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
@@ -198,6 +201,10 @@ msgid ""
 "role=\"img\" aria-label=\"Share on twitter\"/>\n"
 "                                        </span>"
 msgstr ""
+"<span title=\"Share on Twitter\">\n"
+"                                            <i class=\"fa fa-2x fa-twitter\" "
+"role=\"img\" aria-label=\"Delen op Twitter\"/>\n"
+"                                        </span>"
 
 #. module: hr_referral
 #. odoo-python
@@ -238,7 +245,7 @@ msgstr "Activiteitsfase"
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_type_icon
 msgid "Activity Type Icon"
-msgstr "Activiteitensoort icoon"
+msgstr "Activiteitstype icoon"
 
 #. module: hr_referral
 #: model:res.groups,name:hr_referral.group_hr_referral_manager
@@ -618,7 +625,7 @@ msgstr "Afgewezen gebruiker"
 #: model:ir.model.fields,field_description:hr_referral.field_utm_campaign__display_name
 #: model:ir.model.fields,field_description:hr_referral.field_utm_source__display_name
 msgid "Display Name"
-msgstr "Weergavenaam"
+msgstr "Schermnaam"
 
 #. module: hr_referral
 #. odoo-python
@@ -1277,7 +1284,7 @@ msgstr "Ons bedrijf is op zoek naar een"
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_view_form_reward_purchase_dialog
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_reward_kanban
 msgid "Point icon"
-msgstr "Punt pictogram"
+msgstr "Punt icoon"
 
 #. module: hr_referral
 #: model:ir.actions.act_window,name:hr_referral.action_hr_referral_points
@@ -1313,7 +1320,7 @@ msgstr "Ontvangen punten"
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
 msgid "Points icon"
-msgstr "Punten pictogram"
+msgstr "Punten icoon"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_hr_referral_points
@@ -1952,6 +1959,11 @@ msgid "Welcome Onboarding in Referral App"
 msgstr "Welkom onboarding in verwijzing app"
 
 #. module: hr_referral
+#: model:ir.model.fields.selection,name:hr_referral.selection__hr_referral_link_to_share__channel__twitter
+msgid "X"
+msgstr "X"
+
+#. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_job__twitter_clicks
 msgid "X Clicks"
 msgstr "X Klikken"
@@ -2073,9 +2085,9 @@ msgid ""
 "                If you know someone who would be a great fit for this "
 "position, please share this link with them:"
 msgstr ""
-"positie.\n"
+".\n"
 "                Als je iemand kent die geschikt zou zijn voor deze functie, "
-"deel deze link dan met hem of haar:"
+"deel deze link dan met die persoon:"
 
 #. module: hr_referral
 #. odoo-javascript
@@ -2101,8 +2113,11 @@ msgid ""
 msgstr ""
 "🚀 Een geweldige kans voor een %(job_name)s bij mijn bedrijf. Als je op zoek "
 "bent naar een nieuwe uitdaging, kijk dan snel! 👇%(new_line_code)s🔗%"
-"(short_url)s%(new_line_code)s%(hashtag_code)sSolliciteren %(hashtag_code)"
-"sVacature %(hashtag_code)sCarrièremogelijkheid"
+"(short_url)s%(new_line_code)s%(hashtag_code)sSolliciteren %"
+"(hashtag_code)sVacature %(hashtag_code)sCarrièremogelijkheid"
+
+#~ msgid "+1 123 456 789"
+#~ msgstr "+1 123 456 789"
 
 #~ msgid ""
 #~ " You've gained %(gained)s points with this progress.<br/>It makes you a "

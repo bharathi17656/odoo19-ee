@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<odoo noupdate="1">
+<odoo>
     <record id="res_groups_privilege_voip" model="res.groups.privilege">
         <field name="name">VoIP</field>
         <field name="category_id" ref="base.module_category_productivity"/>
@@ -22,6 +22,8 @@
     <record id="base.group_system" model="res.groups">
         <field name="implied_ids" eval="[Command.link(ref('group_voip_admin'))]"/>
     </record>
+
+    <data noupdate="1">
 
     <record id="voip_call_rule_user" model="ir.rule">
         <field name="name">voip.call: users can read their own records</field>
@@ -54,4 +56,6 @@
         <field name="groups" eval="[Command.link(ref('group_voip_admin'))]"/>
         <field name="domain_force">[("company_id", "in", company_ids + [False])]</field>
     </record>
+
+    </data>
 </odoo>

@@ -12,7 +12,8 @@ class SignRequest(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         sign_requests = super().create(vals_list)
-        attachment_ids = sign_requests.template_id.document_ids.attachment_id.ids
+        attachments = sign_requests.template_id.document_ids.attachment_id
+        attachment_ids = (attachments | attachments.original_id).ids
         documents = self.env['documents.document'].search([('attachment_id', 'in', attachment_ids)])
         attachment_docs = defaultdict(list)
         for doc in documents:
@@ -22,7 +23,8 @@ class SignRequest(models.Model):
             if sr.template_id.folder_id and not sr.reference_doc:
                 document_ids = []
                 for attachment in sr.template_id.document_ids.attachment_id:
-                    document_ids += attachment_docs[attachment.id]
+                    document_ids += attachment_docs[attachment.id] + attachment_docs[attachment.original_id.id]
+                document_ids = list(set(document_ids))
                 if len(document_ids) == 1:
                     sr.reference_doc = f"documents.document,{document_ids[0].id}"
                 elif document_ids and all(doc.folder_id == document_ids[0].folder_id for doc in document_ids):
@@ -79,9 +81,13 @@ class SignRequestItem(models.Model):
         completed_documents_sudo = self.env['documents.document'].search([
             ('attachment_id', 'in', self.sign_request_id.completed_document_attachment_ids.ids)
         ])
-        # Add view permission to the signer if he has not already inherited a larger permission from the folder
-        if not completed_documents_sudo.access_ids.filtered(
-                lambda access: access.partner_id == self.partner_id and access.role == 'edit'):
-            completed_documents_sudo.action_update_access_rights(partners={self.partner_id: ('view', False)})
+        # Add view permission to the signer and requester if they not already have a larger permission
+        partners = self.partner_id | self.create_uid.partner_id
+        existing_editors = completed_documents_sudo.access_ids.filtered(
+            lambda access: access.partner_id in partners and access.role == 'edit'
+        ).partner_id | self.env.ref('base.user_root').partner_id  # root user has access to everything
+        if partners_to_update := partners - existing_editors:
+            partners = {partner: ('view', False) for partner in partners_to_update}
+            completed_documents_sudo.action_update_access_rights(partners=partners)
 
         completed_documents_sudo.partner_id = self.partner_id

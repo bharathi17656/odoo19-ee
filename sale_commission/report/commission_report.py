@@ -93,7 +93,7 @@ class SaleCommissionReport(models.Model):
         }
         if self.plan_id.user_type == 'team':
             team_ids = self.env['crm.team'].search([('user_id', '=', self.user_id.id)])
-            context.update({'commission_team_ids': self.user_id.sale_team_id.ids + team_ids.ids})
+            context.update({'commission_team_ids': self.plan_id.team_id.ids + team_ids.ids})
         else:
             context.update({'commission_user_ids': self.user_id.ids})
         return {
@@ -112,7 +112,7 @@ class SaleCommissionReport(models.Model):
             notes = vals.get('notes')
             for line in self:
                 if line.forecast_id:
-                    if forecast:
+                    if forecast is not None:
                         line.sudo().forecast_id.amount = forecast
                     if notes:
                         line.sudo().forecast_id.notes = notes
@@ -171,7 +171,7 @@ LEFT JOIN currency_rate cr
 ), achievement AS (
     SELECT
         (
-            COALESCE(era.plan_id, 0) * 10^13 +
+            COALESCE(era.plan_id, 0) * 10^11 +
             COALESCE(u.user_id, 0) +
             10^5 * COALESCE(to_char(era.date_from, 'YYMMDD')::integer, 0)
         )::bigint AS id,

@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:46+0000\n"
+"POT-Creation-Date: 2026-04-17 18:48+0000\n"
 "PO-Revision-Date: 2025-11-16 13:45+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://translate.odoo.com/"
@@ -64,6 +64,11 @@ msgid "Default Project Folder"
 msgstr "默认项目文件夹"
 
 #. module: documents_project
+#: model:ir.model.fields,field_description:documents_project.field_documents_operation__display_name
+msgid "Destination Display Name"
+msgstr ""
+
+#. module: documents_project
 #: model:ir.model.fields,field_description:documents_project.field_documents_document__display_name
 #: model:ir.model.fields,field_description:documents_project.field_documents_tag__display_name
 #: model:ir.model.fields,field_description:documents_project.field_ir_attachment__display_name
@@ -93,6 +98,11 @@ msgid "Documents Folder"
 msgstr ""
 
 #. module: documents_project
+#: model:ir.model,name:documents_project.model_documents_operation
+msgid "Documents Operation"
+msgstr ""
+
+#. module: documents_project
 #: model:documents.document,name:documents_project.project_1_document_3
 msgid "First Floor Plan"
 msgstr "首个平面图"
@@ -115,6 +125,7 @@ msgstr "创建新项目的文件夹"
 
 #. module: documents_project
 #: model:ir.model.fields,field_description:documents_project.field_documents_document__id
+#: model:ir.model.fields,field_description:documents_project.field_documents_operation__id
 #: model:ir.model.fields,field_description:documents_project.field_documents_tag__id
 #: model:ir.model.fields,field_description:documents_project.field_ir_attachment__id
 #: model:ir.model.fields,field_description:documents_project.field_project_project__id
@@ -156,7 +167,8 @@ msgstr "标签"
 msgid ""
 "The \"%(folder)s\" folder should either be in the \"%(company)s\" company "
 "like this project or be open to all companies."
-msgstr "%(folder)s 文件夹应与本项目一样位于%(company)s公司内，或者对所有公司开放。"
+msgstr ""
+"%(folder)s 文件夹应与本项目一样位于%(company)s公司内，或者对所有公司开放。"
 
 #. module: documents_project
 #. odoo-python
@@ -178,13 +190,20 @@ msgstr ""
 
 #. module: documents_project
 #. odoo-python
+#: code:addons/documents_project/wizard/documents_operation.py:0
+msgid "This document belongs to %(task)s."
+msgstr ""
+
+#. module: documents_project
+#. odoo-python
 #: code:addons/documents_project/models/documents_document.py:0
 msgid ""
 "This folder should remain in the same company as the \"%(project)s\" project "
 "to which it is linked. Please update the company of the \"%(project)s\" "
 "project, or leave the company of this folder empty."
-msgstr "该文件夹应与所链接的 “%(project)s” 项目位于同一公司。请更新 “%(project)s” "
-"项目的公司，或将此文件夹的公司留空。"
+msgstr ""
+"该文件夹应与所链接的 “%(project)s” 项目位于同一公司。请更新 “%(project)s” 项"
+"目的公司，或将此文件夹的公司留空。"
 
 #. module: documents_project
 #. odoo-python

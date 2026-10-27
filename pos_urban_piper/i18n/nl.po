@@ -3,16 +3,16 @@
 # * pos_urban_piper
 #
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# Bren Driesen <brdri@odoo.com>, 2025.
+# Bren Driesen <brdri@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 # Odoo Translation Bot <c3p@odoo.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-21 18:43+0000\n"
-"PO-Revision-Date: 2025-11-27 14:15+0000\n"
-"Last-Translator: Odoo Translation Bot <c3p@odoo.com>\n"
+"POT-Creation-Date: 2026-07-03 17:45+0000\n"
+"PO-Revision-Date: 2026-10-21 12:29+0000\n"
+"Last-Translator: Bren Driesen <brdri@odoo.com>\n"
 "Language-Team: Dutch <https://translate.odoo.com/projects/odoo-19/"
 "pos_urban_piper/nl/>\n"
 "Language: nl\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: pos_urban_piper
 #. odoo-javascript
@@ -126,6 +126,12 @@ msgstr "Annuleren"
 #: model:ir.model.fields.selection,name:pos_urban_piper.selection__pos_order__delivery_status__cancelled
 msgid "Cancelled"
 msgstr "Geannuleerd"
+
+#. module: pos_urban_piper
+#. odoo-python
+#: code:addons/pos_urban_piper/models/pos_urban_piper_request.py:0
+msgid "Cannot reach the server. Please try again later."
+msgstr "De server kan niet worden bereikt. Probeer het later opnieuw."
 
 #. module: pos_urban_piper
 #. odoo-javascript
@@ -373,13 +379,13 @@ msgstr "Verzonden"
 #: model:ir.model.fields,field_description:pos_urban_piper.field_res_company__display_name
 #: model:ir.model.fields,field_description:pos_urban_piper.field_res_config_settings__display_name
 msgid "Display Name"
-msgstr "Weergavenaam"
+msgstr "Schermnaam"
 
 #. module: pos_urban_piper
 #. odoo-javascript
 #: code:addons/pos_urban_piper/static/src/point_of_sale_overrirde/app/delivery_button/delivery_button.xml:0
 msgid "Done"
-msgstr "Gereed"
+msgstr "Voltooid"
 
 #. module: pos_urban_piper
 #. odoo-javascript
@@ -418,7 +424,13 @@ msgstr "Fout opgetreden tijdens het bijwerken van de status."
 #. odoo-javascript
 #: code:addons/pos_urban_piper/static/src/point_of_sale_overrirde/app/services/pos_store.js:0
 msgid "Error to send in preparation display."
-msgstr "Fout om te verzenden in voorbereidingsdisplay."
+msgstr "Fout bij verzenden naar voorbereidingsscherm."
+
+#. module: pos_urban_piper
+#. odoo-python
+#: code:addons/pos_urban_piper/models/pos_urban_piper_request.py:0
+msgid "Failed to parse server response."
+msgstr "Kon serverreactie niet parseren."
 
 #. module: pos_urban_piper
 #. odoo-javascript
@@ -455,7 +467,7 @@ msgstr "Vaste kortingswaarde voor testbestelling."
 #. module: pos_urban_piper
 #: model_terms:ir.ui.view,arch_db:pos_urban_piper.product_template_search_view_inherit_pos_urban_piper
 msgid "Food Delivery Location"
-msgstr ""
+msgstr "Locatie van de maaltijdlevering"
 
 #. module: pos_urban_piper
 #: model_terms:ir.ui.view,arch_db:pos_urban_piper.res_config_settings_view_form_pos_urban_piper
@@ -547,7 +559,7 @@ msgstr "Ongeldige variant/toevoegingen"
 #: model:ir.model.fields,field_description:pos_urban_piper.field_product_product__is_alcoholic_on_urbanpiper
 #: model:ir.model.fields,field_description:pos_urban_piper.field_product_template__is_alcoholic_on_urbanpiper
 msgid "Is Alcoholic"
-msgstr "Is alcoholisch"
+msgstr "Bevat alcohol"
 
 #. module: pos_urban_piper
 #: model:ir.model.fields,field_description:pos_urban_piper.field_product_urban_piper_status__is_product_linked
@@ -783,7 +795,7 @@ msgstr "Filiaal"
 #. module: pos_urban_piper
 #: model_terms:ir.ui.view,arch_db:pos_urban_piper.res_config_settings_view_form_pos_urban_piper
 msgid "POS ID"
-msgstr "POS ID"
+msgstr "Kassa-ID"
 
 #. module: pos_urban_piper
 #. odoo-python
@@ -894,7 +906,7 @@ msgstr "Kassa-ID van UrbanPiper (Atlas)"
 #. module: pos_urban_piper
 #: model:ir.model,name:pos_urban_piper.model_pos_prep_display
 msgid "Pos Preparation Display"
-msgstr "Kassa Bereidingsweergave"
+msgstr "Kassa Voorbereidingsscherm"
 
 #. module: pos_urban_piper
 #: model:ir.model,name:pos_urban_piper.model_pos_prep_order
@@ -971,7 +983,7 @@ msgstr "Providernaam moet uniek zijn."
 #. module: pos_urban_piper
 #: model:ir.model.fields,field_description:pos_urban_piper.field_pos_urbanpiper_test_order_wizard__quantity
 msgid "Quantity"
-msgstr "Aantal"
+msgstr "Hoeveelheid"
 
 #. module: pos_urban_piper
 #: model:ir.model.fields,help:pos_urban_piper.field_product_product__is_recommended_on_urbanpiper
@@ -1220,6 +1232,8 @@ msgid ""
 "This action will flush(delete) the entire menu from Atlas for this store and "
 "re-sync it if any menu data is available."
 msgstr ""
+"Deze actie zal het volledige menu uit Atlas voor deze winkel verwijderen en "
+"opnieuw synchroniseren als er menugegevens beschikbaar zijn."
 
 #. module: pos_urban_piper
 #. odoo-javascript

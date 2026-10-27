@@ -147,3 +147,93 @@ class TestCFDIInvoice(TestMxExtendedEdiCommon):
 
             if RATE_WITH_USD == TEST_RATE_WITH_USD or not EXTERNAL_MODE:
                 self._assert_invoice_cfdi(invoice, 'test_invoice_external_trade_null_qty')
+
+    def test_invoice_external_trade_service(self):
+        with self.mx_external_setup(self.frozen_today):
+            invoice = self._create_invoice(
+                currency_id=self.usd.id,
+                invoice_line_ids=[
+                    Command.create({
+                        'product_id': self.service_product.id,
+                        'price_unit': 1000.0,
+                        'quantity': 1,
+                        'discount': 20.0,
+                        'l10n_mx_edi_qty_umt': 1.0,
+                        'l10n_mx_edi_price_unit_umt': self.service_product.lst_price,
+                        'tax_ids': [Command.set(self.tax_0.ids)],
+                    }),
+                    Command.create({
+                        'product_id': self.product.id,
+                        'price_unit': 17000.0,
+                        'quantity': 5,
+                        'discount': 20.0,
+                        'l10n_mx_edi_qty_umt': 5.0,
+                        'l10n_mx_edi_price_unit_umt': self.product.lst_price,
+                        'tax_ids': [Command.set(self.tax_0.ids)],
+                    }),
+                ],
+            )
+            with self.with_mocked_pac_sign_success():
+                invoice._l10n_mx_edi_cfdi_invoice_try_send()
+
+            if RATE_WITH_USD == TEST_RATE_WITH_USD or not EXTERNAL_MODE:
+                self._assert_invoice_cfdi(invoice, 'test_invoice_external_trade_service')
+
+    def test_invoice_external_trade_foreign_address_format(self):
+        address = {
+            'street': "Unter den Linden",
+            'city': " Add|ison ",
+            # no easy functional way to generate a record of this model
+            # but mock it anyways since SAT allows it.
+            'l10n_mx_edi_locality': "A" * 130,
+            'l10n_mx_edi_colony': 'Mitte',
+            'zip': '10117',
+            'country_id': self.env.ref('base.de').id,
+        }
+        partner_de = self.env['res.partner'].create({'name': "partner_de", **address})
+        delivery_de = self.env['res.partner'].create({
+            'name': "delivery_de",
+            'type': 'delivery',
+            'parent_id': partner_de.id,
+            **address,
+        })
+
+        with self.mx_external_setup(self.frozen_today):
+            invoice = self._create_invoice(partner_id=partner_de.id, partner_shipping_id=delivery_de.id)
+            with self.with_mocked_pac_sign_success():
+                invoice._l10n_mx_edi_cfdi_invoice_try_send()
+
+            if RATE_WITH_USD == TEST_RATE_WITH_USD or not EXTERNAL_MODE:
+                self._assert_invoice_cfdi(invoice, 'test_invoice_external_trade_foreign_address')
+
+    def test_global_invoice_with_issued_address_on_journal(self):
+        branch_address = self.env['res.partner'].create({
+            'name': 'Sucursal Mexico City',
+            'street': 'Paseo de la Reforma 222',
+            'zip': '06600',
+            'city': 'Cuauhtémoc',
+            'state_id': self.env.ref('base.state_mx_mex').id,
+            'country_id': self.env.ref('base.mx').id,
+            'type': 'other',
+        })
+
+        with self.mx_external_setup(self.frozen_today):
+            invoice = self._create_invoice(
+                invoice_line_ids=[
+                    Command.create({
+                        'product_id': self.product.id,
+                        'price_unit': 17000.0,
+                        'quantity': 5,
+                        'discount': 20.0,
+                        'l10n_mx_edi_qty_umt': 0.0,
+                        'l10n_mx_edi_price_unit_umt': self.product.lst_price,
+                        'tax_ids': [Command.set(self.tax_0.ids)],
+                    }),
+                ],
+            )
+            invoice.journal_id.l10n_mx_address_issued_id = branch_address
+
+            with self.with_mocked_pac_sign_success():
+                invoice._l10n_mx_edi_cfdi_global_invoice_try_send()
+
+            self._assert_global_invoice_cfdi_from_invoices(invoice, "test_global_invoice_with_issued_address_on_journal")

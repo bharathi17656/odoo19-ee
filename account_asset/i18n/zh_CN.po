@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:44+0000\n"
+"POT-Creation-Date: 2026-08-21 17:44+0000\n"
 "PO-Revision-Date: 2025-11-16 05:25+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
 "Language-Team: Chinese (Simplified Han script) <https://translate.odoo.com/"
@@ -118,8 +118,9 @@ msgid ""
 "A depreciation entry will be posted on and including the date %(date)s. <br/"
 "> %(extra_text)s Future entries will be recomputed to depreciate the asset "
 "following the changes."
-msgstr "折旧记项会于此日期过账（包括此日期）：%(date)s。<br/> %(extra_text)s "
-"将来的资产折旧记项，会在变更后重新计算。"
+msgstr ""
+"折旧记项会于此日期过账（包括此日期）：%(date)s。<br/> %(extra_text)s 将来的资"
+"产折旧记项，会在变更后重新计算。"
 
 #. module: account_asset
 #. odoo-python
@@ -129,8 +130,8 @@ msgid ""
 "A disposal entry will be posted on the %(account_type)s account <b>%"
 "(account)s</b>."
 msgstr ""
-"折旧记项会于此日期过账（包括此日期）：%(date)s。<br/>处置记项会过账至 "
-"%(account_type)s账户<b>%(account)s</b>。"
+"折旧记项会于此日期过账（包括此日期）：%(date)s。<br/>处置记项会过账至 %"
+"(account_type)s账户<b>%(account)s</b>。"
 
 #. module: account_asset
 #. odoo-python
@@ -140,9 +141,8 @@ msgid ""
 "A second entry will neutralize the original income and post the  outcome of "
 "this sale on account <b>%(account)s</b>."
 msgstr ""
-"折旧记项会于此日期过账（包括此日期）：%(date)s。<br/"
-">将会有第二个记项抵销原本的收入，并将此次销售的结果过账至账户<b>%(account)s</"
-"b>。"
+"折旧记项会于此日期过账（包括此日期）：%(date)s。<br/>将会有第二个记项抵销原本"
+"的收入，并将此次销售的结果过账至账户<b>%(account)s</b>。"
 
 #. module: account_asset
 #. odoo-python
@@ -174,7 +174,8 @@ msgstr "已创建资产增值记录：%(link)s"
 msgid ""
 "A non deductible tax value of %(tax_value)s was added to %(name)s's initial "
 "value of %(purchase_value)s"
-msgstr "有一项不可扣减税值%(tax_value)s已加至%(name)s的初始值%(purchase_value)s"
+msgstr ""
+"有一项不可扣减税值%(tax_value)s已加至%(name)s的初始值%(purchase_value)s"
 
 #. module: account_asset
 #: model:ir.model,name:account_asset.model_account_account
@@ -479,8 +480,8 @@ msgstr "根据发票创建的资产： %s"
 #. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
-msgid "Asset disposed. %s"
-msgstr "已过账资产。%s"
+msgid "Asset disposed. %(message)s"
+msgstr ""
 
 #. module: account_asset
 #: model:account.return.check.template,name:account_asset.account_return_check_template_asset_movement_and_accounting_treatment
@@ -496,8 +497,14 @@ msgstr "暂停资产。%s"
 #. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
-msgid "Asset sold. %s"
-msgstr "资产已售出。%s"
+msgid "Asset sold. %(message)s See %(invoice_links)s"
+msgstr ""
+
+#. module: account_asset
+#. odoo-python
+#: code:addons/account_asset/models/account_asset.py:0
+msgid "Asset sold: %s"
+msgstr ""
 
 #. module: account_asset
 #. odoo-python
@@ -983,6 +990,15 @@ msgid ""
 msgstr ""
 
 #. module: account_asset
+#: model:account.return.check.template,description:account_asset.account_return_check_template_monitoring_of_depreciation
+msgid ""
+"Ensure compliance with local tax rules on depreciation.\n"
+"Verify that the depreciation methods, depreciation period, and start dates "
+"align with tax requirements (e.g. linear depreciation, pro rata temporis "
+"application, no double declining for tax purposes)."
+msgstr ""
+
+#. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/controller/asset_template_controller.py:0
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__account_depreciation_expense_id
@@ -1319,6 +1335,11 @@ msgid "Modify Depreciation"
 msgstr "修改折旧"
 
 #. module: account_asset
+#: model:account.return.check.template,name:account_asset.account_return_check_template_monitoring_of_depreciation
+msgid "Monitoring of Depreciation "
+msgstr ""
+
+#. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__method_period__1
 #: model:ir.model.fields.selection,name:account_asset.selection__asset_modify__method_period__1
 msgid "Months"
@@ -1509,7 +1530,8 @@ msgid ""
 "Odoo manages depreciation for your fixed assets. No depreciation was "
 "recorded for this period. Ensure assets are properly registered for "
 "automatic depreciation calculation."
-msgstr "Odoo 管理固定资产折旧。本期未记录折旧。请确保资产已正确登记以便自动计算折旧。"
+msgstr ""
+"Odoo 管理固定资产折旧。本期未记录折旧。请确保资产已正确登记以便自动计算折旧。"
 
 #. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__state__paused
@@ -1819,7 +1841,8 @@ msgid ""
 "The amount you have entered (%(entered_amount)s) does not match the Related "
 "Purchase's value (%(purchase_value)s). Please make sure this is what you "
 "want."
-msgstr "输入的金额（%(entered_amount)s）不符相关购买的金额（%(purchase_value)s）。请"
+msgstr ""
+"输入的金额（%(entered_amount)s）不符相关购买的金额（%(purchase_value)s）。请"
 "确保这是您想要的。"
 
 #. module: account_asset
@@ -1872,6 +1895,12 @@ msgid ""
 "The expense account for posting periodic depreciation entries (e.g., "
 "\"630000 Depreciation Expenses\"). Must exist in Odoo and be of "
 "\"Depreciation\" or \"Expense\" type."
+msgstr ""
+
+#. module: account_asset
+#. odoo-javascript
+#: code:addons/account_asset/static/src/components/depreciation_schedule/warnings.xml:0
+msgid "The fixed asset account differs from the account on the bill. Click"
 msgstr ""
 
 #. module: account_asset
@@ -2230,6 +2259,12 @@ msgid "gain/loss"
 msgstr "收益/损失"
 
 #. module: account_asset
+#. odoo-javascript
+#: code:addons/account_asset/static/src/components/depreciation_schedule/warnings.xml:0
+msgid "here"
+msgstr ""
+
+#. module: account_asset
 #. odoo-python
 #: code:addons/account_asset/controller/asset_template_controller.py:0
 msgid "journal_id"
@@ -2306,6 +2341,12 @@ msgstr ""
 #: code:addons/account_asset/wizard/asset_modify.py:0
 msgid "sell"
 msgstr "销售"
+
+#~ msgid "Asset disposed. %s"
+#~ msgstr "已过账资产。%s"
+
+#~ msgid "Asset sold. %s"
+#~ msgstr "资产已售出。%s"
 
 #~ msgid " (%s of %s)"
 #~ msgstr " (%s 的 %s)"

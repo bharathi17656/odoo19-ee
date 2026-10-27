@@ -38,7 +38,7 @@ class L10n_HkIr56g(models.Model):
         for payslip in all_payslips:
             employee_payslips[payslip.employee_id] |= payslip
 
-        line_codes = ['BASIC', 'COMMISSION', 'REFERRAL_FEE', 'END_OF_YEAR_PAYMENT', 'BACKPAY', 'ALW.INT', 'HRA', 'MPF_GROSS', 'EEMC', 'ERMC', 'EEVC', 'ERVC']
+        line_codes = ['BASIC', 'COMMISSION', 'REFERRAL_FEE', 'END_OF_YEAR_PAYMENT', 'BACKPAY', 'ALW_INT', 'HRA', 'MPF_GROSS', 'EEMC', 'ERMC', 'EEVC', 'ERVC', 'GLOBAL_REIMBURSEMENT', 'GLOBAL_DEDUCTION']
         all_line_values = all_payslips._get_line_values(line_codes, vals_list=['total', 'quantity'])
 
         sequence = 0
@@ -51,7 +51,7 @@ class L10n_HkIr56g(models.Model):
                 code: sum(all_line_values[code][p.id]['total'] for p in payslips)
                 for code in line_codes}
 
-            start_date = self.start_period if self.start_period > employee.contract_date_start else employee.contract_date_start
+            start_date = self.start_period if self.start_period > employee._get_first_version_date() else employee._get_first_version_date()
             end_date = employee.version_id.contract_date_end or self.end_period
 
             rental_ids = employee.l10n_hk_rental_ids.filtered_domain([
@@ -70,13 +70,13 @@ class L10n_HkIr56g(models.Model):
                 'RTN_ASS_YR': self.end_year,
                 'StartDateOfEmp': start_date,
                 'EndDateOfEmp': end_date,
-                'AmtOfSalary': int(mapped_total['BASIC']),
+                'AmtOfSalary': int(mapped_total['BASIC'] + mapped_total['GLOBAL_REIMBURSEMENT'] + mapped_total['GLOBAL_DEDUCTION']),
                 'AmtOfCommFee': int(mapped_total['COMMISSION']) + int(mapped_total['REFERRAL_FEE']),
                 'AmtOfBonus': int(mapped_total['END_OF_YEAR_PAYMENT']),
                 'AmtOfBpEtc': int(mapped_total['BACKPAY']),
-                'NatureOtherRAP1': 'Internet Allowance' if int(mapped_total['ALW.INT']) else '',
-                'AmtOfOtherRAP1': int(mapped_total['ALW.INT']),
-                'TotalIncome': int(mapped_total['MPF_GROSS']),
+                'NatureOtherRAP1': 'Internet Allowance' if int(mapped_total['ALW_INT']) else '',
+                'AmtOfOtherRAP1': int(mapped_total['ALW_INT']),
+                'TotalIncome': int(mapped_total['MPF_GROSS'] - mapped_total['HRA']),
                 'PlaceOfResInd': int(bool(rental_ids)),
                 'AddrOfPlace1': '',
                 'NatureOfPlace1': '',
@@ -122,7 +122,7 @@ class L10n_HkIr56g(models.Model):
 
         total_data = {
             'NoRecordBatch': '{:05}'.format(sheets_count),
-            'TotIncomeBatch': int(sum(all_line_values['MPF_GROSS'][p.id]['total'] for p in all_payslips)),
+            'TotIncomeBatch': int(sum(ed['TotalIncome'] for ed in employees_data)),
         }
 
         return {'data': report_info, 'employees_data': employees_data, 'total_data': total_data}

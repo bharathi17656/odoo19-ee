@@ -8,11 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
+"POT-Creation-Date: 2026-05-08 17:41+0000\n"
 "PO-Revision-Date: 2025-11-16 13:48+0000\n"
 "Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
-"Language-Team: Kabyle <https://translate.odoo.com/projects/odoo-19/esg/kab/>"
-"\n"
+"Language-Team: Kabyle <https://translate.odoo.com/projects/odoo-19/esg/kab/"
+">\n"
 "Language: kab\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -36,8 +36,10 @@ msgstr "%s (Anɣel )"
 #: model_terms:ir.ui.view,arch_db:esg.emission_factor_form_view
 msgid ""
 "<i class=\"fa fa-exclamation-triangle me-2\"/>\n"
-"                    You are modifying an emission factor already assigned to emissions.\n"
-"                    Changing it will update these emissions. To keep the old value, duplicate the factor."
+"                    You are modifying an emission factor already assigned to "
+"emissions.\n"
+"                    Changing it will update these emissions. To keep the old "
+"value, duplicate the factor."
 msgstr ""
 
 #. module: esg
@@ -114,9 +116,13 @@ msgid "Activity Flow"
 msgstr ""
 
 #. module: esg
-#: model:ir.model,name:esg.model_esg_activity_type
 #: model:ir.model.fields,field_description:esg.field_esg_emission_factor_line__activity_type_id
 msgid "Activity Type"
+msgstr ""
+
+#. module: esg
+#: model:ir.model,name:esg.model_esg_activity_type
+msgid "Activity Type ESG"
 msgstr ""
 
 #. module: esg
@@ -139,8 +145,8 @@ msgstr "Azal"
 #. odoo-python
 #: code:addons/esg/models/esg_assignation_line.py:0
 msgid ""
-"An assignation with the rules (%(account_id)s, %(partner_id)s, "
-"%(product_id)s) already exists in the emission factor '%(factor_name)s'."
+"An assignation with the rules (%(account_id)s, %(partner_id)s, %"
+"(product_id)s) already exists in the emission factor '%(factor_name)s'."
 msgstr ""
 
 #. module: esg
@@ -363,8 +369,11 @@ msgstr "Taggayt"
 #. odoo-python
 #: code:addons/esg/models/account_account.py:0
 msgid ""
-"Changing the account type to anything other than %(valid_account_type_names)s will reset all emission factors linked to journal items using this account.\n"
-"In addition, it will remove all the ESG assignations lines linked to that account.\n"
+"Changing the account type to anything other than %"
+"(valid_account_type_names)s will reset all emission factors linked to "
+"journal items using this account.\n"
+"In addition, it will remove all the ESG assignations lines linked to that "
+"account.\n"
 "Are you sure you want to continue?"
 msgstr ""
 
@@ -734,8 +743,10 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:esg.action_emitted_emission_report_views
 #: model_terms:ir.actions.act_window,help:esg.action_offset_emission_report_views
 msgid ""
-"Emissions data will sync automatically from accounting when you receive supplier invoices.<br>\n"
-"                You can also manually add other emission not linked to journal entries."
+"Emissions data will sync automatically from accounting when you receive "
+"supplier invoices.<br>\n"
+"                You can also manually add other emission not linked to "
+"journal entries."
 msgstr ""
 
 #. module: esg
@@ -1069,8 +1080,8 @@ msgstr ""
 #: model:ir.model.fields,help:esg.field_factors_auto_assignment_wizard__replace_previous_factors
 msgid ""
 "If checked, any emission lines that already have an emission factor "
-"(manually or automatically assigned) will be reassigned if a matching factor"
-" is found based on your configuration."
+"(manually or automatically assigned) will be reassigned if a matching factor "
+"is found based on your configuration."
 msgstr ""
 
 #. module: esg
@@ -1551,8 +1562,7 @@ msgstr ""
 
 #. module: esg
 #: model:ir.model.fields,help:esg.field_esg_gas__global_warming_potential
-msgid ""
-"Relative impact of gas on global warming compared to CO₂ over 100 years"
+msgid "Relative impact of gas on global warming compared to CO₂ over 100 years"
 msgstr ""
 
 #. module: esg
@@ -1591,6 +1601,8 @@ msgstr ""
 
 #. module: esg
 #. odoo-javascript
+#. odoo-python
+#: code:addons/esg/controllers/esg_dashboard.py:0
 #: code:addons/esg/static/src/no_content_helper/no_content_helper.xml:0
 msgid "Scope 1"
 msgstr ""
@@ -1603,6 +1615,8 @@ msgstr ""
 
 #. module: esg
 #. odoo-javascript
+#. odoo-python
+#: code:addons/esg/controllers/esg_dashboard.py:0
 #: code:addons/esg/static/src/no_content_helper/no_content_helper.xml:0
 msgid "Scope 2"
 msgstr ""
@@ -1615,6 +1629,8 @@ msgstr ""
 
 #. module: esg
 #. odoo-javascript
+#. odoo-python
+#: code:addons/esg/controllers/esg_dashboard.py:0
 #: code:addons/esg/static/src/no_content_helper/no_content_helper.xml:0
 msgid "Scope 3"
 msgstr ""
@@ -1895,6 +1911,11 @@ msgid "Valid To"
 msgstr ""
 
 #. module: esg
+#: model_terms:ir.ui.view,arch_db:esg.emission_factor_form_view
+msgid "Validity Period"
+msgstr ""
+
+#. module: esg
 #: model:esg.emission.source,name:esg.esg_emission_source_direct_2_1
 msgid "Vehicle Type 1"
 msgstr ""
@@ -1943,9 +1964,8 @@ msgstr "Amazray n Taywalt n usmel  Web"
 #. odoo-python
 #: code:addons/esg/models/account_account.py:0
 msgid ""
-"You can only create accounts of type %(valid_account_type_names)s in the ESG"
-" module, as emission factors can only be linked to expense or asset "
-"accounts."
+"You can only create accounts of type %(valid_account_type_names)s in the ESG "
+"module, as emission factors can only be linked to expense or asset accounts."
 msgstr ""
 
 #. module: esg

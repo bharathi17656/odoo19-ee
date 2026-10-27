@@ -26,6 +26,9 @@
     </template>
 
     <template id="sign.items_input_info" name="Items input info">
+        <t t-foreach="value_pool or []" t-as="pooled_value">
+            <input type="hidden" class="o_sign_value_pool_input_info" t-att-data-value="pooled_value"/>
+        </t>
         <t t-if="sign_items">
             <t t-foreach="sign_items" t-as="item">
                 <input type="hidden" class="o_sign_item_input_info"
@@ -48,6 +51,8 @@
                     t-att-data-alignment="item.alignment"
                     t-att-data-value="item_values.get(item.id) if item_values else None"
                     t-att-data-frame_value="frame_values.get(item.id) if frame_values else None"
+                    t-att-data-value_ref="item_value_refs.get(item.id) if item_value_refs else None"
+                    t-att-data-frame_value_ref="frame_value_refs.get(item.id) if frame_value_refs else None"
                     t-att-data-document_id="item.document_id.id"
                 />
             </t>

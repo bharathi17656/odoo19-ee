@@ -4,13 +4,14 @@
 #
 # "Tiffany Chang (tic)" <tic@odoo.com>, 2025.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
-# Saara Hakanen <sahak@odoo.com>, 2025.
+# Saara Hakanen <sahak@odoo.com>, 2025, 2026.
+# Odoo Translation Bot <c3p@odoo.com>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:43+0000\n"
-"PO-Revision-Date: 2025-11-27 14:16+0000\n"
+"POT-Creation-Date: 2025-12-30 18:42+0000\n"
+"PO-Revision-Date: 2026-10-13 07:40+0000\n"
 "Last-Translator: Saara Hakanen <sahak@odoo.com>\n"
 "Language-Team: Finnish <https://translate.odoo.com/projects/odoo-19/"
 "knowledge/fi/>\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.14.3\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: knowledge
 #. odoo-javascript
@@ -58,8 +59,8 @@ msgid ""
 "\"%(article_name)s\" is a template and can not be a child of an article (\"%"
 "(parent_article_name)s\")."
 msgstr ""
-"\"%(article_name)s\" on malli, eikä se voi olla artikkelin (\"%"
-"(parent_article_name)s\") alemman tason artikkeli."
+"\"%(article_name)s\" on mallipohja, eikä se voi olla artikkelille (\"%"
+"(parent_article_name)s\") alisteinen."
 
 #. module: knowledge
 #. odoo-python
@@ -68,8 +69,8 @@ msgid ""
 "\"%(article_name)s\" is an article and can not be a child of a template (\"%"
 "(parent_article_name)s\").\""
 msgstr ""
-"\"%(article_name)s\" on artikkeli, eikä se voi olla mallin (\"%"
-"(parent_article_name)s\") alemman tason artikkeli.\""
+"\"%(article_name)s\" on artikkeli, eikä se voi olla mallipohjalle (\"%"
+"(parent_article_name)s\") alisteinen.\""
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_brand_assets
@@ -102,13 +103,13 @@ msgstr "%s on siirretty roskakoriin"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 msgid "(Guest)"
-msgstr ""
+msgstr "(Vieras)"
 
 #. module: knowledge
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 msgid "(You)"
-msgstr ""
+msgstr "(Sinä)"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_mail_invite
@@ -126,6 +127,13 @@ msgid ""
 "                        <br>\n"
 "                        info@yourcompany.com"
 msgstr ""
+"8000 Marina Blvd, Suite 300 94005\n"
+"                        <br>\n"
+"                        Brisbane California (USA)\n"
+"                        <br>\n"
+"                        Yhdysvallat\n"
+"                        <br>\n"
+"                        info@yrityksesi.com"
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_meeting_example_branding
@@ -721,10 +729,10 @@ msgid ""
 "                <font class=\"text-600\">Which KPI will be used to measure "
 "this progress?</font>"
 msgstr ""
-"<font class=\"text-600\">Mikä on toimintasuunnitelmasi tämän tilin "
-"edistämiseksi?</font><br>\n"
-"                <font class=\"text-600\">Millä KPI:llä edistymistä mitataan?"
-"</font>"
+"<font class=\"text-600\">Mikä on toimintasuunnitelmasi tämän tilin jatkon "
+"kannalta?</font><br>\n"
+"                <font class=\"text-600\">Millä suorituskykymittarilla "
+"edistymistä mitataan?</font>"
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_account_management
@@ -2030,8 +2038,9 @@ msgid ""
 "<strong>N</strong>on-<strong>R</strong>ecurring <strong>R</strong>evenues\n"
 "                            (<em>consultancy services, ...</em>)"
 msgstr ""
-"<strong>Kerta</strong> <strong>luontoiset</strong>tuotot</strong>\n"
-"                           (<em>konsulttipalvelut, ...</em>)"
+"<strong>K</strong>erta<strong>l</strong>uonteinen <strong>l</strong>"
+"iikevaihto\n"
+"                            (<em>konsultointipalvelut, ...</em>)"
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_sales_playbook
@@ -2065,7 +2074,8 @@ msgid ""
 "                            Advantage that makes you stand out from the "
 "competition."
 msgstr ""
-"<strong>Ainutlaatuinen</strong> <strong>myyntitarjous</strong>:\n"
+"<strong>Ainut</strong>laatuinen "
+"<strong>m</strong>yynti<strong>v</strong>äittämä:\n"
 "                            Etu, joka erottaa sinut kilpailijoista."
 
 #. module: knowledge
@@ -2206,7 +2216,7 @@ msgstr "Toimenpiteen tila"
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__activity_type_icon
 msgid "Activity Type Icon"
-msgstr "Toimenpiteen kuvake"
+msgstr "Toimenpidetyypin kuvake"
 
 #. module: knowledge
 #. odoo-javascript
@@ -2266,7 +2276,7 @@ msgstr "Lisää kommentti..."
 #. odoo-javascript
 #: code:addons/knowledge/static/src/editor/embedded_components/plugins/foldable_section_plugin/foldable_section_plugin.js:0
 msgid "Add a foldable section."
-msgstr ""
+msgstr "Lisää taitettava osio."
 
 #. module: knowledge
 #. odoo-javascript
@@ -2278,13 +2288,13 @@ msgstr "Lisää satunnainen kuvake"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/editor/embedded_components/plugins/foldable_section_plugin/foldable_section_plugin.js:0
 msgid "Add a title to your section"
-msgstr ""
+msgstr "Lisää otsikko osioosi"
 
 #. module: knowledge
 #. odoo-javascript
 #: code:addons/knowledge/static/src/editor/embedded_components/backend/article_index/article_index.xml:0
 msgid "Add an Article"
-msgstr ""
+msgstr "Lisää artikkeli"
 
 #. module: knowledge
 #: model_terms:ir.actions.act_window,help:knowledge.knowledge_article_stage_action
@@ -2313,7 +2323,7 @@ msgstr "Lisää henkilöitä tai sähköpostiosoitteita"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 msgid "Add people..."
-msgstr ""
+msgstr "Lisää ihmisiä..."
 
 #. module: knowledge
 #. odoo-javascript
@@ -2463,7 +2473,7 @@ msgstr "Kaikki toimenpiteeni koodataan aina CRM-järjestelmään"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/article_annexe_picker_dialog/article_annexe_picker_no_content_helper.xml:0
 msgid "All pages have already been loaded."
-msgstr ""
+msgstr "Kaikki sivut on jo ladattu."
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_brand_assets
@@ -2714,7 +2724,7 @@ msgstr "Artikkelimallin luokka"
 #. module: knowledge
 #: model:ir.actions.act_window,name:knowledge.knowledge_article_template_action
 msgid "Article Templates"
-msgstr "Artikkelimallit"
+msgstr "Artikkelipohjat"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__article_url
@@ -2814,7 +2824,7 @@ msgstr "Liitteiden määrä"
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__template_child_default_create
 msgid "Auto-Create Child Article"
-msgstr ""
+msgstr "Luo alisteinen artikkeli automaattisesti"
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_product_catalog
@@ -2839,7 +2849,7 @@ msgstr "Tausta:"
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_personal_organizer
 msgid "Backlog"
-msgstr "Rästityöt"
+msgstr "Rästissä"
 
 #. module: knowledge
 #. odoo-javascript
@@ -2877,7 +2887,7 @@ msgstr "Vihkot kokonaishintaan &gt; 1000 dollaria"
 #: model:knowledge.article,template_name:knowledge.knowledge_article_template_brand_assets
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_brand_assets
 msgid "Brand Assets"
-msgstr "Tuotemerkin merkkiomaisuus"
+msgstr "Brändiominaisuudet"
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_marketing_customer_persona_1
@@ -3401,14 +3411,13 @@ msgstr "Luo uusi artikkeli työtilaan"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/sidebar/sidebar_section.xml:0
 msgid "Create a new private article"
-msgstr ""
+msgstr "Luo uusi yksityinen artikkeli"
 
 #. module: knowledge
 #: model:knowledge.article,template_description:knowledge.knowledge_article_template_product_catalog
 msgid ""
 "Create a simple catalog to provide technical details about your products."
-msgstr ""
-"Luo yksinkertainen luettelo, joka sisältää teknisiä tietoja tuotteistasi."
+msgstr "Luo yksinkertainen katalogi tarjotaksesi teknisiä tietoja tuotteistasi."
 
 #. module: knowledge
 #: model_terms:ir.actions.act_window,help:knowledge.knowledge_article_action_item_calendar
@@ -3421,7 +3430,7 @@ msgstr "Luo artikkelin kohde"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/sidebar/sidebar_row.xml:0
 msgid "Create an Article inside"
-msgstr ""
+msgstr "Luo sisäinen artikkeli"
 
 #. module: knowledge
 #: model_terms:ir.actions.act_window,help:knowledge.knowledge_article_action
@@ -3542,13 +3551,13 @@ msgstr "Poista suodatin"
 #: code:addons/knowledge/static/src/components/article_template_picker_dialog/article_template_picker_dialog.js:0
 #: code:addons/knowledge/static/src/components/article_template_picker_dialog/article_template_picker_dialog.xml:0
 msgid "Delete Template"
-msgstr "Poista malli"
+msgstr "Poista mallipohja"
 
 #. module: knowledge
 #. odoo-javascript
 #: code:addons/knowledge/static/src/editor/embedded_components/backend/article_index/article_index_list.xml:0
 msgid "Delete article"
-msgstr ""
+msgstr "Poista artikkeli"
 
 #. module: knowledge
 #. odoo-javascript
@@ -3630,8 +3639,8 @@ msgid ""
 "Distribute brand digital assets while ensuring compliance with company "
 "policies and guidelines."
 msgstr ""
-"Jaa tuotemerkin digitaalista omaisuutta varmistaen, että yrityksen "
-"käytäntöjä ja ohjeita noudatetaan."
+"Jaa brändin digitaalisia ominaisuuksia varmistaen, että yrityksen käytäntöjä "
+"ja ohjeita noudatetaan."
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -3666,7 +3675,7 @@ msgstr "Valmis"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/options_dropdown/options_dropdown.xml:0
 msgid "Download PDF"
-msgstr ""
+msgstr "Lataa PDF"
 
 #. module: knowledge
 #. odoo-javascript
@@ -3831,18 +3840,18 @@ msgstr "Etsi kaikki kanssasi jaetut artikkelit"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/sidebar/sidebar_section.xml:0
 msgid "Fold/unfold the section"
-msgstr ""
+msgstr "Taita/avaa osio"
 
 #. module: knowledge
 #. odoo-javascript
 #: code:addons/knowledge/static/src/editor/embedded_components/plugins/foldable_section_plugin/foldable_section_plugin.js:0
 msgid "Foldable Section"
-msgstr ""
+msgstr "Taitettava osio"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article_stage__fold
 msgid "Folded in kanban view"
-msgstr "Laskostettu Kanban-näkymässä"
+msgstr "Taitettu kanban-näkymässä"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__message_follower_ids
@@ -3907,7 +3916,7 @@ msgstr "Sukupuoli: N"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 msgid "General Access"
-msgstr ""
+msgstr "Yleinen pääsy"
 
 #. module: knowledge
 #: model:knowledge.article,template_name:knowledge.knowledge_article_template_hr_faq
@@ -4010,25 +4019,25 @@ msgstr "Piilotettu"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/options_dropdown/options_dropdown.xml:0
 msgid "Hide Chatter"
-msgstr ""
+msgstr "Piilota chatter"
 
 #. module: knowledge
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/options_dropdown/options_dropdown.xml:0
 msgid "Hide Comments"
-msgstr ""
+msgstr "Piilota kommentit"
 
 #. module: knowledge
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/options_dropdown/options_dropdown.xml:0
 msgid "Hide Properties"
-msgstr ""
+msgstr "Piilota ominaisuudet"
 
 #. module: knowledge
 #. odoo-javascript
 #: code:addons/knowledge/static/src/editor/embedded_components/backend/article_index/article_index.xml:0
 msgid "Hide sub-articles"
-msgstr ""
+msgstr "Piilota osa-artikkelit"
 
 #. module: knowledge
 #. odoo-javascript
@@ -4190,8 +4199,8 @@ msgid ""
 "If checked, the article will appear in the templates gallery under the "
 "'Shared Templates' section"
 msgstr ""
-"Jos valittu, artikkeli näkyy mallipohjien galleriassa kohdassa 'Jaetut "
-"mallit'."
+"Jos valittuna, artikkeli näkyy mallipohjien galleriassa 'Jaetut mallit' "
+"-osiossa"
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_product_catalog
@@ -4217,6 +4226,8 @@ msgid ""
 "If set, this will automatically create this child article when its parent "
 "template is used"
 msgstr ""
+"Jos valittuna, tämä alisteinen artikkeli luodaan automaattisesti sen "
+"päämallipohjaa käytettäessä"
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_post_mortem
@@ -4274,7 +4285,7 @@ msgstr "Teollisuus ⚙-"
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_account_management
 msgid "Industry:"
-msgstr "Teollisuus:"
+msgstr "Toimiala:"
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_hr_faq
@@ -4641,12 +4652,12 @@ msgstr "Viimeksi muokattu"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/options_dropdown/options_dropdown.xml:0
 msgid "Last Edited ·"
-msgstr ""
+msgstr "Viimeksi muokattu ·"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__last_edition_user_avatar
 msgid "Last Editor's Avatar"
-msgstr ""
+msgstr "Viimeisen muokkaajan avatar"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__write_uid
@@ -4887,7 +4898,7 @@ msgstr "Viesti"
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__message_has_error
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article_thread__message_has_error
 msgid "Message Delivery error"
-msgstr "Ongelma viestin toimituksessa"
+msgstr "Viestin toimitusvirhe"
 
 #. module: knowledge
 #. odoo-javascript
@@ -5087,7 +5098,7 @@ msgstr "Seuraavan toimenpiteen eräpäivä"
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__activity_summary
 msgid "Next Activity Summary"
-msgstr "Seuraavan toimenpiteen kuvaus"
+msgstr "Seuraavan toimenpiteen yhteenveto"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__activity_type_id
@@ -5148,7 +5159,7 @@ msgstr "Ei pääsyä"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/article_annexe_picker_dialog/article_annexe_picker_no_content_helper.xml:0
 msgid "No annex found!"
-msgstr ""
+msgstr "Liitettä ei löytynyt!"
 
 #. module: knowledge
 #. odoo-javascript
@@ -5229,7 +5240,7 @@ msgstr "Yhteistyömme tavoitteet"
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_meeting_example_branding
 msgid "Odoo Brand Assets"
-msgstr "Odoo brändin omaisuudenhallinta"
+msgstr "Odoon brändiominaisuudet"
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_company_newsletter
@@ -5357,7 +5368,7 @@ msgid ""
 "Our catalog can be found here and is updated every 2 years. If you do not "
 "manage to find the specific model you are looking for,"
 msgstr ""
-"Luettelomme löytyy täältä, ja se päivitetään joka toinen vuosi. Jos et löydä "
+"Katalogimme löytyy täältä ja se päivitetään joka toinen vuosi. Jos et löydä "
 "etsimääsi mallia,"
 
 #. module: knowledge
@@ -5498,8 +5509,8 @@ msgstr "Mahdolliset riskit:"
 msgid ""
 "Prepare your demos in advance and integrate the prospect's use case into it"
 msgstr ""
-"Valmistele demosi etukäteen ja integroi siihen potentiaalisen asiakkaan "
-"käyttötapaus"
+"Valmistele demosi etukäteen ja integroi siihen potentiaalisen asiakkaasi "
+"esimerkkitapaus"
 
 #. module: knowledge
 #. odoo-javascript
@@ -5630,7 +5641,7 @@ msgstr ""
 #: model:knowledge.article,template_name:knowledge.knowledge_article_template_sprint_calendar_public_holiday
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_sprint_calendar_public_holiday
 msgid "Public Holidays"
-msgstr "Yleiset lomapäivät"
+msgstr "Yleiset vapaapäivät"
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_software_specification
@@ -5651,7 +5662,7 @@ msgstr "LUE"
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__rating_ids
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article_thread__rating_ids
 msgid "Ratings"
-msgstr "Arvioinnit"
+msgstr "Arvostelut"
 
 #. module: knowledge
 #. odoo-javascript
@@ -5708,7 +5719,7 @@ msgstr "Poista kansi"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/options_dropdown/options_dropdown.xml:0
 msgid "Remove From Favorites"
-msgstr ""
+msgstr "Poista suosikeista"
 
 #. module: knowledge
 #. odoo-javascript
@@ -5759,7 +5770,7 @@ msgstr "Poista suosikeista"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.xml:0
 msgid "Rename"
-msgstr "Uudelleennimeä"
+msgstr "Nimeä uudelleen"
 
 #. module: knowledge
 #. odoo-javascript
@@ -5999,7 +6010,7 @@ msgstr "Lähetä roskakoriin"
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article_favorite__sequence
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article_stage__sequence
 msgid "Sequence"
-msgstr "Järjestys"
+msgstr "Sekvenssi"
 
 #. module: knowledge
 #. odoo-javascript
@@ -6011,7 +6022,7 @@ msgstr "Jaa"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel_dialog/permission_panel_dialog.xml:0
 msgid "Share settings"
-msgstr ""
+msgstr "Jaa asetukset"
 
 #. module: knowledge
 #. odoo-javascript
@@ -6038,13 +6049,13 @@ msgstr "Jaettu tehtävälista"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/options_dropdown/options_dropdown.xml:0
 msgid "Show Chatter"
-msgstr ""
+msgstr "Näytä chatteri"
 
 #. module: knowledge
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/options_dropdown/options_dropdown.xml:0
 msgid "Show Comments"
-msgstr ""
+msgstr "Näytä kommentit"
 
 #. module: knowledge
 #. odoo-javascript
@@ -6082,7 +6093,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 msgid "Show in Workspace"
-msgstr ""
+msgstr "Näytä työtilassa"
 
 #. module: knowledge
 #. odoo-javascript
@@ -6094,7 +6105,7 @@ msgstr "Näytä sisäkkäiset artikkelit"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/editor/embedded_components/backend/article_index/article_index.xml:0
 msgid "Show sub-articles"
-msgstr ""
+msgstr "Näytä osa-artikkelit"
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_sales_playbook
@@ -6272,7 +6283,7 @@ msgstr "Sidosryhmien/osakkaiden analyysi"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/item_calendar_props_dialog/item_calendar_props_dialog.xml:0
 msgid "Start Date"
-msgstr "Alkupäivä"
+msgstr "Aloituspäivä"
 
 #. module: knowledge
 #. odoo-javascript
@@ -6309,10 +6320,10 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
-"Tila aktiviteetin perusteella\n"
-"Myöhässä: Eräpäivä on menneisyydessä\n"
-"Tänään: Eräpäivä on tänään\n"
-"Suunniteltu: Tulevaisuudessa."
+"Tila toimenpiteiden perusteella\n"
+"Myöhässä: Eräpäivä on jo mennyt\n"
+"Tänään: Toimenpiteen päivämäärä on tänään\n"
+"Suunniteltu: Tulevat toimenpiteet."
 
 #. module: knowledge
 #. odoo-javascript
@@ -6395,7 +6406,7 @@ msgstr "Mallipohjan otsikko"
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__origin_template_id
 msgid "Template used to generate the article"
-msgstr ""
+msgstr "Artikkelin luomiseen käytettävä mallipohja"
 
 #. module: knowledge
 #: model:ir.ui.menu,name:knowledge.knowledge_article_template_menu
@@ -6645,7 +6656,7 @@ msgstr "Ketju on suljettu"
 #: model:knowledge.article,template_name:knowledge.knowledge_article_template_product_catalog
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_product_catalog
 msgid "Tiny House Catalog"
-msgstr "Tiny House -luettelo"
+msgstr "Tiny House -katalogi"
 
 #. module: knowledge
 #: model:digest.tip,name:knowledge.digest_tip_knowledge_0
@@ -6720,13 +6731,13 @@ msgstr "Tyyppi"
 #. module: knowledge
 #: model:ir.model.fields,help:knowledge.field_knowledge_article__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr "Kirjattu poikkeustoimenpiteen tyyppi."
+msgstr "Kirjatun poikkeustoimenpiteen tyyppi."
 
 #. module: knowledge
 #. odoo-javascript
 #: code:addons/knowledge/static/src/editor/embedded_components/plugins/foldable_section_plugin/foldable_section_plugin.js:0
 msgid "Type something inside this section"
-msgstr ""
+msgstr "Kirjoita jotain tähän osioon"
 
 #. module: knowledge
 #. odoo-javascript
@@ -6942,9 +6953,9 @@ msgid ""
 "When set, the article body will take the full width available on the article "
 "page. Otherwise, the body will have large horizontal margins."
 msgstr ""
-"Kun tämä asetus on asetettu, artikkelin teksti kattaa koko artikkelisivun "
-"käytettävissä olevan leveyden. Muussa tapauksessa artikkelin teksti saa "
-"suuret vaakasuuntaiset marginaalit."
+"Kun valittu, artikkelin teksti kattaa koko artikkelisivun käytettävissä "
+"olevan leveyden. Muussa tapauksessa tekstillä on suuret vaakasuuntaiset "
+"marginaalit."
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_product_catalog
@@ -7167,7 +7178,7 @@ msgstr "Sinulla ei ole pääsyoikeutta tähän artikkeliin"
 #. odoo-javascript
 #: code:addons/knowledge/static/src/components/sidebar/sidebar_section.xml:0
 msgid "You have no private Article."
-msgstr ""
+msgstr "Sinulla ei ole yksityistä artikkelia."
 
 #. module: knowledge
 #. odoo-python
@@ -7508,7 +7519,7 @@ msgstr "🔗 Linkit"
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_personal_organizer
 msgid "🗓 WEEKLY AGENDA"
-msgstr "🗓 VIIKOTTAINEN OHJELMA"
+msgstr "🗓 VIIKOITTAINEN OHJELMA"
 
 #. module: knowledge
 #: model_terms:knowledge.article,template_body:knowledge.knowledge_article_template_meeting_example_branding

@@ -227,6 +227,34 @@ test("An error is displayed in the side panel if the list has invalid model", as
     expect(".o-validation-error").toHaveCount(1);
 });
 
+test("Can delete a list with an invalid model from the side panel", async function () {
+    const { model, env } = await createSpreadsheetFromListView({
+        mockRPC: async function (route, { model, method }) {
+            if (model === "unknown" && method === "fields_get") {
+                throw makeServerError({ code: 404 });
+            }
+        },
+    });
+    await contains(".o-sidePanelClose").click();
+    const listId = model.getters.getListIds()[0];
+    const listDefinition = model.getters.getListModelDefinition(listId);
+    model.dispatch("UPDATE_ODOO_LIST", {
+        listId,
+        list: {
+            ...listDefinition,
+            metaData: {
+                ...listDefinition.metaData,
+                resModel: "unknown",
+            },
+        },
+    });
+    env.openSidePanel("LIST_PROPERTIES_PANEL", { listId });
+
+    await contains("button:contains(Delete List)").click();
+    await contains(".modal-footer .btn-primary").click();
+    expect(model.getters.getListIds()).toEqual([]);
+});
+
 test("Open list properties", async function () {
     const { env } = await createSpreadsheetFromListView();
 
@@ -575,6 +603,42 @@ test("Selected all records from current page are inserted correctly", async func
     expect(getCellValue(model, "A2")).toBe(12, {
         message: "First record from page 2 (i.e. 3 of 4 records) should be inserted",
     });
+    expect(getCellValue(model, "A3")).toBe(1);
+    expect(getCellValue(model, "A4")).toBe(17);
+    expect(getCellValue(model, "A5")).toBe(2);
+});
+
+test("Insert in spreadsheet is avaiblable on a list grouped by m2m field", async function () {
+    let spreadsheetAction;
+    patchWithCleanup(SpreadsheetAction.prototype, {
+        setup() {
+            super.setup();
+            spreadsheetAction = this;
+        },
+    });
+    const serverData = {
+        models: getBasicData(),
+        views: {
+            "partner,false,list": `
+                    <list>
+                        <field name="foo"/>
+                    </list>`,
+        },
+    };
+    await spawnListViewForSpreadsheet({
+        serverData,
+        groupBy: ["tag_ids"],
+    });
+    const target = getFixture();
+    await contains(target.querySelectorAll(".o_list_record_selector input")[0]).click();
+    await toggleActionMenu();
+    await contains(".o-dropdown--menu .o_menu_item:has(.oi-view-list)").click();
+    await contains(".modal button.btn-primary").click();
+    await animationFrame();
+
+    const model = getSpreadsheetActionModel(spreadsheetAction);
+    await waitForDataLoaded(model);
+    expect(getCellValue(model, "A2")).toBe(12);
     expect(getCellValue(model, "A3")).toBe(1);
     expect(getCellValue(model, "A4")).toBe(17);
     expect(getCellValue(model, "A5")).toBe(2);

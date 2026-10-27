@@ -65,7 +65,7 @@ async function replaceSidePanel(model, env) {
 }
 
 /**
- * @param {"text" | "date" | "relation"} type
+ * @param {"text" | "date" | "relation" | "boolean" | "selection" | "numeric"} type
  */
 async function clickCreateFilter(type) {
     await contains(FILTER_CREATION_SELECTORS[type]).click();

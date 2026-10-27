@@ -3,13 +3,14 @@
 # * appointment_hr_recruitment
 #
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
+# Ulevičienė <vilma.uleviciene@mededu.lt>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~18.4+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-08 18:45+0000\n"
-"PO-Revision-Date: 2025-11-15 12:53+0000\n"
-"Last-Translator: Weblate <noreply-mt-weblate@weblate.org>\n"
+"POT-Creation-Date: 2025-12-30 18:44+0000\n"
+"PO-Revision-Date: 2026-10-05 22:33+0000\n"
+"Last-Translator: Ulevičienė <vilma.uleviciene@mededu.lt>\n"
 "Language-Team: Lithuanian <https://translate.odoo.com/projects/odoo-19/"
 "appointment_hr_recruitment/lt/>\n"
 "Language: lt\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n % 10 == 1 && (n % 100 < 11 || n % 100 > "
 "19)) ? 0 : ((n % 10 >= 2 && n % 10 <= 9 && (n % 100 < 11 || n % 100 > 19)) ? "
 "1 : 2);\n"
-"X-Generator: Weblate 5.12.2\n"
+"X-Generator: Weblate 2026.8.1\n"
 
 #. module: appointment_hr_recruitment
 #: model:mail.template,body_html:appointment_hr_recruitment.email_template_data_applicant_schedule_interview
@@ -48,6 +49,29 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"    <h2>Sveiki,</h2>\n"
+"    <div style=\"font-size: 13px;\">\n"
+"        Dėkojame už jūsų paraišką ir susidomėjimą „ <t t-"
+"out=\"object.company_id.name or ''\">“ „YourCompany“</t>.<br/>\n"
+"        <br/>\n"
+"        Norėčiau su jumis surengti telefoninį pokalbį, kuris turėtų trukti "
+"apie 30 min.\n"
+"        Peržiūrėsime jūsų CV ir motyvaciją prisijungti prie „ <t t-"
+"out=\"object.company_id.name or ''\">“ „YourCompany“</t> komandos.\n"
+"        Galite užsisakyti laiką mūsų tvarkaraštyje paspaudę žemiau esantį "
+"mygtuką.<br/>\n"
+"    </div>\n"
+"   <br/>\n"
+"    <a t-att-href=\"object._get_interview_invite_url()\" t-attf-"
+"style=\"background-color: {{user.company_id.email_secondary_color or "
+"'#875A7B'}}; text-decoration: none; color: {"
+"{user.company_id.email_primary_color or '#FFFFFF'}}; padding: 8px 16px 8px "
+"16px; border-radius: 5px;\"> Užsisakyti pokalbį</a><br/>\n"
+"   <br/> \n"
+"    Su pagarba,\n"
+"</div>\n"
+"        "
 
 #. module: appointment_hr_recruitment
 #: model:ir.model,name:appointment_hr_recruitment.model_hr_applicant
